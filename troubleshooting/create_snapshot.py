@@ -21,7 +21,8 @@ import tarfile
 import tempfile
 import time
 
-CMD_TIMEOUT_SEC = 30
+CMD_TIMEOUT_SEC = 15
+BACKOFF_LIMIT = 4
 
 KUBECTL_GLOBAL_CMDS = [
     'kubectl version {kubeconfig_arg} --request-timeout {timeout}',
@@ -69,8 +70,12 @@ def run_cmd(cmd: str, subfolder: str, output_dir: pathlib.Path):
     output_path.parent.mkdir(parents=True, exist_ok=True)
     print("Executing: {}... ".format(cmd), end='')
     backoff_timer = 1
+    backoff_count = 0
     with open(output_path, mode='w') as output_file:
         while True:
+            if backoff_count > BACKOFF_LIMIT:
+                print('[ FAIL ]')
+                return
             process = subprocess.run(cmd, stdout=output_file, stderr=output_file,
                                      timeout=60, shell=True)
             if not process.returncode:
@@ -80,6 +85,7 @@ def run_cmd(cmd: str, subfolder: str, output_dir: pathlib.Path):
                                                                                    process.stderr))
             time.sleep(backoff_timer)
             backoff_timer *= 2
+            backoff_count += 1
 
 
 def get_kubectl_list(object_type, kubeconfig, timeout, namespace=None, object_name='',
@@ -93,8 +99,12 @@ def get_kubectl_list(object_type, kubeconfig, timeout, namespace=None, object_na
     if namespace:
         cmd = "{} -n {}".format(cmd, namespace)
     backoff_timer = 1
+    backoff_count = 0
+    print("Executing: {}... ".format(cmd), end='')
     while True:
-        print("Executing: {}... ".format(cmd), end='')
+        if backoff_count > BACKOFF_LIMIT:
+            print('[ FAIL ]')
+            return
         process = subprocess.run(cmd, shell=True,
                                  capture_output=True)
         if not process.returncode:
@@ -107,6 +117,7 @@ def get_kubectl_list(object_type, kubeconfig, timeout, namespace=None, object_na
                                                                                process.stderr))
         time.sleep(backoff_timer)
         backoff_timer *= 2
+        backoff_count += 1
 
 
 def main():
