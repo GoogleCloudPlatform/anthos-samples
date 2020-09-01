@@ -55,11 +55,11 @@ KUBECTL_PER_POD_CMDS = [
 def parse_args():
     parser = argparse.ArgumentParser(description='Create a snapshot of important information about Anthos K8S '
                                                  'cluster to be used by GCP support.')
-    parser.add_argument('--kubeconfig', dest='kubeconfig', action='store_const',
-                        default=os.getenv('KUBECONFIG', ''), const=str,
+    parser.add_argument('--kubeconfig', dest='kubeconfig', action='store',
+                        default=os.getenv('KUBECONFIG', ''),
                         help='Path to kubeconfig file to be used to gather the snapshot')
-    parser.add_argument('--timeout', dest='timeout', action='store_const',
-                        default=CMD_TIMEOUT_SEC, const=int,
+    parser.add_argument('--timeout', dest='timeout', action='store',
+                        default=CMD_TIMEOUT_SEC, type=int,
                         help='Timeout for kubectl commands.')
     args = parser.parse_args()
     return args.kubeconfig, args.timeout
