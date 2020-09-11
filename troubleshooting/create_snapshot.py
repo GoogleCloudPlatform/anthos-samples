@@ -13,6 +13,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+This script can be used to prepare a bundle of files describing the state of a GKE cluster.
+
+Usage examples:
+ * Using default kubeconfig:
+   $ python3 create_snapshot.py
+ * Using selected config from a file:
+   $ python3 create_snapshot.py --kubeconfig /tmp/kubeconfig
+ * Specifying timeout for the kubectl calls (default is 15 seconds):
+   $ python3 create_snapshot.py --timeout 10
+
+Output:
+snapshot-{timestamp}.tar.gz file containing outputs of various kubectl commands that were executed.
+The file is created in the current working directory.
+
+Requirements:
+ * Python 3.8 (but probably work with lower versions of Python 3 too)
+ * kubectl available through $PATH
+
+"""
+
 import argparse
 import os
 import pathlib
