@@ -145,7 +145,6 @@ data:
         storage.backlog.mem_limit  10M
 
     @INCLUDE input-containers.conf
-    @INCLUDE input-systemd.conf
     @INCLUDE filter-kubernetes.conf
     @INCLUDE output-fluentd.conf
   input-containers.conf: |
@@ -378,60 +377,6 @@ data:
         Name    record_modifier
         Match   *.cnrm-system.*
         Record  gke.googleapis.com/log_type system
-  input-systemd.conf: |
-    [INPUT]
-        # https://docs.fluentbit.io/manual/input/systemd
-        Name            systemd
-        Tag             container-runtime
-        Path            /var/log/journal
-        DB              /var/log/fluent-bit-k8s-node-journald-docker.db
-        Systemd_Filter  _SYSTEMD_UNIT=docker.service
-        storage.type    filesystem
-
-    [INPUT]
-        # https://docs.fluentbit.io/manual/input/systemd
-        Name            systemd
-        Tag             kubelet
-        Path            /var/log/journal
-        DB              /var/log/fluent-bit-k8s-node-journald-kubelet.db
-        Systemd_Filter  _SYSTEMD_UNIT=kubelet.service
-        storage.type    filesystem
-
-    [INPUT]
-        # https://docs.fluentbit.io/manual/input/systemd
-        Name            systemd
-        Tag             node-problem-detector
-        Path            /var/log/journal
-        DB              /var/log/fluent-bit-k8s-node-journald-node-problem-detector.db
-        Systemd_Filter  _SYSTEMD_UNIT=node-problem-detector.service
-        storage.type    filesystem
-
-    # We have to use a filter per systemd tag, since we can't match on distinct
-    # strings, only by using wildcards with a prefix/suffix. We can't prefix
-    # these (e.g. with "k8s_node.") since we need to output the records with the
-    # distinct tags, and Fluent Bit doesn't yet support modifying the tag (only
-    # setting it in the input plugin). We can revise once the feature request
-    # (https://github.com/fluent/fluent-bit/issues/293) is fulfilled.
-    [FILTER]
-        # https://docs.fluentbit.io/manual/filter/record_modifier
-        Name    record_modifier
-        Match   container-runtime
-        Record  logging.googleapis.com/local_resource_id k8s_node.${NODE_NAME}
-        Record  gke.googleapis.com/log_type system
-
-    [FILTER]
-        # https://docs.fluentbit.io/manual/filter/record_modifier
-        Name    record_modifier
-        Match   kubelet
-        Record  logging.googleapis.com/local_resource_id k8s_node.${NODE_NAME}
-        Record  gke.googleapis.com/log_type system
-
-    [FILTER]
-        # https://docs.fluentbit.io/manual/filter/record_modifier
-        Name    record_modifier
-        Match   node-problem-detector
-        Record  logging.googleapis.com/local_resource_id k8s_node.${NODE_NAME}
-        Record  gke.googleapis.com/log_type system
 
     [FILTER]
         # https://docs.fluentbit.io/manual/filter/nest
@@ -440,6 +385,7 @@ data:
         Operation nest
         Wildcard gke.googleapis.com*
         Nest_under logging.googleapis.com/labels
+
   output-fluentd.conf: |
     [OUTPUT]
         # https://docs.fluentbit.io/manual/input/forward
