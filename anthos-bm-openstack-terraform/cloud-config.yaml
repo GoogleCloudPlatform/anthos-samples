@@ -1,0 +1,35 @@
+#cloud-config
+users:
+- default
+- name: abm
+  gecos: Anthos BM
+  sudo: ALL=(ALL) NOPASSWD:ALL
+  groups: users, admin
+  shell: /bin/bash
+  lock_passwd: true
+  ssh_authorized_keys:
+    - ${public_key}
+
+write_files:
+- content: |
+    ${indent(4, private_key)}
+  path: /home/abm/.ssh/id_rsa
+  permissions: '0600'
+- content: |
+    ${indent(4, public_key)}
+  path: /home/abm/.ssh/id_rsa.pub
+- content: |
+    export PATH=$PATH:/var/lib/google-cloud-sdk/bin
+    source /var/lib/google-cloud-sdk/path.bash.inc
+    source /var/lib/google-cloud-sdk/completion.bash.inc
+  path: /home/abm/.profile
+
+manage_etc_hosts: true
+
+runcmd:
+- sed -i '$a AllowUsers abm' /etc/ssh/sshd_config
+- systemctl stop apparmor.service
+- systemctl disable apparmor.service
+- curl https://sdk.cloud.google.com > install.sh
+- bash install.sh --disable-prompts --install-dir /var/lib/
+- chown -R abm:abm /home/abm
