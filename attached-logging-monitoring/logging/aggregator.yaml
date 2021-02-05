@@ -400,7 +400,7 @@ data:
       use_grpc true
       project_id [PROJECT_ID]
       k8s_cluster_name [CLUSTER_NAME]
-      k8s_cluster_location [CLUSTER_NAME]
+      k8s_cluster_location [CLUSTER_LOCATION]
       adjust_invalid_timestamps false
       # Metadata Server is not available in On-Prem world. Skip the check to
       # avoid misleading errors in the log.
