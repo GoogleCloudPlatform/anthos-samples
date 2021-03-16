@@ -273,6 +273,8 @@ data:
         # resource. The format is:
         # 'k8s_container.<namespace_name>.<pod_name>.<container_name>'.
         "logging.googleapis.com/local_resource_id" ${tag}
+        # - If log is null, set to empty string instead.
+        log ${record['log'] || ''}
         # - Rename 'log' field to the more generic 'message'. This lets the
         # fluent-plugin-google-cloud know to flatten the field as 'textPayload'
         # instead of 'jsonPayload' after extracting 'time', 'severity' and

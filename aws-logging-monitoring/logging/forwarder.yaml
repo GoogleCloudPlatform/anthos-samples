@@ -157,7 +157,7 @@ data:
         Tag                k8s_container.<namespace_name>.<pod_name>.<container_name>
         Path               /var/log/containers/*.log
         Exclude_Path       *_kube-system_*.log,*_gke-connect_*.log,*_knative-serving_*.log,*_gke-system_*.log,*_istio-system_*.log,*_monitoring-system_*.log,*_config-management-system_*.log,*_gatekeeper-system_*.log,*_cnrm-system_*.log
-        Parser             docker
+        Parser             cri
         DB                 /var/log/fluent-bit-k8s-container-application.db
         Buffer_Chunk_Size  512KB
         Buffer_Max_Size    5M
@@ -174,7 +174,7 @@ data:
         Tag_Regex          var.log.containers.(?<pod_name>[a-z0-9](?:[-a-z0-9]*[a-z0-9])?(?:\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)_(?<namespace_name>[^_]+)_(?<container_name>.+)-(?<docker_id>[a-z0-9]{64})\.log$
         Tag                k8s_container.<namespace_name>.<pod_name>.<container_name>
         Path               /var/log/containers/*_kube-system_*.log
-        Parser             docker
+        Parser             cri
         DB                 /var/log/fluent-bit-k8s-container-kube-system.db
         Buffer_Chunk_Size  512KB
         Buffer_Max_Size    5M
@@ -191,7 +191,7 @@ data:
         Tag_Regex          var.log.containers.(?<pod_name>[a-z0-9](?:[-a-z0-9]*[a-z0-9])?(?:\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)_(?<namespace_name>[^_]+)_(?<container_name>.+)-(?<docker_id>[a-z0-9]{64})\.log$
         Tag                k8s_container.<namespace_name>.<pod_name>.<container_name>
         Path               /var/log/containers/*_gke-connect_*.log
-        Parser             docker
+        Parser             cri
         DB                 /var/log/fluent-bit-k8s-container-gke-connect.db
         Buffer_Chunk_Size  512KB
         Buffer_Max_Size    2M
@@ -208,7 +208,7 @@ data:
         Tag_Regex          var.log.containers.(?<pod_name>[a-z0-9](?:[-a-z0-9]*[a-z0-9])?(?:\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)_(?<namespace_name>[^_]+)_(?<container_name>.+)-(?<docker_id>[a-z0-9]{64})\.log$
         Tag                k8s_container.<namespace_name>.<pod_name>.<container_name>
         Path               /var/log/containers/*_knative-serving_*.log
-        Parser             docker
+        Parser             cri
         DB                 /var/log/fluent-bit-k8s-container-knative-serving.db
         Buffer_Chunk_Size  512KB
         Buffer_Max_Size    2M
@@ -225,7 +225,7 @@ data:
         Tag_Regex          var.log.containers.(?<pod_name>[a-z0-9](?:[-a-z0-9]*[a-z0-9])?(?:\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)_(?<namespace_name>[^_]+)_(?<container_name>.+)-(?<docker_id>[a-z0-9]{64})\.log$
         Tag                k8s_container.<namespace_name>.<pod_name>.<container_name>
         Path               /var/log/containers/*_gke-system_*.log
-        Parser             docker
+        Parser             cri
         DB                 /var/log/fluent-bit-k8s-container-gke-system.db
         Buffer_Chunk_Size  512KB
         Buffer_Max_Size    2M
@@ -242,7 +242,7 @@ data:
         Tag_Regex          var.log.containers.(?<pod_name>[a-z0-9](?:[-a-z0-9]*[a-z0-9])?(?:\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)_(?<namespace_name>[^_]+)_(?<container_name>.+)-(?<docker_id>[a-z0-9]{64})\.log$
         Tag                k8s_container.<namespace_name>.<pod_name>.<container_name>
         Path               /var/log/containers/*_istio-system_*.log
-        Parser             docker
+        Parser             cri
         DB                 /var/log/fluent-bit-k8s-container-istio-system.db
         Buffer_Chunk_Size  512KB
         Buffer_Max_Size    2M
@@ -259,7 +259,7 @@ data:
         Tag_Regex          var.log.containers.(?<pod_name>[a-z0-9](?:[-a-z0-9]*[a-z0-9])?(?:\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)_(?<namespace_name>[^_]+)_(?<container_name>.+)-(?<docker_id>[a-z0-9]{64})\.log$
         Tag                k8s_container.<namespace_name>.<pod_name>.<container_name>
         Path               /var/log/containers/*_monitoring-system_*.log
-        Parser             docker
+        Parser             cri
         DB                 /var/log/fluent-bit-k8s-container-monitoring-system.db
         Buffer_Chunk_Size  512KB
         Buffer_Max_Size    2M
@@ -276,7 +276,7 @@ data:
         Tag_Regex          var.log.containers.(?<pod_name>[a-z0-9](?:[-a-z0-9]*[a-z0-9])?(?:\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)_(?<namespace_name>[^_]+)_(?<container_name>.+)-(?<docker_id>[a-z0-9]{64})\.log$
         Tag                k8s_container.<namespace_name>.<pod_name>.<container_name>
         Path               /var/log/containers/*_config-management-system_*.log
-        Parser             docker
+        Parser             cri
         DB                 /var/log/fluent-bit-k8s-container-config-management-system.db
         Buffer_Chunk_Size  512KB
         Buffer_Max_Size    2M
@@ -293,7 +293,7 @@ data:
         Tag_Regex          var.log.containers.(?<pod_name>[a-z0-9](?:[-a-z0-9]*[a-z0-9])?(?:\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)_(?<namespace_name>[^_]+)_(?<container_name>.+)-(?<docker_id>[a-z0-9]{64})\.log$
         Tag                k8s_container.<namespace_name>.<pod_name>.<container_name>
         Path               /var/log/containers/*_gatekeeper-system_*.log
-        Parser             docker
+        Parser             cri
         DB                 /var/log/fluent-bit-k8s-container-gatekeeper-system.db
         Buffer_Chunk_Size  512KB
         Buffer_Max_Size    2M
@@ -310,7 +310,7 @@ data:
         Tag_Regex          var.log.containers.(?<pod_name>[a-z0-9](?:[-a-z0-9]*[a-z0-9])?(?:\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)_(?<namespace_name>[^_]+)_(?<container_name>.+)-(?<docker_id>[a-z0-9]{64})\.log$
         Tag                k8s_container.<namespace_name>.<pod_name>.<container_name>
         Path               /var/log/containers/*_cnrm-system_*.log
-        Parser             docker
+        Parser             cri
         DB                 /var/log/fluent-bit-k8s-container-cnrm-system.db
         Buffer_Chunk_Size  512KB
         Buffer_Max_Size    2M
@@ -396,14 +396,13 @@ data:
         Retry_Limit 5
   parsers.conf: |
     [PARSER]
-        # https://docs.fluentbit.io/manual/parser/json
-        Name        docker
-        Format      json
-        Time_Key    time
-        Time_Format %Y-%m-%dT%H:%M:%S.%L
-        Time_Keep   Off
-
-    [PARSER]
         Name    k8s-container-custom-tag
         Format  regex
-        Regex   ^(?<namespace_name>[^_.]+)\.(?<pod_name>[a-z0-9](?:[-a-z0-9]*[a-z0-9])?(?:\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*+)\.(?<container_name>[^.]+)$
+        Regex   ^(?<namespace_name>[^_.]+)\.(?<pod_name>[a-z0-9](?:[-a-z0-9]*[a-z0-9])?(?:\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)\.(?<container_name>[^.]+)$
+
+    [PARSER]
+        Name        cri
+        Format      regex
+        Regex       ^(?<time>[^ ]+) (?<stream>stdout|stderr) (?<logtag>[^ ]*) (?<log>.*)$
+        Time_Key    time
+        Time_Format %Y-%m-%dT%H:%M:%S.%L%z
