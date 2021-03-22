@@ -59,32 +59,33 @@ locals {
   )
 }
 
-module "enabled_google_apis" {
+module "enable_google_apis_primary" {
   source                      = "terraform-google-modules/project-factory/google//modules/project_services"
   version                     = "10.2.0"
   project_id                  = var.project_id
+  activate_apis               = var.primary_apis
   disable_services_on_destroy = false
-  activate_apis = [
-    "iam.googleapis.com",
-    "compute.googleapis.com",
-    "anthos.googleapis.com",
-    "anthosgke.googleapis.com",
-    "cloudresourcemanager.googleapis.com",
-    "container.googleapis.com",
-    "gkeconnect.googleapis.com",
-    "gkehub.googleapis.com",
-    "serviceusage.googleapis.com",
-    "stackdriver.googleapis.com",
-    "monitoring.googleapis.com",
-    "logging.googleapis.com",
-  ]
+}
+
+module "enable_google_apis_secondary" {
+  source  = "terraform-google-modules/project-factory/google//modules/project_services"
+  version = "10.2.0"
+  # fetched from previous module to explicitely express dependency
+  project_id                  = module.enable_google_apis_primary.project_id
+  depends_on                  = [module.enable_google_apis_primary]
+  activate_apis               = var.secondary_apis
+  disable_services_on_destroy = false
 }
 
 module "create_service_accounts" {
-  source        = "terraform-google-modules/service-accounts/google"
-  version       = "~> 3.0"
-  depends_on    = [module.enabled_google_apis]
-  project_id    = var.project_id
+  source  = "terraform-google-modules/service-accounts/google"
+  version = "~> 3.0"
+  # fetched from previous module to explicitely express dependency
+  project_id = module.enable_google_apis_secondary.project_id
+  depends_on = [
+    module.enable_google_apis_primary,
+    module.enable_google_apis_secondary
+  ]
   names         = ["baremetal-gcr"]
   generate_keys = true
   project_roles = [
@@ -98,9 +99,13 @@ module "create_service_accounts" {
 }
 
 module "instance_template" {
-  source               = "terraform-google-modules/vm/google//modules/instance_template"
-  depends_on           = [module.enabled_google_apis]
-  project_id           = var.project_id
+  source = "terraform-google-modules/vm/google//modules/instance_template"
+  depends_on = [
+    module.enable_google_apis_primary,
+    module.enable_google_apis_secondary
+  ]
+  # fetched from previous module to explicitely express dependency
+  project_id           = module.enable_google_apis_secondary.project_id
   region               = var.region          # --zone=${ZONE}
   service_account      = var.service_account # --scopes cloud-platform
   source_image_family  = var.image_family    # --image-family=ubuntu-2004-lts
@@ -117,7 +122,11 @@ module "instance_template" {
   # min_cpu_platform = var.min_cpu_platform # --min-cpu-platform "Intel Haswell"
 }
 module "admin_vm_hosts" {
-  source            = "./modules/vm"
+  source = "./modules/vm"
+  depends_on = [
+    module.enable_google_apis_primary,
+    module.enable_google_apis_secondary
+  ]
   hostname_prefix   = var.hostname_prefix
   region            = var.region
   network           = var.network
@@ -126,7 +135,11 @@ module "admin_vm_hosts" {
 }
 
 module "controlplane_vm_hosts" {
-  source            = "./modules/vm"
+  source = "./modules/vm"
+  depends_on = [
+    module.enable_google_apis_primary,
+    module.enable_google_apis_secondary
+  ]
   hostname_prefix   = var.hostname_prefix
   region            = var.region
   network           = var.network
@@ -135,7 +148,11 @@ module "controlplane_vm_hosts" {
 }
 
 module "worker_vm_hosts" {
-  source            = "./modules/vm"
+  source = "./modules/vm"
+  depends_on = [
+    module.enable_google_apis_primary,
+    module.enable_google_apis_secondary
+  ]
   hostname_prefix   = var.hostname_prefix
   region            = var.region
   network           = var.network
