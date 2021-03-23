@@ -64,19 +64,18 @@ credentials_file = "<PATH_TO_GCP_SERVICE_ACCOUNT_FILE>"
 > # ----------------------------------------------------------------------------
 > # First copy the cluster config yaml into the admin host and SSH into it
 > # ----------------------------------------------------------------------------
-> gcloud compute --project <YOUR_PROJECT> ./scripts/anthos_gce_cluster.yaml root@abm-ws-001:~ --zone=<YOUR_ZONE>
-> gcloud compute --project <YOUR_PROJECT> ssh root@abm-ws-001 --zone=<YOUR_ZONE>
+> gcloud compute --project <YOUR_PROJECT> ./scripts/anthos_gce_cluster.yaml root@abm-ws-001:~ --zone=<YOUR_ZONE> && \
+  gcloud compute --project <YOUR_PROJECT> ssh root@abm-ws-001 --zone=<YOUR_ZONE>
 
 > # ----------------------------------------------------------------------------
 > # Use must be SSH'ed into the admin host sabm-ws-001 as root user now
 > # ----------------------------------------------------------------------------
-> export PROJECT_ID=$(gcloud config get-value project)
-> export CLUSTER_ID=anthos-gce-cluster
-> bmctl create config -c $CLUSTER_ID
-> sed -i 's/$CLUSTER_ID/'$CLUSTER_ID'/g' anthos_gce_cluster.yaml
-> sed 's/$PROJECT_ID/'$PROJECT_ID'/g' anthos_gce_cluster.yaml > bmctl-workspace/$CLUSTER_ID/$CLUSTER_ID.yaml
-> bmctl create cluster -c $CLUSTER_ID
-
+> export PROJECT_ID=$(gcloud config get-value project) && \
+  export CLUSTER_ID=anthos-gce-cluster && \
+  bmctl create config -c $CLUSTER_ID && \
+  sed -i 's/$CLUSTER_ID/'$CLUSTER_ID'/g' anthos_gce_cluster.yaml && \
+  sed 's/$PROJECT_ID/'$PROJECT_ID'/g' anthos_gce_cluster.yaml > bmctl-workspace/$CLUSTER_ID/$CLUSTER_ID.yaml && \
+  bmctl create cluster -c $CLUSTER_ID
 ################################################################################
 ```
 ***The above should setup the baremetal cluster. This includes doing preflight checks on the nodes, creating the admin and user clusters and also registering the cluster with Google Cloud using [Connect](https://cloud.google.com/anthos/multicluster-management/connect/overview). The whole setup may take upto approx. 15 minutes***
