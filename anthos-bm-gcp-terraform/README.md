@@ -105,8 +105,14 @@ abm-cp3-001   Ready    master   16m   v1.18.6-gke.6600
 abm-w1-001    Ready    <none>   14m   v1.18.6-gke.6600
 abm-w2-001    Ready    <none>   14m   v1.18.6-gke.6600
 ```
----
 
+#### Interacting with the cluster via the GCP console
+
+During the setup process, your cluster will be auto-registered in Google Cloud using [Connect](https://cloud.google.com/anthos/multicluster-management/connect/overview). In order to interact with the cluster from the GCP console you must first ***login*** to the cluster.
+
+The [Logging in to a cluster from the Cloud Console](https://cloud.google.com/anthos/multicluster-management/console/logging-in/) guide describes how this can be done.
+
+---
 ### Cleanup
 
 You can cleanup the cluster setup in two ways,
