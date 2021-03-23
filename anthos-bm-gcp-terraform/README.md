@@ -50,9 +50,10 @@ credentials_file = "<PATH_TO_GCP_SERVICE_ACCOUNT_FILE>"
 ```
 > **Note:** Once prompted to confirm the terraform plan, type `Yes` and enter
 
-***The above should initiate terraform to start setting up the GCE hosts for the baremetal cluster. This may take a few minutes for the entire bare-metal cluster to be setup.***
+***The above should initiate terraform to start setting up the GCE hosts for the baremetal cluster. This may take a few minutes (approx. 3-5 mins) for the entire bare-metal cluster to be setup.***
 
-5. Once the previous step completes you should see a printed output as follows for the next steps to follow. Just copy/paste the commands and run them
+5. Once the previous step completes you should see a printed output as follows for the next steps to follow. Just copy/paste the commands and run them.
+
 ```sh
 ################################################################################
 ##                       AnthosBM on GCE with Terraform                       ##
@@ -78,6 +79,8 @@ credentials_file = "<PATH_TO_GCP_SERVICE_ACCOUNT_FILE>"
 
 ################################################################################
 ```
+***The above should setup the baremetal cluster. This includes doing preflight checks on the nodes, creating the admin and user clusters and also registering the cluster with Google Cloud using [Connect](https://cloud.google.com/anthos/multicluster-management/connect/overview). The whole setup may take upto approx. 15 minutes***
+
 ---
 ### Verify and interacting with the Baremetal cluster
 
