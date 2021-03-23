@@ -80,6 +80,34 @@ credentials_file = "<PATH_TO_GCP_SERVICE_ACCOUNT_FILE>"
 ```
 ***The above should setup the baremetal cluster. This includes doing preflight checks on the nodes, creating the admin and user clusters and also registering the cluster with Google Cloud using [Connect](https://cloud.google.com/anthos/multicluster-management/connect/overview). The whole setup may take upto approx. 15 minutes***
 
+You will see the following output as the ***admin cluster*** is being created
+```sh
+Created config: bmctl-workspace/anthos-gce-cluster/anthos-gce-cluster.yaml
+Creating bootstrap cluster... OK
+Installing dependency components... OK
+Waiting for preflight check job to finish... OK
+- Validation Category: machines and network
+	- [PASSED] 10.200.0.3
+	- [PASSED] 10.200.0.4
+	- [PASSED] 10.200.0.5
+	- [PASSED] 10.200.0.6
+	- [PASSED] 10.200.0.7
+	- [PASSED] gcp
+	- [PASSED] node-network
+Flushing logs... OK
+Applying resources for new cluster
+Waiting for cluster to become ready OK
+Writing kubeconfig file
+kubeconfig of created cluster is at bmctl-workspace/anthos-gce-cluster/anthos-gce-cluster-kubeconfig, please run
+kubectl --kubeconfig bmctl-workspace/anthos-gce-cluster/anthos-gce-cluster-kubeconfig get nodes
+to get cluster node status.
+Please restrict access to this file as it contains authentication credentials of your cluster.
+Waiting for node pools to become ready OK
+Moving admin cluster resources to the created admin cluster
+Flushing logs... OK
+Deleting bootstrap cluster... OK
+```
+
 ---
 ### Verify and interacting with the Baremetal cluster
 
