@@ -53,6 +53,7 @@ credentials_file = "<PATH_TO_GCP_SERVICE_ACCOUNT_FILE>"
 ***The above should initiate terraform to start setting up the GCE hosts for the baremetal cluster. This may take a few minutes (approx. 3-5 mins) for the entire bare-metal cluster to be setup.***
 
 5. Once the previous step completes you should see a printed output as follows for the next steps to follow. Just copy/paste the commands and run them.
+> **Note:** If the `bmctl` command fails, it could be because the admin host hasn't completed its setup. Give it a few seconds and retry.
 
 ```sh
 ################################################################################
