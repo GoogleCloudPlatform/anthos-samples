@@ -8,25 +8,25 @@ cloudOperationsServiceAccountKeyPath: /root/bm-gcr.json
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: cluster-$CLUSTER_ID
+  name: ${clusterId}-ns
 ---
 apiVersion: baremetal.cluster.gke.io/v1
 kind: Cluster
 metadata:
-  name: $CLUSTER_ID
-  namespace: cluster-$CLUSTER_ID
+  name: ${clusterId}
+  namespace: ${clusterId}-ns
 spec:
   type: hybrid
   anthosBareMetalVersion: 1.6.2
   gkeConnect:
-    projectID: $PROJECT_ID
+    projectID: ${projectId}
   controlPlane:
     nodePoolSpec:
-      clusterName: $CLUSTER_ID
+      clusterName: ${clusterId}
       nodes:
-      - address: 10.200.0.3
-      - address: 10.200.0.4
-      - address: 10.200.0.5
+      %{ for ip in controlPlaneIps ~}
+- address: ${ip}
+      %{ endfor }
   clusterNetwork:
     pods:
       cidrBlocks:
@@ -48,7 +48,7 @@ spec:
   clusterOperations:
     # might need to be this location
     location: us-central1
-    projectID: $PROJECT_ID
+    projectID: ${projectId}
   storage:
     lvpNodeMounts:
       path: /mnt/localpv-disk
@@ -62,9 +62,10 @@ apiVersion: baremetal.cluster.gke.io/v1
 kind: NodePool
 metadata:
   name: node-pool-1
-  namespace: cluster-$CLUSTER_ID
+  namespace: ${clusterId}-ns
 spec:
-  clusterName: $CLUSTER_ID
+  clusterName: ${clusterId}
   nodes:
-  - address: 10.200.0.6
-  - address: 10.200.0.7
+  %{ for ip in workerNodeIps ~}
+- address: ${ip}
+  %{ endfor }

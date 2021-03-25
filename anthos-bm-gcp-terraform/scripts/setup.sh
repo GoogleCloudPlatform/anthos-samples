@@ -55,11 +55,11 @@ function install_deps () {
 ##############################################################################
 function setup_vxlan () {
   VXLAN_IP_ADDRESS=$(curl http://metadata.google.internal/computeMetadata/v1/instance/attributes/$META_DATA -H "Metadata-Flavor: Google")
-  echo "Setting up ip address [$VXLAN_IP_ADDRESS] for net device vxlan0"
+  echo "Setting up ip address [$VXLAN_IP_ADDRESS/24] for net device vxlan0"
 
   ip link add vxlan0 type vxlan id 42 dev ens4 dstport 0
   update_bridge_entries
-  ip addr add $VXLAN_IP_ADDRESS dev vxlan0
+  ip addr add $VXLAN_IP_ADDRESS/24 dev vxlan0
   ip link set up dev vxlan0
 }
 

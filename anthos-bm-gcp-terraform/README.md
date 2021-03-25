@@ -11,7 +11,7 @@ This repo is work-in-progress to replicate the [official AnthosBM setup docs](ht
   - [terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
 - A [GCP Project](https://console.cloud.google.com/cloud-resource-manager?_ga=2.187862184.1029435410.1614837439-1338907320.1614299892) _(in which the resources for the setup will be provisioned)_ with the following setup
   - The project added to a [monitoring workspace](https://console.cloud.google.com/monitoring?_ga=2.23701946.1029435410.1614837439-1338907320.1614299892). _You can create a new workspace for the project or associate it to an existing one._
-  - A [service account](https://pantheon.corp.google.com/iam-admin/serviceaccounts?_ga=2.199273646.1029435410.1614837439-1338907320.1614299892) in the project and its key file **downloaded to the workstation**
+  - A [service account](https://pantheon.corp.google.com/iam-admin/serviceaccounts?_ga=2.199273646.1029435410.1614837439-1338907320.1614299892) in the project with either `Editor` or `Owner` permissions and its key file **downloaded to the workstation**
 ---
 ### Quick starter
 
@@ -58,48 +58,45 @@ credentials_file = "<PATH_TO_GCP_SERVICE_ACCOUNT_FILE>"
 ################################################################################
 ##                       AnthosBM on GCE with Terraform                       ##
 ##                        (Run the following commands)                        ##
-##    (Note that the 3rd command onwards runs inside the SSH'ed admin host)   ##
+##     (Note that the 1st line should have you SSH'ed into the admin host)    ##
 ################################################################################
 
 > # ----------------------------------------------------------------------------
 > # First copy the cluster config yaml into the admin host and SSH into it
 > # ----------------------------------------------------------------------------
-> gcloud compute --project <YOUR_PROJECT> ./scripts/anthos_gce_cluster.yaml root@abm-ws-001:~ --zone=<YOUR_ZONE> && \
-  gcloud compute --project <YOUR_PROJECT> ssh root@abm-ws-001 --zone=<YOUR_ZONE>
+> gcloud compute scp ./scripts/.dev-abm-cluster.yaml root@sabm-ws-001:~/dev-abm-cluster.yaml --project=<YOUR_PROJECT> --zone=<YOUR_ZONE> && \
+  gcloud compute ssh root@sabm-ws-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
 
 > # ----------------------------------------------------------------------------
 > # Use must be SSH'ed into the admin host sabm-ws-001 as root user now
 > # ----------------------------------------------------------------------------
-> export PROJECT_ID=$(gcloud config get-value project) && \
-  export CLUSTER_ID=anthos-gce-cluster && \
-  bmctl create config -c $CLUSTER_ID && \
-  sed -i 's/$CLUSTER_ID/'$CLUSTER_ID'/g' anthos_gce_cluster.yaml && \
-  sed 's/$PROJECT_ID/'$PROJECT_ID'/g' anthos_gce_cluster.yaml > bmctl-workspace/$CLUSTER_ID/$CLUSTER_ID.yaml && \
-  bmctl create cluster -c $CLUSTER_ID
+> bmctl create config -c dev-abm-cluster && \
+  cp ~/dev-abm-cluster.yaml bmctl-workspace/dev-abm-cluster && \
+  bmctl create cluster -c dev-abm-cluster
 ################################################################################
 ```
 ***The above should setup the baremetal cluster. This includes doing preflight checks on the nodes, creating the admin and user clusters and also registering the cluster with Google Cloud using [Connect](https://cloud.google.com/anthos/multicluster-management/connect/overview). The whole setup may take upto approx. 15 minutes***
 
 You will see the following output as the ***admin cluster*** is being created
 ```sh
-Created config: bmctl-workspace/anthos-gce-cluster/anthos-gce-cluster.yaml
+Created config: bmctl-workspace/dev-abm-cluster/dev-abm-cluster.yaml
 Creating bootstrap cluster... OK
 Installing dependency components... OK
 Waiting for preflight check job to finish... OK
 - Validation Category: machines and network
-	- [PASSED] 10.200.0.3
-	- [PASSED] 10.200.0.4
-	- [PASSED] 10.200.0.5
-	- [PASSED] 10.200.0.6
-	- [PASSED] 10.200.0.7
-	- [PASSED] gcp
-	- [PASSED] node-network
+        - [PASSED] 10.200.0.3
+        - [PASSED] 10.200.0.4
+        - [PASSED] 10.200.0.5
+        - [PASSED] 10.200.0.6
+        - [PASSED] 10.200.0.7
+        - [PASSED] gcp
+        - [PASSED] node-network
 Flushing logs... OK
 Applying resources for new cluster
 Waiting for cluster to become ready OK
 Writing kubeconfig file
-kubeconfig of created cluster is at bmctl-workspace/anthos-gce-cluster/anthos-gce-cluster-kubeconfig, please run
-kubectl --kubeconfig bmctl-workspace/anthos-gce-cluster/anthos-gce-cluster-kubeconfig get nodes
+kubeconfig of created cluster is at bmctl-workspace/dev-abm-cluster/dev-abm-cluster-kubeconfig, please run
+kubectl --kubeconfig bmctl-workspace/dev-abm-cluster/dev-abm-cluster-kubeconfig get nodes
 to get cluster node status.
 Please restrict access to this file as it contains authentication credentials of your cluster.
 Waiting for node pools to become ready OK
@@ -116,7 +113,7 @@ You can find your cluster's `kubeconfig` file on the admin machine in the `bmctl
 1. SSH into the admin workstation _(if you are not already inside it)_:
 ```sh
 > # You can copy the command from the output of terraform run from the previous step
-> gcloud compute --project <YOUR_PROJECT> ssh root@abm-ws-001 --zone=<YOUR_ZONE>
+> gcloud compute ssh root@abm-ws-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
 ```
 
 2. Set the `KUBECONFIG` environment variable with the path to the cluster's configuration file to run `kubectl` commands on the cluster.

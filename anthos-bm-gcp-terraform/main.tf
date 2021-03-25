@@ -41,9 +41,11 @@ locals {
     local.worker_vm_names
   )
   vm_vxlan_ip = {
-    for idx, vmName in local.vm_names : vmName => "10.200.0.${idx + 2}/24"
+    for idx, vmName in local.vm_names : vmName => "10.200.0.${idx + 2}"
   }
-  admin_vm_hostnames = [for vm in module.admin_vm_hosts.vm_info : vm.hostname]
+  controlplane_vxlan_ips = [for name in local.controlplane_vm_names : local.vm_vxlan_ip[name]]
+  worker_vxlan_ips       = [for name in local.worker_vm_names : local.vm_vxlan_ip[name]]
+  admin_vm_hostnames     = [for vm in module.admin_vm_hosts.vm_info : vm.hostname]
   vm_hostnames = concat(
     local.admin_vm_hostnames,
     [for vm in module.controlplane_vm_hosts.vm_info : vm.hostname],
@@ -158,6 +160,20 @@ module "worker_vm_hosts" {
   network           = var.network
   vm_names          = local.worker_vm_names
   instance_template = module.instance_template.self_link
+}
+
+resource "local_file" "cluster_yaml" {
+  depends_on = [
+    module.controlplane_vm_hosts,
+    module.worker_vm_hosts
+  ]
+  content = templatefile("${path.module}/scripts/anthos_gce_cluster.tpl", {
+    clusterId       = var.abm_cluster_id,
+    projectId       = var.project_id,
+    controlPlaneIps = local.controlplane_vxlan_ips,
+    workerNodeIps   = local.worker_vxlan_ips
+  })
+  filename = "${path.module}/scripts/.${var.abm_cluster_id}.yaml"
 }
 
 module "gcloud_add_metadata" {

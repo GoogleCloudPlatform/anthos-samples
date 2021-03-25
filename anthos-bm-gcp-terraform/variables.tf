@@ -2,7 +2,6 @@ variable "project_id" {}
 variable "region" {
   default = "us-central1"
 }
-
 variable "zone" {
   default = "us-central1-a"
 }
@@ -81,6 +80,9 @@ variable "secondary_apis" {
   ]
 }
 
+variable "abm_cluster_id" {
+  default = "anthos-gce-cluster"
+}
 variable "instance_names" {
   type = map(any)
   default = {
