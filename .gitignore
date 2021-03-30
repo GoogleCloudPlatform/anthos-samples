@@ -9,3 +9,5 @@ plan
 cleanup.sh
 .*.yaml
 .debug.local.sh
+.ssh-*
+.env*
