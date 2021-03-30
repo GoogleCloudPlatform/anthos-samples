@@ -26,38 +26,35 @@ provider "google-beta" {
 }
 
 locals {
-  admin_vm_names = [
-    for vmName in var.instance_names.admin : join("-", [var.hostname_prefix, vmName])
-  ]
-  controlplane_vm_names = [
-    for vmName in var.instance_names.controlplane : join("-", [var.hostname_prefix, vmName])
-  ]
-  worker_vm_names = [
-    for vmName in var.instance_names.worker : join("-", [var.hostname_prefix, vmName])
-  ]
-  vm_names = concat(
-    local.admin_vm_names,
-    local.controlplane_vm_names,
-    local.worker_vm_names
-  )
-  vm_vxlan_ip = {
-    for idx, vmName in local.vm_names : vmName => "10.200.0.${idx + 2}"
-  }
-  controlplane_vxlan_ips = [for name in local.controlplane_vm_names : local.vm_vxlan_ip[name]]
-  worker_vxlan_ips       = [for name in local.worker_vm_names : local.vm_vxlan_ip[name]]
-  admin_vm_hostnames     = [for vm in module.admin_vm_hosts.vm_info : vm.hostname]
+  vm_names                   = concat(local.admin_vm_names, local.controlplane_vm_names, local.worker_vm_names)
+  admin_vm_names             = [for vmName in var.instance_names.admin : join("-", [var.hostname_prefix, vmName])]
+  controlplane_vm_names      = [for vmName in var.instance_names.controlplane : join("-", [var.hostname_prefix, vmName])]
+  worker_vm_names            = [for vmName in var.instance_names.worker : join("-", [var.hostname_prefix, vmName])]
+  controlplane_vxlan_ips     = [for name in local.controlplane_vm_names : local.vm_vxlan_ip[name]]
+  worker_vxlan_ips           = [for name in local.worker_vm_names : local.vm_vxlan_ip[name]]
+  admin_vm_hostnames         = [for vm in module.admin_vm_hosts.vm_info : vm.hostname]
+  vm_vxlan_ip                = { for idx, vmName in local.vm_names : vmName => "10.200.0.${idx + 2}" }
+  vmHostnameToVmName         = { for vmName in local.vm_names : "${vmName}-001" => vmName }
+  cluster_yaml_file          = "${path.module}/resources/.${var.abm_cluster_id}.yaml"
+  cluster_yaml_template_file = "${path.module}/resources/anthos_gce_cluster.tpl"
+  env_var_script_template    = "${path.module}/resources/env.tpl"
+  env_var_script             = "${path.module}/resources/.env.sh"
+  init_script                = "${path.module}/resources/init.sh"
+  vm_hostnames_str           = join("|", local.vm_hostnames)
   vm_hostnames = concat(
     local.admin_vm_hostnames,
     [for vm in module.controlplane_vm_hosts.vm_info : vm.hostname],
     [for vm in module.worker_vm_hosts.vm_info : vm.hostname]
   )
-  vm_hostnames_str = join("|", local.vm_hostnames)
-  vm_internal_ips = join("|",
-    concat(
-      [for vm in module.admin_vm_hosts.vm_info : vm.internalIp],
-      [for vm in module.controlplane_vm_hosts.vm_info : vm.internalIp],
-      [for vm in module.worker_vm_hosts.vm_info : vm.internalIp]
-    )
+  vm_internal_ips = join("|", concat(
+    [for vm in module.admin_vm_hosts.vm_info : vm.internalIp],
+    [for vm in module.controlplane_vm_hosts.vm_info : vm.internalIp],
+    [for vm in module.worker_vm_hosts.vm_info : vm.internalIp])
+  )
+  publicIps = merge(
+    { for vm in module.admin_vm_hosts.vm_info : vm.hostname => vm.externalIp },
+    { for vm in module.controlplane_vm_hosts.vm_info : vm.hostname => vm.externalIp },
+    { for vm in module.worker_vm_hosts.vm_info : vm.hostname => vm.externalIp }
   )
 }
 
@@ -118,11 +115,10 @@ module "instance_template" {
   can_ip_forward       = true                # --can-ip-forward
   network              = var.network         # --network default
   tags                 = var.tags            # --tags http-server,https-server
-  metadata             = local.vm_vxlan_ip
-  startup_script       = file("./scripts/setup.sh")
   # TODO:: Unavailable as of now
   # min_cpu_platform = var.min_cpu_platform # --min-cpu-platform "Intel Haswell"
 }
+
 module "admin_vm_hosts" {
   source = "./modules/vm"
   depends_on = [
@@ -167,34 +163,26 @@ resource "local_file" "cluster_yaml" {
     module.controlplane_vm_hosts,
     module.worker_vm_hosts
   ]
-  content = templatefile("${path.module}/scripts/anthos_gce_cluster.tpl", {
+  filename = local.cluster_yaml_file
+  content = templatefile(local.cluster_yaml_template_file, {
     clusterId       = var.abm_cluster_id,
     projectId       = var.project_id,
     controlPlaneIps = local.controlplane_vxlan_ips,
     workerNodeIps   = local.worker_vxlan_ips
   })
-  filename = "${path.module}/scripts/.${var.abm_cluster_id}.yaml"
 }
 
-module "gcloud_add_metadata" {
-  source  = "terraform-google-modules/gcloud/google"
-  version = "2.0.3"
-  # Can be set via GCLOUD_TF_DOWNLOAD=never environment variable
-  skip_download            = true
-  platform                 = "linux"
-  service_account_key_file = var.credentials_file
-  module_depends_on = [
-    module.admin_vm_hosts,
-    module.controlplane_vm_hosts,
-    module.worker_vm_hosts
-  ]
-
-  for_each              = toset(local.vm_hostnames)
-  create_cmd_entrypoint = "gcloud"
-  create_cmd_body       = <<EOT
-    compute instances add-metadata ${each.value}  \
-    --project ${var.project_id}                   \
-    --zone ${var.zone}                            \
-    --metadata=clusterVmIps="${local.vm_internal_ips},isAdminVm=${contains(local.admin_vm_hostnames, each.value)},hostNames=${local.vm_hostnames_str},zone=${var.zone}"
-    EOT
+module "init_hosts" {
+  source            = "./modules/init"
+  for_each          = toset(local.vm_hostnames)
+  project_id        = var.project_id
+  zone              = var.zone
+  hostname          = each.value
+  credentials_file  = var.credentials_file
+  publicIp          = local.publicIps[each.value]
+  hostnames         = local.vm_hostnames_str
+  internalIps       = local.vm_internal_ips
+  init_script       = local.init_script
+  init_script_args  = "${var.zone} ${contains(local.admin_vm_hostnames, each.value)} ${local.vm_vxlan_ip[local.vmHostnameToVmName[each.value]]}"
+  cluster_yaml_path = local.cluster_yaml_file
 }

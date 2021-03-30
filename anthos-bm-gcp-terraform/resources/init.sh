@@ -1,41 +1,26 @@
 #!/bin/bash
+
+ZONE=$1
+IS_ADMIN_VM=$2
+VXLAN_IP_ADDRESS=$3
+HOSTNAMES=$(cat hostnames)
+VM_INTERNAL_IPS=$(cat internalIps)
+
+echo "[$IS_ADMIN_VM] [$ZONE] [$HOSTNAMES] [$VXLAN_IP_ADDRESS] [$VM_INTERNAL_IPS]"
+
 DATE=$(date)
-ZONE_FLAG="zone"
-ADMIN_VM_FLAG="isAdminVm"
-HOSTNAMES_FLAG="hostNames"
-CLUSTER_VMS="clusterVmIps"
 HOSTNAME=$(hostname)
-META_DATA=$(echo $HOSTNAME | sed 's|\(.*\)-.*|\1|')
-FILE=anthosbm.lock
 
 ##############################################################################
 # Entrypoint to the startup_script. Ensures that the host setup is run only
 # during the first time the vm boots and never again for future reboots
 ##############################################################################
 function main () {
-  if [[ -f "$FILE" ]]; then
-    echo "[$DATE] $FILE exists; 'setup' script has already been run; hence skipping"
-    exit 0
-  fi
-  echo "[$DATE] Startup script running first time for host $HOSTNAME" >> $FILE
-  wait_for_vms
+  echo "[$DATE] Init script running for host $HOSTNAME"
   install_deps
   setup_vxlan
   disable_apparmour
   setup_admin_host
-}
-
-##############################################################################
-# Wait for the VMs in the cluster to have. They are considered started once
-# the metadata for the VM IPs are made available to them by terraform
-##############################################################################
-function wait_for_vms () {
-  META_DATA_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://metadata.google.internal/computeMetadata/v1/instance/attributes/$CLUSTER_VMS -H "Metadata-Flavor: Google")
-  while [ "$META_DATA_STATUS" == "404" ]; do
-    echo "Metadata status [$META_DATA_STATUS Not found]; sleeping for 5 seconds..."
-    sleep 5
-    META_DATA_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://metadata.google.internal/computeMetadata/v1/instance/attributes/$CLUSTER_VMS -H "Metadata-Flavor: Google")
-  done
 }
 
 ##############################################################################
@@ -54,9 +39,7 @@ function install_deps () {
 #   e.g. hostname = abm-worker1-001 --> metadata = abm-worker1
 ##############################################################################
 function setup_vxlan () {
-  VXLAN_IP_ADDRESS=$(curl http://metadata.google.internal/computeMetadata/v1/instance/attributes/$META_DATA -H "Metadata-Flavor: Google")
   echo "Setting up ip address [$VXLAN_IP_ADDRESS/24] for net device vxlan0"
-
   ip link add vxlan0 type vxlan id 42 dev ens4 dstport 0
   update_bridge_entries
   ip addr add $VXLAN_IP_ADDRESS/24 dev vxlan0
@@ -70,7 +53,6 @@ function setup_vxlan () {
 # the host via a metadata entry (clusterVmIps) by terraform
 ##############################################################################
 function update_bridge_entries () {
-  VM_INTERNAL_IPS=$(curl http://metadata.google.internal/computeMetadata/v1/instance/attributes/$CLUSTER_VMS -H "Metadata-Flavor: Google")
   current_ip=$(ip --json a show dev ens4 | jq '.[0].addr_info[0].local' -r)
 
   echo "Cluster VM IPs retreived => $VM_INTERNAL_IPS"
@@ -102,7 +84,6 @@ function disable_apparmour () {
 # terraform
 ##############################################################################
 function setup_admin_host () {
-  IS_ADMIN_VM=$(curl http://metadata.google.internal/computeMetadata/v1/instance/attributes/$ADMIN_VM_FLAG -H "Metadata-Flavor: Google")
   if [ "$IS_ADMIN_VM" == "true" ]; then
     echo "Configuring admin workstation for host $HOSTNAME."
     setup_service_account
@@ -159,8 +140,6 @@ function setup_docker () {
 # available to the admin host via a metadata entry (hostNames) by terraform
 ##############################################################################
 function setup_ssh_access () {
-  HOSTNAMES=$(curl http://metadata.google.internal/computeMetadata/v1/instance/attributes/$HOSTNAMES_FLAG -H "Metadata-Flavor: Google")
-  ZONE=$(curl http://metadata.google.internal/computeMetadata/v1/instance/attributes/$ZONE_FLAG -H "Metadata-Flavor: Google")
   ssh-keygen -t rsa -N "" -f /root/.ssh/id_rsa
   sed 's/ssh-rsa/root:ssh-rsa/' ~/.ssh/id_rsa.pub > ssh-metadata
   for hostname in $(echo $HOSTNAMES | sed "s/|/ /g")
