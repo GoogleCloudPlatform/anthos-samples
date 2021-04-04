@@ -65,8 +65,7 @@ credentials_file = "<PATH_TO_GCP_SERVICE_ACCOUNT_FILE>"
 > # ----------------------------------------------------------------------------
 > # First copy the cluster config yaml into the admin host and SSH into it
 > # ----------------------------------------------------------------------------
-> gcloud compute scp ./scripts/.dev-abm-cluster.yaml root@sabm-ws-001:~/dev-abm-cluster.yaml --project=<YOUR_PROJECT> --zone=<YOUR_ZONE> && \
-  gcloud compute ssh root@sabm-ws-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
+> gcloud compute ssh root@sabm-ws-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
 
 > # ----------------------------------------------------------------------------
 > # Use must be SSH'ed into the admin host sabm-ws-001 as root user now
