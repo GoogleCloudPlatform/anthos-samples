@@ -22,6 +22,7 @@ rules:
   - list
   - watch
 ---
+# [START anthos_bm_node_prefix]
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
@@ -35,6 +36,7 @@ subjects:
 - kind: ServiceAccount
   name: stackdriver-prometheus
   namespace: kube-system
+# [END anthos_bm_node_prefix]
 ---
 apiVersion: v1
 kind: ServiceAccount
