@@ -83,6 +83,8 @@ variable "secondary_apis" {
 variable "abm_cluster_id" {
   default = "anthos-gce-cluster"
 }
+
+# [START anthos_bm_node_prefix]
 variable "instance_names" {
   type = map(any)
   default = {
@@ -91,3 +93,4 @@ variable "instance_names" {
     "worker" : ["w1", "w2"]
   }
 }
+# [END anthos_bm_node_prefix]

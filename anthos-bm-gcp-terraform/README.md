@@ -62,17 +62,17 @@ credentials_file = "<PATH_TO_GCP_SERVICE_ACCOUNT_FILE>"
 ##     (Note that the 1st line should have you SSH'ed into the admin host)    ##
 ################################################################################
 
-> # ----------------------------------------------------------------------------
-> # First copy the cluster config yaml into the admin host and SSH into it
-> # ----------------------------------------------------------------------------
-> gcloud compute ssh root@sabm-ws-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
+# ------------------------------------------------------------------------------
+# SSH into it the admin host
+# ------------------------------------------------------------------------------
+gcloud compute ssh root@sabm-ws-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
 
-> # ----------------------------------------------------------------------------
-> # Use must be SSH'ed into the admin host sabm-ws-001 as root user now
-> # ----------------------------------------------------------------------------
-> bmctl create config -c dev-abm-cluster && \
-  cp ~/dev-abm-cluster.yaml bmctl-workspace/dev-abm-cluster && \
-  bmctl create cluster -c dev-abm-cluster
+# ------------------------------------------------------------------------------
+# Use must be SSH'ed into the admin host sabm-ws-001 as root user now
+# ------------------------------------------------------------------------------
+bmctl create config -c dev-abm-cluster && \
+cp ~/dev-abm-cluster.yaml bmctl-workspace/dev-abm-cluster && \
+bmctl create cluster -c dev-abm-cluster
 ################################################################################
 ```
 ***The above should setup the baremetal cluster. This includes doing preflight checks on the nodes, creating the admin and user clusters and also registering the cluster with Google Cloud using [Connect](https://cloud.google.com/anthos/multicluster-management/connect/overview). The whole setup may take upto approx. 15 minutes***
