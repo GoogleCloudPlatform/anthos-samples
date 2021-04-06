@@ -2,7 +2,7 @@ output admin_vm_ssh {
   description = "Run the following command to provision the anthos cluster."
   value = join("\n", [
     "################################################################################",
-    "##                       AnthosBM on GCE with Terraform                       ##",
+    "##              AnthosBM on Google Compute Engine VM with Terraform           ##",
     "##                        (Run the following commands)                        ##",
     "##     (Note that the 1st line should have you SSH'ed into the admin host)    ##",
     "################################################################################",
