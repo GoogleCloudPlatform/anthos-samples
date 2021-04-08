@@ -9,7 +9,7 @@ output admin_vm_ssh {
     "",
     "> gcloud compute ssh root@${local.admin_vm_hostnames[0]} --project=${var.project_id} --zone=${var.zone}",
     "",
-    "> # Use must be SSH'ed into the admin host ${local.admin_vm_hostnames[0]} as root user now",
+    "> # You must be SSH'ed into the admin host ${local.admin_vm_hostnames[0]} as root user now",
     "> # ----------------------------------------------------------------------------",
     "> bmctl create config -c ${var.abm_cluster_id} && \\",
     "  cp ~/${var.abm_cluster_id}.yaml bmctl-workspace/${var.abm_cluster_id} && \\",
