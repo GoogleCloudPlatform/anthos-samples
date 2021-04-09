@@ -83,7 +83,7 @@ module "create_service_accounts" {
     module.enable_google_apis_primary,
     module.enable_google_apis_secondary
   ]
-  names         = ["baremetal-gcr"]
+  names         = [var.anthos_service_account_name]
   generate_keys = true
   project_roles = [
     "${var.project_id}=>roles/gkehub.connect",
@@ -103,16 +103,16 @@ module "instance_template" {
   ]
   # fetched from previous module to explicitely express dependency
   project_id           = module.enable_google_apis_secondary.project_id
-  region               = var.region          # --zone=${ZONE}
-  service_account      = var.service_account # --scopes cloud-platform
-  source_image_family  = var.image_family    # --image-family=ubuntu-2004-lts
-  source_image_project = var.image_project   # --image-project=ubuntu-os-cloud
-  machine_type         = var.machine_type    # --machine-type $MACHINE_TYPE
-  disk_size_gb         = var.boot_disk_size  # --boot-disk-size 200G
-  disk_type            = var.boot_disk_type  # --boot-disk-type pd-ssd
-  can_ip_forward       = true                # --can-ip-forward
-  network              = var.network         # --network default
-  tags                 = var.tags            # --tags http-server,https-server
+  region               = var.region             # --zone=${ZONE}
+  service_account      = var.vm_service_account # --scopes cloud-platform
+  source_image_family  = var.image_family       # --image-family=ubuntu-2004-lts
+  source_image_project = var.image_project      # --image-project=ubuntu-os-cloud
+  machine_type         = var.machine_type       # --machine-type $MACHINE_TYPE
+  disk_size_gb         = var.boot_disk_size     # --boot-disk-size 200G
+  disk_type            = var.boot_disk_type     # --boot-disk-type pd-ssd
+  can_ip_forward       = true                   # --can-ip-forward
+  network              = var.network            # --network default
+  tags                 = var.tags               # --tags http-server,https-server
   # TODO:: Unavailable as of now
   # min_cpu_platform = var.min_cpu_platform # --min-cpu-platform "Intel Haswell"
 }
@@ -181,6 +181,6 @@ module "init_hosts" {
   hostnames         = local.vm_hostnames_str
   internalIps       = local.vm_internal_ips
   init_script       = local.init_script
-  init_script_args  = "${var.zone} ${contains(local.admin_vm_hostnames, each.value)} ${local.vm_vxlan_ip[local.vmHostnameToVmName[each.value]]}"
+  init_script_args  = "${var.zone} ${contains(local.admin_vm_hostnames, each.value)} ${local.vm_vxlan_ip[local.vmHostnameToVmName[each.value]]} ${var.anthos_service_account_name}"
   cluster_yaml_path = local.cluster_yaml_file
 }

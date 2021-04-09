@@ -3,6 +3,7 @@
 ZONE=$1
 IS_ADMIN_VM=$2
 VXLAN_IP_ADDRESS=$3
+SERVICE_ACCOUNT=$4
 HOSTNAMES=$(cat hostnames)
 VM_INTERNAL_IPS=$(cat internalIps)
 
@@ -101,7 +102,7 @@ function setup_admin_host () {
 ##############################################################################
 function setup_service_account () {
   PROJECT_ID=$(gcloud config get-value project)
-  gcloud iam service-accounts keys create /root/bm-gcr.json --iam-account=baremetal-gcr@${PROJECT_ID}.iam.gserviceaccount.com
+  gcloud iam service-accounts keys create /root/bm-gcr.json --iam-account=${SERVICE_ACCOUNT}@${PROJECT_ID}.iam.gserviceaccount.com
 }
 
 ##############################################################################

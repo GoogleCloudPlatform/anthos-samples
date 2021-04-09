@@ -50,7 +50,8 @@ variable "init_script_args" {
       1. Zone (string)
       2. Is the VM an admin VM (boolean)
       3. VxLAN IP address of the VM (string)
-    e.g. "us-central1-a true 10.200.0.3"
+      4. Name of Service Account to be used by Anthos components
+    e.g. "us-central1-a true 10.200.0.3 baremetal-gcr"
   EOF
   type        = string
 }

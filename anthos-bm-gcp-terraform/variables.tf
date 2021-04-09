@@ -79,7 +79,7 @@ variable "tags" {
   default     = ["http-server", "https-server"]
 }
 
-variable "service_account" {
+variable "vm_service_account" {
   description = "Service account to attach to the provisioned Compute Engine VM. See https://www.terraform.io/docs/providers/google/r/compute_instance_template.html#service_account."
   type = object({
     email  = string
@@ -89,6 +89,12 @@ variable "service_account" {
     email  = ""
     scopes = ["cloud-platform"]
   }
+}
+
+variable "anthos_service_account_name" {
+  description = "Name given to the Service account that will be used by the Anthos cluster components"
+  type        = string
+  default     = "baremetal-gcr"
 }
 
 variable "primary_apis" {
