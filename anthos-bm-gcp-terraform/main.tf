@@ -37,8 +37,6 @@ locals {
   vmHostnameToVmName         = { for vmName in local.vm_names : "${vmName}-001" => vmName }
   cluster_yaml_file          = "${path.module}/resources/.${var.abm_cluster_id}.yaml"
   cluster_yaml_template_file = "${path.module}/resources/anthos_gce_cluster.tpl"
-  env_var_script_template    = "${path.module}/resources/env.tpl"
-  env_var_script             = "${path.module}/resources/.env.sh"
   init_script                = "${path.module}/resources/init.sh"
   vm_hostnames_str           = join("|", local.vm_hostnames)
   vm_hostnames = concat(
