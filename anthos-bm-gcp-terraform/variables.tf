@@ -79,16 +79,10 @@ variable "tags" {
   default     = ["http-server", "https-server"]
 }
 
-variable "vm_service_account" {
-  description = "Service account to attach to the provisioned Compute Engine VM. See https://www.terraform.io/docs/providers/google/r/compute_instance_template.html#service_account."
-  type = object({
-    email  = string
-    scopes = set(string)
-  })
-  default = {
-    email  = ""
-    scopes = ["cloud-platform"]
-  }
+variable "access_scopes" {
+  description = "The IAM access scopes associated to the Compute Engine VM Service Accounts"
+  type        = set(string)
+  default     = ["cloud-platform"]
 }
 
 variable "anthos_service_account_name" {

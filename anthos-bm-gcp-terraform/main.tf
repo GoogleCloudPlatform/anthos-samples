@@ -103,16 +103,19 @@ module "instance_template" {
   ]
   # fetched from previous module to explicitely express dependency
   project_id           = module.enable_google_apis_secondary.project_id
-  region               = var.region             # --zone=${ZONE}
-  service_account      = var.vm_service_account # --scopes cloud-platform
-  source_image_family  = var.image_family       # --image-family=ubuntu-2004-lts
-  source_image_project = var.image_project      # --image-project=ubuntu-os-cloud
-  machine_type         = var.machine_type       # --machine-type $MACHINE_TYPE
-  disk_size_gb         = var.boot_disk_size     # --boot-disk-size 200G
-  disk_type            = var.boot_disk_type     # --boot-disk-type pd-ssd
-  can_ip_forward       = true                   # --can-ip-forward
-  network              = var.network            # --network default
-  tags                 = var.tags               # --tags http-server,https-server
+  region               = var.region         # --zone=${ZONE}
+  source_image_family  = var.image_family   # --image-family=ubuntu-2004-lts
+  source_image_project = var.image_project  # --image-project=ubuntu-os-cloud
+  machine_type         = var.machine_type   # --machine-type $MACHINE_TYPE
+  disk_size_gb         = var.boot_disk_size # --boot-disk-size 200G
+  disk_type            = var.boot_disk_type # --boot-disk-type pd-ssd
+  can_ip_forward       = true               # --can-ip-forward
+  network              = var.network        # --network default
+  tags                 = var.tags           # --tags http-server,https-server
+  service_account = {
+    email  = ""
+    scopes = var.access_scopes # --scopes cloud-platform
+  }
   # TODO:: Unavailable as of now
   # min_cpu_platform = var.min_cpu_platform # --min-cpu-platform "Intel Haswell"
 }
