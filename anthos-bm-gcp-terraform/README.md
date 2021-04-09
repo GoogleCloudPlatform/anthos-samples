@@ -27,10 +27,10 @@ The [Quick starter](#quick-starter) that follows sets up the following infrastru
 
 2. Update the `terraform.tfvars.sample` file to include variables specific to your environment
 ```
-project_id       = "<GCP_PROJECT_ID>"
-region           = "<GCP_REGION_TO_USE>"
-zone             = "<GCP_ZONE_TO_USE>"
-credentials_file = "<PATH_TO_GCP_SERVICE_ACCOUNT_FILE>"
+project_id       = "<GOOGLE_CLOUD_PROJECT_ID>"
+region           = "<GOOGLE_CLOUD_REGION_TO_USE>"
+zone             = "<GOOGLE_CLOUD_ZONE_TO_USE>"
+credentials_file = "<PATH_TO_GOOGLE_CLOUD_SERVICE_ACCOUNT_FILE>"
 ```
 
 3. Rename the `variables` file to default name used by terraform
