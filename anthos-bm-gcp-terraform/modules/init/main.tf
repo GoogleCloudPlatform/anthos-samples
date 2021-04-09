@@ -66,7 +66,6 @@ resource "null_resource" "exec_init_script" {
   provisioner "remote-exec" {
     inline = [
       "chmod 0100 /root/init.sh",
-      "chmod 0100 /root/env.sh",
       "chmod 0600 /root/${local.cluster_yaml_file_name}"
     ]
   }

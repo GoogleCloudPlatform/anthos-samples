@@ -1,6 +1,6 @@
 module external_ip_addresses {
   source   = "../external-ip"
-  vm_names = var.vm_names
+  ip_names = var.vm_names
 }
 
 module compute_instance {
