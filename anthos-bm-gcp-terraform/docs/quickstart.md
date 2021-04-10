@@ -97,15 +97,15 @@ You can find your cluster's `kubeconfig` file on the admin machine in the `bmctl
 
 1. SSH into the admin host _(if you are not already inside it)_:
 ```sh
-> # You can copy the command from the output of Terraform run from the previous step
-> gcloud compute ssh tfadmin@abm-ws-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
+# You can copy the command from the output of Terraform run from the previous step
+gcloud compute ssh tfadmin@abm-ws-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
 ```
 
 2. Set the `KUBECONFIG` environment variable with the path to the cluster's configuration file to run `kubectl` commands on the cluster.
 ```sh
-> export CLUSTER_ID=anthos-gce-cluster
-> export KUBECONFIG=$HOME/bmctl-workspace/$CLUSTER_ID/$CLUSTER_ID-kubeconfig
-> kubectl get nodes
+export CLUSTER_ID=anthos-gce-cluster
+export KUBECONFIG=$HOME/bmctl-workspace/$CLUSTER_ID/$CLUSTER_ID-kubeconfig
+kubectl get nodes
 ```
 
 You should see the nodes of the cluster printed, _similar_ to the output below:
@@ -131,7 +131,7 @@ You can cleanup the cluster setup in two ways,
 
 #### Using Terraform
 
-- Deregister the cluster before deleting all the resources created by Terraform
+- First deregister the cluster before deleting all the resources created by Terraform
   ```sh
   # SSH into the admin host
   gcloud compute ssh tfadmin@abm-ws-001 --project=PROJECT_ID --zone=GOOGLE_CLOUD_ZONE
@@ -145,7 +145,7 @@ You can cleanup the cluster setup in two ways,
   exit
   ```
 
-- Use Terraform to delete all resources.
+- Then, use Terraform to delete all resources.
   ```sh
   # to be run from the root directory of this repo
   terraform destroy
