@@ -11,17 +11,21 @@ This repository shows you how to use Terraform to try Anthos clusters on bare me
   - [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) (~v0.14.10)
 
 - A [GCP Project](https://console.cloud.google.com/cloud-resource-manager?_ga=2.187862184.1029435410.1614837439-1338907320.1614299892) _(in which the resources for the setup will be provisioned)_ with the following setup
-  - The project added to a [monitoring workspace](https://console.cloud.google.com/monitoring?_ga=2.256070603.1395081395.1617860495-190605143.1617846491). _You can create a new workspace for the project or associate it to an existing one._
-  - A [Service Account](https://cloud.devsite.corp.google.com/iam/docs/creating-managing-service-accounts) in the project with either `Project Editor` or `Project Owner` permissions and its **[key file downloaded to the workstation](https://cloud.devsite.corp.google.com/iam/docs/creating-managing-service-account-keys)**
+  - The project added to a [monitoring workspace](https://console.cloud.google.com/monitoring?_ga=2.256070603.1395081395.1617860495-190605143.1617846491) _(You can create a new workspace for the project or associate it to an existing one)_
+  - A [Service Account](https://cloud.devsite.corp.google.com/iam/docs/creating-managing-service-accounts) in the project with either `Project Editor` or `Project Owner` permissions and its **[key file downloaded](https://cloud.devsite.corp.google.com/iam/docs/creating-managing-service-account-keys)** to the workstation
+
 ---
 ### Bare metal infrastructure on Google Cloud using Compute Engine VMs
 
-The [Quick starter](docs/quickstarter.md) guide sets up the following infrastructure in Google Cloud using Compute Engine VMs. The diagram assumes that the none of the default values for the [variables](variables.tf) were changed other than the ones mentioned in the quick starter.
+The [Quick starter](docs/quickstart.md) guide sets up the following infrastructure in Google Cloud using Compute Engine VMs. The diagram assumes that the none of the default values for the [variables](variables.tf) were changed other than the ones mentioned in the quick starter.
 
 ![Bare metal infrastructure on Google Cloud using Compute Engine VMs](resources/images/abm_gcp_infra.svg)
 
 ---
 ## Getting started
+
+- [Quick starter guide](/docs/quickstart.md)
+- [Variables guide](/docs/variables.md)
 
  ## Troubleshooting
 
