@@ -11,3 +11,4 @@ cleanup.sh
 .debug.local.sh
 .ssh-*
 .env*
+.temp/

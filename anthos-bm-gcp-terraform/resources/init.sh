@@ -1,20 +1,18 @@
 #!/bin/bash
 
-ZONE=$1
-IS_ADMIN_VM=$2
-VXLAN_IP_ADDRESS=$3
-SERVICE_ACCOUNT=$4
-HOSTNAMES=$(cat hostnames)
-VM_INTERNAL_IPS=$(cat internalIps)
-
-echo "[$IS_ADMIN_VM] [$ZONE] [$HOSTNAMES] [$VXLAN_IP_ADDRESS] [$VM_INTERNAL_IPS]"
+ZONE=$(cut -d "=" -f2- <<< $(cat init.vars | grep ZONE))
+IS_ADMIN_VM=$(cut -d "=" -f2- <<< $(cat init.vars | grep IS_ADMIN_VM))
+VXLAN_IP_ADDRESS=$(cut -d "=" -f2- <<< $(cat init.vars | grep VXLAN_IP_ADDRESS))
+SERVICE_ACCOUNT=$(cut -d "=" -f2- <<< $(cat init.vars | grep SERVICE_ACCOUNT))
+HOSTNAMES=$(cut -d "=" -f2- <<< $(cat init.vars | grep HOSTNAMES))
+VM_INTERNAL_IPS=$(cut -d "=" -f2- <<< $(cat init.vars | grep VM_INTERNAL_IPS))
 
 DATE=$(date)
 HOSTNAME=$(hostname)
 
 ##############################################################################
-# Entrypoint to the startup_script. Ensures that the host setup is run only
-# during the first time the vm boots and never again for future reboots
+# Entrypoint to the startup_script. Runs all the necessary steps to configure
+# the host; also ensures admin specific setup is done for admin hosts
 ##############################################################################
 function main () {
   echo "[$DATE] Init script running for host $HOSTNAME"
@@ -34,10 +32,7 @@ function install_deps () {
 
 ##############################################################################
 # Setup a new network device for the overlay vxlan network connecting all the
-# hosts in the cluster. The vxlan IP address to use for this specific host is
-# provided via a metadata entry by terraform. The metadata entry is the
-# hostname minus the last suffix string appended by terraform
-#   e.g. hostname = abm-worker1-001 --> metadata = abm-worker1
+# hosts in the cluster. This adds this host to an L2 overlay network
 ##############################################################################
 function setup_vxlan () {
   echo "Setting up ip address [$VXLAN_IP_ADDRESS/24] for net device vxlan0"
@@ -50,8 +45,7 @@ function setup_vxlan () {
 ##############################################################################
 # Update the host's linux bridge to include forwarding entries for each of
 # the hosts in the cluster. The bridge entries are populated using the VPC
-# internal IPs of the hosts in the cluster. These IPs are made available to
-# the host via a metadata entry (clusterVmIps) by terraform
+# internal IPs of the hosts in the cluster.
 ##############################################################################
 function update_bridge_entries () {
   current_ip=$(ip --json a show dev ens4 | jq '.[0].addr_info[0].local' -r)
@@ -80,9 +74,7 @@ function disable_apparmour () {
 
 ##############################################################################
 # Configure the admin host with additional tools required to provision and
-# manage the Anthos cluster. This is only executed inside the admin host. A
-# is notified whether it's an admin or not via a metadata entry (isAdminVm) by
-# terraform
+# manage the Anthos cluster. This is only executed inside the admin host.
 ##############################################################################
 function setup_admin_host () {
   if [ "$IS_ADMIN_VM" == "true" ]; then
@@ -137,8 +129,7 @@ function setup_docker () {
 
 ##############################################################################
 # Setup SSH access from the admin host to all the other hosts in the cluster.
-# The gcloud CLI is used here and the instance names for other hosts are made
-# available to the admin host via a metadata entry (hostNames) by terraform
+# The gcloud CLI is used here update the SSH key information on the hosts.
 ##############################################################################
 function setup_ssh_access () {
   ssh-keygen -t rsa -N "" -f /root/.ssh/id_rsa

@@ -26,19 +26,23 @@ provider "google-beta" {
 }
 
 locals {
-  vm_names                   = concat(local.admin_vm_names, local.controlplane_vm_names, local.worker_vm_names)
-  admin_vm_names             = [for vmName in var.instance_names.admin : join("-", [var.hostname_prefix, vmName])]
-  controlplane_vm_names      = [for vmName in var.instance_names.controlplane : join("-", [var.hostname_prefix, vmName])]
-  worker_vm_names            = [for vmName in var.instance_names.worker : join("-", [var.hostname_prefix, vmName])]
-  controlplane_vxlan_ips     = [for name in local.controlplane_vm_names : local.vm_vxlan_ip[name]]
-  worker_vxlan_ips           = [for name in local.worker_vm_names : local.vm_vxlan_ip[name]]
-  admin_vm_hostnames         = [for vm in module.admin_vm_hosts.vm_info : vm.hostname]
-  vm_vxlan_ip                = { for idx, vmName in local.vm_names : vmName => "10.200.0.${idx + 2}" }
-  vmHostnameToVmName         = { for vmName in local.vm_names : "${vmName}-001" => vmName }
-  cluster_yaml_file          = "${path.module}/resources/.${var.abm_cluster_id}.yaml"
-  cluster_yaml_template_file = "${path.module}/resources/anthos_gce_cluster.tpl"
-  init_script                = "${path.module}/resources/init.sh"
-  vm_hostnames_str           = join("|", local.vm_hostnames)
+  vm_names                            = concat(local.admin_vm_names, local.controlplane_vm_names, local.worker_vm_names)
+  admin_vm_names                      = [for vmName in var.instance_names.admin : join("-", [var.hostname_prefix, vmName])]
+  controlplane_vm_names               = [for vmName in var.instance_names.controlplane : join("-", [var.hostname_prefix, vmName])]
+  worker_vm_names                     = [for vmName in var.instance_names.worker : join("-", [var.hostname_prefix, vmName])]
+  controlplane_vxlan_ips              = [for name in local.controlplane_vm_names : local.vm_vxlan_ip[name]]
+  worker_vxlan_ips                    = [for name in local.worker_vm_names : local.vm_vxlan_ip[name]]
+  admin_vm_hostnames                  = [for vm in module.admin_vm_hosts.vm_info : vm.hostname]
+  vm_vxlan_ip                         = { for idx, vmName in local.vm_names : vmName => "10.200.0.${idx + 2}" }
+  vmHostnameToVmName                  = { for vmName in local.vm_names : "${vmName}-001" => vmName }
+  public_key_file_path_template       = "${path.root}/resources/.temp/%s/ssh-key.pub"
+  private_key_file_path_template      = "${path.root}/resources/.temp/%s/ssh-key.priv"
+  init_script_vars_file_path_template = "${path.root}/resources/.temp/%s/init.vars"
+  cluster_yaml_file                   = "${path.root}/resources/.temp/.${var.abm_cluster_id}.yaml"
+  cluster_yaml_template_file          = "${path.root}/resources/anthos_gce_cluster.tpl"
+  init_script_vars_file               = "${path.root}/resources/init.vars.tpl"
+  init_script                         = "${path.root}/resources/init.sh"
+  vm_hostnames_str                    = join("|", local.vm_hostnames)
   vm_hostnames = concat(
     local.admin_vm_hostnames,
     [for vm in module.controlplane_vm_hosts.vm_info : vm.hostname],
@@ -173,17 +177,34 @@ resource "local_file" "cluster_yaml" {
   })
 }
 
+resource "local_file" "init_args_file" {
+  depends_on = [
+    module.controlplane_vm_hosts,
+    module.worker_vm_hosts
+  ]
+  for_each = toset(local.vm_hostnames)
+  filename = format(local.init_script_vars_file_path_template, each.value)
+  content = templatefile(local.init_script_vars_file, {
+    zone           = var.zone,
+    isAdminVm      = contains(local.admin_vm_hostnames, each.value),
+    vxLanIp        = local.vm_vxlan_ip[local.vmHostnameToVmName[each.value]],
+    serviceAccount = var.anthos_service_account_name,
+    hostnames      = local.vm_hostnames_str,
+    vmInternalIps  = local.vm_internal_ips
+  })
+}
+
 module "init_hosts" {
-  source            = "./modules/init"
-  for_each          = toset(local.vm_hostnames)
-  project_id        = var.project_id
-  zone              = var.zone
-  hostname          = each.value
-  credentials_file  = var.credentials_file
-  publicIp          = local.publicIps[each.value]
-  hostnames         = local.vm_hostnames_str
-  internalIps       = local.vm_internal_ips
-  init_script       = local.init_script
-  init_script_args  = "${var.zone} ${contains(local.admin_vm_hostnames, each.value)} ${local.vm_vxlan_ip[local.vmHostnameToVmName[each.value]]} ${var.anthos_service_account_name}"
-  cluster_yaml_path = local.cluster_yaml_file
+  source                 = "./modules/init"
+  for_each               = toset(local.vm_hostnames)
+  project_id             = var.project_id
+  zone                   = var.zone
+  hostname               = each.value
+  credentials_file       = var.credentials_file
+  publicIp               = local.publicIps[each.value]
+  init_script            = local.init_script
+  pub_key_path_template  = local.public_key_file_path_template
+  priv_key_path_template = local.private_key_file_path_template
+  init_vars_file         = format(local.init_script_vars_file_path_template, each.value)
+  cluster_yaml_path      = local.cluster_yaml_file
 }

@@ -27,32 +27,14 @@ variable "publicIp" {
   type        = string
 }
 
-variable "hostnames" {
-  description = "List of hostnames of all the VMs to which the target VM should have SSH configured"
-  type        = string
-}
-
-variable "internalIps" {
-  description = "List of VPC internal IP addresses that is to be added to the target VM's VxLAN bridge"
-  type        = string
-}
-
 variable "init_script" {
   description = "Path to the initilization script that is to be run on the target VM"
   type        = string
   default     = "../../resources/init.sh"
 }
 
-variable "init_script_args" {
-  description = <<EOF
-    Space separated list of arguments to be passed into the initialization script.
-    This shall include atleast 2 arguments:
-      1. Zone (string)
-      2. Is the VM an admin VM (boolean)
-      3. VxLAN IP address of the VM (string)
-      4. Name of Service Account to be used by Anthos components
-    e.g. "us-central1-a true 10.200.0.3 baremetal-gcr"
-  EOF
+variable "init_vars_file" {
+  description = "Path to the file containing the host specific arguments to the init script"
   type        = string
 }
 
@@ -65,11 +47,11 @@ variable "cluster_yaml_path" {
 variable "pub_key_path_template" {
   description = "Template denoting the path where the public key is to be stored"
   type        = string
-  default     = "./resources/.ssh-key-%s.pub"
+  default     = "../../resources/.ssh-key-%s.pub"
 }
 
 variable "priv_key_path_template" {
   description = "Template denoting the path where the private key is to be stored"
   type        = string
-  default     = "./resources/.ssh-key-%s.priv"
+  default     = "../../resources/.ssh-key-%s.priv"
 }

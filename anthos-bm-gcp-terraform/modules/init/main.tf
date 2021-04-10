@@ -1,5 +1,5 @@
 locals {
-  ssh_pub_key_template_file = "${path.module}/../../resources/ssh-keys.tpl"
+  ssh_pub_key_template_file = "${path.root}/resources/ssh-keys.tpl"
   ssh_pub_key_file          = format(var.pub_key_path_template, var.hostname)
   ssh_private_key_file      = format(var.priv_key_path_template, var.hostname)
   cluster_yaml_file_name    = trimprefix(basename(var.cluster_yaml_path), ".")
@@ -59,12 +59,18 @@ resource "null_resource" "exec_init_script" {
   }
 
   provisioner "file" {
+    source      = var.init_vars_file
+    destination = "/root/init.vars"
+  }
+
+  provisioner "file" {
     source      = var.init_script
     destination = "/root/init.sh"
   }
 
   provisioner "remote-exec" {
     inline = [
+      "chmod 0600 /root/init.vars",
       "chmod 0100 /root/init.sh",
       "chmod 0600 /root/${local.cluster_yaml_file_name}"
     ]
@@ -72,10 +78,14 @@ resource "null_resource" "exec_init_script" {
 
   provisioner "local-exec" {
     command = <<EOT
-      ssh -o 'StrictHostKeyChecking no' \
-      -i ${local.ssh_private_key_file} \
-      root@${var.publicIp} \
-      'echo "${var.hostnames}" > hostnames && echo "${var.internalIps}" > internalIps && nohup /root/init.sh ${var.init_script_args} > /root/init.log 2>&1 &'
+      ssh                               \
+      -o 'StrictHostKeyChecking no'     \
+      -o 'UserKnownHostsFile /dev/null' \
+      -o 'IdentitiesOnly yes'           \
+      -F /dev/null                      \
+      -i ${local.ssh_private_key_file}  \
+      root@${var.publicIp}              \
+      'nohup /root/init.sh > /root/init.log 2>&1 &'
     EOT
   }
 }
