@@ -119,7 +119,7 @@ You can find your cluster's `kubeconfig` file on the admin machine in the `bmctl
 1. SSH into the admin workstation _(if you are not already inside it)_:
 ```sh
 > # You can copy the command from the output of terraform run from the previous step
-> gcloud compute ssh root@abm-ws-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
+> gcloud compute ssh tfadmin@abm-ws-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
 ```
 
 2. Set the `KUBECONFIG` environment variable with the path to the cluster's configuration file to run `kubectl` commands on the cluster.
