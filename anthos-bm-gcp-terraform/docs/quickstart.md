@@ -13,25 +13,25 @@ credentials_file = "<PATH_TO_GOOGLE_CLOUD_SERVICE_ACCOUNT_FILE>"
 3. Rename the `variables` file to default name used by Terraform for the `variables` file:
 > **Note:** You can skip this step if you run `terraform apply` with the `-var-file` flag
 ```sh
-> mv terraform.tfvars.sample terraform.tfvars
+mv terraform.tfvars.sample terraform.tfvars
 ```
 
 4. Navigate to the root directory of this repository initialize it as a Terraform directory
 ```sh
-> # this sets up the required Terraform state management configurations, similar to 'git init'
-> terraform init
+# this sets up the required Terraform state management configurations, similar to 'git init'
+terraform init
 ```
 
 5. Create a _Terraform_ execution plan
 ```sh
-> # compares the state of the resources, verifies the scripts and creates an execution plan
-> terraform plan
+# compares the state of the resources, verifies the scripts and creates an execution plan
+terraform plan
 ```
 
 6. Apply the changes described in the _Terraform_ script
 ```sh
-> # executes the plan on the given provider (i.e: GCP) to reach the desired state of resources
-> terraform apply
+# executes the plan on the given provider (i.e: GCP) to reach the desired state of resources
+terraform apply
 ```
 > **Note:** When prompted to confirm the Terraform plan, type 'Yes' and enter
 
@@ -48,7 +48,7 @@ credentials_file = "<PATH_TO_GOOGLE_CLOUD_SERVICE_ACCOUNT_FILE>"
 ##   (Note that the 1st command should have you SSH'ed into the admin host)   ##
 ################################################################################
 
-> gcloud compute ssh tfadmin@abm-ws-001 --project=<GOOGLE_CLOUD_PROJECT_ID> --zone=<GOOGLE_CLOUD_ZONE>
+> gcloud compute ssh tfadmin@abm-ws-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
 
 # ------------------------------------------------------------------------------
 # You must be SSH'ed into the admin host abm-ws-001 as tfadmin user now
@@ -95,7 +95,7 @@ Deleting bootstrap cluster... OK
 
 You can find your cluster's `kubeconfig` file on the admin machine in the `bmctl-workspace` directory. To verify your deployment, complete the following steps
 
-1. SSH into the admin workstation _(if you are not already inside it)_:
+1. SSH into the admin host _(if you are not already inside it)_:
 ```sh
 > # You can copy the command from the output of Terraform run from the previous step
 > gcloud compute ssh tfadmin@abm-ws-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
@@ -130,10 +130,26 @@ The [Logging in to a cluster from the Cloud Console](https://cloud.google.com/an
 You can cleanup the cluster setup in two ways,
 
 #### Using Terraform
-```sh
-> # to be run from the root directory of this repo
-> terraform destroy
-```
 
-#### Deleting the GCP project
-- Directly delete the project from the console
+- Deregister the cluster before deleting all the resources created by Terraform
+  ```sh
+  # SSH into the admin host
+  gcloud compute ssh tfadmin@abm-ws-001 --project=PROJECT_ID --zone=GOOGLE_CLOUD_ZONE
+
+  # Reset the cluster
+  export CLUSTER_ID=anthos-gce-cluster
+  export KUBECONFIG=$HOME/bmctl-workspace/$CLUSTER_ID/$CLUSTER_ID-kubeconfig
+  sudo bmctl reset --cluster $CLUSTER_ID
+
+  # logout of the admin host
+  exit
+  ```
+
+- Use Terraform to delete all resources.
+  ```sh
+  # to be run from the root directory of this repo
+  terraform destroy
+  ```
+
+#### Delete the entire Google Cloud project
+- Directly [delete the project](https://console.cloud.google.com/cloud-resource-manager) from the console
