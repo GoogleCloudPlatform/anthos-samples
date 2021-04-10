@@ -24,8 +24,8 @@ The [Quick starter](docs/quickstart.md) guide sets up the following infrastructu
 ---
 ## Getting started
 
-- [Quick starter guide](/docs/quickstart.md)
-- [Variables guide](/docs/variables.md)
+- [Quick starter guide](docs/quickstart.md)
+- [Variables guide](docs/variables.md)
 
  ## Troubleshooting
 
