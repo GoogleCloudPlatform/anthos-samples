@@ -10,35 +10,36 @@ zone             = "<GOOGLE_CLOUD_ZONE_TO_USE>"
 credentials_file = "<PATH_TO_GOOGLE_CLOUD_SERVICE_ACCOUNT_FILE>"
 ```
 
-3. Rename the `variables` file to default name used by terraform
+3. Rename the `variables` file to default name used by Terraform for the `variables` file:
 > **Note:** You can skip this step if you run `terraform apply` with the `-var-file` flag
 ```sh
 > mv terraform.tfvars.sample terraform.tfvars
 ```
 
-4. Navigate to the root directory of this repository initialize it as a _terraform_ directory
+4. Navigate to the root directory of this repository initialize it as a Terraform directory
 ```sh
-> # similar to 'git init'; sets up the required terraform state management configurations
+> # this sets up the required Terraform state management configurations, similar to 'git init'
 > terraform init
 ```
 
-5. Create a _terraform_ execution plan
+5. Create a _Terraform_ execution plan
 ```sh
 > # compares the state of the resources, verifies the scripts and creates an execution plan
 > terraform plan
 ```
 
-6. Apply the changes described in the _terraform_ script
+6. Apply the changes described in the _Terraform_ script
 ```sh
 > # executes the plan on the given provider (i.e: GCP) to reach the desired state of resources
 > terraform apply
 ```
-> **Note:** Once prompted to confirm the terraform plan, type `Yes` and enter
+> **Note:** When prompted to confirm the Terraform plan, type 'Yes' and enter
 
-***The above should initiate terraform to start setting up the GCE hosts for the baremetal cluster. This may take a few minutes (approx. 3-5 mins) for the entire bare-metal cluster to be setup.***
+***The `apply` command sets up the Compute Engine VM based bare metal infrastructure. This can take a few minutes (approx. 3-5 mins) for the entire bare-metal cluster to be setup.***
 
-5. Once the previous step completes you should see a printed output as follows for the next steps to follow. Just copy/paste the commands and run them.
-> **Note:** If the `bmctl` command fails, it could be because the admin host hasn't completed its setup. Give it a few seconds and retry.
+5. After the Terraform execution completes it prints the next steps. These steps install the Anthos cluster on the provisioned Compute Engine VM based bare metal infrastructure. Just copy/paste the commands and run them.
+
+> **Note:** The following output is only an example. Hence, copy the commands from the output that is printed in your own workstation as a result of running the Terraform scripts. If copying from the sample below ensure that the parameters match that of your environment.
 
 ```sh
 ################################################################################
@@ -47,7 +48,7 @@ credentials_file = "<PATH_TO_GOOGLE_CLOUD_SERVICE_ACCOUNT_FILE>"
 ##   (Note that the 1st command should have you SSH'ed into the admin host)   ##
 ################################################################################
 
-> gcloud compute ssh tfadmin@abm-ws-001 --project=shabir-abm-local --zone=us-central1-a
+> gcloud compute ssh tfadmin@abm-ws-001 --project=<GOOGLE_CLOUD_PROJECT_ID> --zone=<GOOGLE_CLOUD_ZONE>
 
 # ------------------------------------------------------------------------------
 # You must be SSH'ed into the admin host abm-ws-001 as tfadmin user now
@@ -58,9 +59,10 @@ credentials_file = "<PATH_TO_GOOGLE_CLOUD_SERVICE_ACCOUNT_FILE>"
 
 ################################################################################
 ```
-***The above should setup the baremetal cluster. This includes doing preflight checks on the nodes, creating the admin and user clusters and also registering the cluster with Google Cloud using [Connect](https://cloud.google.com/anthos/multicluster-management/connect/overview). The whole setup may take upto approx. 15 minutes***
+---
 
-You will see the following output as the ***admin cluster*** is being created
+Running the commands from the Terraform output starts setting up a new Anthos cluster. This includes doing preflight checks on the nodes, creating the admin and user clusters and also registering the cluster with Google Cloud using [Connect](https://cloud.google.com/anthos/multicluster-management/connect/overview). The whole setup can take up to 15 minutes. You see the following output as the cluster is being created:
+
 ```sh
 Created config: bmctl-workspace/anthos-gce-cluster/anthos-gce-cluster.yaml
 Creating bootstrap cluster... OK
@@ -95,7 +97,7 @@ You can find your cluster's `kubeconfig` file on the admin machine in the `bmctl
 
 1. SSH into the admin workstation _(if you are not already inside it)_:
 ```sh
-> # You can copy the command from the output of terraform run from the previous step
+> # You can copy the command from the output of Terraform run from the previous step
 > gcloud compute ssh tfadmin@abm-ws-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
 ```
 
@@ -127,7 +129,7 @@ The [Logging in to a cluster from the Cloud Console](https://cloud.google.com/an
 
 You can cleanup the cluster setup in two ways,
 
-#### Using terraform
+#### Using Terraform
 ```sh
 > # to be run from the root directory of this repo
 > terraform destroy
