@@ -1,1 +1,1 @@
-root:${ssh_key} root
+${username}:${ssh_key} ${username}

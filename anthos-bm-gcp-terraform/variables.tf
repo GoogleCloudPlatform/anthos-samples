@@ -23,6 +23,12 @@ variable "zone" {
   default     = "us-central1-a"
 }
 
+variable "username" {
+  description = "The name of the user to be created on each Compute Engine VM to execute the init script"
+  type        = string
+  default     = "tfadmin"
+}
+
 variable "hostname_prefix" {
   description = "Unique string to prefix the hostnames of the all the Compute Enfine VMs created"
   type        = string

@@ -200,6 +200,7 @@ module "init_hosts" {
   project_id             = var.project_id
   zone                   = var.zone
   hostname               = each.value
+  username               = var.username
   credentials_file       = var.credentials_file
   publicIp               = local.publicIps[each.value]
   init_script            = local.init_script

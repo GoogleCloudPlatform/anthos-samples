@@ -17,6 +17,12 @@ variable "zone" {
   default     = "us-central1-a"
 }
 
+variable "username" {
+  description = "The name of the user to be created to execute the init script"
+  type        = string
+  default     = "tfadmin"
+}
+
 variable "hostname" {
   description = "Hostname of the target VM"
   type        = string

@@ -3,6 +3,7 @@ locals {
   ssh_pub_key_file          = format(var.pub_key_path_template, var.hostname)
   ssh_private_key_file      = format(var.priv_key_path_template, var.hostname)
   cluster_yaml_file_name    = trimprefix(basename(var.cluster_yaml_path), ".")
+  home_dir                  = "/home/${var.username}"
 }
 
 resource "tls_private_key" "ssh_key_pair" {
@@ -14,8 +15,10 @@ resource "local_file" "temp_ssh_pub_key_file" {
   filename        = local.ssh_pub_key_file
   file_permission = "0600"
   content = templatefile(
-    local.ssh_pub_key_template_file,
-    { ssh_key = chomp(tls_private_key.ssh_key_pair.public_key_openssh) }
+    local.ssh_pub_key_template_file, {
+      username = var.username,
+      ssh_key  = chomp(tls_private_key.ssh_key_pair.public_key_openssh)
+    }
   )
 }
 
@@ -48,31 +51,31 @@ resource "null_resource" "exec_init_script" {
   depends_on = [module.gcloud_add_ssh_key_metadata]
   connection {
     type        = "ssh"
-    user        = "root"
+    user        = var.username
     host        = var.publicIp
     private_key = chomp(tls_private_key.ssh_key_pair.private_key_pem)
   }
 
   provisioner "file" {
     source      = var.cluster_yaml_path
-    destination = "/root/${local.cluster_yaml_file_name}"
+    destination = "${local.home_dir}/${local.cluster_yaml_file_name}"
   }
 
   provisioner "file" {
     source      = var.init_vars_file
-    destination = "/root/init.vars"
+    destination = "${local.home_dir}/init.vars"
   }
 
   provisioner "file" {
     source      = var.init_script
-    destination = "/root/init.sh"
+    destination = "${local.home_dir}/init.sh"
   }
 
   provisioner "remote-exec" {
     inline = [
-      "chmod 0600 /root/init.vars",
-      "chmod 0100 /root/init.sh",
-      "chmod 0600 /root/${local.cluster_yaml_file_name}"
+      "chmod 0600 ${local.home_dir}/${local.cluster_yaml_file_name}",
+      "chmod 0600 ${local.home_dir}/init.vars",
+      "chmod 0100 ${local.home_dir}/init.sh"
     ]
   }
 
@@ -84,8 +87,8 @@ resource "null_resource" "exec_init_script" {
       -o 'IdentitiesOnly yes'           \
       -F /dev/null                      \
       -i ${local.ssh_private_key_file}  \
-      root@${var.publicIp}              \
-      'nohup /root/init.sh > /root/init.log 2>&1 &'
+      ${var.username}@${var.publicIp}              \
+      'nohup sudo ${local.home_dir}/init.sh > ${local.home_dir}/init.log 2>&1 &'
     EOT
   }
 }

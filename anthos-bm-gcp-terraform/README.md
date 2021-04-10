@@ -67,27 +67,53 @@ credentials_file = "<PATH_TO_GOOGLE_CLOUD_SERVICE_ACCOUNT_FILE>"
 ################################################################################
 ##                       AnthosBM on GCE with Terraform                       ##
 ##                        (Run the following commands)                        ##
-##     (Note that the 1st line should have you SSH'ed into the admin host)    ##
+##   (Note that the 1st command should have you SSH'ed into the admin host)   ##
 ################################################################################
 
 # ------------------------------------------------------------------------------
 # SSH into it the admin host
 # ------------------------------------------------------------------------------
-gcloud compute ssh root@sabm-ws-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
+ssh -o 'StrictHostKeyChecking no' \
+    -o 'UserKnownHostsFile' \
+    -o 'IdentitiesOnly yes' \
+    -F /dev/null \
+    -i ./resources/.temp/abm-ws-001/ssh-key.priv \
+    tfadmin@34.71.222.147
 
 # ------------------------------------------------------------------------------
 # Use must be SSH'ed into the admin host sabm-ws-001 as root user now
 # ------------------------------------------------------------------------------
-bmctl create config -c dev-abm-cluster && \
-cp ~/dev-abm-cluster.yaml bmctl-workspace/dev-abm-cluster && \
-bmctl create cluster -c dev-abm-cluster
+bmctl create config -c anthos-gce-cluster && \
+cp ~/anthos-gce-cluster.yaml bmctl-workspace/anthos-gce-cluster && \
+bmctl create cluster -c anthos-gce-cluster
+################################################################################
+
+################################################################################
+##              AnthosBM on Google Compute Engine VM with Terraform           ##
+##                        (Run the following commands)                        ##
+##   (Note that the 1st command should have you SSH'ed into the admin host)   ##
+################################################################################
+
+> ssh -o 'StrictHostKeyChecking no' \
+      -o 'UserKnownHostsFile /dev/null' \
+      -o 'IdentitiesOnly yes' \
+      -F /dev/null \
+      -i ./resources/.temp/abm-ws-001/ssh-key.priv \
+      tfadmin@35.192.74.64
+
+# You must be SSH'ed into the admin host abm-ws-001 as tfadmin user now
+# ----------------------------------------------------------------------------
+> sudo bmctl create config -c anthos-gce-cluster && \
+  sudo cp ~/anthos-gce-cluster.yaml bmctl-workspace/anthos-gce-cluster && \
+  sudo bmctl create cluster -c anthos-gce-cluster
+
 ################################################################################
 ```
 ***The above should setup the baremetal cluster. This includes doing preflight checks on the nodes, creating the admin and user clusters and also registering the cluster with Google Cloud using [Connect](https://cloud.google.com/anthos/multicluster-management/connect/overview). The whole setup may take upto approx. 15 minutes***
 
 You will see the following output as the ***admin cluster*** is being created
 ```sh
-Created config: bmctl-workspace/dev-abm-cluster/dev-abm-cluster.yaml
+Created config: bmctl-workspace/anthos-gce-cluster/anthos-gce-cluster.yaml
 Creating bootstrap cluster... OK
 Installing dependency components... OK
 Waiting for preflight check job to finish... OK
@@ -103,8 +129,8 @@ Flushing logs... OK
 Applying resources for new cluster
 Waiting for cluster to become ready OK
 Writing kubeconfig file
-kubeconfig of created cluster is at bmctl-workspace/dev-abm-cluster/dev-abm-cluster-kubeconfig, please run
-kubectl --kubeconfig bmctl-workspace/dev-abm-cluster/dev-abm-cluster-kubeconfig get nodes
+kubeconfig of created cluster is at bmctl-workspace/anthos-gce-cluster/anthos-gce-cluster-kubeconfig, please run
+kubectl --kubeconfig bmctl-workspace/anthos-gce-cluster/anthos-gce-cluster-kubeconfig get nodes
 to get cluster node status.
 Please restrict access to this file as it contains authentication credentials of your cluster.
 Waiting for node pools to become ready OK
