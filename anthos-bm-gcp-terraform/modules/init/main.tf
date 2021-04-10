@@ -87,7 +87,7 @@ resource "null_resource" "exec_init_script" {
       -o 'IdentitiesOnly yes'           \
       -F /dev/null                      \
       -i ${local.ssh_private_key_file}  \
-      ${var.username}@${var.publicIp}              \
+      ${var.username}@${var.publicIp}   \
       'nohup sudo ${local.home_dir}/init.sh > ${local.home_dir}/init.log 2>&1 &'
     EOT
   }

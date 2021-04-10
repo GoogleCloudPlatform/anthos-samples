@@ -65,44 +65,16 @@ credentials_file = "<PATH_TO_GOOGLE_CLOUD_SERVICE_ACCOUNT_FILE>"
 
 ```sh
 ################################################################################
-##                       AnthosBM on GCE with Terraform                       ##
-##                        (Run the following commands)                        ##
-##   (Note that the 1st command should have you SSH'ed into the admin host)   ##
-################################################################################
-
-# ------------------------------------------------------------------------------
-# SSH into it the admin host
-# ------------------------------------------------------------------------------
-ssh -o 'StrictHostKeyChecking no' \
-    -o 'UserKnownHostsFile' \
-    -o 'IdentitiesOnly yes' \
-    -F /dev/null \
-    -i ./resources/.temp/abm-ws-001/ssh-key.priv \
-    tfadmin@34.71.222.147
-
-# ------------------------------------------------------------------------------
-# Use must be SSH'ed into the admin host sabm-ws-001 as root user now
-# ------------------------------------------------------------------------------
-bmctl create config -c anthos-gce-cluster && \
-cp ~/anthos-gce-cluster.yaml bmctl-workspace/anthos-gce-cluster && \
-bmctl create cluster -c anthos-gce-cluster
-################################################################################
-
-################################################################################
 ##              AnthosBM on Google Compute Engine VM with Terraform           ##
 ##                        (Run the following commands)                        ##
 ##   (Note that the 1st command should have you SSH'ed into the admin host)   ##
 ################################################################################
 
-> ssh -o 'StrictHostKeyChecking no' \
-      -o 'UserKnownHostsFile /dev/null' \
-      -o 'IdentitiesOnly yes' \
-      -F /dev/null \
-      -i ./resources/.temp/abm-ws-001/ssh-key.priv \
-      tfadmin@35.192.74.64
+> gcloud compute ssh tfadmin@abm-ws-001 --project=shabir-abm-local --zone=us-central1-a
 
+# ------------------------------------------------------------------------------
 # You must be SSH'ed into the admin host abm-ws-001 as tfadmin user now
-# ----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 > sudo bmctl create config -c anthos-gce-cluster && \
   sudo cp ~/anthos-gce-cluster.yaml bmctl-workspace/anthos-gce-cluster && \
   sudo bmctl create cluster -c anthos-gce-cluster
