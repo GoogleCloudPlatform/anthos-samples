@@ -130,12 +130,14 @@ variable "abm_cluster_id" {
 }
 
 # [START anthos_bm_node_prefix]
+###################################################################################
+# List of names to be given to the Compute Engine VMs that are provisioned. These
+# names will be prefixed by the string provided for the 'hostname_prefix' variable.
+# The number of nodes created can be controlled by adding/removing instance_names
+# to/from this list
+###################################################################################
 variable "instance_names" {
-  description = <<EOT
-    List of names to be given to the Compute Engine VMs that are provisioned.
-    These names will be prefixed by the string provided for the 'hostname_prefix' variable.
-    The number of nodes created can be controlled by adding/removing instance_names to/from this list
-  EOT
+  description = "List of names to be given to the Compute Engine VMs that are provisioned."
   type        = map(any)
   default = {
     "admin" : ["ws"]
