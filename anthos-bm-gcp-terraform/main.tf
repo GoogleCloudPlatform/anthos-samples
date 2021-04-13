@@ -26,6 +26,7 @@ provider "google-beta" {
 }
 
 locals {
+  init_script_logfile_name            = "init.log"
   vm_name_template                    = "abm-%s%d"
   admin_vm_name                       = [format(local.vm_name_template, "ws", 0)]
   vm_names                            = concat(local.admin_vm_name, local.controlplane_vm_names, local.worker_vm_names)
@@ -43,6 +44,7 @@ locals {
   cluster_yaml_template_file          = "${path.root}/resources/anthos_gce_cluster.tpl"
   init_script_vars_file               = "${path.root}/resources/init.vars.tpl"
   init_script                         = "${path.root}/resources/init.sh"
+  preflight_script                    = "${path.root}/resources/preflights.sh"
   vm_hostnames_str                    = join("|", local.vm_hostnames)
   vm_hostnames = concat(
     local.admin_vm_hostnames,
@@ -188,7 +190,8 @@ resource "local_file" "init_args_file" {
     vxLanIp        = local.vm_vxlan_ip[local.vmHostnameToVmName[each.value]],
     serviceAccount = var.anthos_service_account_name,
     hostnames      = local.vm_hostnames_str,
-    vmInternalIps  = local.vm_internal_ips
+    vmInternalIps  = local.vm_internal_ips,
+    logFile        = local.init_script_logfile_name
   })
 }
 
@@ -202,6 +205,8 @@ module "init_hosts" {
   credentials_file       = var.credentials_file
   publicIp               = local.publicIps[each.value]
   init_script            = local.init_script
+  preflight_script       = local.preflight_script
+  init_logs              = local.init_script_logfile_name
   pub_key_path_template  = local.public_key_file_path_template
   priv_key_path_template = local.private_key_file_path_template
   init_vars_file         = format(local.init_script_vars_file_path_template, each.value)

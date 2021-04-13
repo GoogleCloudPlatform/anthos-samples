@@ -39,6 +39,18 @@ variable "init_script" {
   default     = "../../resources/init.sh"
 }
 
+variable "preflight_script" {
+  description = "Path to the preflight check script that validates if the initialization is complete"
+  type        = string
+  default     = "../../resources/preflights.sh"
+}
+
+variable "init_logs" {
+  description = "Name of the file to write the logs of the initialization script"
+  type        = string
+  default     = "init.log"
+}
+
 variable "init_vars_file" {
   description = "Path to the file containing the host specific arguments to the init script"
   type        = string

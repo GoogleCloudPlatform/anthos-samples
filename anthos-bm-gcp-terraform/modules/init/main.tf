@@ -71,11 +71,17 @@ resource "null_resource" "exec_init_script" {
     destination = "${local.home_dir}/init.sh"
   }
 
+  provisioner "file" {
+    source      = var.preflight_script
+    destination = "${local.home_dir}/preflights.sh"
+  }
+
   provisioner "remote-exec" {
     inline = [
       "chmod 0600 ${local.home_dir}/${local.cluster_yaml_file_name}",
       "chmod 0600 ${local.home_dir}/init.vars",
-      "chmod 0100 ${local.home_dir}/init.sh"
+      "chmod 0100 ${local.home_dir}/init.sh",
+      "chmod 0100 ${local.home_dir}/preflights.sh"
     ]
   }
 
@@ -88,7 +94,7 @@ resource "null_resource" "exec_init_script" {
       -F /dev/null                      \
       -i ${local.ssh_private_key_file}  \
       ${var.username}@${var.publicIp}   \
-      'nohup sudo ${local.home_dir}/init.sh > ${local.home_dir}/init.log 2>&1 &'
+      'nohup sudo ${local.home_dir}/init.sh > ${local.home_dir}/${var.init_logs} 2>&1 &'
     EOT
   }
 }
