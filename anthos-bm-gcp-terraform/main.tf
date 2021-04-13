@@ -26,14 +26,15 @@ provider "google-beta" {
 }
 
 locals {
-  vm_names                            = concat(local.admin_vm_names, local.controlplane_vm_names, local.worker_vm_names)
-  admin_vm_names                      = [for vmName in var.instance_names.admin : join("-", [var.hostname_prefix, vmName])]
-  controlplane_vm_names               = [for vmName in var.instance_names.controlplane : join("-", [var.hostname_prefix, vmName])]
-  worker_vm_names                     = [for vmName in var.instance_names.worker : join("-", [var.hostname_prefix, vmName])]
+  vm_name_template                    = "abm-%s%d"
+  admin_vm_name                       = [format(local.vm_name_template, "ws", 0)]
+  vm_names                            = concat(local.admin_vm_name, local.controlplane_vm_names, local.worker_vm_names)
+  controlplane_vm_names               = [for i in range(var.instance_count.controlplane) : format(local.vm_name_template, "cp", i + 1)]
+  worker_vm_names                     = [for i in range(var.instance_count.worker) : format(local.vm_name_template, "w", i + 1)]
   controlplane_vxlan_ips              = [for name in local.controlplane_vm_names : local.vm_vxlan_ip[name]]
   worker_vxlan_ips                    = [for name in local.worker_vm_names : local.vm_vxlan_ip[name]]
   admin_vm_hostnames                  = [for vm in module.admin_vm_hosts.vm_info : vm.hostname]
-  vm_vxlan_ip                         = { for idx, vmName in local.vm_names : vmName => "10.200.0.${idx + 2}" }
+  vm_vxlan_ip                         = { for idx, vmName in local.vm_names : vmName => format("10.200.0.%d", idx + 2) }
   vmHostnameToVmName                  = { for vmName in local.vm_names : "${vmName}-001" => vmName }
   public_key_file_path_template       = "${path.root}/resources/.temp/%s/ssh-key.pub"
   private_key_file_path_template      = "${path.root}/resources/.temp/%s/ssh-key.priv"
@@ -107,21 +108,21 @@ module "instance_template" {
   ]
   # fetched from previous module to explicitely express dependency
   project_id           = module.enable_google_apis_secondary.project_id
-  region               = var.region         # --zone=${ZONE}
-  source_image_family  = var.image_family   # --image-family=ubuntu-2004-lts
-  source_image_project = var.image_project  # --image-project=ubuntu-os-cloud
-  machine_type         = var.machine_type   # --machine-type $MACHINE_TYPE
-  disk_size_gb         = var.boot_disk_size # --boot-disk-size 200G
-  disk_type            = var.boot_disk_type # --boot-disk-type pd-ssd
-  can_ip_forward       = true               # --can-ip-forward
-  network              = var.network        # --network default
-  tags                 = var.tags           # --tags http-server,https-server
+  region               = var.region           # --zone=${ZONE}
+  source_image_family  = var.image_family     # --image-family=ubuntu-2004-lts
+  source_image_project = var.image_project    # --image-project=ubuntu-os-cloud
+  machine_type         = var.machine_type     # --machine-type $MACHINE_TYPE
+  disk_size_gb         = var.boot_disk_size   # --boot-disk-size 200G
+  disk_type            = var.boot_disk_type   # --boot-disk-type pd-ssd
+  can_ip_forward       = true                 # --can-ip-forward
+  network              = var.network          # --network default
+  tags                 = var.tags             # --tags http-server,https-server
+  # TODO: Should be available from any version upwards of v6.2.0
+  # min_cpu_platform     = var.min_cpu_platform # --min-cpu-platform "Intel Haswell"
   service_account = {
     email  = ""
     scopes = var.access_scopes # --scopes cloud-platform
   }
-  # TODO:: Unavailable as of now
-  # min_cpu_platform = var.min_cpu_platform # --min-cpu-platform "Intel Haswell"
 }
 
 module "admin_vm_hosts" {
@@ -130,10 +131,9 @@ module "admin_vm_hosts" {
     module.enable_google_apis_primary,
     module.enable_google_apis_secondary
   ]
-  hostname_prefix   = var.hostname_prefix
   region            = var.region
   network           = var.network
-  vm_names          = local.admin_vm_names
+  vm_names          = local.admin_vm_name
   instance_template = module.instance_template.self_link
 }
 
@@ -143,7 +143,6 @@ module "controlplane_vm_hosts" {
     module.enable_google_apis_primary,
     module.enable_google_apis_secondary
   ]
-  hostname_prefix   = var.hostname_prefix
   region            = var.region
   network           = var.network
   vm_names          = local.controlplane_vm_names
@@ -156,7 +155,6 @@ module "worker_vm_hosts" {
     module.enable_google_apis_primary,
     module.enable_google_apis_secondary
   ]
-  hostname_prefix   = var.hostname_prefix
   region            = var.region
   network           = var.network
   vm_names          = local.worker_vm_names

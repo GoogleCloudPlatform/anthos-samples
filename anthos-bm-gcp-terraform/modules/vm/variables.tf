@@ -10,12 +10,6 @@ variable "network" {
   default     = "default"
 }
 
-variable "hostname_prefix" {
-  description = "Unique string to prefix the hostnames of the VMs"
-  type        = string
-  default     = "abm"
-}
-
 variable "vm_names" {
   description = "List of names to be given to the Compute Engine VMs that are provisioned"
   type        = list(any)

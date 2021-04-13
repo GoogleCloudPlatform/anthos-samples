@@ -4,9 +4,7 @@ zone             = "<GCP_ZONE_TO_USE>"
 credentials_file = "<PATH_TO_GCP_SERVICE_ACCOUNT_FILE>"
 abm_cluster_id   = "anthos-gce-cluster"
 machine_type     = "n1-standard-8"
-hostname_prefix  = "abm"
-instance_names   = {
-  "admin" : ["ws"]
-  "controlplane" : ["cp1", "cp2", "cp3"]
-  "worker" : ["w1", "w2"]
+instance_count   = {
+  "controlplane" : 3
+  "worker" : 2
 }

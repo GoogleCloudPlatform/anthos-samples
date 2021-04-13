@@ -29,12 +29,6 @@ variable "username" {
   default     = "tfadmin"
 }
 
-variable "hostname_prefix" {
-  description = "Unique string to prefix the hostnames of the all the Compute Enfine VMs created"
-  type        = string
-  default     = "abm"
-}
-
 variable "min_cpu_platform" {
   description = "Minimum CPU architecture upon which the Compute Engine VMs are to be scheduled"
   type        = string
@@ -131,18 +125,15 @@ variable "abm_cluster_id" {
 
 # [START anthos_bm_node_prefix]
 ###################################################################################
-# List of names to be given to the Compute Engine VMs that are provisioned. These
-# names will be prefixed by the string provided for the 'hostname_prefix' variable.
-# The number of nodes created can be controlled by adding/removing instance_names
-# to/from this list
+# The recommended instance count for High Availability (HA) is 3 for Control plane
+# and 2 for Worker nodes.
 ###################################################################################
-variable "instance_names" {
-  description = "List of names to be given to the Compute Engine VMs that are provisioned."
+variable "instance_count" {
+  description = "Number of instances to provision per layer (Control plane and Worker nodes) of the cluster"
   type        = map(any)
   default = {
-    "admin" : ["ws"]
-    "controlplane" : ["cp1", "cp2", "cp3"]
-    "worker" : ["w1", "w2"]
+    "controlplane" : 3
+    "worker" : 2
   }
 }
 # [END anthos_bm_node_prefix]
