@@ -65,8 +65,8 @@ function __setup_vxlan__ () {
 
   ip link set up dev vxlan0
   __check_exit_status__ $? \
-    "[+] Successfully associated ip address $VXLAN_IP_ADDRESS/24 to the new vxlan network interface" \
-    "[-] Failed to associate ip address $VXLAN_IP_ADDRESS/24 to the new vxlan network interface. Check for failures on [ip addr add] in ~/$LOG_FILE"
+    "[+] Successfully started the new network device vxlan0" \
+    "[-] Failed to start the new network device vxlan0. Check for failures on [ip link set up] in ~/$LOG_FILE"
 
   __print_separator__
 }
