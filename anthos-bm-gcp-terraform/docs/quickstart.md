@@ -53,7 +53,8 @@ terraform apply
 # ------------------------------------------------------------------------------
 # You must be SSH'ed into the admin host abm-ws-001 as tfadmin user now
 # ------------------------------------------------------------------------------
-> sudo bmctl create config -c anthos-gce-cluster && \
+> sudo ./preflights.sh && \
+  sudo bmctl create config -c anthos-gce-cluster && \
   sudo cp ~/anthos-gce-cluster.yaml bmctl-workspace/anthos-gce-cluster && \
   sudo bmctl create cluster -c anthos-gce-cluster
 
