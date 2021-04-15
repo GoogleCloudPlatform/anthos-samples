@@ -48,10 +48,10 @@ terraform apply
 ##   (Note that the 1st command should have you SSH'ed into the admin host)   ##
 ################################################################################
 
-> gcloud compute ssh tfadmin@abm-ws-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
+> gcloud compute ssh tfadmin@abm-ws0-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
 
 # ------------------------------------------------------------------------------
-# You must be SSH'ed into the admin host abm-ws-001 as tfadmin user now
+# You must be SSH'ed into the admin host abm-ws0-001 as tfadmin user now
 # ------------------------------------------------------------------------------
 > sudo ./preflights.sh && \
   sudo bmctl create config -c anthos-gce-cluster && \
@@ -63,6 +63,8 @@ terraform apply
 ---
 
 Running the commands from the Terraform output starts setting up a new Anthos cluster. This includes doing preflight checks on the nodes, creating the admin and user clusters and also registering the cluster with Google Cloud using [Connect](https://cloud.google.com/anthos/multicluster-management/connect/overview). The whole setup can take up to 15 minutes. You see the following output as the cluster is being created:
+
+> **Note:** The logs for checks on node initialization has been left out. They appear before the following logs from Anthos setup
 
 ```sh
 Created config: bmctl-workspace/anthos-gce-cluster/anthos-gce-cluster.yaml
@@ -99,7 +101,7 @@ You can find your cluster's `kubeconfig` file on the admin machine in the `bmctl
 1. SSH into the admin host _(if you are not already inside it)_:
 ```sh
 # You can copy the command from the output of Terraform run from the previous step
-gcloud compute ssh tfadmin@abm-ws-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
+gcloud compute ssh tfadmin@abm-ws0-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
 ```
 
 2. Set the `KUBECONFIG` environment variable with the path to the cluster's configuration file to run `kubectl` commands on the cluster.
@@ -128,14 +130,14 @@ The [Logging in to a cluster from the Cloud Console](https://cloud.google.com/an
 ---
 ### Cleanup
 
-You can cleanup the cluster setup in two ways,
+You can cleanup the cluster setup in two ways:
 
-#### Using Terraform
+#### 1. Using Terraform
 
 - First deregister the cluster before deleting all the resources created by Terraform
   ```sh
   # SSH into the admin host
-  gcloud compute ssh tfadmin@abm-ws-001 --project=PROJECT_ID --zone=GOOGLE_CLOUD_ZONE
+  gcloud compute ssh tfadmin@abm-ws0-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
 
   # Reset the cluster
   export CLUSTER_ID=anthos-gce-cluster
@@ -152,5 +154,5 @@ You can cleanup the cluster setup in two ways,
   terraform destroy
   ```
 
-#### Delete the entire Google Cloud project
+#### 2. Delete the entire Google Cloud project
 - Directly [delete the project](https://console.cloud.google.com/cloud-resource-manager) from the console
