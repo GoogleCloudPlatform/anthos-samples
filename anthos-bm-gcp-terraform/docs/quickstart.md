@@ -151,7 +151,7 @@ You can cleanup the cluster setup in two ways:
 - Then, use Terraform to delete all resources.
   ```sh
   # to be run from the root directory of this repo
-  terraform destroy
+  terraform destroy --auto-approve
   ```
 
 #### 2. Delete the entire Google Cloud project
