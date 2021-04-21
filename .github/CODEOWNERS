@@ -5,4 +5,4 @@
 # https://help.github.com/en/github/creating-cloning-and-archiving-repositories/about-code-owners#codeowners-syntax
 
 # The @googleapis/cicd is the default owner for changes in this repo
-*                       @googleapis/cicd
+*                       @googleapis/cdpe-devplat
