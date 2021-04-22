@@ -1,9 +1,10 @@
-module external_ip_addresses {
+module "external_ip_addresses" {
   source   = "../external-ip"
+  region   = var.region
   ip_names = var.vm_names
 }
 
-module compute_instance {
+module "compute_instance" {
   source            = "terraform-google-modules/vm/google//modules/compute_instance"
   instance_template = var.instance_template
   region            = var.region
