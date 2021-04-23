@@ -11,10 +11,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCreatedExternalIps(t *testing.T) {
+func TestExternalIps(t *testing.T) {
 	t.Parallel()
 
-	exampleDir := test_structure.CopyTerraformFolderToTemp(t, "../", "modules/external-ip")
+	moduleDir := test_structure.CopyTerraformFolderToTemp(t, "../", "modules/external-ip")
 	projectId := gcp.GetGoogleProjectIDFromEnvVar(t) // from GOOGLE_CLOUD_PROJECT
 	region := gcp.GetRandomRegion(t, projectId, nil, nil)
 
@@ -25,7 +25,7 @@ func TestCreatedExternalIps(t *testing.T) {
 		randomVmHostNameOne, randomVmHostNameTwo, randomVmHostNameThree}
 
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
-		TerraformDir: exampleDir,
+		TerraformDir: moduleDir,
 		// Variables to pass to our Terraform code using -var options
 		Vars: map[string]interface{}{
 			"region":   region,
@@ -40,6 +40,9 @@ func TestCreatedExternalIps(t *testing.T) {
 	ipAddressDetails := terraform.OutputMapOfObjects(t, terraformOptions, "ips")
 
 	// validate that the output contians an entry per name in expectedIpNames
+	errMsg := fmt.Sprintf("Output from external-ip module should have %d IP names but only got %d", len(expectedIpNames), len(ipAddressDetails))
+	assert.True(t, len(expectedIpNames) == len(ipAddressDetails), errMsg)
+
 	for _, ip := range expectedIpNames {
 		errMsg := fmt.Sprintf("Output from external-ip module should have IP name: %s", ip)
 		assert.Contains(t, ipAddressDetails, ip, errMsg)
