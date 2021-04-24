@@ -12,6 +12,6 @@ cleanup.sh
 .ssh-*
 .env*
 .temp/
-plan.tfplan
+*.tfplan
 plan.json
 .vscode

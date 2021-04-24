@@ -1,42 +1,42 @@
-package test
+package module
 
 import (
 	"context"
 	"fmt"
-	"log"
 	"testing"
 
+	"github.com/GoogleCloudPlatform/anthos-samples/anthos-bm-gcp-terraform/util"
 	"github.com/gruntwork-io/terratest/modules/gcp"
+	"github.com/gruntwork-io/terratest/modules/terraform"
+	testStructure "github.com/gruntwork-io/terratest/modules/test-structure"
 	compute "google.golang.org/api/compute/v1"
-	"google.golang.org/api/googleapi"
 )
 
-func TestGcpInstance(t *testing.T) {
+func TestModule_VmModule(t *testing.T) {
 	t.Parallel()
 
-	// moduleDir := test_structure.CopyTerraformFolderToTemp(t, "../", "modules/vm")
+	moduleDir := testStructure.CopyTerraformFolderToTemp(t, "../../", "modules/vm")
 	projectId := gcp.GetGoogleProjectIDFromEnvVar(t) // from GOOGLE_CLOUD_PROJECT
 	selfLinkPrefix := "https://www.googleapis.com/compute/v1/projects"
-
-	// region := gcp.GetRandomRegion(t, projectId, nil, nil)
+	region := gcp.GetRandomRegion(t, projectId, nil, nil)
 	// zone := gcp.GetRandomZoneForRegion(t, projectId, region)
 
 	network := "default"
 	sourceImageProject := "ubuntu-os-cloud"
 	sourceImageFamily := "ubuntu-2004-focal-v20210415"
 
-	// randomVmHostNameOne := gcp.RandomValidGcpName()
-	// randomVmHostNameTwo := gcp.RandomValidGcpName()
-	// randomVmHostNameThree := gcp.RandomValidGcpName()
-	// vmNames := []string{
-	// 	randomVmHostNameOne, randomVmHostNameTwo, randomVmHostNameThree}
+	randomVmHostNameOne := gcp.RandomValidGcpName()
+	randomVmHostNameTwo := gcp.RandomValidGcpName()
+	randomVmHostNameThree := gcp.RandomValidGcpName()
+	vmNames := []string{
+		randomVmHostNameOne, randomVmHostNameTwo, randomVmHostNameThree}
 
 	// create the go client SDK to create an instance template since terratest
 	// doesn't have support for creating one
 	// credentials for the context are looked up via GOOGLE_APPLICATION_CREDENTIALS
 	ctx := context.Background()
 	computeService, err := compute.NewService(ctx)
-	LogError(err, "Failed to create new compute service for instance template creation")
+	util.LogError(err, "Failed to create new compute service for instance template creation")
 
 	instanceTemplateService := compute.NewInstanceTemplatesService(computeService)
 	testInstanceTemplate := gcp.RandomValidGcpName()
@@ -68,36 +68,28 @@ func TestGcpInstance(t *testing.T) {
 		},
 	})
 	_, insertErr := insertInsertTemplateCall.Do()
-	LogError(insertErr, fmt.Sprintf("Failed to create new instance template with name %s", testInstanceTemplate))
+	util.LogError(insertErr, fmt.Sprintf("Failed to create new instance template with name %s", testInstanceTemplate))
 	instanceTemplatesDeleteCall := instanceTemplateService.Delete(projectId, testInstanceTemplate)
-	defer deleteResource(instanceTemplatesDeleteCall, fmt.Sprintf("Failed to delete test instance template with name %s", testInstanceTemplate))
+	defer util.DeleteResource(instanceTemplatesDeleteCall, fmt.Sprintf("Failed to delete test instance template with name %s", testInstanceTemplate))
 
-	// terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
-	// 	TerraformDir: moduleDir,
-	// 	// Variables to pass to our Terraform code using -var options
-	// 	Vars: map[string]interface{}{
-	// 		"region":            region,
-	// 		"network":           network,
-	// 		"vm_names":          vmNames,
-	// 		"instance_template": template,
-	// 	},
-	// })
-	// defer terraform.Destroy(t, terraformOptions)
+	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
+		TerraformDir: moduleDir,
+		// Variables to pass to our Terraform code using -var options
+		Vars: map[string]interface{}{
+			"region":            region,
+			"network":           network,
+			"vm_names":          vmNames,
+			"instance_template": testInstanceTemplate,
+		},
+	})
+	defer terraform.Destroy(t, terraformOptions)
 
-}
+	// run `terraform init` and `terraform apply`
+	terraform.InitAndApply(t, terraformOptions)
 
-type GcpOperation interface {
-	Do(opts ...googleapi.CallOption) (*compute.Operation, error)
-}
-
-func deleteResource(fn GcpOperation, errMsg string) {
-	_, err := fn.Do()
-	LogError(err, errMsg)
-}
-
-func LogError(err error, errMsg string) {
-	if err != nil {
-		log.Print(fmt.Sprintf("%s:\n\t", errMsg))
-		log.Fatal(err)
+	// Run `terraform output` to get the value of 'ips' output
+	vmInfoList := terraform.OutputList(t, terraformOptions, "vm_info")
+	for _, vm := range vmInfoList {
+		fmt.Printf(vm)
 	}
 }

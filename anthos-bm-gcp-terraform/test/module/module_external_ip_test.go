@@ -1,4 +1,4 @@
-package test
+package module
 
 import (
 	"fmt"
@@ -7,14 +7,14 @@ import (
 
 	"github.com/gruntwork-io/terratest/modules/gcp"
 	"github.com/gruntwork-io/terratest/modules/terraform"
-	test_structure "github.com/gruntwork-io/terratest/modules/test-structure"
+	testStructure "github.com/gruntwork-io/terratest/modules/test-structure"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestExternalIps(t *testing.T) {
+func TestModule_ExternalIpsModule(t *testing.T) {
 	t.Parallel()
 
-	moduleDir := test_structure.CopyTerraformFolderToTemp(t, "../", "modules/external-ip")
+	moduleDir := testStructure.CopyTerraformFolderToTemp(t, "../../", "modules/external-ip")
 	projectId := gcp.GetGoogleProjectIDFromEnvVar(t) // from GOOGLE_CLOUD_PROJECT
 	region := gcp.GetRandomRegion(t, projectId, nil, nil)
 
