@@ -36,13 +36,13 @@ variable "publicIp" {
 variable "init_script" {
   description = "Path to the initilization script that is to be run on the target VM"
   type        = string
-  default     = "../../resources/init.sh"
+  default     = "${path.module}/../../resources/init.sh"
 }
 
 variable "preflight_script" {
   description = "Path to the preflight check script that validates if the initialization is complete"
   type        = string
-  default     = "../../resources/preflights.sh"
+  default     = "${path.module}/../../resources/preflights.sh"
 }
 
 variable "init_logs" {
@@ -59,17 +59,17 @@ variable "init_vars_file" {
 variable "cluster_yaml_path" {
   description = "Path to the YAML configuration file describing the Anthos cluster"
   type        = string
-  default     = "../../resources/.anthos-gce-cluster.yaml"
+  default     = "${path.module}/../../resources/.anthos-gce-cluster.yaml"
 }
 
 variable "pub_key_path_template" {
   description = "Template denoting the path where the public key is to be stored"
   type        = string
-  default     = "../../resources/.ssh-key-%s.pub"
+  default     = "${path.module}/../../resources/.ssh-key-%s.pub"
 }
 
 variable "priv_key_path_template" {
   description = "Template denoting the path where the private key is to be stored"
   type        = string
-  default     = "../../resources/.ssh-key-%s.priv"
+  default     = "${path.module}/../../resources/.ssh-key-%s.priv"
 }

@@ -1,5 +1,5 @@
 locals {
-  ssh_pub_key_template_file = "${path.root}/resources/ssh-keys.tpl"
+  ssh_pub_key_template_file = "${path.module}/../../resources/ssh-keys.tpl"
   ssh_pub_key_file          = format(var.pub_key_path_template, var.hostname)
   ssh_private_key_file      = format(var.priv_key_path_template, var.hostname)
   cluster_yaml_file_name    = trimprefix(basename(var.cluster_yaml_path), ".")

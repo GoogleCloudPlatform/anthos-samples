@@ -26,7 +26,8 @@ func LogError(err error, errMsg string) {
 
 func ExitIf(varToCheck bool, expectedState bool) {
 	if varToCheck == expectedState {
-		os.Exit(1)
+		var err error
+		LogError(err, "Exiting tests since failute condition met.")
 	}
 }
 

@@ -176,49 +176,12 @@ func TestUnit_VmModule(goTester *testing.T) {
 			goTester.Fail()
 		}
 	}
-
 	// verify how many child modules of type google_compute_instance_from_template were present
 	assert.Len(
 		goTester,
 		expectedVmNames,
 		numberOfComputeInstanceModules,
 		"Resource count for module type google_compute_instance_from_template does not match in plan",
-	)
-}
-
-func validateExternalIpInSubModule(
-	goTester *testing.T, externalIpResource *VMResource,
-	idx int, ipIdx int, expectedIpNames *[]string, region string) {
-
-	assert.Equal(
-		goTester,
-		"google_compute_address",
-		externalIpResource.Type,
-		fmt.Sprintf("Invalid type for planned_values.root_module.child_modules[%d].resources[%d].type", idx, ipIdx),
-	)
-	assert.Equal(
-		goTester,
-		"external_ip_address",
-		externalIpResource.Name,
-		fmt.Sprintf("Invalid resource name for planned_values.root_module.child_modules[%d].resources[%d].name", idx, ipIdx),
-	)
-	assert.Equal(
-		goTester,
-		"registry.terraform.io/hashicorp/google",
-		externalIpResource.Provider,
-		fmt.Sprintf("Invalid provider for planned_values.root_module.child_modules[%d].resources[%d].provider", idx, ipIdx),
-	)
-	assert.Contains(
-		goTester,
-		*expectedIpNames,
-		externalIpResource.Values.Name,
-		fmt.Sprintf("Invalid resource instance name for planned_values.root_module.child_modules[%d].resources[%d].values.name", idx, ipIdx),
-	)
-	assert.Equal(
-		goTester,
-		region,
-		externalIpResource.Values.Region,
-		fmt.Sprintf("Invalid resource region planned_values.root_module.child_modules[%d].resources[%d].values.region", idx, ipIdx),
 	)
 }
 
@@ -276,5 +239,41 @@ func validateComputeInstanceSubModule(
 		instanceTemplate,
 		childResource.Values.InstanceTemplate,
 		fmt.Sprintf("Invalid instance template for planned_values.root_module.child_modules[%d].resources[0].values.source_instance_template", idx),
+	)
+}
+
+func validateExternalIpInSubModule(
+	goTester *testing.T, externalIpResource *VMResource,
+	idx int, ipIdx int, expectedIpNames *[]string, region string) {
+
+	assert.Equal(
+		goTester,
+		"google_compute_address",
+		externalIpResource.Type,
+		fmt.Sprintf("Invalid type for planned_values.root_module.child_modules[%d].resources[%d].type", idx, ipIdx),
+	)
+	assert.Equal(
+		goTester,
+		"external_ip_address",
+		externalIpResource.Name,
+		fmt.Sprintf("Invalid resource name for planned_values.root_module.child_modules[%d].resources[%d].name", idx, ipIdx),
+	)
+	assert.Equal(
+		goTester,
+		"registry.terraform.io/hashicorp/google",
+		externalIpResource.Provider,
+		fmt.Sprintf("Invalid provider for planned_values.root_module.child_modules[%d].resources[%d].provider", idx, ipIdx),
+	)
+	assert.Contains(
+		goTester,
+		*expectedIpNames,
+		externalIpResource.Values.Name,
+		fmt.Sprintf("Invalid resource instance name for planned_values.root_module.child_modules[%d].resources[%d].values.name", idx, ipIdx),
+	)
+	assert.Equal(
+		goTester,
+		region,
+		externalIpResource.Values.Region,
+		fmt.Sprintf("Invalid resource region planned_values.root_module.child_modules[%d].resources[%d].values.region", idx, ipIdx),
 	)
 }
