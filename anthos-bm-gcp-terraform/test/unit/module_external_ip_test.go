@@ -46,7 +46,7 @@ func TestUnit_ExternalIpsModule(goTester *testing.T) {
 	tfPlanJSON, err := terraform.ShowE(goTester, tfOptions)
 	util.LogError(err, fmt.Sprintf("Failed to parse the plan file %s into JSON format", tfPlanOutput))
 
-	var externalIpPlan ExternalIpPlan
+	var externalIpPlan util.ExternalIpPlan
 	err = json.Unmarshal([]byte(tfPlanJSON), &externalIpPlan)
 	util.LogError(err, "Failed to parse the JSON plan into the ExternalIpPlan struct in unit/module_external_ip.go")
 

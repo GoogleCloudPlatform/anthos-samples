@@ -22,13 +22,13 @@ func TestUnit_InitModule(goTester *testing.T) {
 	username := "test_username"
 	hostname := "test_hostname"
 	ipAddress := "10.10.10.01"
-	init_script := "test_instance_template"
-	preflight_script := "test_instance_template"
-	init_logs := "test_instance_template"
-	init_vars_file := "test_instance_template"
-	// cluster_yaml_path := "test_instance_template"
-	// pub_key_path_template := "test_instance_template"
-	// priv_key_path_template := "test_instance_template"
+	init_script := "../test/../path/../init_script.sh"
+	preflight_script := "../test/../path/../preflight_script.sh"
+	init_logs := "test_init_log_file.log"
+	init_vars_file := "../test/../path/../init_vars_file.var"
+	cluster_yaml_path := "../test/../path/../test_cluster.yaml"
+	pub_key_path_template := "../test/../path/../test_pub_key-%s.pub"
+	priv_key_path_template := "../test/../path/../test_pub_key-%s.priv"
 
 	tfPlanOutput := "terraform_test.tfplan"
 	tfPlanOutputArg := fmt.Sprintf("-out=%s", tfPlanOutput)
@@ -46,9 +46,9 @@ func TestUnit_InitModule(goTester *testing.T) {
 			"preflight_script":       preflight_script,
 			"init_logs":              init_logs,
 			"init_vars_file":         init_vars_file,
-			// "cluster_yaml_path":      cluster_yaml_path,
-			// "pub_key_path_template":  pub_key_path_template,
-			// "priv_key_path_template": priv_key_path_template,
+			"cluster_yaml_path":      cluster_yaml_path,
+			"pub_key_path_template":  pub_key_path_template,
+			"priv_key_path_template": priv_key_path_template,
 		},
 		PlanFilePath: tfPlanOutput,
 	})
@@ -68,8 +68,17 @@ func TestUnit_InitModule(goTester *testing.T) {
 	 * Write the json to a file using the util.WriteToFile() method to easily debug
 	 * util.WriteToFile(tfPlanJSON, "../../plan.json")
 	 */
-	var vmInstancePlan VMInstancePlan
-	err = json.Unmarshal([]byte(tfPlanJSON), &vmInstancePlan)
+	var initModulePlan util.InitModulePlan
+	err = json.Unmarshal([]byte(tfPlanJSON), &initModulePlan)
 	util.LogError(err, "Failed to parse the JSON plan into the ExternalIpPlan struct in unit/module_external_ip.go")
-	util.WriteToFile(tfPlanJSON, "../../plan.json")
+
+	// TODO: test variables count and names
+	// TODO: test variable format (IP address)
+	// TODO: test default variables
+	// TODO: test locals variables and there validity
+	// TODO: test resources that are planned
+
+
+
+
 }

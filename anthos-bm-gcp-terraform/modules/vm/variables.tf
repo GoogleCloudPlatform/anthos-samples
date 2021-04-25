@@ -13,7 +13,6 @@ variable "network" {
 variable "vm_names" {
   description = "List of names to be given to the Compute Engine VMs that are provisioned"
   type        = list(any)
-  default     = ["ws"]
 }
 
 variable "instance_template" {

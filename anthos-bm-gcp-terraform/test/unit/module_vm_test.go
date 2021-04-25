@@ -56,9 +56,12 @@ func TestUnit_VmModule(goTester *testing.T) {
 	 * Write the json to a file using the util.WriteToFile() method to easily debug
 	 * util.WriteToFile(tfPlanJSON, "../../plan.json")
 	 */
-	var vmInstancePlan VMInstancePlan
+	var vmInstancePlan util.VMInstancePlan
 	err = json.Unmarshal([]byte(tfPlanJSON), &vmInstancePlan)
 	util.LogError(err, "Failed to parse the JSON plan into the ExternalIpPlan struct in unit/module_external_ip.go")
+
+	// TODO: test default variables
+	// TODO: test output variables
 
 	// verify plan has region input variable
 	hasVar := assert.NotNil(
@@ -137,13 +140,13 @@ func TestUnit_VmModule(goTester *testing.T) {
 	// verify the number of resources planned
 	assert.Len(
 		goTester,
-		vmInstancePlan.PlannedValues.RootModule.VMChildModules,
+		vmInstancePlan.PlannedValues.RootModule.ChildModules,
 		len(expectedVmNames)+1, // +1 for the external Ip resource
 		"Resource count does not match in plan: google_compute_address.",
 	)
 
 	numberOfComputeInstanceModules := 0
-	for idx, childModule := range vmInstancePlan.PlannedValues.RootModule.VMChildModules {
+	for idx, childModule := range vmInstancePlan.PlannedValues.RootModule.ChildModules {
 		moduleAddress := childModule.ModuleAddress
 		if strings.HasPrefix(moduleAddress, "module.compute_instance") {
 			numberOfComputeInstanceModules++
@@ -186,7 +189,7 @@ func TestUnit_VmModule(goTester *testing.T) {
 }
 
 func validateComputeInstanceSubModule(
-	goTester *testing.T, childModule *VMChildModule,
+	goTester *testing.T, childModule *util.TFModule,
 	idx int, expectedVmNames *[]string,
 	instanceTemplate string, network string, region string) {
 	lenMatch := assert.Len(
@@ -243,7 +246,7 @@ func validateComputeInstanceSubModule(
 }
 
 func validateExternalIpInSubModule(
-	goTester *testing.T, externalIpResource *VMResource,
+	goTester *testing.T, externalIpResource *util.TFResource,
 	idx int, ipIdx int, expectedIpNames *[]string, region string) {
 
 	assert.Equal(
