@@ -50,13 +50,19 @@ func TestUnit_ExternalIpsModule(goTester *testing.T) {
 	err = json.Unmarshal([]byte(tfPlanJSON), &externalIpPlan)
 	util.LogError(err, "Failed to parse the JSON plan into the ExternalIpPlan struct in unit/module_external_ip.go")
 
+	/**
+	 * Pro tip:
+	 * Write the json to a file using the util.WriteToFile() method to easily debug
+	 * util.WriteToFile(tfPlanJSON, "../../plan.json")
+	 */
+
 	// verify plan has ip_names input variable
 	hasVar := assert.NotNil(
 		goTester,
 		externalIpPlan.Variables.IPNames,
 		"Variable not found in plan: ip_names",
 	)
-	util.ExitIf(hasVar, true)
+	util.ExitIf(hasVar, false)
 
 	// verify plan has region input variable
 	hasVar = assert.NotNil(
@@ -64,7 +70,7 @@ func TestUnit_ExternalIpsModule(goTester *testing.T) {
 		externalIpPlan.Variables.Region,
 		"Variable not found in plan: region",
 	)
-	util.ExitIf(hasVar, true)
+	util.ExitIf(hasVar, false)
 
 	// verify size of input variable ip_names array in plan
 	assert.Len(
@@ -98,8 +104,9 @@ func TestUnit_ExternalIpsModule(goTester *testing.T) {
 		externalIpPlan.PlannedValues.Outputs.IPS,
 		"Variable not found in plan: region",
 	)
-	util.ExitIf(hasVar, true)
+	util.ExitIf(hasVar, false)
 
+	// verify the number of resources planned
 	assert.Len(
 		goTester,
 		externalIpPlan.PlannedValues.RootModule.Resources,
@@ -107,6 +114,7 @@ func TestUnit_ExternalIpsModule(goTester *testing.T) {
 		"Resource count does not match in plan: google_compute_address.",
 	)
 
+	// verify attributes of each planned resource
 	for _, resource := range externalIpPlan.PlannedValues.RootModule.Resources {
 		assert.Equal(
 			goTester,

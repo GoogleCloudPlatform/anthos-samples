@@ -25,7 +25,7 @@ func LogError(err error, errMsg string) {
 }
 
 func ExitIf(varToCheck bool, expectedState bool) {
-	if varToCheck != expectedState {
+	if varToCheck == expectedState {
 		os.Exit(1)
 	}
 }

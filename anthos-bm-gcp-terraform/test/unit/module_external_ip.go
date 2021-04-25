@@ -1,16 +1,16 @@
 package unit
 
 type ExternalIpPlan struct {
-	Variables     Variables     `json:"variables"`
-	PlannedValues PlannedValues `json:"planned_values"`
+	Variables     IPVariables     `json:"variables"`
+	PlannedValues IPPlannedValues `json:"planned_values"`
 }
 
-type Variables struct {
-	IPNames *IPNames `json:"ip_names"`
-	Region  *Region  `json:"region"`
+type IPVariables struct {
+	IPNames *IPNames  `json:"ip_names"`
+	Region  *IPRegion `json:"region"`
 }
 
-type Region struct {
+type IPRegion struct {
 	Value string `json:"value"`
 }
 
@@ -18,12 +18,12 @@ type IPNames struct {
 	Value []string `json:"value"`
 }
 
-type PlannedValues struct {
-	Outputs    Outputs    `json:"outputs"`
-	RootModule RootModule `json:"root_module"`
+type IPPlannedValues struct {
+	Outputs    IPOutputs    `json:"outputs"`
+	RootModule IPRootModule `json:"root_module"`
 }
 
-type Outputs struct {
+type IPOutputs struct {
 	IPS *IPS `json:"ips"`
 }
 
@@ -31,19 +31,19 @@ type IPS struct {
 	Sensitive bool `json:"sensitive"`
 }
 
-type RootModule struct {
-	Resources []Resource `json:"resources"`
+type IPRootModule struct {
+	Resources []IPResource `json:"resources"`
 }
 
-type Resource struct {
-	Type     string `json:"type"`
-	Name     string `json:"name"`
-	UniqueId string `json:"index"`
-	Provider string `json:"provider_name"`
-	Values   Values `json:"values"`
+type IPResource struct {
+	Type     string   `json:"type"`
+	Name     string   `json:"name"`
+	UniqueId string   `json:"index"`
+	Provider string   `json:"provider_name"`
+	Values   IPValues `json:"values"`
 }
 
-type Values struct {
+type IPValues struct {
 	Name        string `json:"name"`
 	Region      string `json:"region"`
 	AddressType string `json:"address_type"`
