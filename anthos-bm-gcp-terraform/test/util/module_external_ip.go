@@ -14,7 +14,7 @@
 
 package util
 
-type ExternalIpPlan struct {
+type ExternalIPPlan struct {
 	Variables     IPVariables     `json:"variables"`
 	PlannedValues IPPlannedValues `json:"planned_values"`
 }

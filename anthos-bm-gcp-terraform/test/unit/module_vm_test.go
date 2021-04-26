@@ -31,15 +31,15 @@ func TestUnit_VmModule(goTester *testing.T) {
 	goTester.Parallel()
 
 	moduleDir := testStructure.CopyTerraformFolderToTemp(goTester, "../../", "modules/vm")
-	projectId := gcp.GetGoogleProjectIDFromEnvVar(goTester) // from GOOGLE_CLOUD_PROJECT
-	region := gcp.GetRandomRegion(goTester, projectId, nil, nil)
+	projectID := gcp.GetGoogleProjectIDFromEnvVar(goTester) // from GOOGLE_CLOUD_PROJECT
+	region := gcp.GetRandomRegion(goTester, projectID, nil, nil)
 	network := "default"
 	instanceTemplate := "test_instance_template"
-	randomVmHostNameOne := gcp.RandomValidGcpName()
-	randomVmHostNameTwo := gcp.RandomValidGcpName()
-	randomVmHostNameThree := gcp.RandomValidGcpName()
-	expectedVmNames := []string{
-		randomVmHostNameOne, randomVmHostNameTwo, randomVmHostNameThree}
+	randomVMHostNameOne := gcp.RandomValidGcpName()
+	randomVMHostNameTwo := gcp.RandomValidGcpName()
+	randomVMHostNameThree := gcp.RandomValidGcpName()
+	expectedVMNames := []string{
+		randomVMHostNameOne, randomVMHostNameTwo, randomVMHostNameThree}
 
 	tfPlanOutput := "terraform_test.tfplan"
 	tfPlanOutputArg := fmt.Sprintf("-out=%s", tfPlanOutput)
@@ -49,7 +49,7 @@ func TestUnit_VmModule(goTester *testing.T) {
 		Vars: map[string]interface{}{
 			"region":            region,
 			"network":           network,
-			"vm_names":          expectedVmNames,
+			"vm_names":          expectedVMNames,
 			"instance_template": instanceTemplate,
 		},
 		PlanFilePath: tfPlanOutput,
@@ -137,7 +137,7 @@ func TestUnit_VmModule(goTester *testing.T) {
 	assert.Len(
 		goTester,
 		vmInstancePlan.Variables.Names.Value,
-		len(expectedVmNames),
+		len(expectedVMNames),
 		"Variable count does not match in plan: vm_names.",
 	)
 
@@ -145,7 +145,7 @@ func TestUnit_VmModule(goTester *testing.T) {
 	for _, vmName := range vmInstancePlan.Variables.Names.Value {
 		assert.Contains(
 			goTester,
-			expectedVmNames,
+			expectedVMNames,
 			vmName,
 			"Variable does not match in plan: vm_names.",
 		)
@@ -155,7 +155,7 @@ func TestUnit_VmModule(goTester *testing.T) {
 	assert.Len(
 		goTester,
 		vmInstancePlan.PlannedValues.RootModule.ChildModules,
-		len(expectedVmNames)+1, // +1 for the external Ip resource
+		len(expectedVMNames)+1, // +1 for the external Ip resource
 		"Resource count does not match in plan: google_compute_address.",
 	)
 
@@ -166,19 +166,19 @@ func TestUnit_VmModule(goTester *testing.T) {
 			numberOfComputeInstanceModules++
 			validateComputeInstanceSubModule(
 				goTester, &childModule, idx,
-				&expectedVmNames, instanceTemplate, network, region)
+				&expectedVMNames, instanceTemplate, network, region)
 
 		} else if strings.HasPrefix(moduleAddress, "module.external_ip_addresses") {
 			assert.Len(
 				goTester,
 				childModule.Resources,
-				len(expectedVmNames),
+				len(expectedVMNames),
 				fmt.Sprintf("Invalid count for planned_values.root_module.child_modules[%d].resources", idx),
 			)
 
-			for ipIdx, externalIpResource := range childModule.Resources {
-				validateExternalIpInSubModule(
-					goTester, &externalIpResource, idx, ipIdx, &expectedVmNames, region)
+			for ipIdx, externalIPResource := range childModule.Resources {
+				validateExternalIPInSubModule(
+					goTester, &externalIPResource, idx, ipIdx, &expectedVMNames, region)
 			}
 		} else {
 			// child module should be either compute_instance or external_ip_addresses
@@ -196,7 +196,7 @@ func TestUnit_VmModule(goTester *testing.T) {
 	// verify how many child modules of type google_compute_instance_from_template were present
 	assert.Len(
 		goTester,
-		expectedVmNames,
+		expectedVMNames,
 		numberOfComputeInstanceModules,
 		"Resource count for module type google_compute_instance_from_template does not match in plan",
 	)
@@ -204,7 +204,7 @@ func TestUnit_VmModule(goTester *testing.T) {
 
 func validateComputeInstanceSubModule(
 	goTester *testing.T, childModule *util.TFModule,
-	idx int, expectedVmNames *[]string,
+	idx int, expectedVMNames *[]string,
 	instanceTemplate string, network string, region string) {
 	lenMatch := assert.Len(
 		goTester,
@@ -235,7 +235,7 @@ func validateComputeInstanceSubModule(
 	)
 	assert.Contains(
 		goTester,
-		*expectedVmNames,
+		*expectedVMNames,
 		// vm names have -001 appended to them by module google_compute_instance_from_template
 		strings.Replace(childResource.Values.Name, "-001", "", 1),
 		fmt.Sprintf("Invalid resource instance name for planned_values.root_module.child_modules[%d].resources[0].values.name", idx),
@@ -259,38 +259,38 @@ func validateComputeInstanceSubModule(
 	)
 }
 
-func validateExternalIpInSubModule(
-	goTester *testing.T, externalIpResource *util.TFResource,
-	idx int, ipIdx int, expectedIpNames *[]string, region string) {
+func validateExternalIPInSubModule(
+	goTester *testing.T, externalIPResource *util.TFResource,
+	idx int, ipIdx int, expectedIPNames *[]string, region string) {
 
 	assert.Equal(
 		goTester,
 		"google_compute_address",
-		externalIpResource.Type,
+		externalIPResource.Type,
 		fmt.Sprintf("Invalid type for planned_values.root_module.child_modules[%d].resources[%d].type", idx, ipIdx),
 	)
 	assert.Equal(
 		goTester,
 		"external_ip_address",
-		externalIpResource.Name,
+		externalIPResource.Name,
 		fmt.Sprintf("Invalid resource name for planned_values.root_module.child_modules[%d].resources[%d].name", idx, ipIdx),
 	)
 	assert.Equal(
 		goTester,
 		"registry.terraform.io/hashicorp/google",
-		externalIpResource.Provider,
+		externalIPResource.Provider,
 		fmt.Sprintf("Invalid provider for planned_values.root_module.child_modules[%d].resources[%d].provider", idx, ipIdx),
 	)
 	assert.Contains(
 		goTester,
-		*expectedIpNames,
-		externalIpResource.Values.Name,
+		*expectedIPNames,
+		externalIPResource.Values.Name,
 		fmt.Sprintf("Invalid resource instance name for planned_values.root_module.child_modules[%d].resources[%d].values.name", idx, ipIdx),
 	)
 	assert.Equal(
 		goTester,
 		region,
-		externalIpResource.Values.Region,
+		externalIPResource.Values.Region,
 		fmt.Sprintf("Invalid resource region planned_values.root_module.child_modules[%d].resources[%d].values.region", idx, ipIdx),
 	)
 }

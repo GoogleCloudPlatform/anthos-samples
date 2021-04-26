@@ -20,8 +20,8 @@ type InitModulePlan struct {
 }
 
 type InitVariables struct {
-	ProjectId              *InitVariable `json:"project_id"`
-	PublicIp               *InitVariable `json:"publicIp"`
+	ProjectID              *InitVariable `json:"project_id"`
+	PublicIP               *InitVariable `json:"publicIp"`
 	Zone                   *InitVariable `json:"zone"`
 	Username               *InitVariable `json:"username"`
 	Hostname               *InitVariable `json:"hostname"`

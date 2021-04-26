@@ -30,13 +30,13 @@ func TestUnit_ExternalIpsModule(goTester *testing.T) {
 	goTester.Parallel()
 
 	moduleDir := testStructure.CopyTerraformFolderToTemp(goTester, "../../", "modules/external-ip")
-	projectId := gcp.GetGoogleProjectIDFromEnvVar(goTester) // from GOOGLE_CLOUD_PROJECT
-	region := gcp.GetRandomRegion(goTester, projectId, nil, nil)
-	randomVmHostNameOne := gcp.RandomValidGcpName()
-	randomVmHostNameTwo := gcp.RandomValidGcpName()
-	randomVmHostNameThree := gcp.RandomValidGcpName()
-	expectedIpNames := []string{
-		randomVmHostNameOne, randomVmHostNameTwo, randomVmHostNameThree}
+	projectID := gcp.GetGoogleProjectIDFromEnvVar(goTester) // from GOOGLE_CLOUD_PROJECT
+	region := gcp.GetRandomRegion(goTester, projectID, nil, nil)
+	randomVMHostNameOne := gcp.RandomValidGcpName()
+	randomVMHostNameTwo := gcp.RandomValidGcpName()
+	randomVMHostNameThree := gcp.RandomValidGcpName()
+	expectedIPNames := []string{
+		randomVMHostNameOne, randomVMHostNameTwo, randomVMHostNameThree}
 
 	tfPlanOutput := "terraform_test.tfplan"
 	tfPlanOutputArg := fmt.Sprintf("-out=%s", tfPlanOutput)
@@ -45,7 +45,7 @@ func TestUnit_ExternalIpsModule(goTester *testing.T) {
 		// Variables to pass to our Terraform code using -var options
 		Vars: map[string]interface{}{
 			"region":   region,
-			"ip_names": expectedIpNames,
+			"ip_names": expectedIPNames,
 		},
 		PlanFilePath: tfPlanOutput,
 	})
@@ -60,8 +60,8 @@ func TestUnit_ExternalIpsModule(goTester *testing.T) {
 	tfPlanJSON, err := terraform.ShowE(goTester, tfOptions)
 	util.LogError(err, fmt.Sprintf("Failed to parse the plan file %s into JSON format", tfPlanOutput))
 
-	var externalIpPlan util.ExternalIpPlan
-	err = json.Unmarshal([]byte(tfPlanJSON), &externalIpPlan)
+	var externalIPPlan util.ExternalIPPlan
+	err = json.Unmarshal([]byte(tfPlanJSON), &externalIPPlan)
 	util.LogError(err, "Failed to parse the JSON plan into the ExternalIpPlan struct in unit/module_external_ip.go")
 
 	/**
@@ -73,7 +73,7 @@ func TestUnit_ExternalIpsModule(goTester *testing.T) {
 	// verify plan has ip_names input variable
 	hasVar := assert.NotNil(
 		goTester,
-		externalIpPlan.Variables.IPNames,
+		externalIPPlan.Variables.IPNames,
 		"Variable not found in plan: ip_names",
 	)
 	util.ExitIf(hasVar, false)
@@ -81,7 +81,7 @@ func TestUnit_ExternalIpsModule(goTester *testing.T) {
 	// verify plan has region input variable
 	hasVar = assert.NotNil(
 		goTester,
-		externalIpPlan.Variables.Region,
+		externalIPPlan.Variables.Region,
 		"Variable not found in plan: region",
 	)
 	util.ExitIf(hasVar, false)
@@ -89,8 +89,8 @@ func TestUnit_ExternalIpsModule(goTester *testing.T) {
 	// verify size of input variable ip_names array in plan
 	assert.Len(
 		goTester,
-		externalIpPlan.Variables.IPNames.Value,
-		len(expectedIpNames),
+		externalIPPlan.Variables.IPNames.Value,
+		len(expectedIPNames),
 		"Variable count does not match in plan: ip_names.",
 	)
 
@@ -98,15 +98,15 @@ func TestUnit_ExternalIpsModule(goTester *testing.T) {
 	assert.Equal(
 		goTester,
 		region,
-		externalIpPlan.Variables.Region.Value,
+		externalIPPlan.Variables.Region.Value,
 		"Variable does not match in plan: region.",
 	)
 
 	// verify each input variable ip_name in plan matches
-	for _, ipName := range externalIpPlan.Variables.IPNames.Value {
+	for _, ipName := range externalIPPlan.Variables.IPNames.Value {
 		assert.Contains(
 			goTester,
-			expectedIpNames,
+			expectedIPNames,
 			ipName,
 			"Variable does not match in plan: ip_names.",
 		)
@@ -115,7 +115,7 @@ func TestUnit_ExternalIpsModule(goTester *testing.T) {
 	// verify output variable ips in plan matches
 	hasVar = assert.NotNil(
 		goTester,
-		externalIpPlan.PlannedValues.Outputs.IPS,
+		externalIPPlan.PlannedValues.Outputs.IPS,
 		"Variable not found in plan: region",
 	)
 	util.ExitIf(hasVar, false)
@@ -123,13 +123,13 @@ func TestUnit_ExternalIpsModule(goTester *testing.T) {
 	// verify the number of resources planned
 	assert.Len(
 		goTester,
-		externalIpPlan.PlannedValues.RootModule.Resources,
-		len(expectedIpNames),
+		externalIPPlan.PlannedValues.RootModule.Resources,
+		len(expectedIPNames),
 		"Resource count does not match in plan: google_compute_address.",
 	)
 
 	// verify attributes of each planned resource
-	for _, resource := range externalIpPlan.PlannedValues.RootModule.Resources {
+	for _, resource := range externalIPPlan.PlannedValues.RootModule.Resources {
 		assert.Equal(
 			goTester,
 			"google_compute_address",
@@ -144,7 +144,7 @@ func TestUnit_ExternalIpsModule(goTester *testing.T) {
 		)
 		assert.Contains(
 			goTester,
-			expectedIpNames,
+			expectedIPNames,
 			resource.Values.Name,
 			"Name given for an instance of the resource does not match.",
 		)

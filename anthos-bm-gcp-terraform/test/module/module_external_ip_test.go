@@ -29,21 +29,21 @@ func TestModule_ExternalIpsModule(t *testing.T) {
 	t.Parallel()
 
 	moduleDir := testStructure.CopyTerraformFolderToTemp(t, "../../", "modules/external-ip")
-	projectId := gcp.GetGoogleProjectIDFromEnvVar(t) // from GOOGLE_CLOUD_PROJECT
-	region := gcp.GetRandomRegion(t, projectId, nil, nil)
+	projectID := gcp.GetGoogleProjectIDFromEnvVar(t) // from GOOGLE_CLOUD_PROJECT
+	region := gcp.GetRandomRegion(t, projectID, nil, nil)
 
-	randomVmHostNameOne := gcp.RandomValidGcpName()
-	randomVmHostNameTwo := gcp.RandomValidGcpName()
-	randomVmHostNameThree := gcp.RandomValidGcpName()
-	expectedIpNames := []string{
-		randomVmHostNameOne, randomVmHostNameTwo, randomVmHostNameThree}
+	randomVMHostNameOne := gcp.RandomValidGcpName()
+	randomVMHostNameTwo := gcp.RandomValidGcpName()
+	randomVMHostNameThree := gcp.RandomValidGcpName()
+	expectedIPNames := []string{
+		randomVMHostNameOne, randomVMHostNameTwo, randomVMHostNameThree}
 
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: moduleDir,
 		// Variables to pass to our Terraform code using -var options
 		Vars: map[string]interface{}{
 			"region":   region,
-			"ip_names": expectedIpNames,
+			"ip_names": expectedIPNames,
 		},
 	})
 	defer terraform.Destroy(t, terraformOptions)
@@ -54,10 +54,10 @@ func TestModule_ExternalIpsModule(t *testing.T) {
 	ipAddressDetails := terraform.OutputMapOfObjects(t, terraformOptions, "ips")
 
 	// validate that the output contians an entry per name in expectedIpNames
-	errMsg := fmt.Sprintf("Output from external-ip module should have %d IP names but only got %d", len(expectedIpNames), len(ipAddressDetails))
-	assert.True(t, len(expectedIpNames) == len(ipAddressDetails), errMsg)
+	errMsg := fmt.Sprintf("Output from external-ip module should have %d IP names but only got %d", len(expectedIPNames), len(ipAddressDetails))
+	assert.True(t, len(expectedIPNames) == len(ipAddressDetails), errMsg)
 
-	for _, ip := range expectedIpNames {
+	for _, ip := range expectedIPNames {
 		errMsg := fmt.Sprintf("Output from external-ip module should have IP name: %s", ip)
 		assert.Contains(t, ipAddressDetails, ip, errMsg)
 	}

@@ -30,20 +30,20 @@ func TestModule_VmModule(t *testing.T) {
 	t.Parallel()
 
 	moduleDir := testStructure.CopyTerraformFolderToTemp(t, "../../", "modules/vm")
-	projectId := gcp.GetGoogleProjectIDFromEnvVar(t) // from GOOGLE_CLOUD_PROJECT
+	projectID := gcp.GetGoogleProjectIDFromEnvVar(t) // from GOOGLE_CLOUD_PROJECT
 	selfLinkPrefix := "https://www.googleapis.com/compute/v1/projects"
-	region := gcp.GetRandomRegion(t, projectId, nil, nil)
+	region := gcp.GetRandomRegion(t, projectID, nil, nil)
 	// zone := gcp.GetRandomZoneForRegion(t, projectId, region)
 
 	network := "default"
 	sourceImageProject := "ubuntu-os-cloud"
 	sourceImageFamily := "ubuntu-2004-focal-v20210415"
 
-	randomVmHostNameOne := gcp.RandomValidGcpName()
-	randomVmHostNameTwo := gcp.RandomValidGcpName()
-	randomVmHostNameThree := gcp.RandomValidGcpName()
+	randomVMHostNameOne := gcp.RandomValidGcpName()
+	randomVMHostNameTwo := gcp.RandomValidGcpName()
+	randomVMHostNameThree := gcp.RandomValidGcpName()
 	vmNames := []string{
-		randomVmHostNameOne, randomVmHostNameTwo, randomVmHostNameThree}
+		randomVMHostNameOne, randomVMHostNameTwo, randomVMHostNameThree}
 
 	// create the go client SDK to create an instance template since terratest
 	// doesn't have support for creating one
@@ -54,10 +54,10 @@ func TestModule_VmModule(t *testing.T) {
 
 	instanceTemplateService := compute.NewInstanceTemplatesService(computeService)
 	testInstanceTemplate := gcp.RandomValidGcpName()
-	networkSelfLink := fmt.Sprintf("%s/%s/global/networks/%s", selfLinkPrefix, projectId, network)
+	networkSelfLink := fmt.Sprintf("%s/%s/global/networks/%s", selfLinkPrefix, projectID, network)
 	sourceImageSelfLink := fmt.Sprintf("%s/%s/global/images/%s", selfLinkPrefix, sourceImageProject, sourceImageFamily)
 
-	insertInsertTemplateCall := instanceTemplateService.Insert(projectId, &compute.InstanceTemplate{
+	insertInsertTemplateCall := instanceTemplateService.Insert(projectID, &compute.InstanceTemplate{
 		Name: testInstanceTemplate,
 		Properties: &compute.InstanceProperties{
 			CanIpForward:   true,
@@ -83,7 +83,7 @@ func TestModule_VmModule(t *testing.T) {
 	})
 	_, insertErr := insertInsertTemplateCall.Do()
 	util.LogError(insertErr, fmt.Sprintf("Failed to create new instance template with name %s", testInstanceTemplate))
-	instanceTemplatesDeleteCall := instanceTemplateService.Delete(projectId, testInstanceTemplate)
+	instanceTemplatesDeleteCall := instanceTemplateService.Delete(projectID, testInstanceTemplate)
 	defer util.DeleteResource(instanceTemplatesDeleteCall, fmt.Sprintf("Failed to delete test instance template with name %s", testInstanceTemplate))
 
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{

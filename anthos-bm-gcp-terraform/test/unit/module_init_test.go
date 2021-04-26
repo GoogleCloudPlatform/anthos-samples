@@ -31,19 +31,19 @@ func TestUnit_InitModule(goTester *testing.T) {
 	goTester.Parallel()
 
 	moduleDir := testStructure.CopyTerraformFolderToTemp(goTester, "../../", "modules/init")
-	projectId := gcp.GetGoogleProjectIDFromEnvVar(goTester) // from GOOGLE_CLOUD_PROJECT
+	projectID := gcp.GetGoogleProjectIDFromEnvVar(goTester) // from GOOGLE_CLOUD_PROJECT
 	credentialsFile := os.Getenv("GOOGLE_CLOUD_PROJECT")
-	zone := gcp.GetRandomZone(goTester, projectId, nil, nil, nil)
+	zone := gcp.GetRandomZone(goTester, projectID, nil, nil, nil)
 	username := "test_username"
 	hostname := "test_hostname"
 	ipAddress := "10.10.10.01"
-	init_script := "../test/../path/../init_script.sh"
-	preflight_script := "../test/../path/../preflight_script.sh"
-	init_logs := "test_init_log_file.log"
-	init_vars_file := "../test/../path/../init_vars_file.var"
-	cluster_yaml_path := "../test/../path/../test_cluster.yaml"
-	pub_key_path_template := "../test/../path/../test_pub_key-%s.pub"
-	priv_key_path_template := "../test/../path/../test_pub_key-%s.priv"
+	initScript := "../test/../path/../init_script.sh"
+	preflightScript := "../test/../path/../preflight_script.sh"
+	initLogs := "test_init_log_file.log"
+	initVarsFile := "../test/../path/../init_vars_file.var"
+	clusterYamlPath := "../test/../path/../test_cluster.yaml"
+	pubKeyPathTemplate := "../test/../path/../test_pub_key-%s.pub"
+	privKeyPathTemplate := "../test/../path/../test_pub_key-%s.priv"
 
 	tfPlanOutput := "terraform_test.tfplan"
 	tfPlanOutputArg := fmt.Sprintf("-out=%s", tfPlanOutput)
@@ -51,19 +51,19 @@ func TestUnit_InitModule(goTester *testing.T) {
 		TerraformDir: moduleDir,
 		// Variables to pass to our Terraform code using -var options
 		Vars: map[string]interface{}{
-			"project_id":             projectId,
+			"project_id":             projectID,
 			"credentials_file":       credentialsFile,
 			"zone":                   zone,
 			"username":               username,
 			"hostname":               hostname,
 			"publicIp":               ipAddress,
-			"init_script":            init_script,
-			"preflight_script":       preflight_script,
-			"init_logs":              init_logs,
-			"init_vars_file":         init_vars_file,
-			"cluster_yaml_path":      cluster_yaml_path,
-			"pub_key_path_template":  pub_key_path_template,
-			"priv_key_path_template": priv_key_path_template,
+			"init_script":            initScript,
+			"preflight_script":       preflightScript,
+			"init_logs":              initLogs,
+			"init_vars_file":         initVarsFile,
+			"cluster_yaml_path":      clusterYamlPath,
+			"pub_key_path_template":  pubKeyPathTemplate,
+			"priv_key_path_template": privKeyPathTemplate,
 		},
 		PlanFilePath: tfPlanOutput,
 	})
@@ -101,7 +101,7 @@ func validateVariables(goTester *testing.T, tfPlan *util.InitModulePlan) {
 	// verify plan has region input variable
 	hasVar := assert.NotNil(
 		goTester,
-		tfPlan.Variables.ProjectId,
+		tfPlan.Variables.ProjectID,
 		"Variable not found in plan: project_id",
 	)
 	util.ExitIf(hasVar, false)
