@@ -10,6 +10,7 @@ import (
 	"github.com/gruntwork-io/terratest/modules/gcp"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	testStructure "github.com/gruntwork-io/terratest/modules/test-structure"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestUnit_InitModule(goTester *testing.T) {
@@ -78,7 +79,16 @@ func TestUnit_InitModule(goTester *testing.T) {
 	// TODO: test locals variables and there validity
 	// TODO: test resources that are planned
 
+	validateVariables(goTester, &initModulePlan)
 
+}
 
-
+func validateVariables(goTester *testing.T, tfPlan *util.InitModulePlan) {
+	// verify plan has region input variable
+	hasVar := assert.NotNil(
+		goTester,
+		tfPlan.Variables.ProjectId,
+		"Variable not found in plan: project_id",
+	)
+	util.ExitIf(hasVar, false)
 }
