@@ -1,5 +1,7 @@
 ## Quick starter
 
+### Setup the bare metal infrastructure
+
 1. Clone this repo into the workstation from where the rest of this guide will be followed
 
 2. Update the `terraform.tfvars.sample` file to include variables specific to your environment
@@ -37,28 +39,22 @@ terraform apply
 
 ***The `apply` command sets up the Compute Engine VM based bare metal infrastructure. This can take a few minutes (approx. 3-5 mins) for the entire bare-metal cluster to be setup.***
 
-5. After the Terraform execution completes it prints the next steps. These steps install the Anthos cluster on the provisioned Compute Engine VM based bare metal infrastructure. Just copy/paste the commands and run them.
+---
+### Deploy an Anthos cluster
 
-> **Note:** The following output is only an example. Hence, copy the commands from the output that is printed in your own workstation as a result of running the Terraform scripts. If copying from the sample below ensure that the parameters match that of your environment.
+After the Terraform execution completes you are ready to deploy an Anthos cluster.
 
+1. SSH into the admin host
 ```sh
-################################################################################
-##              AnthosBM on Google Compute Engine VM with Terraform           ##
-##                        (Run the following commands)                        ##
-##   (Note that the 1st command should have you SSH'ed into the admin host)   ##
-################################################################################
+gcloud compute ssh tfadmin@abm-ws0-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
+```
 
-> gcloud compute ssh tfadmin@abm-ws0-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
-
-# ------------------------------------------------------------------------------
-# You must be SSH'ed into the admin host abm-ws0-001 as tfadmin user now
-# ------------------------------------------------------------------------------
-> sudo ./preflights.sh && \
-  sudo bmctl create config -c anthos-gce-cluster && \
-  sudo cp ~/anthos-gce-cluster.yaml bmctl-workspace/anthos-gce-cluster && \
-  sudo bmctl create cluster -c anthos-gce-cluster
-
-################################################################################
+2. Install the Anthos cluster on the provisioned Compute Engine VM based bare metal infrastructure
+```sh
+sudo ./preflights.sh && \
+sudo bmctl create config -c anthos-gce-cluster && \
+sudo cp ~/anthos-gce-cluster.yaml bmctl-workspace/anthos-gce-cluster && \
+sudo bmctl create cluster -c anthos-gce-cluster
 ```
 ---
 
