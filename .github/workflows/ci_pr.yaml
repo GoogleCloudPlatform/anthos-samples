@@ -60,17 +60,41 @@ jobs:
         touch all_errors.err
         [ -s license.err ]
         if [ $? -eq 0 ]; then
-          echo "[✘] There are files missing the license header. Use [google/addlicense](https://github.com/google/addlicense) to add license headers to the following files: </br>" >> all_errors.err
-          sed -i '$ s/$/'"$(cat license.err)"'/' all_errors.err
-        fi
-
-        [ -s all_errors.err ]
-        if [ $? -eq 0 ]; then
+          echo "- [✘]" >> all_errors.err
           curl \
             -X POST \
             $COMMENTS_URL \
             -H "Content-Type: application/json" \
             -H "Authorization: token $GITHUB_TOKEN" \
-            --data '{ "body": "💣 🚨 Please fix the following errors 🚨 💣  </br></br> '"$(cat all_errors.err)"'"}'
-          exit 1
+            --data '{ "body": "💣 🚨 There are files missing the license header. Use [google/addlicense](https://github.com/google/addlicense) to add license headers to the following files. </br>```'"$(cat license.err)"'```"}'
         fi
+
+        [ -s terraform-fmt.err ]
+        if [ $? -eq 0 ]; then
+          echo "- [✘]" >> all_errors.err
+          curl \
+            -X POST \
+            $COMMENTS_URL \
+            -H "Content-Type: application/json" \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            --data '{ "body": "💣 🚨 There were Terraform files incorrectly formatted. Use `terraform fmt -recursive -check -diff ./` format the Terraform files"}'
+        fi
+
+        [ -s all_errors.err ]
+        if ! [ $? -eq 0 ]; then
+          curl \
+            -X POST \
+            $COMMENTS_URL \
+            -H "Content-Type: application/json" \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            --data '{ "body": "✅ 🚀  All static code and unit tests have passed!!! 🚀 ✅"}'
+        exit 1
+        fi
+
+        curl \
+          -X POST \
+          $COMMENTS_URL \
+          -H "Content-Type: application/json" \
+          -H "Authorization: token $GITHUB_TOKEN" \
+          --data '{ "body": "💣 🚨 Some tests have failed; please fix them 🚨 💣 "}'
+        exit 1
