@@ -37,7 +37,7 @@ type VMVarValue struct {
 	Value string `json:"value"`
 }
 
-// VMVarValue represents an instance of a single terraform input variable
+// VMVarValueList represents an instance of a single terraform input variable
 // which is a list item in the vm terraform module.
 type VMVarValueList struct {
 	Value []string `json:"value"`
