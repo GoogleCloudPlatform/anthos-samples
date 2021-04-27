@@ -14,11 +14,16 @@
 
 package util
 
+// An InitModulePlan represents the root json object resulting from terraform
+// plan on the init module
 type InitModulePlan struct {
 	Variables     InitVariables     `json:"variables"`
 	PlannedValues InitPlannedValues `json:"planned_values"`
 }
 
+// InitVariables represents the variables defined within the init terraform
+// module. When variables are added to the module this struct needs to be
+// modified
 type InitVariables struct {
 	ProjectID              *InitVariable `json:"project_id"`
 	PublicIP               *InitVariable `json:"publicIp"`
@@ -35,10 +40,15 @@ type InitVariables struct {
 	PrivateKeyTemplatePath *InitVariable `json:"priv_key_path_template"`
 }
 
+// InitVariable represents an instance of a single terraform input variable
+// in the init terraform module. When variables are added to the module this
+// struct needs to be modified
 type InitVariable struct {
 	Value string `json:"value"`
 }
 
+// IPPlannedValues represent the planned state of the terraform run resulting
+// from the input varibales and the init terraform module
 type InitPlannedValues struct {
 	RootModule TFModule `json:"root_module"`
 }
