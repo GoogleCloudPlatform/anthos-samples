@@ -61,6 +61,7 @@ jobs:
         [ -s license.err ]
         if [ $? -eq 0 ]; then
           echo "[✘] There are files missing the license header. Use [google/addlicense](https://github.com/google/addlicense) to add license headers to the following files: </br>" >> all_errors.err
+          truncate -s -1 license.err
           tr '\n' '</br>' < license.err > formatted.err
           cat formatted.err >> all_errors.err
         fi
