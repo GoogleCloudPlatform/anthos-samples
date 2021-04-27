@@ -34,17 +34,17 @@ jobs:
       continue-on-error: true
       run: |
         terraform fmt -recursive -check -diff ./
-    - name: Terraform Validate
-      timeout-minutes: 20
-      continue-on-error: true
-      run: |
-        for sample in $(cat .github/terraform_samples); do
-          echo "Terraform validating: $sample"
-          cd $sample
-          terraform init -backend=false
-          terraform validate -json .
-          cd ..
-        done
+    # - name: Terraform Validate
+    #   timeout-minutes: 20
+    #   continue-on-error: true
+    #   run: |
+    #     for sample in $(cat .github/terraform_samples); do
+    #       echo "Terraform validating: $sample"
+    #       cd $sample
+    #       terraform init -backend=false
+    #       terraform validate -json .
+    #       cd ..
+    #     done
     - name: Golang Checkstyle
       timeout-minutes: 20
       continue-on-error: true
@@ -61,15 +61,23 @@ jobs:
         [ -s license.err ]
         if [ $? -eq 0 ]; then
           echo "[✘]" >> all_errors.err
+          cat license.err >> all_errors.err
         fi
 
         [ -s terraform-fmt.err ]
         if [ $? -eq 0 ]; then
           echo "[✘]" >> all_errors.err
+          cat terraform-fmt.err >> all_errors.err
         fi
 
         [ -s all_errors.err ]
         if [ $? -eq 0 ]; then
+          curl \
+            -X POST \
+            $COMMENTS_URL \
+            -H "Content-Type: application/json" \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            --data '{ "body": '"(cat all_errors.err)"'}'
           exit 1
         fi
 
