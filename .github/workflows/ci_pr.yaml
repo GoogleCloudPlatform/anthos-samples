@@ -32,46 +32,48 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         addlicense -check ./ >> license.err
+    - name: Terraform Checkstyle
+      timeout-minutes: 20
+      continue-on-error: true
+      run: |
+        terraform fmt -recursive -check -diff ./ >> terraform-fmt.err
+    # - name: Terraform Validate
+    #   timeout-minutes: 20
+    #   continue-on-error: true
+    #   run: |
+    #     for sample in $(cat .github/terraform_samples); do
+    #       echo "Terraform validating: $sample"
+    #       cd $sample
+    #       terraform init -backend=false
+    #       terraform validate -json . >> terraform-validate.err
+    #       cd ..
+    #     done
+    - name: Golang Checkstyle
+      timeout-minutes: 20
+      continue-on-error: true
+      run: |
+        golint ./... > golint.err
+        [ -s golint.err ]
+    - name: Comment PR with errors
+      env:
+        COMMENTS_URL: ${{ github.event.pull_request.comments_url }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        set -x
+        touch all_errors.err
+        [ -s license.err ]
         if [ $? -eq 0 ]; then
-          echo "[✔] All files have the license header"
-        else
-          echo "[✘] There are files missing the license header"
+          echo "[✘] There are files missing the license header. Use [google/addlicense](https://github.com/google/addlicense) to add license headers to the following files: </br>" >> all_errors.err
+          cat license.err >> all_errors.err
+        fi
+
+        [ -s all_errors.err ]
+        if [ $? -eq 0 ]; then
           curl \
             -X POST \
             $COMMENTS_URL \
             -H "Content-Type: application/json" \
             -H "Authorization: token $GITHUB_TOKEN" \
-            --data '{ "body": "💣  Add license headers to following files:</br> ${cat license.err}"}'
-        fi
-    - name: Terraform Checkstyle
-      timeout-minutes: 20
-      continue-on-error: true
-      run: |
-        terraform fmt -recursive -check -diff ./
-        if [ $? -eq 0 ]; then
-          echo "[✔] All terraform files are properly formatted"
-        else
-          echo "[✘] There are some terraform file not properly formatted"
+            --data '{ "body": "💣 🚨 Please fix the following errors 🚨 💣  </br></br> '"$(cat all_errors.err)"'"}'
           exit 1
-        fi
-    - name: Terraform Validate
-      timeout-minutes: 20
-      run: |
-        for sample in $(cat .github/terraform_samples); do
-          echo "Terraform validating: $sample"
-          cd $sample
-          terraform init -backend=false
-          terraform validate .
-          if ! [ $? -eq 0 ]; then
-            echo "[✘] Terraform validation failed for sample $sample"
-            exit 1
-          fi
-        done
-    - name: Golang Checkstyle
-      timeout-minutes: 20
-      run: |
-        golint ./... > golint.err
-        [ -s golint.err ]
-        if [ $? -eq 0 ]; then
-          echo "[✘] Golang (.go) files have linting errors"
         fi
