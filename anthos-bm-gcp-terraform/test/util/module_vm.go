@@ -14,11 +14,16 @@
 
 package util
 
+// An VMInstancePlan represents the root json object resulting from terraform
+// plan on the vm module
 type VMInstancePlan struct {
 	Variables     VMVariables     `json:"variables"`
 	PlannedValues VMPlannedValues `json:"planned_values"`
 }
 
+// VMVariables represents the variables defined within the external-ip
+// terraform module. When variables are added to the module this struct needs
+// to be modified
 type VMVariables struct {
 	Region           *VMVarValue     `json:"region"`
 	Network          *VMVarValue     `json:"network"`
@@ -26,27 +31,38 @@ type VMVariables struct {
 	InstanceTemplate *VMVarValue     `json:"instance_template"`
 }
 
+// VMVarValue represents an instance of a single terraform input variable
+// in the vm terraform module.
 type VMVarValue struct {
 	Value string `json:"value"`
 }
 
+// VMVarValue represents an instance of a single terraform input variable
+// which is a list item in the vm terraform module.
 type VMVarValueList struct {
 	Value []string `json:"value"`
 }
 
+// VMNames represents the array of names to be given to newly created
+// VMs, which is configures as an input for the vm terraform module
 type VMNames struct {
 	Value []string `json:"value"`
 }
 
+// VMPlannedValues represent the planned state of the terraform run resulting
+// from the input variables and the external-ip terraform module
 type VMPlannedValues struct {
 	Outputs    VMOutputs `json:"outputs"`
 	RootModule TFModule  `json:"root_module"`
 }
 
+// VMOutputs represents the outputs produced by the vm terraform module
 type VMOutputs struct {
 	VMInfo *VMInfo `json:"vm_info"`
 }
 
+// VMInfo represent the vm information that will be created as a result of
+// running the external-ip terraform module
 type VMInfo struct {
 	Sensitive bool `json:"sensitive"`
 }

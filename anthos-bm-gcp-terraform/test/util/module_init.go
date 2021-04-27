@@ -41,14 +41,13 @@ type InitVariables struct {
 }
 
 // InitVariable represents an instance of a single terraform input variable
-// in the init terraform module. When variables are added to the module this
-// struct needs to be modified
+// in the init terraform module.
 type InitVariable struct {
 	Value string `json:"value"`
 }
 
-// IPPlannedValues represent the planned state of the terraform run resulting
-// from the input varibales and the init terraform module
+// InitPlannedValues represent the planned state of the terraform run resulting
+// from the input variables and the init terraform module
 type InitPlannedValues struct {
 	RootModule TFModule `json:"root_module"`
 }

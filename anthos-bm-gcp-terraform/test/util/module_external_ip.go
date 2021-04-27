@@ -43,7 +43,7 @@ type IPNames struct {
 }
 
 // IPPlannedValues represent the planned state of the terraform run resulting
-// from the input varibales and the external-ip terraform module
+// from the input variables and the external-ip terraform module
 type IPPlannedValues struct {
 	Outputs    IPOutputs `json:"outputs"`
 	RootModule TFModule  `json:"root_module"`
