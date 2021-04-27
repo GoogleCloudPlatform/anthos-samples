@@ -60,7 +60,7 @@ jobs:
         touch all_errors.err
         [ -s license.err ]
         if [ $? -eq 0 ]; then
-          echo "[✘] Some files don't have the license header. Please add it using the [google/addlicense](https://github.com/google/addlicense) tool" >> all_errors.err
+          echo '[✘] Some files don't have the license header. Please add it using the [google/addlicense](https://github.com/google/addlicense) tool' >> all_errors.err
           cat <<EOF>>all_errors.err
           ----------------------------------------------------------
           $(cat license.err)
@@ -70,7 +70,7 @@ jobs:
 
         [ -s terraform-fmt.err ]
         if [ $? -eq 0 ]; then
-          echo "[✘] Some Terraform files are not properly formatted. You can see which files using 'terraform fmt -recursive -check -diff ./'" >> all_errors.err
+          echo '[✘] Some Terraform files are not properly formatted. You can see which files using [terraform fmt -recursive -check -diff ./]' >> all_errors.err
           cat <<EOF>>all_errors.err
           ----------------------------------------------------------
           $(cat license.err)
