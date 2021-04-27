@@ -21,6 +21,7 @@ jobs:
   code-tests:
     runs-on: [self-hosted]
     steps:
+    - continue-on-error: true
     - uses: actions/checkout@v2
       with:
         ref: ${{github.event.pull_request.head.ref}}
