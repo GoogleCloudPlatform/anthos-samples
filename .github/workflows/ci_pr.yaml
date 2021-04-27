@@ -26,67 +26,24 @@ jobs:
         ref: ${{github.event.pull_request.head.ref}}
         repository: ${{github.event.pull_request.head.repo.full_name}}
     - name: License Check
-      continue-on-error: true
       run: |
         addlicense -check ./
     - name: Terraform Checkstyle
       timeout-minutes: 20
-      continue-on-error: true
       run: |
         terraform fmt -recursive -check -diff ./
-    # - name: Terraform Validate
-    #   timeout-minutes: 20
-    #   continue-on-error: true
-    #   run: |
-    #     for sample in $(cat .github/terraform_samples); do
-    #       echo "Terraform validating: $sample"
-    #       cd $sample
-    #       terraform init -backend=false
-    #       terraform validate -json .
-    #       cd ..
-    #     done
+    - name: Terraform Validate
+      timeout-minutes: 20
+      run: |
+        for sample in $(cat .github/terraform_samples); do
+          echo "Terraform validating: $sample"
+          cd $sample
+          terraform init -backend=false
+          terraform validate -json .
+          cd ..
+        done
     - name: Golang Checkstyle
       timeout-minutes: 20
-      continue-on-error: true
       run: |
         golint ./... > golint.err
         [ -s golint.err ]
-    - name: Comment PR with errors
-      env:
-        COMMENTS_URL: ${{ github.event.pull_request.comments_url }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        set -x
-        touch all_errors.err
-        [ -s license.err ]
-        if [ $? -eq 0 ]; then
-          echo '[✘] Some files don't have the license header. Please add it using the [google/addlicense](https://github.com/google/addlicense) tool' >> all_errors.err
-          cat <<EOF>>all_errors.err
-          ----------------------------------------------------------
-          $(cat license.err)
-          ----------------------------------------------------------
-        EOF
-        fi
-
-        [ -s terraform-fmt.err ]
-        if [ $? -eq 0 ]; then
-          echo '[✘] Some Terraform files are not properly formatted. You can see which files using [terraform fmt -recursive -check -diff ./]' >> all_errors.err
-          cat <<EOF>>all_errors.err
-          ----------------------------------------------------------
-          $(cat license.err)
-          ----------------------------------------------------------
-        EOF
-        fi
-
-        [ -s all_errors.err ]
-        if [ $? -eq 0 ]; then
-          cat all_errors.err
-        fi
-
-        curl \
-          -X POST \
-          $COMMENTS_URL \
-          -H "Content-Type: application/json" \
-          -H "Authorization: token $GITHUB_TOKEN" \
-          --data '{ "body": "✅ 🚀  All static code and unit tests have passed!!! 🚀 ✅"}'
-        exit 0
