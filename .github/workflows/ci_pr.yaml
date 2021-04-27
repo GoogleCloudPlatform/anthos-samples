@@ -27,9 +27,6 @@ jobs:
         repository: ${{github.event.pull_request.head.repo.full_name}}
     - name: License Check
       continue-on-error: true
-      env:
-        COMMENTS_URL: ${{ github.event.pull_request.comments_url }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         addlicense -check ./ >> license.err
     - name: Terraform Checkstyle
@@ -74,6 +71,6 @@ jobs:
             $COMMENTS_URL \
             -H "Content-Type: application/json" \
             -H "Authorization: token $GITHUB_TOKEN" \
-            --data '{ "body": "💣 🚨 Please fix the following errors 🚨 💣  </br></br> '"$(cat all_errors.err)"'"}'
+            --data '{ "body": "💣 🚨 Please fix the following errors 🚨 💣  </br></br> '"$(cat .github/terraform_samples)"'"}'
           exit 1
         fi
