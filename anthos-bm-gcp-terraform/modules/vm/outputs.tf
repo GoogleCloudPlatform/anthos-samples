@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-output vm_info {
+output "vm_info" {
   value = flatten([
     for group in module.compute_instance[*] : [
       for vm_details in group : [

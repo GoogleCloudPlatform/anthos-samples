@@ -135,7 +135,7 @@ resource "tls_private_key" "abm" {
 }
 
 data "template_file" "cloud-config" {
-  template = "${file("${path.module}/cloud-config.yaml")}"
+  template = file("${path.module}/cloud-config.yaml")
   vars = {
     private_key = tls_private_key.abm.private_key_pem,
     public_key  = tls_private_key.abm.public_key_openssh
