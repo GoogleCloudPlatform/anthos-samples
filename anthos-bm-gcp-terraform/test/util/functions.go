@@ -29,9 +29,9 @@ func LogError(err error, errMsg string) {
 	}
 }
 
-// Given boolean variable and its expected states, ExitIf checks if they are
-// both same; if they match, then the exit condition is met. Thus, an error
-// message is logged and th eprogram exists
+// ExitIf checks two variables are same, given a boolean variable and its
+// expected state; if they match, then the exit condition is met. Thus, an
+// error message is logged and th eprogram exists
 func ExitIf(varToCheck bool, expectedState bool) {
 	if varToCheck == expectedState {
 		var err error
@@ -39,7 +39,7 @@ func ExitIf(varToCheck bool, expectedState bool) {
 	}
 }
 
-// Given a string and a file path in the host FS, WriteToFile creates a new file
+// WriteToFile creates a new file at the path denoted by the second arguments
 // and writes the string to the newly created file, accessible on that path
 func WriteToFile(s string, path string) {
 	f, _ := os.Create(path)
