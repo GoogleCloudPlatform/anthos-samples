@@ -26,13 +26,22 @@ jobs:
         ref: ${{github.event.pull_request.head.ref}}
         repository: ${{github.event.pull_request.head.repo.full_name}}
     - name: License Check
+      continue-on-error: true
+      env:
+        COMMENTS_URL: ${{ github.event.pull_request.comments_url }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        addlicense -check ./
+        addlicense -check ./ >> license.err
         if [ $? -eq 0 ]; then
           echo "[✔] All files have the license header"
         else
           echo "[✘] There are files missing the license header"
-          exit 1
+          curl \
+            -X POST \
+            $COMMENTS_URL \
+            -H "Content-Type: application/json" \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            --data '{ "body": "💣  Add license headers to following files:</br> ${cat license.err}"}'
         fi
     - name: Terraform Checkstyle
       timeout-minutes: 20
