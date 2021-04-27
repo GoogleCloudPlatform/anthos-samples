@@ -70,6 +70,6 @@ jobs:
             $COMMENTS_URL \
             -H "Content-Type: application/json" \
             -H "Authorization: token $GITHUB_TOKEN" \
-            --data '{ "body": "💣 🚨 Please fix the following errors 🚨 💣  </br></br> '"$(cat all_errors.err)"' </br></br> '$(cat license.err)'"}'
+            --data '{ "body": "💣 🚨 Please fix the following errors 🚨 💣  </br></br> '"$(cat all_errors.err)"' </br></br> '"$(cat license.err)"'"}'
           exit 1
         fi
