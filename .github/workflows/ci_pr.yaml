@@ -81,7 +81,6 @@ jobs:
         [ -s all_errors.err ]
         if [ $? -eq 0 ]; then
           cat all_errors.err
-          exit 1
         fi
 
         curl \
