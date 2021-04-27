@@ -27,7 +27,6 @@ jobs:
         repository: ${{github.event.pull_request.head.repo.full_name}}
     - name: License Check
       run: |
-        set -x
         addlicense -check ./
         if [ $? -eq 0 ]; then
           echo "[✔] All files have the license header"
