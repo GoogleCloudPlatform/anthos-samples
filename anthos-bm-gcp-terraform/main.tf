@@ -1,12 +1,28 @@
+/**
+ * Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 terraform {
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = "3.58.0"
+      version = "3.65.0"
     }
     google-beta = {
       source  = "hashicorp/google-beta"
-      version = "3.58.0"
+      version = "3.65.0"
     }
   }
 }
@@ -65,7 +81,7 @@ locals {
 
 module "enable_google_apis_primary" {
   source                      = "terraform-google-modules/project-factory/google//modules/project_services"
-  version                     = "10.2.0"
+  version                     = "10.3.2"
   project_id                  = var.project_id
   activate_apis               = var.primary_apis
   disable_services_on_destroy = false
@@ -73,7 +89,7 @@ module "enable_google_apis_primary" {
 
 module "enable_google_apis_secondary" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "10.2.0"
+  version = "10.3.2"
   # fetched from previous module to explicitely express dependency
   project_id                  = module.enable_google_apis_primary.project_id
   depends_on                  = [module.enable_google_apis_primary]
@@ -83,7 +99,7 @@ module "enable_google_apis_secondary" {
 
 module "create_service_accounts" {
   source  = "terraform-google-modules/service-accounts/google"
-  version = "~> 3.0"
+  version = "~> 4.0"
   # fetched from previous module to explicitely express dependency
   project_id = module.enable_google_apis_secondary.project_id
   depends_on = [
