@@ -20,7 +20,6 @@ on:
 jobs:
   code-tests:
     runs-on: [self-hosted]
-    continue-on-error: true
     steps:
     - uses: actions/checkout@v2
       with:
@@ -37,6 +36,7 @@ jobs:
         fi
     - name: Terraform Checkstyle
       timeout-minutes: 20
+      continue-on-error: true
       run: |
         terraform fmt -recursive -check -diff ./
         if [ $? -eq 0 ]; then
