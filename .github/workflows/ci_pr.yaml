@@ -47,7 +47,7 @@ jobs:
       timeout-minutes: 20
       run: |
         golint ./... > golint.err 2>&1
-        if [ -s golint.err ]; then
+        if ! [ -s golint.err ]; then
           exit 0
         fi
         if ! grep -q '"./..." matched no packages' "golint.err"; then
