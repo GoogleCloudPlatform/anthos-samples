@@ -34,17 +34,17 @@ jobs:
       continue-on-error: true
       run: |
         terraform fmt -recursive -check -diff ./
-    - name: Terraform Validate
-      timeout-minutes: 20
-      continue-on-error: true
-      run: |
-        for sample in $(cat .github/terraform_samples); do
-          echo "Terraform validating: $sample"
-          cd $sample
-          terraform init -backend=false
-          terraform validate -json .
-          cd ..
-        done
+    # - name: Terraform Validate
+    #   timeout-minutes: 20
+    #   continue-on-error: true
+    #   run: |
+    #     for sample in $(cat .github/terraform_samples); do
+    #       echo "Terraform validating: $sample"
+    #       cd $sample
+    #       terraform init -backend=false
+    #       terraform validate -json .
+    #       cd ..
+    #     done
     - name: Golang Checkstyle
       timeout-minutes: 20
       continue-on-error: true
@@ -70,12 +70,17 @@ jobs:
 
         [ -s terraform-fmt.err ]
         if [ $? -eq 0 ]; then
-          echo "[✘]" >> all_errors.err
-          cat terraform-fmt.err >> all_errors.err
+          echo "[✘] Some Terraform files are not properly formatted. You can see which files using 'terraform fmt -recursive -check -diff ./'" >> all_errors.err
+          cat <<EOF>>all_errors.err
+          ----------------------------------------------------------
+          $(cat license.err)
+          ----------------------------------------------------------
+        EOF
         fi
 
         [ -s all_errors.err ]
         if [ $? -eq 0 ]; then
+          cat all_errors.err
           exit 1
         fi
 
