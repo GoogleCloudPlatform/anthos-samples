@@ -28,23 +28,23 @@ jobs:
     - name: License Check
       continue-on-error: true
       run: |
-        addlicense -check ./ >> license.err
+        addlicense -check ./
     - name: Terraform Checkstyle
       timeout-minutes: 20
       continue-on-error: true
       run: |
-        terraform fmt -recursive -check -diff ./ >> terraform-fmt.err
-    # - name: Terraform Validate
-    #   timeout-minutes: 20
-    #   continue-on-error: true
-    #   run: |
-    #     for sample in $(cat .github/terraform_samples); do
-    #       echo "Terraform validating: $sample"
-    #       cd $sample
-    #       terraform init -backend=false
-    #       terraform validate -json . >> terraform-validate.err
-    #       cd ..
-    #     done
+        terraform fmt -recursive -check -diff ./
+    - name: Terraform Validate
+      timeout-minutes: 20
+      continue-on-error: true
+      run: |
+        for sample in $(cat .github/terraform_samples); do
+          echo "Terraform validating: $sample"
+          cd $sample
+          terraform init -backend=false
+          terraform validate -json .
+          cd ..
+        done
     - name: Golang Checkstyle
       timeout-minutes: 20
       continue-on-error: true
@@ -60,24 +60,12 @@ jobs:
         touch all_errors.err
         [ -s license.err ]
         if [ $? -eq 0 ]; then
-          echo "- [✘]" >> all_errors.err
-          curl \
-            -X POST \
-            $COMMENTS_URL \
-            -H "Content-Type: application/json" \
-            -H "Authorization: token $GITHUB_TOKEN" \
-            --data '{ "body": "💣 🚨 There are files missing the license header.</br>- Use [google/addlicense](https://github.com/google/addlicense) to add license headers to the following files.</br>```'"$(cat license.err)"'```"}'
+          echo "[✘]" >> all_errors.err
         fi
 
         [ -s terraform-fmt.err ]
         if [ $? -eq 0 ]; then
-          echo "- [✘]" >> all_errors.err
-          curl \
-            -X POST \
-            $COMMENTS_URL \
-            -H "Content-Type: application/json" \
-            -H "Authorization: token $GITHUB_TOKEN" \
-            --data '{ "body": "💣 🚨 There were Terraform files incorrectly formatted.</br>- Use `terraform fmt -recursive -check -diff ./` format the Terraform files.</br>```'"$(cat terraform-fmt.err)"'```"}'
+          echo "[✘]" >> all_errors.err
         fi
 
         [ -s all_errors.err ]
