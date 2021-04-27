@@ -88,7 +88,7 @@ jobs:
             -H "Content-Type: application/json" \
             -H "Authorization: token $GITHUB_TOKEN" \
             --data '{ "body": "✅ 🚀  All static code and unit tests have passed!!! 🚀 ✅"}'
-        exit 1
+          exit 0
         fi
 
         curl \
