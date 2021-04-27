@@ -20,13 +20,13 @@ on:
 jobs:
   code-tests:
     runs-on: [self-hosted]
+    continue-on-error: true
     steps:
     - uses: actions/checkout@v2
       with:
         ref: ${{github.event.pull_request.head.ref}}
         repository: ${{github.event.pull_request.head.repo.full_name}}
     - name: License Check
-      continue-on-error: true
       run: |
         addlicense -check ./
         if [ $? -eq 0 ]; then
