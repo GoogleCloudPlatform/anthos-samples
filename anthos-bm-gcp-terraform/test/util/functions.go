@@ -18,26 +18,20 @@ import (
 	"bufio"
 	"log"
 	"os"
-
-	"google.golang.org/api/compute/v1"
-	"google.golang.org/api/googleapi"
 )
 
-type GcpOperation interface {
-	Do(opts ...googleapi.CallOption) (*compute.Operation, error)
-}
-
-func DeleteResource(fn GcpOperation, errMsg string) {
-	_, err := fn.Do()
-	LogError(err, errMsg)
-}
-
+// LogError takes in an error returned from a function call and a string message;
+// Prints the message on the error object along with the string message.
+// Calling this method causes the progrma to exit
 func LogError(err error, errMsg string) {
 	if err != nil {
 		log.Fatalf("%s:\n\t%s", errMsg, err)
 	}
 }
 
+// Given boolean variable and its expected states, ExitIf checks if they are
+// both same; if they match, then the exit condition is met. Thus, an error
+// message is logged and th eprogram exists
 func ExitIf(varToCheck bool, expectedState bool) {
 	if varToCheck == expectedState {
 		var err error
@@ -45,6 +39,8 @@ func ExitIf(varToCheck bool, expectedState bool) {
 	}
 }
 
+// Given a string and a file path in the host FS, WriteToFile creates a new file
+// and writes the string to the newly created file, accessible on that path
 func WriteToFile(s string, path string) {
 	f, _ := os.Create(path)
 	w := bufio.NewWriter(f)
