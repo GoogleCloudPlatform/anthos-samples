@@ -77,7 +77,7 @@ jobs:
             $COMMENTS_URL \
             -H "Content-Type: application/json" \
             -H "Authorization: token $GITHUB_TOKEN" \
-            --data '{ "body": '"(cat all_errors.err)"'}'
+            --data '{ "body": '"$(cat all_errors.err)"'}'
           exit 1
         fi
 
