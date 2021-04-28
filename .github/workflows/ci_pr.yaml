@@ -93,6 +93,7 @@ jobs:
           whoami
           hostname
           /usr/local/go/bin/go version
+          echo $PATH
           go version
           echo $GOOGLE_CLOUD_PROJECT
           echo $GOOGLE_APPLICATION_CREDENTIALS
