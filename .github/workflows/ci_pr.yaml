@@ -86,18 +86,13 @@ jobs:
       - name: Golang unit tests
         timeout-minutes: 20
         env:
+          # these env variables are required by the golang tests
           GOOGLE_CLOUD_PROJECT: ${{ secrets.GOOGLE_CLOUD_PROJECT }}
           GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
           GOLANG_TEST_DIR: ${{ matrix.go-test-dir }}
         run: |
-          whoami
-          hostname
-          /usr/local/go/bin/go version
-          echo $PATH
-          cat ~/.bashrc
-          source ~/.bashrc
-          /usr/local/go/bin/go version
-          echo $GOOGLE_CLOUD_PROJECT
-          echo $GOOGLE_APPLICATION_CREDENTIALS
+          echo 'export GOPATH=$HOME/go' >> ~/.profile
+          echo 'export PATH=$PATH:/usr/local/go/bin:$GOPATH/bin' >> ~/.profile
+          source ~/.profile
           cd $GOLANG_TEST_DIR
           /usr/local/go/bin/go test -v -timeout 30m ./
