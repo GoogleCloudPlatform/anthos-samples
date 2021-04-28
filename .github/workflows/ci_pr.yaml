@@ -94,6 +94,8 @@ jobs:
           hostname
           /usr/local/go/bin/go version
           echo $PATH
+          cat ~/.bashrc
+          source ~/.bashrc
           go version
           echo $GOOGLE_CLOUD_PROJECT
           echo $GOOGLE_APPLICATION_CREDENTIALS
