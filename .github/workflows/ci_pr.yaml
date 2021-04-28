@@ -19,7 +19,7 @@ on:
     branches:
       - master
 jobs:
-  code-tests:
+  static-code-tests:
     runs-on: [self-hosted]
     steps:
       - uses: actions/checkout@v2
@@ -33,16 +33,16 @@ jobs:
         timeout-minutes: 20
         run: |
           terraform fmt -recursive -check -diff ./
-      - name: Terraform Validate
-        timeout-minutes: 20
-        run: |
-          for sample in $(cat .github/terraform_samples); do
-            echo "Terraform validating: $sample"
-            cd $sample
-            terraform init -backend=false
-            terraform validate -json .
-            cd ..
-          done
+      # - name: Terraform Validate
+      #   timeout-minutes: 20
+      #   run: |
+      #     for sample in $(cat .github/terraform_samples); do
+      #       echo "Terraform validating: $sample"
+      #       cd $sample
+      #       terraform init -backend=false
+      #       terraform validate -json .
+      #       cd ..
+      #     done
       - name: Golang Checkstyle
         timeout-minutes: 20
         run: |
@@ -55,6 +55,30 @@ jobs:
             cat golint.err
             exit 1
           fi
+  terraform-validate:
+    runs-on: [self-hosted]
+    strategy:
+      matrix:
+        # list of directories in the repo that hosts Terraform samples
+        tf-sample: [
+          'anthos-bm-gcp-terraform',
+          'anthos-bm-openstack-terraform']
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{github.event.pull_request.head.ref}}
+          repository: ${{github.event.pull_request.head.repo.full_name}}
+          # this creates one job per sample directory listed in the matrix above
+          # tf-sample-dir: ${{ matrix.tf-sample }}
+      - name: Terraform Validate
+        timeout-minutes: 20
+        env:
+          SAMPLE_DIR: ${{ matrix.tf-sample }}
+        run: |
+          echo "Terraform validating: $SAMPLE_DIR"
+          cd $SAMPLE_DIR
+          terraform init -backend=false
+          terraform validate -json .
   unit-tests:
     runs-on: [self-hosted]
     steps:
@@ -62,7 +86,7 @@ jobs:
         with:
           ref: ${{github.event.pull_request.head.ref}}
           repository: ${{github.event.pull_request.head.repo.full_name}}
-      - name: License Check
+      - name: Tests for anthos-bm-gcp-terraform/test/unit
         env:
           GOOGLE_CLOUD_PROJECT: ${{ secrets.GOOGLE_CLOUD_PROJECT }}
           GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
@@ -70,5 +94,4 @@ jobs:
           echo $GOOGLE_CLOUD_PROJECT
           echo $GOOGLE_APPLICATION_CREDENTIALS
           cd anthos-bm-gcp-terraform/test/unit/
-          addlicense -check ./
           go test -v -timeout 30m ./
