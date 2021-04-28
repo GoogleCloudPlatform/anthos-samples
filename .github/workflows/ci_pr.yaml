@@ -70,6 +70,7 @@ jobs:
           terraform validate -json .
   unit-tests:
     runs-on: [self-hosted]
+    needs: tf-validate
     strategy:
       matrix:
         # list of directories in the repo that hosts Golang unit tests
@@ -77,11 +78,11 @@ jobs:
         go-test-dir: ['anthos-bm-gcp-terraform/test/unit/']
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-go@v2
+      # - uses: actions/setup-go@v2
         with:
           ref: ${{github.event.pull_request.head.ref}}
           repository: ${{github.event.pull_request.head.repo.full_name}}
-          go-version: '^1.16.2'
+          # go-version: '^1.16.2'
       - name: Golang unit tests
         timeout-minutes: 20
         env:
@@ -89,6 +90,9 @@ jobs:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
           GOLANG_TEST_DIR: ${{ matrix.go-test-dir }}
         run: |
+          whoami
+          hostname
+          /usr/local/go/bin/go version
           go version
           echo $GOOGLE_CLOUD_PROJECT
           echo $GOOGLE_APPLICATION_CREDENTIALS
