@@ -22,36 +22,53 @@ jobs:
   code-tests:
     runs-on: [self-hosted]
     steps:
-    - uses: actions/checkout@v2
-      with:
-        ref: ${{github.event.pull_request.head.ref}}
-        repository: ${{github.event.pull_request.head.repo.full_name}}
-    - name: License Check
-      run: |
-        addlicense -check ./
-    - name: Terraform Checkstyle
-      timeout-minutes: 20
-      run: |
-        terraform fmt -recursive -check -diff ./
-    - name: Terraform Validate
-      timeout-minutes: 20
-      run: |
-        for sample in $(cat .github/terraform_samples); do
-          echo "Terraform validating: $sample"
-          cd $sample
-          terraform init -backend=false
-          terraform validate -json .
-          cd ..
-        done
-    - name: Golang Checkstyle
-      timeout-minutes: 20
-      run: |
-        golint ./... > golint.err 2>&1
-        if ! [ -s golint.err ]; then
-          exit 0
-        fi
-        if ! grep -q '"./..." matched no packages' "golint.err"; then
-          echo '[✘] Some .go files are not properly formatted. Check for lint errors using (golint ./...)'
-          cat golint.err
-          exit 1
-        fi
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{github.event.pull_request.head.ref}}
+          repository: ${{github.event.pull_request.head.repo.full_name}}
+      - name: License Check
+        run: |
+          addlicense -check ./
+      - name: Terraform Checkstyle
+        timeout-minutes: 20
+        run: |
+          terraform fmt -recursive -check -diff ./
+      - name: Terraform Validate
+        timeout-minutes: 20
+        run: |
+          for sample in $(cat .github/terraform_samples); do
+            echo "Terraform validating: $sample"
+            cd $sample
+            terraform init -backend=false
+            terraform validate -json .
+            cd ..
+          done
+      - name: Golang Checkstyle
+        timeout-minutes: 20
+        run: |
+          golint ./... > golint.err 2>&1
+          if ! [ -s golint.err ]; then
+            exit 0
+          fi
+          if ! grep -q '"./..." matched no packages' "golint.err"; then
+            echo '[✘] Some .go files are not properly formatted. Check for lint errors using (golint ./...)'
+            cat golint.err
+            exit 1
+          fi
+  unit-tests:
+    runs-on: [self-hosted]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{github.event.pull_request.head.ref}}
+          repository: ${{github.event.pull_request.head.repo.full_name}}
+      - name: License Check
+        env:
+          GOOGLE_CLOUD_PROJECT: ${{ secrets.GOOGLE_CLOUD_PROJECT }}
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+        run: |
+          echo $GOOGLE_CLOUD_PROJECT
+          echo $GOOGLE_APPLICATION_CREDENTIALS
+          cd anthos-bm-gcp-terraform/test/unit/
+          addlicense -check ./
+          go test -v -timeout 30m ./
