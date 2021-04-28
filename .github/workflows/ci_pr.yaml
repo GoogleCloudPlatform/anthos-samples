@@ -96,8 +96,8 @@ jobs:
           echo $PATH
           cat ~/.bashrc
           source ~/.bashrc
-          go version
+          /usr/local/go/bin/go version
           echo $GOOGLE_CLOUD_PROJECT
           echo $GOOGLE_APPLICATION_CREDENTIALS
           cd $GOLANG_TEST_DIR
-          go test -v -timeout 30m ./
+          /usr/local/go/bin/go test -v -timeout 30m ./
