@@ -13,11 +13,13 @@
 # limitations under the License.
 
 ## TODO:: Post comment on correct ways to resolve the build errors
-name: "Continuous Integration - Pull Request"
+name: "Continuous Integration - Any commits to master"
 on:
-  pull_request:
+  push:
+    # run on pushes to master or release/*
     branches:
       - master
+      - release/*
 jobs:
   static-code-tests:
     runs-on: [self-hosted]
@@ -78,11 +80,9 @@ jobs:
         go-test-dir: ['anthos-bm-gcp-terraform/test/unit/']
     steps:
       - uses: actions/checkout@v2
-      # - uses: actions/setup-go@v2
         with:
           ref: ${{github.event.pull_request.head.ref}}
           repository: ${{github.event.pull_request.head.repo.full_name}}
-          # go-version: '^1.16.2'
       - name: Golang unit tests
         timeout-minutes: 20
         env:
@@ -91,8 +91,5 @@ jobs:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
           GOLANG_TEST_DIR: ${{ matrix.go-test-dir }}
         run: |
-          echo 'export GOPATH=$HOME/go' >> ~/.profile
-          echo 'export PATH=$PATH:/usr/local/go/bin:$GOPATH/bin' >> ~/.profile
-          source ~/.profile
           cd $GOLANG_TEST_DIR
           /usr/local/go/bin/go test -v -timeout 30m ./
