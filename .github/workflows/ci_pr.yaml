@@ -33,16 +33,6 @@ jobs:
         timeout-minutes: 20
         run: |
           terraform fmt -recursive -check -diff ./
-      # - name: Terraform Validate
-      #   timeout-minutes: 20
-      #   run: |
-      #     for sample in $(cat .github/terraform_samples); do
-      #       echo "Terraform validating: $sample"
-      #       cd $sample
-      #       terraform init -backend=false
-      #       terraform validate -json .
-      #       cd ..
-      #     done
       - name: Golang Checkstyle
         timeout-minutes: 20
         run: |
@@ -55,11 +45,12 @@ jobs:
             cat golint.err
             exit 1
           fi
-  terraform-validate:
+  tf-validate:
     runs-on: [self-hosted]
     strategy:
       matrix:
         # list of directories in the repo that hosts Terraform samples
+        # update this list as new terraform samples are added to the repo
         tf-sample: [
           'anthos-bm-gcp-terraform',
           'anthos-bm-openstack-terraform']
@@ -68,8 +59,6 @@ jobs:
         with:
           ref: ${{github.event.pull_request.head.ref}}
           repository: ${{github.event.pull_request.head.repo.full_name}}
-          # this creates one job per sample directory listed in the matrix above
-          # tf-sample-dir: ${{ matrix.tf-sample }}
       - name: Terraform Validate
         timeout-minutes: 20
         env:
@@ -81,17 +70,27 @@ jobs:
           terraform validate -json .
   unit-tests:
     runs-on: [self-hosted]
+    strategy:
+      matrix:
+        # list of directories in the repo that hosts Golang unit tests
+        # update this list as new unit tests in golang are added to the repo
+        go-test-dir: ['anthos-bm-gcp-terraform/test/unit/']
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
         with:
           ref: ${{github.event.pull_request.head.ref}}
           repository: ${{github.event.pull_request.head.repo.full_name}}
-      - name: Tests for anthos-bm-gcp-terraform/test/unit
+          go-version: '^1.16.2'
+      - name: Golang unit tests
+        timeout-minutes: 20
         env:
           GOOGLE_CLOUD_PROJECT: ${{ secrets.GOOGLE_CLOUD_PROJECT }}
           GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          GOLANG_TEST_DIR: ${{ matrix.go-test-dir }}
         run: |
+          go version
           echo $GOOGLE_CLOUD_PROJECT
           echo $GOOGLE_APPLICATION_CREDENTIALS
-          cd anthos-bm-gcp-terraform/test/unit/
+          cd $GOLANG_TEST_DIR
           go test -v -timeout 30m ./
