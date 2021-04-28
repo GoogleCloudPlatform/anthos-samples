@@ -34,7 +34,7 @@ func TestUnit_VmModule(goTester *testing.T) {
 	projectID := gcp.GetGoogleProjectIDFromEnvVar(goTester) // from GOOGLE_CLOUD_PROJECT
 	region := gcp.GetRandomRegion(goTester, projectID, nil, nil)
 	network := "default"
-	instanceTemplate := "test_instance_template"
+	instanceTemplate := fmt.Sprintf("/projects/%s/test_instance_template", projectID)
 	randomVMHostNameOne := gcp.RandomValidGcpName()
 	randomVMHostNameTwo := gcp.RandomValidGcpName()
 	randomVMHostNameThree := gcp.RandomValidGcpName()

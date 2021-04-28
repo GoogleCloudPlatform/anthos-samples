@@ -30,8 +30,7 @@ func TestUnit_ExternalIpsModule(goTester *testing.T) {
 	goTester.Parallel()
 
 	moduleDir := testStructure.CopyTerraformFolderToTemp(goTester, "../../", "modules/external-ip")
-	projectID := gcp.GetGoogleProjectIDFromEnvVar(goTester) // from GOOGLE_CLOUD_PROJECT
-	region := gcp.GetRandomRegion(goTester, projectID, nil, nil)
+	region := "test_region"
 	randomVMHostNameOne := gcp.RandomValidGcpName()
 	randomVMHostNameTwo := gcp.RandomValidGcpName()
 	randomVMHostNameThree := gcp.RandomValidGcpName()

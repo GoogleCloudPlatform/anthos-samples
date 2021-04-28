@@ -17,11 +17,9 @@ package unit
 import (
 	"encoding/json"
 	"fmt"
-	"os"
 	"testing"
 
 	"github.com/GoogleCloudPlatform/anthos-samples/anthos-bm-gcp-terraform/util"
-	"github.com/gruntwork-io/terratest/modules/gcp"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	testStructure "github.com/gruntwork-io/terratest/modules/test-structure"
 	"github.com/stretchr/testify/assert"
@@ -31,9 +29,9 @@ func TestUnit_InitModule(goTester *testing.T) {
 	goTester.Parallel()
 
 	moduleDir := testStructure.CopyTerraformFolderToTemp(goTester, "../../", "modules/init")
-	projectID := gcp.GetGoogleProjectIDFromEnvVar(goTester) // from GOOGLE_CLOUD_PROJECT
-	credentialsFile := os.Getenv("GOOGLE_CLOUD_PROJECT")
-	zone := gcp.GetRandomZone(goTester, projectID, nil, nil, nil)
+	projectID := "test_project"
+	zone := "test_zone"
+	credentialsFile := "../test/../path/../credentials_file.json"
 	username := "test_username"
 	hostname := "test_hostname"
 	ipAddress := "10.10.10.01"
