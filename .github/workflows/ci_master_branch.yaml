@@ -13,7 +13,7 @@
 # limitations under the License.
 
 ## TODO:: Post comment on correct ways to resolve the build errors
-name: "Continuous Integration - Any commits to master"
+name: "Continuous Integration - Master/Release"
 on:
   push:
     # run on pushes to master or release/*
