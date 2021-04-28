@@ -68,7 +68,7 @@ jobs:
           cd $SAMPLE_DIR
           terraform init -backend=false
           terraform validate -json .
-  unit-tests:
+  go-unit-tests:
     runs-on: [self-hosted]
     needs: tf-validate
     strategy:
