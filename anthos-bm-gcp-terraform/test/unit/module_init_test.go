@@ -34,7 +34,7 @@ func TestUnit_InitModule(goTester *testing.T) {
 	credentialsFile := "../test/../path/../credentials_file.json"
 	username := "test_username"
 	hostname := "test_hostname"
-	ipAddress := "10.10.10.01"
+	publicIp := "10.10.10.01"
 	initScript := "../test/../path/../init_script.sh"
 	preflightScript := "../test/../path/../preflight_script.sh"
 	initLogs := "test_init_log_file.log"
@@ -54,7 +54,7 @@ func TestUnit_InitModule(goTester *testing.T) {
 			"zone":                   zone,
 			"username":               username,
 			"hostname":               hostname,
-			"publicIp":               ipAddress,
+			"publicIp":               publicIp,
 			"init_script":            initScript,
 			"preflight_script":       preflightScript,
 			"init_logs":              initLogs,
@@ -84,7 +84,7 @@ func TestUnit_InitModule(goTester *testing.T) {
 	var initModulePlan util.InitModulePlan
 	err = json.Unmarshal([]byte(tfPlanJSON), &initModulePlan)
 	util.LogError(err, "Failed to parse the JSON plan into the ExternalIpPlan struct in unit/module_external_ip.go")
-
+	util.WriteToFile(tfPlanJSON, "../../plan.json")
 	// TODO: test variables count and names
 	// TODO: test variable format (IP address)
 	// TODO: test default variables
@@ -93,14 +93,213 @@ func TestUnit_InitModule(goTester *testing.T) {
 
 	validateVariables(goTester, &initModulePlan)
 
+	// verify input variable project_id in plan matches
+	assert.Equal(
+		goTester,
+		projectID,
+		initModulePlan.Variables.ProjectID.Value,
+		"Variable does not match in plan: project_id.",
+	)
+
+	// verify input variable credentials_file in plan matches
+	assert.Equal(
+		goTester,
+		credentialsFile,
+		initModulePlan.Variables.CredentialsFile.Value,
+		"Variable does not match in plan: credentials_file.",
+	)
+
+	// verify input variable zone in plan matches
+	assert.Equal(
+		goTester,
+		zone,
+		initModulePlan.Variables.Zone.Value,
+		"Variable does not match in plan: zone.",
+	)
+
+	// verify input variable username in plan matches
+	assert.Equal(
+		goTester,
+		username,
+		initModulePlan.Variables.Username.Value,
+		"Variable does not match in plan: username.",
+	)
+
+	// verify input variable hostname in plan matches
+	assert.Equal(
+		goTester,
+		hostname,
+		initModulePlan.Variables.Hostname.Value,
+		"Variable does not match in plan: hostname.",
+	)
+
+	// verify input variable publicIp in plan matches
+	assert.Equal(
+		goTester,
+		publicIp,
+		initModulePlan.Variables.PublicIP.Value,
+		"Variable does not match in plan: publicIp.",
+	)
+
+	// verify input variable init_script in plan matches
+	assert.Equal(
+		goTester,
+		initScript,
+		initModulePlan.Variables.InitScriptPath.Value,
+		"Variable does not match in plan: init_script.",
+	)
+
+	// verify input variable preflight_script in plan matches
+	assert.Equal(
+		goTester,
+		preflightScript,
+		initModulePlan.Variables.PreflightsScript.Value,
+		"Variable does not match in plan: preflight_script.",
+	)
+
+	// verify input variable init_logs in plan matches
+	assert.Equal(
+		goTester,
+		initLogs,
+		initModulePlan.Variables.InitLogsFile.Value,
+		"Variable does not match in plan: init_logs.",
+	)
+
+	// verify input variable init_vars_file in plan matches
+	assert.Equal(
+		goTester,
+		initVarsFile,
+		initModulePlan.Variables.InitScriptVarsFilePath.Value,
+		"Variable does not match in plan: init_vars_file.",
+	)
+
+	// verify input variable cluster_yaml_path in plan matches
+	assert.Equal(
+		goTester,
+		clusterYamlPath,
+		initModulePlan.Variables.ClusterYamlPath.Value,
+		"Variable does not match in plan: cluster_yaml_path.",
+	)
+
+	// verify input variable pub_key_path_template in plan matches
+	assert.Equal(
+		goTester,
+		pubKeyPathTemplate,
+		initModulePlan.Variables.PublicKeyTemplatePath.Value,
+		"Variable does not match in plan: pub_key_path_template.",
+	)
+
+	// verify input variable priv_key_path_template in plan matches
+	assert.Equal(
+		goTester,
+		privKeyPathTemplate,
+		initModulePlan.Variables.PrivateKeyTemplatePath.Value,
+		"Variable does not match in plan: priv_key_path_template.",
+	)
 }
 
 func validateVariables(goTester *testing.T, tfPlan *util.InitModulePlan) {
-	// verify plan has region input variable
+	// verify plan has project_id input variable
 	hasVar := assert.NotNil(
 		goTester,
 		tfPlan.Variables.ProjectID,
 		"Variable not found in plan: project_id",
+	)
+	util.ExitIf(hasVar, false)
+
+	// verify plan has credentials_file input variable
+	hasVar = assert.NotNil(
+		goTester,
+		tfPlan.Variables.CredentialsFile,
+		"Variable not found in plan: credentials_file",
+	)
+	util.ExitIf(hasVar, false)
+
+	// verify plan has zone input variable
+	hasVar = assert.NotNil(
+		goTester,
+		tfPlan.Variables.Zone,
+		"Variable not found in plan: zone",
+	)
+	util.ExitIf(hasVar, false)
+
+	// verify plan has username input variable
+	hasVar = assert.NotNil(
+		goTester,
+		tfPlan.Variables.Username,
+		"Variable not found in plan: username",
+	)
+	util.ExitIf(hasVar, false)
+
+	// verify plan has hostname input variable
+	hasVar = assert.NotNil(
+		goTester,
+		tfPlan.Variables.Hostname,
+		"Variable not found in plan: hostname",
+	)
+	util.ExitIf(hasVar, false)
+
+	// verify plan has publicIp input variable
+	hasVar = assert.NotNil(
+		goTester,
+		tfPlan.Variables.PublicIP,
+		"Variable not found in plan: publicIp",
+	)
+	util.ExitIf(hasVar, false)
+
+	// verify plan has init_script input variable
+	hasVar = assert.NotNil(
+		goTester,
+		tfPlan.Variables.InitScriptPath,
+		"Variable not found in plan: init_script",
+	)
+	util.ExitIf(hasVar, false)
+
+	// verify plan has preflight_script input variable
+	hasVar = assert.NotNil(
+		goTester,
+		tfPlan.Variables.PreflightsScript,
+		"Variable not found in plan: preflight_script",
+	)
+	util.ExitIf(hasVar, false)
+
+	// verify plan has init_logs input variable
+	hasVar = assert.NotNil(
+		goTester,
+		tfPlan.Variables.InitLogsFile,
+		"Variable not found in plan: init_logs",
+	)
+	util.ExitIf(hasVar, false)
+
+	// verify plan has init_vars_file input variable
+	hasVar = assert.NotNil(
+		goTester,
+		tfPlan.Variables.InitScriptVarsFilePath,
+		"Variable not found in plan: init_vars_file",
+	)
+	util.ExitIf(hasVar, false)
+
+	// verify plan has cluster_yaml_path input variable
+	hasVar = assert.NotNil(
+		goTester,
+		tfPlan.Variables.ClusterYamlPath,
+		"Variable not found in plan: cluster_yaml_path",
+	)
+	util.ExitIf(hasVar, false)
+
+	// verify plan has pub_key_path_template input variable
+	hasVar = assert.NotNil(
+		goTester,
+		tfPlan.Variables.PublicKeyTemplatePath,
+		"Variable not found in plan: pub_key_path_template",
+	)
+	util.ExitIf(hasVar, false)
+
+	// verify plan has priv_key_path_template input variable
+	hasVar = assert.NotNil(
+		goTester,
+		tfPlan.Variables.PrivateKeyTemplatePath,
+		"Variable not found in plan: priv_key_path_template",
 	)
 	util.ExitIf(hasVar, false)
 }
