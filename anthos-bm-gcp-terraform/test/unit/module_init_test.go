@@ -34,7 +34,7 @@ func TestUnit_InitModule(goTester *testing.T) {
 	credentialsFile := "../test/../path/../credentials_file.json"
 	username := "test_username"
 	hostname := "test_hostname"
-	publicIp := "10.10.10.01"
+	publicIP := "10.10.10.01"
 	initScript := "../test/../path/../init_script.sh"
 	preflightScript := "../test/../path/../preflight_script.sh"
 	initLogs := "test_init_log_file.log"
@@ -54,7 +54,7 @@ func TestUnit_InitModule(goTester *testing.T) {
 			"zone":                   zone,
 			"username":               username,
 			"hostname":               hostname,
-			"publicIp":               publicIp,
+			"publicIp":               publicIP,
 			"init_script":            initScript,
 			"preflight_script":       preflightScript,
 			"init_logs":              initLogs,
@@ -84,13 +84,14 @@ func TestUnit_InitModule(goTester *testing.T) {
 	var initModulePlan util.InitModulePlan
 	err = json.Unmarshal([]byte(tfPlanJSON), &initModulePlan)
 	util.LogError(err, "Failed to parse the JSON plan into the ExternalIpPlan struct in unit/module_external_ip.go")
-	util.WriteToFile(tfPlanJSON, "../../plan.json")
+
 	// TODO: test variables count and names
 	// TODO: test variable format (IP address)
 	// TODO: test default variables
 	// TODO: test locals variables and there validity
 	// TODO: test resources that are planned
 
+	// validate the plan has the expected variables
 	validateVariables(goTester, &initModulePlan)
 
 	// verify input variable project_id in plan matches
@@ -136,7 +137,7 @@ func TestUnit_InitModule(goTester *testing.T) {
 	// verify input variable publicIp in plan matches
 	assert.Equal(
 		goTester,
-		publicIp,
+		publicIP,
 		initModulePlan.Variables.PublicIP.Value,
 		"Variable does not match in plan: publicIp.",
 	)
