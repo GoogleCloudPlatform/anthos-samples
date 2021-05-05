@@ -25,13 +25,14 @@ type TFModule struct {
 // TFResource is the struct representation of a terraform resource in JSON
 // format found in the output of terraform plan
 type TFResource struct {
-	Type     string   `json:"type"`
-	Name     string   `json:"name"`
-	Provider string   `json:"provider_name"`
-	Values   TFValues `json:"values"`
+	Type         string          `json:"type"`
+	Name         string          `json:"name"`
+	Provider     string          `json:"provider_name"`
+	Values       TFValues        `json:"values"`
+	Provisioners []TFProvisioner `json:"provisioners"`
 }
 
-// TFValues represents the common terraform resource attirbutes available in the
+// TFValues represents the common terraform resource attributes available in the
 // JSON output of terraform plan
 type TFValues struct {
 	Name              string      `json:"name"`
@@ -45,6 +46,12 @@ type TFValues struct {
 	CryptoAlgorithm   string      `json:"algorithm"`
 	Trigger           Trigger     `json:"triggers"`
 	NetworkInterfaces []Interface `json:"network_interface"`
+}
+
+// TFProvisioner represents the provisioners configured in the terraform output
+// resulting from the terraform plan
+type TFProvisioner struct {
+	Type string `json:"type"`
 }
 
 // Interface represents a network interface of a network resource

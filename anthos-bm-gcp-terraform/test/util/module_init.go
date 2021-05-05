@@ -19,25 +19,26 @@ package util
 type InitModulePlan struct {
 	Variables     InitVariables     `json:"variables"`
 	PlannedValues InitPlannedValues `json:"planned_values"`
+	Configuration InitConfiguration `json:"configuration"`
 }
 
 // InitVariables represents the variables defined within the init terraform
 // module. When variables are added to the module this struct needs to be
 // modified
 type InitVariables struct {
-	ProjectID              *InitVariable `json:"project_id"`
-	PublicIP               *InitVariable `json:"publicIp"`
 	Zone                   *InitVariable `json:"zone"`
+	PublicIP               *InitVariable `json:"publicIp"`
+	ProjectID              *InitVariable `json:"project_id"`
 	Username               *InitVariable `json:"username"`
 	Hostname               *InitVariable `json:"hostname"`
 	InitLogsFile           *InitVariable `json:"init_logs"`
 	InitScriptPath         *InitVariable `json:"init_script"`
+	ClusterYamlPath        *InitVariable `json:"cluster_yaml_path"`
 	CredentialsFile        *InitVariable `json:"credentials_file"`
 	PreflightsScript       *InitVariable `json:"preflight_script"`
-	InitScriptVarsFilePath *InitVariable `json:"init_vars_file"`
-	ClusterYamlPath        *InitVariable `json:"cluster_yaml_path"`
 	PublicKeyTemplatePath  *InitVariable `json:"pub_key_path_template"`
 	PrivateKeyTemplatePath *InitVariable `json:"priv_key_path_template"`
+	InitScriptVarsFilePath *InitVariable `json:"init_vars_file"`
 }
 
 // InitVariable represents an instance of a single terraform input variable
@@ -46,8 +47,14 @@ type InitVariable struct {
 	Value string `json:"value"`
 }
 
-// InitPlannedValues represent the planned state of the terraform run resulting
+// InitPlannedValues represents the planned state of the terraform run resulting
 // from the input variables and the init terraform module
 type InitPlannedValues struct {
+	RootModule TFModule `json:"root_module"`
+}
+
+// InitConfiguration represents the configuration output in the execution plan
+// resulting from the input variables and the init terraform module
+type InitConfiguration struct {
 	RootModule TFModule `json:"root_module"`
 }

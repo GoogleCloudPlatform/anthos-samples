@@ -25,6 +25,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// Test for the following:
+// 		-	tests if the module has the expected variables defined
+//		- tests if the variable in the plan match the ones passed in
+//		- tests if the plan has the expected resources and modules
+//		- tests if the plan has the correct provisioners for null_resource
 func TestUnit_InitModule(goTester *testing.T) {
 	goTester.Parallel()
 
@@ -45,24 +50,25 @@ func TestUnit_InitModule(goTester *testing.T) {
 
 	tfPlanOutput := "terraform_test.tfplan"
 	tfPlanOutputArg := fmt.Sprintf("-out=%s", tfPlanOutput)
+	tfVarsMap := map[string]interface{}{
+		"project_id":             projectID,
+		"credentials_file":       credentialsFile,
+		"zone":                   zone,
+		"username":               username,
+		"hostname":               hostname,
+		"publicIp":               publicIP,
+		"init_script":            initScript,
+		"preflight_script":       preflightScript,
+		"init_logs":              initLogs,
+		"init_vars_file":         initVarsFile,
+		"cluster_yaml_path":      clusterYamlPath,
+		"pub_key_path_template":  pubKeyPathTemplate,
+		"priv_key_path_template": privKeyPathTemplate,
+	}
 	tfOptions := terraform.WithDefaultRetryableErrors(goTester, &terraform.Options{
 		TerraformDir: moduleDir,
 		// Variables to pass to our Terraform code using -var options
-		Vars: map[string]interface{}{
-			"project_id":             projectID,
-			"credentials_file":       credentialsFile,
-			"zone":                   zone,
-			"username":               username,
-			"hostname":               hostname,
-			"publicIp":               publicIP,
-			"init_script":            initScript,
-			"preflight_script":       preflightScript,
-			"init_logs":              initLogs,
-			"init_vars_file":         initVarsFile,
-			"cluster_yaml_path":      clusterYamlPath,
-			"pub_key_path_template":  pubKeyPathTemplate,
-			"priv_key_path_template": privKeyPathTemplate,
-		},
+		Vars:         tfVarsMap,
 		PlanFilePath: tfPlanOutput,
 	})
 
@@ -85,115 +91,181 @@ func TestUnit_InitModule(goTester *testing.T) {
 	err = json.Unmarshal([]byte(tfPlanJSON), &initModulePlan)
 	util.LogError(err, "Failed to parse the JSON plan into the ExternalIpPlan struct in unit/module_external_ip.go")
 
-	// TODO: test variables count and names
-	// TODO: test variable format (IP address)
-	// TODO: test default variables
-	// TODO: test locals variables and there validity
-	// TODO: test resources that are planned
-
 	// validate the plan has the expected variables
 	validateVariables(goTester, &initModulePlan)
+	// validate the plan has the corect values set for the expected variables
+	validateVariableValues(goTester, &initModulePlan, &tfVarsMap)
 
-	// verify input variable project_id in plan matches
-	assert.Equal(
+	// validate the plan has the expected resources and modules
+	// resource type must be one of the following
+	resourceTypes := []string{"tls_private_key", "local_file", "null_resource"}
+	for idx, rootModule := range initModulePlan.PlannedValues.RootModule.Resources {
+		assert.Contains(
+			goTester,
+			resourceTypes,
+			rootModule.Type,
+			fmt.Sprintf("Invalid resource type for planned_values.root_module.resources[%d].type", idx),
+		)
+
+		if rootModule.Type == "local_file" {
+			keyFilenames := []string{
+				fmt.Sprintf(pubKeyPathTemplate, hostname),
+				fmt.Sprintf(privKeyPathTemplate, hostname),
+			}
+			assert.Contains(
+				goTester,
+				keyFilenames,
+				rootModule.Values.FileName,
+				fmt.Sprintf("Invalid file name for planned_values.root_module.resources[%d].values.filename", idx),
+			)
+			assert.Equal(
+				goTester,
+				"0777",
+				rootModule.Values.DirPermissions,
+				fmt.Sprintf("Invalid directory permissions for planned_values.root_module.resources[%d].values.directory_permission", idx),
+			)
+			assert.Equal(
+				goTester,
+				"0600",
+				rootModule.Values.FilePermissions,
+				fmt.Sprintf("Invalid file permission for planned_values.root_module.resources[%d].values.file_permission", idx),
+			)
+		} else if rootModule.Type == "tls_private_key" {
+			assert.Equal(
+				goTester,
+				"RSA",
+				rootModule.Values.CryptoAlgorithm,
+				fmt.Sprintf("Invalid algorithm for planned_values.root_module.resources[%d].values.algorithm", idx),
+			)
+		}
+	}
+
+	// verify that there is only one child module that uses gcloud to add metadata
+	assert.Len(
 		goTester,
-		projectID,
-		initModulePlan.Variables.ProjectID.Value,
-		"Variable does not match in plan: project_id.",
+		initModulePlan.PlannedValues.RootModule.ChildModules,
+		1,
+		fmt.Sprintf("Invalid number of planned_values.root_module.child_modules"),
 	)
 
-	// verify input variable credentials_file in plan matches
+	// verify that the existing child module name matches
 	assert.Equal(
 		goTester,
-		credentialsFile,
-		initModulePlan.Variables.CredentialsFile.Value,
-		"Variable does not match in plan: credentials_file.",
+		"module.gcloud_add_ssh_key_metadata",
+		initModulePlan.PlannedValues.RootModule.ChildModules[0].ModuleAddress,
+		"Unexpected module address for planned_values.root_module.child_modules[0].address",
 	)
 
-	// verify input variable zone in plan matches
+	// validate that the plan configurations have the correct provisioners for null_resource
+	validatePlanConfigurations(goTester, &initModulePlan)
+}
+
+// Test if the correct default values are being set
+func TestUnit_InitModule_DefaultValues(goTester *testing.T) {
+	goTester.Parallel()
+
+	moduleDir := testStructure.CopyTerraformFolderToTemp(goTester, "../../", "modules/init")
+	projectID := "test_project"
+	credentialsFile := "../test/../path/../credentials_file.json"
+	hostname := "test_hostname"
+	publicIP := "10.10.10.01"
+	initVarsFile := "../test/../path/../init_vars_file.var"
+
+	tfPlanOutput := "terraform_test.tfplan"
+	tfPlanOutputArg := fmt.Sprintf("-out=%s", tfPlanOutput)
+	tfVarsMap := map[string]interface{}{
+		"project_id":       projectID,
+		"credentials_file": credentialsFile,
+		"hostname":         hostname,
+		"publicIp":         publicIP,
+		"init_vars_file":   initVarsFile,
+	}
+	tfOptions := terraform.WithDefaultRetryableErrors(goTester, &terraform.Options{
+		TerraformDir: moduleDir,
+		// Variables to pass to our Terraform code using -var options
+		Vars:         tfVarsMap,
+		PlanFilePath: tfPlanOutput,
+	})
+
+	// Terraform init and plan only
+	terraform.Init(goTester, tfOptions)
+	terraform.RunTerraformCommand(
+		goTester,
+		tfOptions,
+		terraform.FormatArgs(tfOptions, "plan", tfPlanOutputArg)...,
+	)
+	tfPlanJSON, err := terraform.ShowE(goTester, tfOptions)
+	util.LogError(err, fmt.Sprintf("Failed to parse the plan file %s into JSON format", tfPlanOutput))
+
+	/**
+	 * Pro tip:
+	 * Write the json to a file using the util.WriteToFile() method to easily debug
+	 * util.WriteToFile(tfPlanJSON, "../../plan.json")
+	 */
+	var initModulePlan util.InitModulePlan
+	err = json.Unmarshal([]byte(tfPlanJSON), &initModulePlan)
+	util.LogError(err, "Failed to parse the JSON plan into the ExternalIpPlan struct in unit/module_external_ip.go")
+
+	// verify input variable zone in plan matches default value
 	assert.Equal(
 		goTester,
-		zone,
+		"us-central1-a",
 		initModulePlan.Variables.Zone.Value,
 		"Variable does not match in plan: zone.",
 	)
 
-	// verify input variable username in plan matches
+	// verify input variable username in plan matches default value
 	assert.Equal(
 		goTester,
-		username,
+		"tfadmin",
 		initModulePlan.Variables.Username.Value,
 		"Variable does not match in plan: username.",
 	)
 
-	// verify input variable hostname in plan matches
+	// verify input variable init_script in plan matches default value
 	assert.Equal(
 		goTester,
-		hostname,
-		initModulePlan.Variables.Hostname.Value,
-		"Variable does not match in plan: hostname.",
-	)
-
-	// verify input variable publicIp in plan matches
-	assert.Equal(
-		goTester,
-		publicIP,
-		initModulePlan.Variables.PublicIP.Value,
-		"Variable does not match in plan: publicIp.",
-	)
-
-	// verify input variable init_script in plan matches
-	assert.Equal(
-		goTester,
-		initScript,
+		"../../resources/init.sh",
 		initModulePlan.Variables.InitScriptPath.Value,
 		"Variable does not match in plan: init_script.",
 	)
 
-	// verify input variable preflight_script in plan matches
+	// verify input variable preflight_script in plan matches default value
 	assert.Equal(
 		goTester,
-		preflightScript,
+		"../../resources/preflights.sh",
 		initModulePlan.Variables.PreflightsScript.Value,
 		"Variable does not match in plan: preflight_script.",
 	)
 
-	// verify input variable init_logs in plan matches
+	// verify input variable init_logs in plan matches default value
 	assert.Equal(
 		goTester,
-		initLogs,
+		"init.log",
 		initModulePlan.Variables.InitLogsFile.Value,
 		"Variable does not match in plan: init_logs.",
 	)
 
-	// verify input variable init_vars_file in plan matches
+	// verify input variable cluster_yaml_path in plan matches default value
 	assert.Equal(
 		goTester,
-		initVarsFile,
-		initModulePlan.Variables.InitScriptVarsFilePath.Value,
-		"Variable does not match in plan: init_vars_file.",
-	)
-
-	// verify input variable cluster_yaml_path in plan matches
-	assert.Equal(
-		goTester,
-		clusterYamlPath,
+		"../../resources/.anthos-gce-cluster.yaml",
 		initModulePlan.Variables.ClusterYamlPath.Value,
 		"Variable does not match in plan: cluster_yaml_path.",
 	)
 
-	// verify input variable pub_key_path_template in plan matches
+	// verify input variable pub_key_path_template in plan matches default value
 	assert.Equal(
 		goTester,
-		pubKeyPathTemplate,
+		"../../resources/.ssh-key-%s.pub",
 		initModulePlan.Variables.PublicKeyTemplatePath.Value,
 		"Variable does not match in plan: pub_key_path_template.",
 	)
 
-	// verify input variable priv_key_path_template in plan matches
+	// verify input variable priv_key_path_template in plan matches default value
 	assert.Equal(
 		goTester,
-		privKeyPathTemplate,
+		"../../resources/.ssh-key-%s.priv",
 		initModulePlan.Variables.PrivateKeyTemplatePath.Value,
 		"Variable does not match in plan: priv_key_path_template.",
 	)
@@ -303,4 +375,161 @@ func validateVariables(goTester *testing.T, tfPlan *util.InitModulePlan) {
 		"Variable not found in plan: priv_key_path_template",
 	)
 	util.ExitIf(hasVar, false)
+}
+
+func validateVariableValues(goTester *testing.T, initModulePlan *util.InitModulePlan, vars *map[string]interface{}) {
+	// verify input variable project_id in plan matches
+	assert.Equal(
+		goTester,
+		(*vars)["project_id"],
+		initModulePlan.Variables.ProjectID.Value,
+		"Variable does not match in plan: project_id.",
+	)
+
+	// verify input variable credentials_file in plan matches
+	assert.Equal(
+		goTester,
+		(*vars)["credentials_file"],
+		initModulePlan.Variables.CredentialsFile.Value,
+		"Variable does not match in plan: credentials_file.",
+	)
+
+	// verify input variable zone in plan matches
+	assert.Equal(
+		goTester,
+		(*vars)["zone"],
+		initModulePlan.Variables.Zone.Value,
+		"Variable does not match in plan: zone.",
+	)
+
+	// verify input variable username in plan matches
+	assert.Equal(
+		goTester,
+		(*vars)["username"],
+		initModulePlan.Variables.Username.Value,
+		"Variable does not match in plan: username.",
+	)
+
+	// verify input variable hostname in plan matches
+	assert.Equal(
+		goTester,
+		(*vars)["hostname"],
+		initModulePlan.Variables.Hostname.Value,
+		"Variable does not match in plan: hostname.",
+	)
+
+	// verify input variable publicIp in plan matches
+	assert.Equal(
+		goTester,
+		(*vars)["publicIp"],
+		initModulePlan.Variables.PublicIP.Value,
+		"Variable does not match in plan: publicIp.",
+	)
+
+	// verify input variable init_script in plan matches
+	assert.Equal(
+		goTester,
+		(*vars)["init_script"],
+		initModulePlan.Variables.InitScriptPath.Value,
+		"Variable does not match in plan: init_script.",
+	)
+
+	// verify input variable preflight_script in plan matches
+	assert.Equal(
+		goTester,
+		(*vars)["preflight_script"],
+		initModulePlan.Variables.PreflightsScript.Value,
+		"Variable does not match in plan: preflight_script.",
+	)
+
+	// verify input variable init_logs in plan matches
+	assert.Equal(
+		goTester,
+		(*vars)["init_logs"],
+		initModulePlan.Variables.InitLogsFile.Value,
+		"Variable does not match in plan: init_logs.",
+	)
+
+	// verify input variable init_vars_file in plan matches
+	assert.Equal(
+		goTester,
+		(*vars)["init_vars_file"],
+		initModulePlan.Variables.InitScriptVarsFilePath.Value,
+		"Variable does not match in plan: init_vars_file.",
+	)
+
+	// verify input variable cluster_yaml_path in plan matches
+	assert.Equal(
+		goTester,
+		(*vars)["cluster_yaml_path"],
+		initModulePlan.Variables.ClusterYamlPath.Value,
+		"Variable does not match in plan: cluster_yaml_path.",
+	)
+
+	// verify input variable pub_key_path_template in plan matches
+	assert.Equal(
+		goTester,
+		(*vars)["pub_key_path_template"],
+		initModulePlan.Variables.PublicKeyTemplatePath.Value,
+		"Variable does not match in plan: pub_key_path_template.",
+	)
+
+	// verify input variable priv_key_path_template in plan matches
+	assert.Equal(
+		goTester,
+		(*vars)["priv_key_path_template"],
+		initModulePlan.Variables.PrivateKeyTemplatePath.Value,
+		"Variable does not match in plan: priv_key_path_template.",
+	)
+}
+
+func validatePlanConfigurations(goTester *testing.T, initModulePlan *util.InitModulePlan) {
+	for rIdx, configResource := range initModulePlan.Configuration.RootModule.Resources {
+		if configResource.Type != "null_resource" {
+			// we just want to check the configs for the null resource
+			continue
+		}
+
+		fileProvisioners := 0
+		localExecProvisioners := 0
+		remoteExecProvisioners := 0
+		expectedProvisioners := []string{"file", "remote-exec", "local-exec"}
+		for pIdx, provisioner := range configResource.Provisioners {
+			assert.Contains(
+				goTester,
+				expectedProvisioners,
+				provisioner.Type,
+				fmt.Sprintf("Invalid provisioner for configuration.root_module.resources[%d].provisioners[%d].type", rIdx, pIdx),
+			)
+
+			if provisioner.Type == "file" {
+				fileProvisioners++
+			} else if provisioner.Type == "local-exec" {
+				localExecProvisioners++
+			} else if provisioner.Type == "remote-exec" {
+				remoteExecProvisioners++
+			}
+		}
+
+		assert.Equal(
+			goTester,
+			4,
+			fileProvisioners,
+			fmt.Sprintf("Unexpected number of file provisioners under configuration.root_module.resources[%d].provisioners", rIdx),
+		)
+
+		assert.Equal(
+			goTester,
+			1,
+			localExecProvisioners,
+			fmt.Sprintf("Unexpected number of local-exec provisioners under configuration.root_module.resources[%d].provisioners", rIdx),
+		)
+
+		assert.Equal(
+			goTester,
+			1,
+			remoteExecProvisioners,
+			fmt.Sprintf("Unexpected number of remote-exec provisioners under configuration.root_module.resources[%d].provisioners", rIdx),
+		)
+	}
 }
