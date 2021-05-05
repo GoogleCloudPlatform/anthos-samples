@@ -52,7 +52,7 @@ type VMNames struct {
 // VMPlannedValues represent the planned state of the terraform run resulting
 // from the input variables and the external-ip terraform module
 type VMPlannedValues struct {
-	Outputs    VMOutputs `json:"outputs"`
+	Outputs    *VMOutputs `json:"outputs"`
 	RootModule TFModule  `json:"root_module"`
 }
 

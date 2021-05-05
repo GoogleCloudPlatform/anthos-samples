@@ -74,9 +74,6 @@ func TestUnit_VmModule(goTester *testing.T) {
 	err = json.Unmarshal([]byte(tfPlanJSON), &vmInstancePlan)
 	util.LogError(err, "Failed to parse the JSON plan into the ExternalIpPlan struct in unit/module_external_ip.go")
 
-	// TODO: test default variables
-	// TODO: test output variables
-
 	// verify plan has region input variable
 	hasVar := assert.NotNil(
 		goTester,
@@ -200,6 +197,69 @@ func TestUnit_VmModule(goTester *testing.T) {
 		numberOfComputeInstanceModules,
 		"Resource count for module type google_compute_instance_from_template does not match in plan",
 	)
+
+	validateOutputs(goTester, vmInstancePlan.PlannedValues.Outputs)
+}
+
+func TestUnit_VmModule_ValidateDefaults(goTester *testing.T) {
+	goTester.Parallel()
+
+	moduleDir := testStructure.CopyTerraformFolderToTemp(goTester, "../../", "modules/vm")
+	projectID := gcp.GetGoogleProjectIDFromEnvVar(goTester) // from GOOGLE_CLOUD_PROJECT
+	instanceTemplate := fmt.Sprintf("/projects/%s/test_instance_template", projectID)
+	randomVMHostNameOne := gcp.RandomValidGcpName()
+	randomVMHostNameTwo := gcp.RandomValidGcpName()
+	randomVMHostNameThree := gcp.RandomValidGcpName()
+	expectedVMNames := []string{
+		randomVMHostNameOne, randomVMHostNameTwo, randomVMHostNameThree}
+
+	tfPlanOutput := "terraform_test.tfplan"
+	tfPlanOutputArg := fmt.Sprintf("-out=%s", tfPlanOutput)
+	tfOptions := terraform.WithDefaultRetryableErrors(goTester, &terraform.Options{
+		TerraformDir: moduleDir,
+		// Variables to pass to our Terraform code using -var options
+		Vars: map[string]interface{}{
+			"vm_names":          expectedVMNames,
+			"instance_template": instanceTemplate,
+		},
+		PlanFilePath: tfPlanOutput,
+	})
+
+	// Terraform init and plan only
+	terraform.Init(goTester, tfOptions)
+	terraform.RunTerraformCommand(
+		goTester,
+		tfOptions,
+		terraform.FormatArgs(tfOptions, "plan", tfPlanOutputArg)...,
+	)
+	tfPlanJSON, err := terraform.ShowE(goTester, tfOptions)
+	util.LogError(err, fmt.Sprintf("Failed to parse the plan file %s into JSON format", tfPlanOutput))
+
+	/**
+	 * Pro tip:
+	 * Write the json to a file using the util.WriteToFile() method to easily debug
+	 * util.WriteToFile(tfPlanJSON, "../../plan.json")
+	 */
+	var vmInstancePlan util.VMInstancePlan
+	err = json.Unmarshal([]byte(tfPlanJSON), &vmInstancePlan)
+	util.LogError(err, "Failed to parse the JSON plan into the ExternalIpPlan struct in unit/module_external_ip.go")
+
+	// verify input variable region in plan matches the default value
+	assert.Equal(
+		goTester,
+		"us-central1",
+		vmInstancePlan.Variables.Region.Value,
+		"Variable does not match default value in plan: region.",
+	)
+
+	// verify input variable network in plan matches the default value
+	assert.Equal(
+		goTester,
+		"default",
+		vmInstancePlan.Variables.Network.Value,
+		"Variable does not match default value in plan: network.",
+	)
+
 }
 
 func validateComputeInstanceSubModule(
@@ -292,5 +352,21 @@ func validateExternalIPInSubModule(
 		region,
 		externalIPResource.Values.Region,
 		fmt.Sprintf("Invalid resource region planned_values.root_module.child_modules[%d].resources[%d].values.region", idx, ipIdx),
+	)
+}
+
+func validateOutputs(goTester *testing.T, vmPlanOutputs *util.VMOutputs) {
+	// verify module produces output in plan
+	assert.NotNil(
+		goTester,
+		vmPlanOutputs,
+		"Module is expected to produce outputs; but none found",
+	)
+
+	// verify module produces an output for vm_info in plan
+	assert.NotNil(
+		goTester,
+		vmPlanOutputs.VMInfo,
+		"Module is expected to have an output for vm_info; but not found",
 	)
 }
