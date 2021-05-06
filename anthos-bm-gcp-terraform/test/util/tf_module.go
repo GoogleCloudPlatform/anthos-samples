@@ -36,6 +36,7 @@ type TFResource struct {
 // JSON output of terraform plan
 type TFValues struct {
 	Name              string      `json:"name"`
+	Index             string      `json:"index"`
 	Region            string      `json:"region"`
 	Zone              string      `json:"zone"`
 	AddressType       string      `json:"address_type"`

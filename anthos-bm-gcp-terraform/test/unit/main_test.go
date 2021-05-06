@@ -23,6 +23,7 @@ import (
 	"net"
 	"os"
 	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/GoogleCloudPlatform/anthos-samples/anthos-bm-gcp-terraform/util"
@@ -148,6 +149,9 @@ func TestUnit_MainScript(goTester *testing.T) {
 		rootResourceCount,
 		fmt.Sprintf("Invalid resource count in the root module of the plan at planned_values.root_module.resources"),
 	)
+
+	vmHostnames := make(map[string]interface{})
+	envVarFilenames := make(map[string]interface{})
 	for idx, rootResource := range terraformPlan.PlannedValues.RootModule.Resources {
 		assert.Equal(
 			goTester,
@@ -155,13 +159,29 @@ func TestUnit_MainScript(goTester *testing.T) {
 			rootResource.Type,
 			fmt.Sprintf("Invalid resource type for planned_values.root_module.resources[%d]", idx),
 		)
-
 		if rootResource.Name == "cluster_yaml" {
 			validateYaml(goTester, instanceCountMapInTest, rootResource, projectID, abmClusterID)
 		} else {
-
+			vmHostnames[rootResource.Values.Index] = nil
+			envVarFilenames[rootResource.Values.FileName] = nil
+			assert.True(
+				goTester,
+				strings.HasSuffix(rootResource.Values.FileName, "init.vars"),
+				fmt.Sprintf(
+					"Initialization env variables file for resource planned_values.root_module.resources[%d].values.filename "+
+						"seems to not match the expected name init.vars", idx),
+			)
 		}
 	}
+	// assert that the length of env var file names map is same as
+	// controlplane nodes + worker nodes + 1 (admin host) meaning that they
+	// are all unique paths
+	assert.Len(
+		goTester,
+		envVarFilenames,
+		instanceCountMapInTest["worker"]+instanceCountMapInTest["controlplane"]+1,
+		"There are overlapping file path names for the init.vars file intended for each different hosts",
+	)
 }
 
 func validateYaml(
@@ -302,7 +322,8 @@ func validateYaml(
 			}
 		}
 	}
-
+	// assert that the length of IPs map is same as
+	// controlplane nodes + worker nodes meaning that they are all unique
 	assert.Len(
 		goTester,
 		allIps,
