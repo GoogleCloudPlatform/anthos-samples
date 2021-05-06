@@ -120,23 +120,23 @@ module "create_service_accounts" {
 
 module "instance_template" {
   source = "terraform-google-modules/vm/google//modules/instance_template"
+  version = "~> 6.3.0"
   depends_on = [
     module.enable_google_apis_primary,
     module.enable_google_apis_secondary
   ]
   # fetched from previous module to explicitely express dependency
   project_id           = module.enable_google_apis_secondary.project_id
-  region               = var.region         # --zone=${ZONE}
-  source_image_family  = var.image_family   # --image-family=ubuntu-2004-lts
-  source_image_project = var.image_project  # --image-project=ubuntu-os-cloud
-  machine_type         = var.machine_type   # --machine-type $MACHINE_TYPE
-  disk_size_gb         = var.boot_disk_size # --boot-disk-size 200G
-  disk_type            = var.boot_disk_type # --boot-disk-type pd-ssd
-  network              = var.network        # --network default
-  tags                 = var.tags           # --tags http-server,https-server
-  can_ip_forward       = true               # --can-ip-forward
-  # TODO: Should be available from any version upwards of v6.2.0
-  # min_cpu_platform     = var.min_cpu_platform # --min-cpu-platform "Intel Haswell"
+  region               = var.region           # --zone=${ZONE}
+  source_image_family  = var.image_family     # --image-family=ubuntu-2004-lts
+  source_image_project = var.image_project    # --image-project=ubuntu-os-cloud
+  machine_type         = var.machine_type     # --machine-type $MACHINE_TYPE
+  disk_size_gb         = var.boot_disk_size   # --boot-disk-size 200G
+  disk_type            = var.boot_disk_type   # --boot-disk-type pd-ssd
+  network              = var.network          # --network default
+  tags                 = var.tags             # --tags http-server,https-server
+  can_ip_forward       = true                 # --can-ip-forward
+  min_cpu_platform     = var.min_cpu_platform # --min-cpu-platform "Intel Haswell"
   service_account = {
     email  = ""
     scopes = var.access_scopes # --scopes cloud-platform
