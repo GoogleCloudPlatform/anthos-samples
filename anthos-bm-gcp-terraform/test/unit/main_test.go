@@ -220,130 +220,40 @@ func TestUnit_MainScript(goTester *testing.T) {
 
 	// validate the instance template module
 	validateInstanceTemplateModule(goTester, &instanceTemplateModules[0], &tfVarsMap)
+	// validate the virtual machines modules
+	validateVirtualMachineMoodules(goTester, &virtualMachineModules, &tfVarsMap)
+	// validate the service account module
+	validateServiceAccMoodule(goTester, &serviceAccModules[0], &tfVarsMap)
+	// validate the Google APIs module
+	validateAPIsMoodule(goTester, &googleAPIsModules, &tfVarsMap)
 
 }
 
-func validateInstanceTemplateModule(goTester *testing.T, module *util.TFModule, vars *map[string]interface{}) {
-	for idx, resource := range module.Resources {
-		if resource.Type == "google_compute_image" {
-			assert.Equal(
-				goTester,
-				(*vars)["image_project"],
-				resource.Values.Project,
-				fmt.Sprintf("Invalid value for attribute at resources[%d].values.project in the instance_template child module", idx),
-			)
-
-			if resource.Name == "image" {
-				assert.Equal(
-					goTester,
-					(*vars)["image"],
-					resource.Values.Name,
-					fmt.Sprintf("Invalid value for attribute at resources[%d].values.name in the instance_template child module", idx),
-				)
-			} else {
-				assert.Equal(
-					goTester,
-					(*vars)["image_family"],
-					resource.Values.ImageFamily,
-					fmt.Sprintf("Invalid value for attribute at resources[%d].values.family in the instance_template child module", idx),
-				)
-			}
+func validateAPIsMoodule(goTester *testing.T, modules *[]util.TFModule, vars *map[string]interface{}) {
+	primaryApis := (*vars)["primary_apis"].([]string)
+	secondaryApis := (*vars)["secondary_apis"].([]string)
+	for _, apisModule := range *modules {
+		var expectedApisCount int
+		var validApiList []string
+		if strings.HasSuffix(apisModule.ModuleAddress, "primary") {
+			validApiList = primaryApis
 		} else {
-			assert.Equal(
+			validApiList = secondaryApis
+		}
+		expectedApisCount = len(validApiList)
+		assert.Len(
+			goTester,
+			apisModule.Resources,
+			expectedApisCount,
+			fmt.Sprintf("Unexpected number of APIs for %s child module", apisModule.ModuleAddress),
+		)
+		for _, api := range apisModule.Resources {
+			assert.Contains(
 				goTester,
-				"google_compute_instance_template",
-				resource.Type,
-				fmt.Sprintf("Invalid resource type for resources[%d] in the instance_template child module", idx),
+				validApiList,
+				api.Values.Service,
+				fmt.Sprintf("Invalid value for API for %s child module", apisModule.ModuleAddress),
 			)
-			assert.True(
-				goTester,
-				resource.Values.CanIPForward,
-				fmt.Sprintf("Invalid value for resources[%d].values.can_ip_forward in the instance_template child module", idx),
-			)
-			assert.Len(
-				goTester,
-				resource.Values.Disk,
-				1,
-				fmt.Sprintf("Invalid length for resources[%d].values.disk in the instance_template child module", idx),
-			)
-			assert.Equal(
-				goTester,
-				(*vars)["boot_disk_type"],
-				resource.Values.Disk[0].Type,
-				fmt.Sprintf("Invalid value for resources[%d].values.disk.boot_disk_type in the instance_template child module", idx),
-			)
-			assert.Equal(
-				goTester,
-				(*vars)["boot_disk_size"],
-				resource.Values.Disk[0].Size,
-				fmt.Sprintf("Invalid value for resources[%d].values.disk.boot_disk_size in the instance_template child module", idx),
-			)
-			assert.Equal(
-				goTester,
-				(*vars)["machine_type"],
-				resource.Values.MachineType,
-				fmt.Sprintf("Invalid value for resources[%d].values.machine_type in the instance_template child module", idx),
-			)
-			assert.Equal(
-				goTester,
-				(*vars)["min_cpu_platform"],
-				resource.Values.MinCPUPlatform,
-				fmt.Sprintf("Invalid value for resources[%d].values.min_cpu_platform in the instance_template child module", idx),
-			)
-			assert.Equal(
-				goTester,
-				(*vars)["network"],
-				resource.Values.NetworkInterfaces[0].Network,
-				fmt.Sprintf("Invalid value for resources[%d].values.network_interface[0].network in the instance_template child module", idx),
-			)
-			assert.Equal(
-				goTester,
-				(*vars)["project_id"],
-				resource.Values.Project,
-				fmt.Sprintf("Invalid value for resources[%d].values.project in the instance_template child module", idx),
-			)
-			assert.Equal(
-				goTester,
-				(*vars)["region"],
-				resource.Values.Region,
-				fmt.Sprintf("Invalid value for resources[%d].values.region in the instance_template child module", idx),
-			)
-			testTags := (*vars)["tags"].([]string)
-			testAccessScopes := (*vars)["access_scopes"].([]string)
-			assert.Len(
-				goTester,
-				resource.Values.Tags,
-				len(testTags),
-				fmt.Sprintf("Invalid length for resources[%d].values.tags in the instance_template child module", idx),
-			)
-			for it, t := range resource.Values.Tags {
-				assert.Contains(
-					goTester,
-					testTags,
-					t,
-					fmt.Sprintf("Invalid value for resources[%d].values.tags[%d] in the instance_template child module", idx, it),
-				)
-			}
-			assert.Len(
-				goTester,
-				resource.Values.ServiceAccount,
-				1,
-				fmt.Sprintf("Invalid length for resources[%d].values.service_account in the instance_template child module", idx),
-			)
-			assert.Len(
-				goTester,
-				resource.Values.ServiceAccount[0].Scopes,
-				len(testAccessScopes),
-				fmt.Sprintf("Invalid length for resources[%d].values.service_account[0].scopes in the instance_template child module", idx),
-			)
-			for it, t := range resource.Values.ServiceAccount[0].Scopes {
-				assert.Contains(
-					goTester,
-					testAccessScopes,
-					t,
-					fmt.Sprintf("Invalid value for resources[%d].values.service_account[0].scopes[%d] in the instance_template child module", idx, it),
-				)
-			}
 		}
 	}
 }
@@ -857,5 +767,181 @@ func validateVariableValuesInMain(goTester *testing.T, tfPlan *util.MainModulePl
 			vmCount,
 			fmt.Sprintf("Variable does not match in plan: instance_count for %s.", name),
 		)
+	}
+}
+
+func validateInstanceTemplateModule(goTester *testing.T, module *util.TFModule, vars *map[string]interface{}) {
+	for idx, resource := range module.Resources {
+		if resource.Type == "google_compute_image" {
+			assert.Equal(
+				goTester,
+				(*vars)["image_project"],
+				resource.Values.Project,
+				fmt.Sprintf("Invalid value for attribute at resources[%d].values.project in the instance_template child module", idx),
+			)
+
+			if resource.Name == "image" {
+				assert.Equal(
+					goTester,
+					(*vars)["image"],
+					resource.Values.Name,
+					fmt.Sprintf("Invalid value for attribute at resources[%d].values.name in the instance_template child module", idx),
+				)
+			} else {
+				assert.Equal(
+					goTester,
+					(*vars)["image_family"],
+					resource.Values.ImageFamily,
+					fmt.Sprintf("Invalid value for attribute at resources[%d].values.family in the instance_template child module", idx),
+				)
+			}
+		} else {
+			assert.Equal(
+				goTester,
+				"google_compute_instance_template",
+				resource.Type,
+				fmt.Sprintf("Invalid resource type for resources[%d] in the instance_template child module", idx),
+			)
+			assert.True(
+				goTester,
+				resource.Values.CanIPForward,
+				fmt.Sprintf("Invalid value for resources[%d].values.can_ip_forward in the instance_template child module", idx),
+			)
+			assert.Len(
+				goTester,
+				resource.Values.Disk,
+				1,
+				fmt.Sprintf("Invalid length for resources[%d].values.disk in the instance_template child module", idx),
+			)
+			assert.Equal(
+				goTester,
+				(*vars)["boot_disk_type"],
+				resource.Values.Disk[0].Type,
+				fmt.Sprintf("Invalid value for resources[%d].values.disk.boot_disk_type in the instance_template child module", idx),
+			)
+			assert.Equal(
+				goTester,
+				(*vars)["boot_disk_size"],
+				resource.Values.Disk[0].Size,
+				fmt.Sprintf("Invalid value for resources[%d].values.disk.boot_disk_size in the instance_template child module", idx),
+			)
+			assert.Equal(
+				goTester,
+				(*vars)["machine_type"],
+				resource.Values.MachineType,
+				fmt.Sprintf("Invalid value for resources[%d].values.machine_type in the instance_template child module", idx),
+			)
+			assert.Equal(
+				goTester,
+				(*vars)["min_cpu_platform"],
+				resource.Values.MinCPUPlatform,
+				fmt.Sprintf("Invalid value for resources[%d].values.min_cpu_platform in the instance_template child module", idx),
+			)
+			assert.Equal(
+				goTester,
+				(*vars)["network"],
+				resource.Values.NetworkInterfaces[0].Network,
+				fmt.Sprintf("Invalid value for resources[%d].values.network_interface[0].network in the instance_template child module", idx),
+			)
+			assert.Equal(
+				goTester,
+				(*vars)["project_id"],
+				resource.Values.Project,
+				fmt.Sprintf("Invalid value for resources[%d].values.project in the instance_template child module", idx),
+			)
+			assert.Equal(
+				goTester,
+				(*vars)["region"],
+				resource.Values.Region,
+				fmt.Sprintf("Invalid value for resources[%d].values.region in the instance_template child module", idx),
+			)
+			testTags := (*vars)["tags"].([]string)
+			testAccessScopes := (*vars)["access_scopes"].([]string)
+			assert.Len(
+				goTester,
+				resource.Values.Tags,
+				len(testTags),
+				fmt.Sprintf("Invalid length for resources[%d].values.tags in the instance_template child module", idx),
+			)
+			for it, t := range resource.Values.Tags {
+				assert.Contains(
+					goTester,
+					testTags,
+					t,
+					fmt.Sprintf("Invalid value for resources[%d].values.tags[%d] in the instance_template child module", idx, it),
+				)
+			}
+			assert.Len(
+				goTester,
+				resource.Values.ServiceAccount,
+				1,
+				fmt.Sprintf("Invalid length for resources[%d].values.service_account in the instance_template child module", idx),
+			)
+			assert.Len(
+				goTester,
+				resource.Values.ServiceAccount[0].Scopes,
+				len(testAccessScopes),
+				fmt.Sprintf("Invalid length for resources[%d].values.service_account[0].scopes in the instance_template child module", idx),
+			)
+			for it, t := range resource.Values.ServiceAccount[0].Scopes {
+				assert.Contains(
+					goTester,
+					testAccessScopes,
+					t,
+					fmt.Sprintf("Invalid value for resources[%d].values.service_account[0].scopes[%d] in the instance_template child module", idx, it),
+				)
+			}
+		}
+	}
+}
+
+func validateVirtualMachineMoodules(goTester *testing.T, modules *[]util.TFModule, vars *map[string]interface{}) {
+	instanceCountMapInTest := (*vars)["instance_count"].(map[string]int)
+	instanceCountMapInTest["admin"] = 1 // add entry for admin VMs too to making life easier
+
+	for _, vmModule := range *modules {
+		computeInstanceCount := 0
+		var vmType string
+		if strings.Contains(vmModule.ModuleAddress, "worker") {
+			vmType = "worker"
+		} else if strings.Contains(vmModule.ModuleAddress, "controlplane") {
+			vmType = "controlplane"
+		} else {
+			vmType = "admin"
+		}
+
+		for _, childModule := range vmModule.ChildModules {
+			if strings.Contains(childModule.ModuleAddress, "external_ip_addresses") {
+				// if the module is for external IP addresses
+				assert.Len(
+					goTester,
+					childModule.Resources,
+					instanceCountMapInTest[vmType],
+					fmt.Sprintf("Unexpected number of external ip resources for %s virtual machine child module", vmType),
+				)
+			} else if strings.Contains(childModule.ModuleAddress, "compute_instance") {
+				// if the module is for compute instances
+				computeInstanceCount++
+			}
+		}
+		assert.Equal(
+			goTester,
+			instanceCountMapInTest[vmType],
+			computeInstanceCount,
+			fmt.Sprintf("Unexpected number of compute instances for %s virtual machine child module", vmType),
+		)
+	}
+}
+
+func validateServiceAccMoodule(goTester *testing.T, module *util.TFModule, vars *map[string]interface{}) {
+	for _, accResource := range module.Resources {
+		if accResource.Type == "google_service_account" {
+			assert.Equal(
+				goTester,
+				(*vars)["project_id"],
+				accResource.Values.Project,
+				"Invalid value for project_id in the service account child module",
+			)
+		}
 	}
 }

@@ -51,6 +51,7 @@ type TFValues struct {
 	ImageFamily       string           `json:"family"`
 	MachineType       string           `json:"machine_type"`
 	MinCPUPlatform    string           `json:"min_cpu_platform"`
+	Service           string           `json:"service"`
 	CanIPForward      bool             `json:"can_ip_forward"`
 	Trigger           Trigger          `json:"triggers"`
 	Tags              []string         `json:"tags"`
