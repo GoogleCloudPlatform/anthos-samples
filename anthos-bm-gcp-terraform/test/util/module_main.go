@@ -36,6 +36,7 @@ type MainVariables struct {
 	BootDiskSize             *Variable     `json:"boot_disk_size"`
 	BootDiskType             *Variable     `json:"boot_disk_type"`
 	CrendetialsFile          *Variable     `json:"credentials_file"`
+	Image                    *Variable     `json:"image"`
 	ImageFamily              *Variable     `json:"image_family"`
 	ImageProject             *Variable     `json:"image_project"`
 	MachineType              *Variable     `json:"machine_type"`

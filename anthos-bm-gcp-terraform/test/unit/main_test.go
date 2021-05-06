@@ -54,6 +54,7 @@ func TestUnit_MainScript(goTester *testing.T) {
 	username := "test_username"
 	minCPUPlatform := "test_cpu_platform"
 	machineType := "test_machine_type"
+	image := "test_image"
 	imageProject := "test_image_project"
 	imageFamily := "test_image_family"
 	bootDiskType := "test_boot_disk_type"
@@ -93,6 +94,7 @@ func TestUnit_MainScript(goTester *testing.T) {
 		"username":                    username,
 		"min_cpu_platform":            minCPUPlatform,
 		"machine_type":                machineType,
+		"image":                       image,
 		"image_project":               imageProject,
 		"image_family":                imageFamily,
 		"boot_disk_type":              bootDiskType,
@@ -158,9 +160,64 @@ func TestUnit_MainScript(goTester *testing.T) {
 	assert.Len(
 		goTester,
 		envVarFilenames,
-		instanceCountMapInTest["worker"]+instanceCountMapInTest["controlplane"]+1,
+		numberOfHostsForInitialization,
 		"There are overlapping file path names for the init.vars file intended for each different hosts",
 	)
+
+	var instanceTemplateModules []util.TFModule
+	var virtualMachineModules []util.TFModule
+	var serviceAccModules []util.TFModule
+	var googleAPIsModules []util.TFModule
+	var initHostsModules []util.TFModule
+
+	for _, childModule := range terraformPlan.PlannedValues.RootModule.ChildModules {
+		moduleAddress := childModule.ModuleAddress
+		if strings.HasSuffix(moduleAddress, "instance_template") {
+			instanceTemplateModules = append(instanceTemplateModules, childModule)
+		} else if strings.HasSuffix(moduleAddress, "vm_hosts") {
+			virtualMachineModules = append(virtualMachineModules, childModule)
+		} else if strings.HasSuffix(moduleAddress, "service_accounts") {
+			serviceAccModules = append(serviceAccModules, childModule)
+		} else if strings.Contains(moduleAddress, "google_apis") {
+			googleAPIsModules = append(googleAPIsModules, childModule)
+		} else if strings.Contains(moduleAddress, "init_hosts") {
+			initHostsModules = append(initHostsModules, childModule)
+		} else {
+			goTester.Error(fmt.Sprintf("Unexpected module with address [%s] at planned_values.root_module.child_modules", moduleAddress))
+		}
+	}
+
+	assert.Len(
+		goTester,
+		instanceTemplateModules,
+		1,
+		"Unexpected number of child modules with address type instance_template at planned_values.root_module.child_modules",
+	)
+	assert.Len(
+		goTester,
+		virtualMachineModules,
+		3, // 1 each for admin host, controlplane, worker nodes
+		"Unexpected number of child modules with address type vm_hosts at planned_values.root_module.child_modules",
+	)
+	assert.Len(
+		goTester,
+		serviceAccModules,
+		1,
+		"Unexpected number of child modules with address type service_accounts at planned_values.root_module.child_modules",
+	)
+	assert.Len(
+		goTester,
+		googleAPIsModules,
+		2, // 1 for primary APIs and 1 for secondary APIs
+		"Unexpected number of child modules with address type google_apis at planned_values.root_module.child_modules",
+	)
+	assert.Len(
+		goTester,
+		initHostsModules,
+		numberOfHostsForInitialization,
+		"Unexpected number of child modules with address type init_hosts at planned_values.root_module.child_modules",
+	)
+
 }
 
 func validateRootResources(
@@ -342,164 +399,151 @@ func validateYaml(
 
 func validateVariablesInMain(goTester *testing.T, tfPlan *util.MainModulePlan) {
 	// verify plan has project_id input variable
-	hasVar := assert.NotNil(
+	assert.NotNil(
 		goTester,
 		tfPlan.Variables.ProjectID,
 		"Variable not found in plan: project_id",
 	)
-	util.ExitIf(hasVar, false)
 
 	// verify plan has region input variable
-	hasVar = assert.NotNil(
+	assert.NotNil(
 		goTester,
 		tfPlan.Variables.Region,
 		"Variable not found in plan: region",
 	)
-	util.ExitIf(hasVar, false)
 
 	// verify plan has zone input variable
-	hasVar = assert.NotNil(
+	assert.NotNil(
 		goTester,
 		tfPlan.Variables.Zone,
 		"Variable not found in plan: zone",
 	)
-	util.ExitIf(hasVar, false)
 
 	// verify plan has network input variable
-	hasVar = assert.NotNil(
+	assert.NotNil(
 		goTester,
 		tfPlan.Variables.Network,
 		"Variable not found in plan: network",
 	)
-	util.ExitIf(hasVar, false)
 
 	// verify plan has username input variable
-	hasVar = assert.NotNil(
+	assert.NotNil(
 		goTester,
 		tfPlan.Variables.Username,
 		"Variable not found in plan: username",
 	)
-	util.ExitIf(hasVar, false)
 
 	// verify plan has abm_cluster_id input variable
-	hasVar = assert.NotNil(
+	assert.NotNil(
 		goTester,
 		tfPlan.Variables.ABMClusterID,
 		"Variable not found in plan: abm_cluster_id",
 	)
-	util.ExitIf(hasVar, false)
 
 	// verify plan has anthos_service_account_name input variable
-	hasVar = assert.NotNil(
+	assert.NotNil(
 		goTester,
 		tfPlan.Variables.AnthosServiceAccountName,
 		"Variable not found in plan: anthos_service_account_name",
 	)
-	util.ExitIf(hasVar, false)
 
 	// verify plan has boot_disk_size input variable
-	hasVar = assert.NotNil(
+	assert.NotNil(
 		goTester,
 		tfPlan.Variables.BootDiskSize,
 		"Variable not found in plan: boot_disk_size",
 	)
-	util.ExitIf(hasVar, false)
 
 	// verify plan has boot_disk_type input variable
-	hasVar = assert.NotNil(
+	assert.NotNil(
 		goTester,
 		tfPlan.Variables.BootDiskType,
 		"Variable not found in plan: boot_disk_type",
 	)
-	util.ExitIf(hasVar, false)
 
 	// verify plan has credentials_file input variable
-	hasVar = assert.NotNil(
+	assert.NotNil(
 		goTester,
 		tfPlan.Variables.CrendetialsFile,
 		"Variable not found in plan: credentials_file",
 	)
-	util.ExitIf(hasVar, false)
+
+	// verify plan has image input variable
+	assert.NotNil(
+		goTester,
+		tfPlan.Variables.Image,
+		"Variable not found in plan: image",
+	)
 
 	// verify plan has image_family input variable
-	hasVar = assert.NotNil(
+	assert.NotNil(
 		goTester,
 		tfPlan.Variables.ImageFamily,
 		"Variable not found in plan: image_family",
 	)
-	util.ExitIf(hasVar, false)
 
 	// verify plan has image_project input variable
-	hasVar = assert.NotNil(
+	assert.NotNil(
 		goTester,
 		tfPlan.Variables.ImageProject,
 		"Variable not found in plan: image_project",
 	)
-	util.ExitIf(hasVar, false)
 
 	// verify plan has machine_type input variable
-	hasVar = assert.NotNil(
+	assert.NotNil(
 		goTester,
 		tfPlan.Variables.MachineType,
 		"Variable not found in plan: machine_type",
 	)
-	util.ExitIf(hasVar, false)
 
 	// verify plan has min_cpu_platform input variable
-	hasVar = assert.NotNil(
+	assert.NotNil(
 		goTester,
 		tfPlan.Variables.MinCPUPlatform,
 		"Variable not found in plan: min_cpu_platform",
 	)
-	util.ExitIf(hasVar, false)
 
 	// verify plan has tags input variable
-	hasVar = assert.NotNil(
+	assert.NotNil(
 		goTester,
 		tfPlan.Variables.Tags,
 		"Variable not found in plan: tags",
 	)
-	util.ExitIf(hasVar, false)
 
 	// verify plan has tags input variable
-	hasVar = assert.NotNil(
+	assert.NotNil(
 		goTester,
 		tfPlan.Variables.Tags,
 		"Variable not found in plan: tags",
 	)
-	util.ExitIf(hasVar, false)
 
 	// verify plan has access_scopes input variable
-	hasVar = assert.NotNil(
+	assert.NotNil(
 		goTester,
 		tfPlan.Variables.AccessScope,
 		"Variable not found in plan: access_scopes",
 	)
-	util.ExitIf(hasVar, false)
 
 	// verify plan has primary_apis input variable
-	hasVar = assert.NotNil(
+	assert.NotNil(
 		goTester,
 		tfPlan.Variables.PrimaryAPIs,
 		"Variable not found in plan: primary_apis",
 	)
-	util.ExitIf(hasVar, false)
 
 	// verify plan has secondary_apis input variable
-	hasVar = assert.NotNil(
+	assert.NotNil(
 		goTester,
 		tfPlan.Variables.SecondaryAPIs,
 		"Variable not found in plan: secondary_apis",
 	)
-	util.ExitIf(hasVar, false)
 
 	// verify plan has instance_count input variable
-	hasVar = assert.NotNil(
+	assert.NotNil(
 		goTester,
 		tfPlan.Variables.InstanceCount,
 		"Variable not found in plan: instance_count",
 	)
-	util.ExitIf(hasVar, false)
 }
 
 func validateVariableValuesInMain(goTester *testing.T, tfPlan *util.MainModulePlan, vars *map[string]interface{}) {
@@ -582,6 +626,14 @@ func validateVariableValuesInMain(goTester *testing.T, tfPlan *util.MainModulePl
 		(*vars)["credentials_file"],
 		tfPlan.Variables.CrendetialsFile.Value,
 		"Variable does not match in plan: credentials_file.",
+	)
+
+	// verify input variable image in plan matches
+	assert.Equal(
+		goTester,
+		(*vars)["image"],
+		tfPlan.Variables.Image.Value,
+		"Variable does not match in plan: image.",
 	)
 
 	// verify input variable image_family in plan matches
