@@ -33,21 +33,30 @@ type TFResource struct {
 }
 
 // TFValues represents the common terraform resource attributes available in the
-// JSON output of terraform plan
+// JSON output of terraform plan. Note that this is a union of all possible
+// values for any modules used in this script
 type TFValues struct {
-	Name              string      `json:"name"`
-	Index             string      `json:"index"`
-	Region            string      `json:"region"`
-	Zone              string      `json:"zone"`
-	AddressType       string      `json:"address_type"`
-	InstanceTemplate  string      `json:"source_instance_template"`
-	FileName          string      `json:"filename"`
-	FilePermissions   string      `json:"file_permission"`
-	DirPermissions    string      `json:"directory_permission"`
-	CryptoAlgorithm   string      `json:"algorithm"`
-	Content           string      `json:"content"`
-	Trigger           Trigger     `json:"triggers"`
-	NetworkInterfaces []Interface `json:"network_interface"`
+	Name              string           `json:"name"`
+	Index             string           `json:"index"`
+	Region            string           `json:"region"`
+	Zone              string           `json:"zone"`
+	AddressType       string           `json:"address_type"`
+	InstanceTemplate  string           `json:"source_instance_template"`
+	FileName          string           `json:"filename"`
+	FilePermissions   string           `json:"file_permission"`
+	DirPermissions    string           `json:"directory_permission"`
+	CryptoAlgorithm   string           `json:"algorithm"`
+	Content           string           `json:"content"`
+	Project           string           `json:"project"`
+	ImageFamily       string           `json:"family"`
+	MachineType       string           `json:"machine_type"`
+	MinCPUPlatform    string           `json:"min_cpu_platform"`
+	CanIPForward      bool             `json:"can_ip_forward"`
+	Trigger           Trigger          `json:"triggers"`
+	Tags              []string         `json:"tags"`
+	Disk              []Disk           `json:"disk"`
+	ServiceAccount    []ServiceAccount `json:"service_account"`
+	NetworkInterfaces []Interface      `json:"network_interface"`
 }
 
 // TFProvisioner represents the provisioners configured in the terraform output
@@ -59,6 +68,18 @@ type TFProvisioner struct {
 // Interface represents a network interface of a network resource
 type Interface struct {
 	Network string `json:"network"`
+}
+
+// ServiceAccount represents a service account associated to an instance
+// template resource
+type ServiceAccount struct {
+	Scopes []string `json:"scopes"`
+}
+
+// Disk represents a storage disk associated to an instance template resource
+type Disk struct {
+	Type string `json:"disk_type"`
+	Size int    `json:"disk_size_gb"`
 }
 
 // Trigger represents a trigger attributes of a GCP gcloud resource
