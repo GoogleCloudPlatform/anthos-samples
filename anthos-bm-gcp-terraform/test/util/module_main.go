@@ -52,7 +52,22 @@ type MainVariables struct {
 // from the input variables and the main terraform script
 type MainPlannedValues struct {
 	RootModule TFModule `json:"root_module"`
+	Outputs    *Outputs `json:"outputs"`
 }
+
+// Outputs represents the outputs produced by the main terraform module
+type Outputs struct {
+	AdminVMSSH *AdminVMSSH `json:"admin_vm_ssh"`
+}
+
+
+// AdminVMSSH represents the final output from the main terraform script with
+// instructions as to how to SSH into the admin host and create a new
+// ABM cluster
+type AdminVMSSH struct {
+	Value string `json:"value"`
+}
+
 
 // MainConfiguration represents the configuration output in the execution plan
 // resulting from the input variables and the main terraform script

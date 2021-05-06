@@ -224,6 +224,8 @@ func TestUnit_MainScript(goTester *testing.T) {
 	validateServiceAccMoodule(goTester, &serviceAccModules[0], &tfVarsMap)
 	// validate the google APIs module
 	validateAPIsMoodule(goTester, &googleAPIsModules, &tfVarsMap)
+	// validate the outputs from the script
+	validateMainOutputs(goTester, terraformPlan.PlannedValues.Outputs, &tfVarsMap)
 }
 
 func TestUnit_MainScript_ValidateDefaults(goTester *testing.T) {
@@ -418,19 +420,19 @@ func TestUnit_MainScript_ValidateDefaults(goTester *testing.T) {
 			"Variable does not match any valid default value: access_scopes.",
 		)
 	}
-	for _, pApi := range terraformPlan.Variables.PrimaryAPIs.Value {
+	for _, pAPI := range terraformPlan.Variables.PrimaryAPIs.Value {
 		assert.Contains(
 			goTester,
 			defaultPrimaryApis,
-			pApi,
+			pAPI,
 			"Variable does not match any valid default value: primary_apis.",
 		)
 	}
-	for _, sApi := range terraformPlan.Variables.SecondaryAPIs.Value {
+	for _, sAPI := range terraformPlan.Variables.SecondaryAPIs.Value {
 		assert.Contains(
 			goTester,
 			defaultSecondaryApis,
-			sApi,
+			sAPI,
 			"Variable does not match any valid default value: secondary_apis.",
 		)
 	}
@@ -1170,4 +1172,47 @@ func validateAPIsMoodule(goTester *testing.T, modules *[]util.TFModule, vars *ma
 			)
 		}
 	}
+}
+
+func validateMainOutputs(goTester *testing.T, planOutputs *util.Outputs, vars *map[string]interface{}) {
+	// verify module produces output in plan
+	assert.NotNil(
+		goTester,
+		planOutputs,
+		"Module is expected to produce outputs; but none found",
+	)
+
+	// verify module produces an output for admin_vm_ssh in plan
+	assert.NotNil(
+		goTester,
+		planOutputs.AdminVMSSH,
+		"Module is expected to have an output for admin_vm_ssh; but not found",
+	)
+
+	outputValue := planOutputs.AdminVMSSH.Value
+	assert.True(
+		goTester,
+		strings.Contains(outputValue, (*vars)["project_id"].(string)),
+		"Output is expected to have the project_id",
+	)
+	assert.True(
+		goTester,
+		strings.Contains(outputValue, (*vars)["username"].(string)),
+		"Output is expected to have the username",
+	)
+	assert.True(
+		goTester,
+		strings.Contains(outputValue, (*vars)["zone"].(string)),
+		"Output is expected to have the zone",
+	)
+	assert.True(
+		goTester,
+		strings.Contains(outputValue, (*vars)["abm_cluster_id"].(string)),
+		"Output is expected to have the abm_cluster_id",
+	)
+	assert.True(
+		goTester,
+		strings.Contains(outputValue, "sudo ./preflights.sh"),
+		"Output is expected to have 'sudo ./preflights.sh'",
+	)
 }
