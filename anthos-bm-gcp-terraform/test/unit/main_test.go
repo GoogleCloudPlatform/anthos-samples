@@ -150,6 +150,22 @@ func TestUnit_MainScript(goTester *testing.T) {
 		fmt.Sprintf("Invalid resource count in the root module of the plan at planned_values.root_module.resources"),
 	)
 
+	_, envVarFilenames := validateRootResources(
+		goTester, &terraformPlan, instanceCountMapInTest, projectID, abmClusterID)
+	// assert that the length of env var file names map is same as
+	// controlplane nodes + worker nodes + 1 (admin host) meaning that they
+	// are all unique paths
+	assert.Len(
+		goTester,
+		envVarFilenames,
+		instanceCountMapInTest["worker"]+instanceCountMapInTest["controlplane"]+1,
+		"There are overlapping file path names for the init.vars file intended for each different hosts",
+	)
+}
+
+func validateRootResources(
+	goTester *testing.T, terraformPlan *util.MainModulePlan,
+	instanceCountMapInTest map[string]int, projectID, abmClusterID string) (map[string]interface{}, map[string]interface{}) {
 	vmHostnames := make(map[string]interface{})
 	envVarFilenames := make(map[string]interface{})
 	for idx, rootResource := range terraformPlan.PlannedValues.RootModule.Resources {
@@ -173,15 +189,7 @@ func TestUnit_MainScript(goTester *testing.T) {
 			)
 		}
 	}
-	// assert that the length of env var file names map is same as
-	// controlplane nodes + worker nodes + 1 (admin host) meaning that they
-	// are all unique paths
-	assert.Len(
-		goTester,
-		envVarFilenames,
-		instanceCountMapInTest["worker"]+instanceCountMapInTest["controlplane"]+1,
-		"There are overlapping file path names for the init.vars file intended for each different hosts",
-	)
+	return vmHostnames, envVarFilenames
 }
 
 func validateYaml(
