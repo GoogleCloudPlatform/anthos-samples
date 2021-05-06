@@ -72,7 +72,7 @@ func TestUnit_VmModule(goTester *testing.T) {
 	 */
 	var vmInstancePlan util.VMInstancePlan
 	err = json.Unmarshal([]byte(tfPlanJSON), &vmInstancePlan)
-	util.LogError(err, "Failed to parse the JSON plan into the ExternalIpPlan struct in unit/module_external_ip.go")
+	util.LogError(err, "Failed to parse the JSON plan into the ExternalIpPlan struct in unit/module_vm.go")
 
 	// verify plan has region input variable
 	hasVar := assert.NotNil(
@@ -242,7 +242,7 @@ func TestUnit_VmModule_ValidateDefaults(goTester *testing.T) {
 	 */
 	var vmInstancePlan util.VMInstancePlan
 	err = json.Unmarshal([]byte(tfPlanJSON), &vmInstancePlan)
-	util.LogError(err, "Failed to parse the JSON plan into the ExternalIpPlan struct in unit/module_external_ip.go")
+	util.LogError(err, "Failed to parse the JSON plan into the ExternalIpPlan struct in unit/module_vm.go")
 
 	// verify input variable region in plan matches the default value
 	assert.Equal(

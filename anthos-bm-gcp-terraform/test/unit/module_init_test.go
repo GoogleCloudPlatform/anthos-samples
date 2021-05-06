@@ -89,7 +89,7 @@ func TestUnit_InitModule(goTester *testing.T) {
 	 */
 	var initModulePlan util.InitModulePlan
 	err = json.Unmarshal([]byte(tfPlanJSON), &initModulePlan)
-	util.LogError(err, "Failed to parse the JSON plan into the ExternalIpPlan struct in unit/module_external_ip.go")
+	util.LogError(err, "Failed to parse the JSON plan into the ExternalIpPlan struct in unit/module_init.go")
 
 	// validate the plan has the expected variables
 	validateVariables(goTester, &initModulePlan)
@@ -204,7 +204,7 @@ func TestUnit_InitModule_DefaultValues(goTester *testing.T) {
 	 */
 	var initModulePlan util.InitModulePlan
 	err = json.Unmarshal([]byte(tfPlanJSON), &initModulePlan)
-	util.LogError(err, "Failed to parse the JSON plan into the ExternalIpPlan struct in unit/module_external_ip.go")
+	util.LogError(err, "Failed to parse the JSON plan into the ExternalIpPlan struct in unit/module_init.go")
 
 	// verify input variable zone in plan matches default value
 	assert.Equal(

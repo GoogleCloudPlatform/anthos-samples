@@ -35,8 +35,6 @@ import (
 )
 
 func TestUnit_MainScript(goTester *testing.T) {
-	goTester.Parallel()
-
 	moduleDir := testStructure.CopyTerraformFolderToTemp(goTester, "../../", ".")
 	projectID := gcp.GetGoogleProjectIDFromEnvVar(goTester) // from GOOGLE_CLOUD_PROJECT
 	region := gcp.GetRandomRegion(goTester, projectID, nil, nil)
@@ -128,7 +126,7 @@ func TestUnit_MainScript(goTester *testing.T) {
 
 	var terraformPlan util.MainModulePlan
 	err = json.Unmarshal([]byte(tfPlanJSON), &terraformPlan)
-	util.LogError(err, "Failed to parse the JSON plan into the ExternalIpPlan struct in unit/module_external_ip.go")
+	util.LogError(err, "Failed to parse the JSON plan into the MainModulePlan struct in unit/module_main.go")
 	/**
 	 * Pro tip:
 	 * Write the json to a file using the util.WriteToFile() method to easily debug
@@ -226,6 +224,235 @@ func TestUnit_MainScript(goTester *testing.T) {
 	validateServiceAccMoodule(goTester, &serviceAccModules[0], &tfVarsMap)
 	// validate the google APIs module
 	validateAPIsMoodule(goTester, &googleAPIsModules, &tfVarsMap)
+}
+
+func TestUnit_MainScript_ValidateDefaults(goTester *testing.T) {
+
+	moduleDir := testStructure.CopyTerraformFolderToTemp(goTester, "../../", ".")
+	projectID := gcp.GetGoogleProjectIDFromEnvVar(goTester) // from GOOGLE_CLOUD_PROJECT
+	workingDir, err := os.Getwd()
+	util.LogError(err, "Failed to read current working directory")
+	credentialsFile := fmt.Sprintf("%s/credentials_file.json", workingDir)
+
+	tmpFile, err := os.Create(credentialsFile)
+	util.LogError(err, fmt.Sprintf("Could not create temporary file at %s", credentialsFile))
+	defer tmpFile.Close()
+	defer os.Remove(credentialsFile)
+
+	machineType := "test_machine_type"
+	tfPlanOutput := "terraform_test.tfplan"
+	tfPlanOutputArg := fmt.Sprintf("-out=%s", tfPlanOutput)
+	tfVarsMap := map[string]interface{}{
+		"project_id":       projectID,
+		"credentials_file": credentialsFile,
+		"machine_type":     machineType,
+		"boot_disk_size":   200,
+	}
+
+	tfOptions := terraform.WithDefaultRetryableErrors(goTester, &terraform.Options{
+		TerraformDir: moduleDir,
+		// Variables to pass to our Terraform code using -var options
+		Vars:         tfVarsMap,
+		PlanFilePath: tfPlanOutput,
+	})
+
+	// Terraform init and plan only
+	terraform.Init(goTester, tfOptions)
+	terraform.RunTerraformCommand(
+		goTester,
+		tfOptions,
+		terraform.FormatArgs(tfOptions, "plan", tfPlanOutputArg)...,
+	)
+	tfPlanJSON, err := terraform.ShowE(goTester, tfOptions)
+	util.LogError(err, fmt.Sprintf("Failed to parse the plan file %s into JSON format", tfPlanOutput))
+
+	var terraformPlan util.MainModulePlan
+	err = json.Unmarshal([]byte(tfPlanJSON), &terraformPlan)
+	util.LogError(err, "Failed to parse the JSON plan into the MainModulePlan struct in unit/module_main.go")
+
+	// verify input variable region in plan matches the default value
+	assert.Equal(
+		goTester,
+		"us-central1",
+		terraformPlan.Variables.Region.Value,
+		"Variable does not match expected default value: region.",
+	)
+
+	// verify input variable zone in plan matches the default value
+	assert.Equal(
+		goTester,
+		"us-central1-a",
+		terraformPlan.Variables.Zone.Value,
+		"Variable does not match expected default value: zone.",
+	)
+
+	// verify input variable username in plan matches the default value
+	assert.Equal(
+		goTester,
+		"tfadmin",
+		terraformPlan.Variables.Username.Value,
+		"Variable does not match expected default value: username.",
+	)
+
+	// verify input variable min_cpu_platform in plan matches the default value
+	assert.Equal(
+		goTester,
+		"Intel Haswell",
+		terraformPlan.Variables.MinCPUPlatform.Value,
+		"Variable does not match expected default value: min_cpu_platform.",
+	)
+
+	// verify input variable image in plan matches the default value
+	assert.Equal(
+		goTester,
+		"ubuntu-2004-focal-v20210429",
+		terraformPlan.Variables.Image.Value,
+		"Variable does not match expected default value: image.",
+	)
+
+	// verify input variable image_project in plan matches the default value
+	assert.Equal(
+		goTester,
+		"ubuntu-os-cloud",
+		terraformPlan.Variables.ImageProject.Value,
+		"Variable does not match expected default value: image_project.",
+	)
+
+	// verify input variable image_family in plan matches the default value
+	assert.Equal(
+		goTester,
+		"ubuntu-2004-lts",
+		terraformPlan.Variables.ImageFamily.Value,
+		"Variable does not match expected default value: image_family.",
+	)
+
+	// verify input variable boot_disk_type in plan matches the default value
+	assert.Equal(
+		goTester,
+		"pd-ssd",
+		terraformPlan.Variables.BootDiskType.Value,
+		"Variable does not match expected default value: boot_disk_type.",
+	)
+
+	// verify input variable network in plan matches the default value
+	assert.Equal(
+		goTester,
+		"default",
+		terraformPlan.Variables.Network.Value,
+		"Variable does not match expected default value: network.",
+	)
+
+	// verify input variable anthos_service_account_name in plan matches the default value
+	assert.Equal(
+		goTester,
+		"baremetal-gcr",
+		terraformPlan.Variables.AnthosServiceAccountName.Value,
+		"Variable does not match expected default value: anthos_service_account_name.",
+	)
+
+	// verify input variable abm_cluster_id in plan matches the default value
+	assert.Equal(
+		goTester,
+		"anthos-gce-cluster",
+		terraformPlan.Variables.ABMClusterID.Value,
+		"Variable does not match expected default value: abm_cluster_id.",
+	)
+
+	defaultTags := []string{"http-server", "https-server"}
+	defaultAccessScopes := []string{"cloud-platform"}
+	defaultPrimaryApis := []string{
+		"anthos.googleapis.com",
+		"anthosgke.googleapis.com",
+		"cloudresourcemanager.googleapis.com",
+	}
+	defaultSecondaryApis := []string{
+		"container.googleapis.com",
+		"gkeconnect.googleapis.com",
+		"gkehub.googleapis.com",
+		"serviceusage.googleapis.com",
+		"stackdriver.googleapis.com",
+		"monitoring.googleapis.com",
+		"logging.googleapis.com",
+		"iam.googleapis.com",
+		"compute.googleapis.com",
+	}
+
+	assert.Len(
+		goTester,
+		terraformPlan.Variables.Tags.Value,
+		len(defaultTags),
+		"List variable length does not match the expected default value list length: tags.",
+	)
+	assert.Len(
+		goTester,
+		terraformPlan.Variables.AccessScope.Value,
+		len(defaultAccessScopes),
+		"List variable length does not match the expected default value list length: access_scopes.",
+	)
+	assert.Len(
+		goTester,
+		terraformPlan.Variables.PrimaryAPIs.Value,
+		len(defaultPrimaryApis),
+		"List variable length does not match the expected default value list length: primary_apis.",
+	)
+	assert.Len(
+		goTester,
+		terraformPlan.Variables.SecondaryAPIs.Value,
+		len(defaultSecondaryApis),
+		"List variable length does not match the expected default value list length: secondary_apis.",
+	)
+
+	for _, tag := range terraformPlan.Variables.Tags.Value {
+		assert.Contains(
+			goTester,
+			defaultTags,
+			tag,
+			"Variable does not match any valid default value: tags",
+		)
+	}
+	for _, scope := range terraformPlan.Variables.AccessScope.Value {
+		assert.Contains(
+			goTester,
+			defaultAccessScopes,
+			scope,
+			"Variable does not match any valid default value: access_scopes.",
+		)
+	}
+	for _, pApi := range terraformPlan.Variables.PrimaryAPIs.Value {
+		assert.Contains(
+			goTester,
+			defaultPrimaryApis,
+			pApi,
+			"Variable does not match any valid default value: primary_apis.",
+		)
+	}
+	for _, sApi := range terraformPlan.Variables.SecondaryAPIs.Value {
+		assert.Contains(
+			goTester,
+			defaultSecondaryApis,
+			sApi,
+			"Variable does not match any valid default value: secondary_apis.",
+		)
+	}
+
+	defaultNodeCounts := map[string]int{
+		"controlplane": 3,
+		"worker":       2,
+	}
+	// verify input variable instance_count.controlplane in plan matches the default value
+	assert.Equal(
+		goTester,
+		defaultNodeCounts["controlplane"],
+		terraformPlan.Variables.InstanceCount.Value["controlplane"],
+		"Variable does not match expected default value: instance_count.controlplane.",
+	)
+	// verify input variable instance_count.worker in plan matches the default value
+	assert.Equal(
+		goTester,
+		defaultNodeCounts["worker"],
+		terraformPlan.Variables.InstanceCount.Value["worker"],
+		"Variable does not match expected default value: instance_count.worker.",
+	)
 }
 
 func validateRootResources(
