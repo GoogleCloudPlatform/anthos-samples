@@ -15,8 +15,13 @@
 package unit
 
 import (
+	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
+	"net"
+	"os"
 	"strconv"
 	"testing"
 
@@ -25,6 +30,7 @@ import (
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	testStructure "github.com/gruntwork-io/terratest/modules/test-structure"
 	"github.com/stretchr/testify/assert"
+	"gopkg.in/yaml.v3"
 )
 
 func TestUnit_MainScript(goTester *testing.T) {
@@ -34,9 +40,18 @@ func TestUnit_MainScript(goTester *testing.T) {
 	projectID := gcp.GetGoogleProjectIDFromEnvVar(goTester) // from GOOGLE_CLOUD_PROJECT
 	region := gcp.GetRandomRegion(goTester, projectID, nil, nil)
 	zone := gcp.GetRandomZoneForRegion(goTester, projectID, region)
-	credentialsFile := "/Users/shabirmean/.gcloud/shabir-abm-local-00830950f3ae.json"
+
+	workingDir, err := os.Getwd()
+	util.LogError(err, "Failed to read current working directory")
+	credentialsFile := fmt.Sprintf("%s/credentials_file.json", workingDir)
+
+	tmpFile, err := os.Create(credentialsFile)
+	util.LogError(err, fmt.Sprintf("Could not create temporary file at %s", credentialsFile))
+	defer tmpFile.Close()
+	defer os.Remove(credentialsFile)
+
 	username := "test_username"
-	minCpuPlatform := "test_cpu_platform"
+	minCPUPlatform := "test_cpu_platform"
 	machineType := "test_machine_type"
 	imageProject := "test_image_project"
 	imageFamily := "test_image_family"
@@ -75,7 +90,7 @@ func TestUnit_MainScript(goTester *testing.T) {
 		"region":                      region,
 		"zone":                        zone,
 		"username":                    username,
-		"min_cpu_platform":            minCpuPlatform,
+		"min_cpu_platform":            minCPUPlatform,
 		"machine_type":                machineType,
 		"image_project":               imageProject,
 		"image_family":                imageFamily,
@@ -122,6 +137,178 @@ func TestUnit_MainScript(goTester *testing.T) {
 	// validate the plan has the corect values set for the expected variables
 	validateVariableValuesInMain(goTester, &terraformPlan, &tfVarsMap)
 
+	// validate the plan has the expected resources and modules
+	instanceCountMapInTest := tfVarsMap["instance_count"].(map[string]int)
+	numberOfHostsForInitialization :=
+		instanceCountMapInTest["controlplane"] + instanceCountMapInTest["worker"] + 1 // 1 for the admin vm
+	rootResourceCount := numberOfHostsForInitialization + 1 // 1 for the cluster_yaml created from template
+	assert.Len(
+		goTester,
+		terraformPlan.PlannedValues.RootModule.Resources,
+		rootResourceCount,
+		fmt.Sprintf("Invalid resource count in the root module of the plan at planned_values.root_module.resources"),
+	)
+	for idx, rootResource := range terraformPlan.PlannedValues.RootModule.Resources {
+		assert.Equal(
+			goTester,
+			"local_file",
+			rootResource.Type,
+			fmt.Sprintf("Invalid resource type for planned_values.root_module.resources[%d]", idx),
+		)
+
+		if rootResource.Name == "cluster_yaml" {
+			validateYaml(goTester, instanceCountMapInTest, rootResource, projectID, abmClusterID)
+		} else {
+
+		}
+	}
+}
+
+func validateYaml(
+	goTester *testing.T, instanceCountMapInTest map[string]int,
+	rootResource util.TFResource, projectID, abmClusterID string) {
+
+	allIps := make(map[string]interface{})
+	validNamespaceName := fmt.Sprintf("%s-ns", abmClusterID)
+	validRsourceKinds := []string{"Namespace", "NodePool", "Cluster"}
+	fileContents := rootResource.Values.Content
+	fileReader := bytes.NewReader([]byte(fileContents))
+	decodedYaml := yaml.NewDecoder(fileReader)
+	for {
+		newYamlDefinition := new(util.ClusterYaml)
+		err := decodedYaml.Decode(&newYamlDefinition)
+		if errors.Is(err, io.EOF) {
+			break
+		}
+		util.LogError(err, "Failed to decode yaml definiton")
+		if newYamlDefinition.Kind == nil {
+			// there could be one definition without a resource kind;
+			// this holds just path defniitions to key files
+			continue
+		}
+		assert.Contains(
+			goTester,
+			validRsourceKinds,
+			*newYamlDefinition.Kind,
+			"Invalid resource kind in the cluster_yaml file",
+		)
+
+		if *newYamlDefinition.Kind == "Namespace" {
+			assert.Equal(
+				goTester,
+				validNamespaceName,
+				newYamlDefinition.Metadata.Name,
+				"Invalid metadate name for resource kind Namespace in the cluster_yaml file",
+			)
+		} else if *newYamlDefinition.Kind == "NodePool" {
+			assert.NotNil(
+				goTester,
+				newYamlDefinition.Spec,
+				"Resource kind NodePool is excpected to have a spec definition in the cluster_yaml file",
+			)
+			assert.Equal(
+				goTester,
+				validNamespaceName,
+				newYamlDefinition.Metadata.Namespace,
+				"Invalid metadate namespace for resource kind NodePool in the cluster_yaml file",
+			)
+			assert.Equal(
+				goTester,
+				abmClusterID,
+				*newYamlDefinition.Spec.ClusterName,
+				"Invalid spec clusterName for resource kind NodePool in the cluster_yaml file",
+			)
+			assert.NotNil(
+				goTester,
+				newYamlDefinition.Spec.Nodes,
+				"Resource kind NodePool is expected to define spec.nodes in the cluster_yaml file",
+			)
+			assert.Len(
+				goTester,
+				*newYamlDefinition.Spec.Nodes,
+				instanceCountMapInTest["worker"],
+				"Invalid number of nodes for spec.nodes in resource kind NodePool in the cluster_yaml file",
+			)
+			for idx, ip := range *newYamlDefinition.Spec.Nodes {
+				assert.True(
+					goTester,
+					net.ParseIP(ip.Address) != nil, // ensure the IP address is valid
+					fmt.Sprintf("Invalid IP address format for spec.nodes[%d].address in resource kind NodePool in the cluster_yaml file", idx),
+				)
+				allIps[ip.Address] = nil
+			}
+		} else {
+			assert.NotNil(
+				goTester,
+				newYamlDefinition.Spec,
+				"Resource kind Cluster is excpected to have a spec definition in the cluster_yaml file",
+			)
+			assert.NotNil(
+				goTester,
+				newYamlDefinition.Spec.GkeConnect,
+				"Resource kind Cluster is excpected to have a spec.gkeConnect definition in the cluster_yaml file",
+			)
+			assert.NotNil(
+				goTester,
+				newYamlDefinition.Spec.ClusterOperations,
+				"Resource kind Cluster is excpected to have a spec.clusterOperations definition in the cluster_yaml file",
+			)
+			assert.NotNil(
+				goTester,
+				newYamlDefinition.Spec.ControlPlane,
+				"Resource kind Cluster is excpected to have a spec.controlPlane definition in the cluster_yaml file",
+			)
+			assert.NotNil(
+				goTester,
+				newYamlDefinition.Spec.ControlPlane.NodePoolSpec,
+				"Resource kind Cluster is excpected to have a spec.controlPlane.nodePoolSpec definition in the cluster_yaml file",
+			)
+			assert.NotNil(
+				goTester,
+				newYamlDefinition.Spec.ControlPlane.NodePoolSpec.Nodes,
+				"Resource kind Cluster is excpected to have a spec.controlPlane.nodePoolSpec.nodes definition in the cluster_yaml file",
+			)
+			assert.Equal(
+				goTester,
+				projectID,
+				newYamlDefinition.Spec.GkeConnect.ProjectID,
+				"Invalid value for spec.gkeConnect.ProjectID for resource kind Cluster in the cluster_yaml file",
+			)
+			assert.Equal(
+				goTester,
+				projectID,
+				newYamlDefinition.Spec.ClusterOperations.ProjectID,
+				"Invalid value for spec.clusterOperations.ProjectID for resource kind Cluster in the cluster_yaml file",
+			)
+			assert.Equal(
+				goTester,
+				abmClusterID,
+				newYamlDefinition.Spec.ControlPlane.NodePoolSpec.ClusterName,
+				"Invalid value for spec.controlPlane.nodePoolSpec.clusterName for resource kind Cluster in the cluster_yaml file",
+			)
+			assert.Len(
+				goTester,
+				*newYamlDefinition.Spec.ControlPlane.NodePoolSpec.Nodes,
+				instanceCountMapInTest["controlplane"],
+				"Invalid number of nodes for spec.controlPlane.nodePoolSpec.nodes in resource kind Cluster in the cluster_yaml file",
+			)
+			for idx, ip := range *newYamlDefinition.Spec.ControlPlane.NodePoolSpec.Nodes {
+				assert.True(
+					goTester,
+					net.ParseIP(ip.Address) != nil, // ensure the IP address is valid
+					fmt.Sprintf("Invalid IP address format for spec.controlPlane.nodePoolSpec.nodes[%d].address in resource kind Cluster in the cluster_yaml file", idx),
+				)
+				allIps[ip.Address] = nil
+			}
+		}
+	}
+
+	assert.Len(
+		goTester,
+		allIps,
+		instanceCountMapInTest["worker"]+instanceCountMapInTest["controlplane"],
+		"There are overlapping IP addresses in the generated IPs for control plane and worker nodes",
+	)
 }
 
 func validateVariablesInMain(goTester *testing.T, tfPlan *util.MainModulePlan) {

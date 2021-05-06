@@ -44,6 +44,7 @@ type TFValues struct {
 	FilePermissions   string      `json:"file_permission"`
 	DirPermissions    string      `json:"directory_permission"`
 	CryptoAlgorithm   string      `json:"algorithm"`
+	Content           string      `json:"content"`
 	Trigger           Trigger     `json:"triggers"`
 	NetworkInterfaces []Interface `json:"network_interface"`
 }
@@ -75,7 +76,6 @@ type Variable struct {
 type ListVariable struct {
 	Value []string `json:"value"`
 }
-
 
 // MapVariable represents an instance of a single terraform input variable
 // which is of type map
