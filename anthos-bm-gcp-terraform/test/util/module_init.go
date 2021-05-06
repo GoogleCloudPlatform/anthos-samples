@@ -26,25 +26,19 @@ type InitModulePlan struct {
 // module. When variables are added to the module this struct needs to be
 // modified
 type InitVariables struct {
-	Zone                   *InitVariable `json:"zone"`
-	PublicIP               *InitVariable `json:"publicIp"`
-	ProjectID              *InitVariable `json:"project_id"`
-	Username               *InitVariable `json:"username"`
-	Hostname               *InitVariable `json:"hostname"`
-	InitLogsFile           *InitVariable `json:"init_logs"`
-	InitScriptPath         *InitVariable `json:"init_script"`
-	ClusterYamlPath        *InitVariable `json:"cluster_yaml_path"`
-	CredentialsFile        *InitVariable `json:"credentials_file"`
-	PreflightsScript       *InitVariable `json:"preflight_script"`
-	PublicKeyTemplatePath  *InitVariable `json:"pub_key_path_template"`
-	PrivateKeyTemplatePath *InitVariable `json:"priv_key_path_template"`
-	InitScriptVarsFilePath *InitVariable `json:"init_vars_file"`
-}
-
-// InitVariable represents an instance of a single terraform input variable
-// in the init terraform module.
-type InitVariable struct {
-	Value string `json:"value"`
+	Zone                   *Variable `json:"zone"`
+	PublicIP               *Variable `json:"publicIp"`
+	ProjectID              *Variable `json:"project_id"`
+	Username               *Variable `json:"username"`
+	Hostname               *Variable `json:"hostname"`
+	InitLogsFile           *Variable `json:"init_logs"`
+	InitScriptPath         *Variable `json:"init_script"`
+	ClusterYamlPath        *Variable `json:"cluster_yaml_path"`
+	CredentialsFile        *Variable `json:"credentials_file"`
+	PreflightsScript       *Variable `json:"preflight_script"`
+	PublicKeyTemplatePath  *Variable `json:"pub_key_path_template"`
+	PrivateKeyTemplatePath *Variable `json:"priv_key_path_template"`
+	InitScriptVarsFilePath *Variable `json:"init_vars_file"`
 }
 
 // InitPlannedValues represents the planned state of the terraform run resulting

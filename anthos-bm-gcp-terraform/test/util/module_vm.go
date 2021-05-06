@@ -25,16 +25,10 @@ type VMInstancePlan struct {
 // terraform module. When variables are added to the module this struct needs
 // to be modified
 type VMVariables struct {
-	Region           *VMVarValue     `json:"region"`
-	Network          *VMVarValue     `json:"network"`
+	Region           *Variable       `json:"region"`
+	Network          *Variable       `json:"network"`
 	Names            *VMVarValueList `json:"vm_names"`
-	InstanceTemplate *VMVarValue     `json:"instance_template"`
-}
-
-// VMVarValue represents an instance of a single terraform input variable
-// in the vm terraform module.
-type VMVarValue struct {
-	Value string `json:"value"`
+	InstanceTemplate *Variable       `json:"instance_template"`
 }
 
 // VMVarValueList represents an instance of a single terraform input variable
@@ -53,7 +47,7 @@ type VMNames struct {
 // from the input variables and the external-ip terraform module
 type VMPlannedValues struct {
 	Outputs    *VMOutputs `json:"outputs"`
-	RootModule TFModule  `json:"root_module"`
+	RootModule TFModule   `json:"root_module"`
 }
 
 // VMOutputs represents the outputs produced by the vm terraform module

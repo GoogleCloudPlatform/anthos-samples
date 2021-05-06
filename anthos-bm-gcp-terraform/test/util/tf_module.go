@@ -64,3 +64,21 @@ type Trigger struct {
 	CmdBody       string `json:"create_cmd_body"`
 	CmdEntrypoint string `json:"create_cmd_entrypoint"`
 }
+
+// Variable represents an instance of a single terraform input variable
+type Variable struct {
+	Value string `json:"value"`
+}
+
+// ListVariable represents an instance of a single terraform input variable
+// which is of type list
+type ListVariable struct {
+	Value []string `json:"value"`
+}
+
+
+// MapVariable represents an instance of a single terraform input variable
+// which is of type map
+type MapVariable struct {
+	Value map[string]int `json:"value"`
+}
