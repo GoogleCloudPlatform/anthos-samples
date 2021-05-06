@@ -224,38 +224,8 @@ func TestUnit_MainScript(goTester *testing.T) {
 	validateVirtualMachineMoodules(goTester, &virtualMachineModules, &tfVarsMap)
 	// validate the service account module
 	validateServiceAccMoodule(goTester, &serviceAccModules[0], &tfVarsMap)
-	// validate the Google APIs module
+	// validate the google APIs module
 	validateAPIsMoodule(goTester, &googleAPIsModules, &tfVarsMap)
-
-}
-
-func validateAPIsMoodule(goTester *testing.T, modules *[]util.TFModule, vars *map[string]interface{}) {
-	primaryApis := (*vars)["primary_apis"].([]string)
-	secondaryApis := (*vars)["secondary_apis"].([]string)
-	for _, apisModule := range *modules {
-		var expectedApisCount int
-		var validApiList []string
-		if strings.HasSuffix(apisModule.ModuleAddress, "primary") {
-			validApiList = primaryApis
-		} else {
-			validApiList = secondaryApis
-		}
-		expectedApisCount = len(validApiList)
-		assert.Len(
-			goTester,
-			apisModule.Resources,
-			expectedApisCount,
-			fmt.Sprintf("Unexpected number of APIs for %s child module", apisModule.ModuleAddress),
-		)
-		for _, api := range apisModule.Resources {
-			assert.Contains(
-				goTester,
-				validApiList,
-				api.Values.Service,
-				fmt.Sprintf("Invalid value for API for %s child module", apisModule.ModuleAddress),
-			)
-		}
-	}
 }
 
 func validateRootResources(
@@ -941,6 +911,35 @@ func validateServiceAccMoodule(goTester *testing.T, module *util.TFModule, vars 
 				(*vars)["project_id"],
 				accResource.Values.Project,
 				"Invalid value for project_id in the service account child module",
+			)
+		}
+	}
+}
+
+func validateAPIsMoodule(goTester *testing.T, modules *[]util.TFModule, vars *map[string]interface{}) {
+	primaryApis := (*vars)["primary_apis"].([]string)
+	secondaryApis := (*vars)["secondary_apis"].([]string)
+	for _, apisModule := range *modules {
+		var expectedApisCount int
+		var validAPIList []string
+		if strings.HasSuffix(apisModule.ModuleAddress, "primary") {
+			validAPIList = primaryApis
+		} else {
+			validAPIList = secondaryApis
+		}
+		expectedApisCount = len(validAPIList)
+		assert.Len(
+			goTester,
+			apisModule.Resources,
+			expectedApisCount,
+			fmt.Sprintf("Unexpected number of APIs for %s child module", apisModule.ModuleAddress),
+		)
+		for _, api := range apisModule.Resources {
+			assert.Contains(
+				goTester,
+				validAPIList,
+				api.Values.Service,
+				fmt.Sprintf("Invalid value for API for %s child module", apisModule.ModuleAddress),
 			)
 		}
 	}
