@@ -29,8 +29,23 @@ The [Quick starter](docs/quickstart.md) guide sets up the following infrastructu
 - [Quick starter guide](docs/quickstart.md)
 - [Variables guide](docs/variables.md)
 
- ## Troubleshooting
-
-## Development
-
+---
 ## Contributing
+
+#### Pre-requisites
+- The same [pre-requisites](#pre-requisites) to run this sample is required for testing as well
+#### Pull requests
+- For improvements to this sample, submit your pull requests to the `master` branch
+
+#### Testing
+- Ensure that the improvements have _unit/integration tests_ where appropriate
+- To run the existing tests you have to set two environment variables
+```bash
+export GOOGLE_CLOUD_PROJECT="<YOUR_GOOGLE_CLOUD_PROJECT>"
+export GOOGLE_APPLICATION_CREDENTIALS="<PATH_TO_THE_SERVICE_ACCOUNT_KEY_FILE>"
+```
+- Move into the test directory and recursively execute the tests
+```bash
+cd anthos-bm-gcp-terraform/test
+go test -v -timeout 30m ./...
+```

@@ -16,6 +16,7 @@
 
 module "external_ip_addresses" {
   source   = "../external-ip"
+  region   = var.region
   ip_names = var.vm_names
 }
 

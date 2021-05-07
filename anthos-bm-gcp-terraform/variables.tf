@@ -56,6 +56,15 @@ variable "machine_type" {
   type        = string
 }
 
+variable "image" {
+  description = <<EOF
+    The source image to use when provisioning the Compute Engine VMs.
+    Use 'gcloud compute images list' to find a list of all available images
+  EOF
+  type        = string
+  default     = "ubuntu-2004-focal-v20210429"
+}
+
 variable "image_project" {
   description = "Project name of the source image to use when provisioning the Compute Engine VMs"
   type        = string

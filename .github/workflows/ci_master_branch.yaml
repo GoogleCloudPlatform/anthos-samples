@@ -1,0 +1,95 @@
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+## TODO:: Post comment on correct ways to resolve the build errors
+name: "Continuous Integration - Master/Release"
+on:
+  push:
+    # run on pushes to master or release/*
+    branches:
+      - master
+      - release/*
+jobs:
+  static-code-tests:
+    runs-on: [self-hosted]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{github.event.pull_request.head.ref}}
+          repository: ${{github.event.pull_request.head.repo.full_name}}
+      - name: License Check
+        run: |
+          addlicense -check ./
+      - name: Terraform Checkstyle
+        timeout-minutes: 20
+        run: |
+          terraform fmt -recursive -check -diff ./
+      - name: Golang Checkstyle
+        timeout-minutes: 20
+        run: |
+          golint ./... > golint.err 2>&1
+          if ! [ -s golint.err ]; then
+            exit 0
+          fi
+          if ! grep -q '"./..." matched no packages' "golint.err"; then
+            echo '[✘] Some .go files are not properly formatted. Check for lint errors using (golint ./...)'
+            cat golint.err
+            exit 1
+          fi
+  tf-validate:
+    runs-on: [self-hosted]
+    strategy:
+      matrix:
+        # list of directories in the repo that hosts Terraform samples
+        # update this list as new terraform samples are added to the repo
+        tf-sample: [
+          'anthos-bm-gcp-terraform',
+          'anthos-bm-openstack-terraform']
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{github.event.pull_request.head.ref}}
+          repository: ${{github.event.pull_request.head.repo.full_name}}
+      - name: Terraform Validate
+        timeout-minutes: 20
+        env:
+          SAMPLE_DIR: ${{ matrix.tf-sample }}
+        run: |
+          echo "Terraform validating: $SAMPLE_DIR"
+          cd $SAMPLE_DIR
+          terraform init -backend=false
+          terraform validate -json .
+  go-unit-tests:
+    runs-on: [self-hosted]
+    needs: tf-validate
+    strategy:
+      matrix:
+        # list of directories in the repo that hosts Golang unit tests
+        # update this list as new unit tests in golang are added to the repo
+        go-test-dir: ['anthos-bm-gcp-terraform/test/unit/']
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{github.event.pull_request.head.ref}}
+          repository: ${{github.event.pull_request.head.repo.full_name}}
+      - name: Golang unit tests
+        timeout-minutes: 20
+        env:
+          # these env variables are required by the golang tests
+          GOOGLE_CLOUD_PROJECT: ${{ secrets.GOOGLE_CLOUD_PROJECT }}
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          GOLANG_TEST_DIR: ${{ matrix.go-test-dir }}
+        run: |
+          cd $GOLANG_TEST_DIR
+          /usr/local/go/bin/go test -v -timeout 30m ./

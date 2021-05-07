@@ -53,14 +53,14 @@ locals {
   admin_vm_hostnames                  = [for vm in module.admin_vm_hosts.vm_info : vm.hostname]
   vm_vxlan_ip                         = { for idx, vmName in local.vm_names : vmName => format("10.200.0.%d", idx + 2) }
   vmHostnameToVmName                  = { for vmName in local.vm_names : "${vmName}-001" => vmName }
-  public_key_file_path_template       = "${path.root}/resources/.temp/%s/ssh-key.pub"
-  private_key_file_path_template      = "${path.root}/resources/.temp/%s/ssh-key.priv"
-  init_script_vars_file_path_template = "${path.root}/resources/.temp/%s/init.vars"
-  cluster_yaml_file                   = "${path.root}/resources/.temp/.${var.abm_cluster_id}.yaml"
-  cluster_yaml_template_file          = "${path.root}/resources/anthos_gce_cluster.tpl"
-  init_script_vars_file               = "${path.root}/resources/init.vars.tpl"
-  init_script                         = "${path.root}/resources/init.sh"
-  preflight_script                    = "${path.root}/resources/preflights.sh"
+  public_key_file_path_template       = "${path.module}/resources/.temp/%s/ssh-key.pub"
+  private_key_file_path_template      = "${path.module}/resources/.temp/%s/ssh-key.priv"
+  init_script_vars_file_path_template = "${path.module}/resources/.temp/%s/init.vars"
+  cluster_yaml_file                   = "${path.module}/resources/.temp/.${var.abm_cluster_id}.yaml"
+  cluster_yaml_template_file          = "${path.module}/resources/anthos_gce_cluster.tpl"
+  init_script_vars_file               = "${path.module}/resources/init.vars.tpl"
+  init_script                         = "${path.module}/resources/init.sh"
+  preflight_script                    = "${path.module}/resources/preflights.sh"
   vm_hostnames_str                    = join("|", local.vm_hostnames)
   vm_hostnames = concat(
     local.admin_vm_hostnames,
@@ -119,24 +119,25 @@ module "create_service_accounts" {
 }
 
 module "instance_template" {
-  source = "terraform-google-modules/vm/google//modules/instance_template"
+  source  = "terraform-google-modules/vm/google//modules/instance_template"
+  version = "~> 6.3.0"
   depends_on = [
     module.enable_google_apis_primary,
     module.enable_google_apis_secondary
   ]
   # fetched from previous module to explicitely express dependency
   project_id           = module.enable_google_apis_secondary.project_id
-  region               = var.region         # --zone=${ZONE}
-  source_image_family  = var.image_family   # --image-family=ubuntu-2004-lts
-  source_image_project = var.image_project  # --image-project=ubuntu-os-cloud
-  machine_type         = var.machine_type   # --machine-type $MACHINE_TYPE
-  disk_size_gb         = var.boot_disk_size # --boot-disk-size 200G
-  disk_type            = var.boot_disk_type # --boot-disk-type pd-ssd
-  network              = var.network        # --network default
-  tags                 = var.tags           # --tags http-server,https-server
-  can_ip_forward       = true               # --can-ip-forward
-  # TODO: Should be available from any version upwards of v6.2.0
-  # min_cpu_platform     = var.min_cpu_platform # --min-cpu-platform "Intel Haswell"
+  region               = var.region           # --zone=${ZONE}
+  source_image         = var.image            # --image=ubuntu-2004-focal-v20210429
+  source_image_family  = var.image_family     # --image-family=ubuntu-2004-lts
+  source_image_project = var.image_project    # --image-project=ubuntu-os-cloud
+  machine_type         = var.machine_type     # --machine-type $MACHINE_TYPE
+  disk_size_gb         = var.boot_disk_size   # --boot-disk-size 200G
+  disk_type            = var.boot_disk_type   # --boot-disk-type pd-ssd
+  network              = var.network          # --network default
+  tags                 = var.tags             # --tags http-server,https-server
+  min_cpu_platform     = var.min_cpu_platform # --min-cpu-platform "Intel Haswell"
+  can_ip_forward       = true                 # --can-ip-forward
   service_account = {
     email  = ""
     scopes = var.access_scopes # --scopes cloud-platform
