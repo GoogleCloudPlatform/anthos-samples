@@ -28,7 +28,7 @@ output "admin_vm_ssh" {
     "# ------------------------------------------------------------------------------",
     "# You must be SSH'ed into the admin host ${local.admin_vm_hostnames[0]} as ${var.username} user now",
     "# ------------------------------------------------------------------------------",
-    "> sudo ./preflights.sh && \\",
+    "> sudo ./run_initialization_checks.sh && \\",
     "  sudo bmctl create config -c ${var.abm_cluster_id} && \\",
     "  sudo cp ~/${var.abm_cluster_id}.yaml bmctl-workspace/${var.abm_cluster_id} && \\",
     "  sudo bmctl create cluster -c ${var.abm_cluster_id}",
