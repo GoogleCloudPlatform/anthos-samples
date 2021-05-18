@@ -35,7 +35,7 @@ type InitVariables struct {
 	InitScriptPath         *Variable `json:"init_script"`
 	ClusterYamlPath        *Variable `json:"cluster_yaml_path"`
 	CredentialsFile        *Variable `json:"credentials_file"`
-	PreflightsScript       *Variable `json:"preflight_script"`
+	InitCheckScript        *Variable `json:"init_check_script"`
 	PublicKeyTemplatePath  *Variable `json:"pub_key_path_template"`
 	PrivateKeyTemplatePath *Variable `json:"priv_key_path_template"`
 	InitScriptVarsFilePath *Variable `json:"init_vars_file"`

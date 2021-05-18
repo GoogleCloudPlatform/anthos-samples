@@ -41,7 +41,7 @@ func TestUnit_InitModule(goTester *testing.T) {
 	hostname := "test_hostname"
 	publicIP := "10.10.10.01"
 	initScript := "../test/../path/../init_script.sh"
-	preflightScript := "../test/../path/../preflight_script.sh"
+	initCheckScript := "../test/../path/../run_initialization_checks.sh"
 	initLogs := "test_init_log_file.log"
 	initVarsFile := "../test/../path/../init_vars_file.var"
 	clusterYamlPath := "../test/../path/../test_cluster.yaml"
@@ -58,7 +58,7 @@ func TestUnit_InitModule(goTester *testing.T) {
 		"hostname":               hostname,
 		"publicIp":               publicIP,
 		"init_script":            initScript,
-		"preflight_script":       preflightScript,
+		"init_check_script":       initCheckScript,
 		"init_logs":              initLogs,
 		"init_vars_file":         initVarsFile,
 		"cluster_yaml_path":      clusterYamlPath,
@@ -230,12 +230,12 @@ func TestUnit_InitModule_DefaultValues(goTester *testing.T) {
 		"Variable does not match in plan: init_script.",
 	)
 
-	// verify input variable preflight_script in plan matches default value
+	// verify input variable init_check_script in plan matches default value
 	assert.Equal(
 		goTester,
-		"../../resources/preflights.sh",
-		initModulePlan.Variables.PreflightsScript.Value,
-		"Variable does not match in plan: preflight_script.",
+		"../../resources/run_initialization_checks.sh",
+		initModulePlan.Variables.InitCheckScript.Value,
+		"Variable does not match in plan: init_check_script.",
 	)
 
 	// verify input variable init_logs in plan matches default value
@@ -328,11 +328,11 @@ func validateVariables(goTester *testing.T, tfPlan *util.InitModulePlan) {
 	)
 	util.ExitIf(hasVar, false)
 
-	// verify plan has preflight_script input variable
+	// verify plan has init_check_script input variable
 	hasVar = assert.NotNil(
 		goTester,
-		tfPlan.Variables.PreflightsScript,
-		"Variable not found in plan: preflight_script",
+		tfPlan.Variables.InitCheckScript,
+		"Variable not found in plan: init_check_script",
 	)
 	util.ExitIf(hasVar, false)
 
@@ -434,12 +434,12 @@ func validateVariableValues(goTester *testing.T, initModulePlan *util.InitModule
 		"Variable does not match in plan: init_script.",
 	)
 
-	// verify input variable preflight_script in plan matches
+	// verify input variable init_check_script in plan matches
 	assert.Equal(
 		goTester,
-		(*vars)["preflight_script"],
-		initModulePlan.Variables.PreflightsScript.Value,
-		"Variable does not match in plan: preflight_script.",
+		(*vars)["init_check_script"],
+		initModulePlan.Variables.InitCheckScript.Value,
+		"Variable does not match in plan: init_check_script.",
 	)
 
 	// verify input variable init_logs in plan matches

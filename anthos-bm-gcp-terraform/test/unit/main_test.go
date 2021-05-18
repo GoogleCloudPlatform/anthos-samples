@@ -69,13 +69,13 @@ func TestUnit_MainScript(goTester *testing.T) {
 		"test_scope_2",
 	}
 	primaryApis := []string{
-		"test_primary_api_1",
-		"test_primary_api_2",
+		"test_primary_api_1.googleapis.com",
+		"test_primary_api_2.googleapis.com",
 	}
 	secondaryApis := []string{
-		"test_secondary_api_1",
-		"test_secondary_api_2",
-		"test_secondary_api_3",
+		"test_secondary_api_1.googleapis.com",
+		"test_secondary_api_2.googleapis.com",
+		"test_secondary_api_3.googleapis.com",
 	}
 	instanceCount := map[string]int{
 		"controlplane": 3,
@@ -1212,7 +1212,7 @@ func validateMainOutputs(goTester *testing.T, planOutputs *util.Outputs, vars *m
 	)
 	assert.True(
 		goTester,
-		strings.Contains(outputValue, "sudo ./preflights.sh"),
-		"Output is expected to have 'sudo ./preflights.sh'",
+		strings.Contains(outputValue, "sudo ./run_initialization_checks.sh"),
+		"Output is expected to have 'sudo ./run_initialization_checks.sh'",
 	)
 }
