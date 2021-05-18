@@ -55,10 +55,10 @@ variable "init_script" {
   default     = "../../resources/init.sh"
 }
 
-variable "preflight_script" {
-  description = "Path to the preflight check script that validates if the initialization is complete"
+variable "init_check_script" {
+  description = "Path to the script that validates if the initialization is complete"
   type        = string
-  default     = "../../resources/preflights.sh"
+  default     = "../../resources/run_initialization_checks.sh"
 }
 
 variable "init_logs" {

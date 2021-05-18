@@ -88,8 +88,8 @@ resource "null_resource" "exec_init_script" {
   }
 
   provisioner "file" {
-    source      = var.preflight_script
-    destination = "${local.home_dir}/preflights.sh"
+    source      = var.init_check_script
+    destination = "${local.home_dir}/run_initialization_checks.sh"
   }
 
   provisioner "remote-exec" {
@@ -97,7 +97,7 @@ resource "null_resource" "exec_init_script" {
       "chmod 0600 ${local.home_dir}/${local.cluster_yaml_file_name}",
       "chmod 0600 ${local.home_dir}/init.vars",
       "chmod 0100 ${local.home_dir}/init.sh",
-      "chmod 0100 ${local.home_dir}/preflights.sh"
+      "chmod 0100 ${local.home_dir}/run_initialization_checks.sh"
     ]
   }
 
