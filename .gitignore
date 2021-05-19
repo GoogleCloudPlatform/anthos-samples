@@ -5,7 +5,7 @@ terraform.tfstate
 .terraform.tfstate*
 plan
 .terraform.lock.hcl
-*/.terraform/*
+.terraform*
 cleanup.sh
 .*.yaml
 .debug.local.sh

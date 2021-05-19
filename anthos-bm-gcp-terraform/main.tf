@@ -14,33 +14,6 @@
  * limitations under the License.
  */
 
-terraform {
-  required_providers {
-    google = {
-      source  = "hashicorp/google"
-      version = "3.67.0"
-    }
-    google-beta = {
-      source  = "hashicorp/google-beta"
-      version = "3.67.0"
-    }
-  }
-}
-
-provider "google" {
-  project     = var.project_id
-  region      = var.region
-  zone        = var.zone
-  credentials = file(var.credentials_file)
-}
-
-provider "google-beta" {
-  project     = var.project_id
-  region      = var.region
-  zone        = var.zone
-  credentials = file(var.credentials_file)
-}
-
 locals {
   init_script_logfile_name            = "init.log"
   vm_name_template                    = "abm-%s%d"
