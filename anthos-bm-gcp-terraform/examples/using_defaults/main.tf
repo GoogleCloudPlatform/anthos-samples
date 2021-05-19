@@ -18,5 +18,4 @@ module "anthos_bm_gcp" {
   source           = "../.."
   project_id       = var.project_id
   credentials_file = var.credentials_file
-  machine_type     = var.machine_type
 }

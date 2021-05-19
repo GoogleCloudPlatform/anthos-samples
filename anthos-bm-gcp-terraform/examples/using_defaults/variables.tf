@@ -23,8 +23,3 @@ variable "credentials_file" {
   description = "The service account key file to use."
   type        = string
 }
-
-variable "machine_type" {
-  description = "The machine type of the GCE VMs."
-  type        = string
-}
