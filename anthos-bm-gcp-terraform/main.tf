@@ -18,11 +18,11 @@ terraform {
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = "3.66.1"
+      version = "3.67.0"
     }
     google-beta = {
       source  = "hashicorp/google-beta"
-      version = "3.66.1"
+      version = "3.67.0"
     }
   }
 }
@@ -60,7 +60,7 @@ locals {
   cluster_yaml_template_file          = "${path.root}/resources/anthos_gce_cluster.tpl"
   init_script_vars_file               = "${path.root}/resources/init.vars.tpl"
   init_script                         = "${path.root}/resources/init.sh"
-  preflight_script                    = "${path.root}/resources/preflights.sh"
+  init_check_script                   = "${path.root}/resources/run_initialization_checks.sh"
   vm_hostnames_str                    = join("|", local.vm_hostnames)
   vm_hostnames = concat(
     local.admin_vm_hostnames,
@@ -221,7 +221,7 @@ module "init_hosts" {
   credentials_file       = var.credentials_file
   publicIp               = local.publicIps[each.value]
   init_script            = local.init_script
-  preflight_script       = local.preflight_script
+  init_check_script      = local.init_check_script
   init_logs              = local.init_script_logfile_name
   pub_key_path_template  = local.public_key_file_path_template
   priv_key_path_template = local.private_key_file_path_template
