@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-variable "project_id" {
-  description = "The ID of the project in which to provision resources."
-  type        = string
-}
-
-variable "bucket_name" {
-  description = "The name of the bucket to create."
-  type        = string
+module "anthos_bm_gcp" {
+  source           = "../.."
+  project_id       = var.project_id
+  credentials_file = var.credentials_file
+  machine_type     = var.machine_type
 }

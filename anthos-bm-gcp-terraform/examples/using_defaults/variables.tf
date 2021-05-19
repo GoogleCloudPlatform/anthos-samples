@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-provider "google" {
-  version = "~> 3.0"
+variable "project_id" {
+  description = "The ID of the project in which to provision resources."
+  type        = string
 }
 
-module "anthos_bm_gcp" {
-  source = "../.."
+variable "credentials_file" {
+  description = "The service account key file to use."
+  type        = string
+}
 
-  project_id  = var.project_id
-  bucket_name = var.bucket_name
+variable "machine_type" {
+  description = "The machine type of the GCE VMs."
+  type        = string
 }

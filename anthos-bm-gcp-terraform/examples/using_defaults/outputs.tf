@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
-terraform {
-  required_version = ">= 0.13"
+output "admin_vm_ssh" {
+  description = "The follow up steps to configure the GCE VM with Anthos Bare metal."
+  value       = module.anthos_bm_gcp.admin_vm_ssh
 }

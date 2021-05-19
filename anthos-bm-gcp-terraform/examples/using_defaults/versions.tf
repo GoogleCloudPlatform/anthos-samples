@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-output "bucket_name" {
-  description = "The name of the bucket."
-  value       = module.anthos_bm_gcp.bucket_name
+terraform {
+  required_version = "~> 0.14.9"
 }

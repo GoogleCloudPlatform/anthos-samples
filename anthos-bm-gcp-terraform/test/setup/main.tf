@@ -15,6 +15,7 @@
  */
 
 locals {
+  module_path = abspath(path.module)
   # required roles for the service account on the project that will be used for
   # the setting up the GCE infrastructure. The service account shall have either
   # Owner role or both Editor & Project IAM Admin roles
@@ -61,6 +62,10 @@ resource "google_service_account_key" "int_test_owner_sa_key" {
   service_account_id = google_service_account.int_test_owner_sa.id
 }
 
+resource "local_file" "int_test_owner_sa_key_file" {
+  content  = base64decode(google_service_account_key.int_test_owner_sa_key.private_key)
+  filename = "${local.module_path}/${module.abm_infra_owner_project.project_id}.json"
+}
 
 # Create a project and service account to test the script upon a project with
 # Project Editor and Project IAM Admin permissions
@@ -90,4 +95,9 @@ resource "google_project_iam_member" "project_iam_editor_binding" {
 
 resource "google_service_account_key" "int_test_editor_sa_key" {
   service_account_id = google_service_account.int_test_editor_sa.id
+}
+
+resource "local_file" "int_test_editor_sa_key_file" {
+  content  = base64decode(google_service_account_key.int_test_editor_sa_key.private_key)
+  filename = "${local.module_path}/${module.abm_infra_editor_project.project_id}.json"
 }
