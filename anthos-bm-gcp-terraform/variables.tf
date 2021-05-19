@@ -112,8 +112,6 @@ variable "primary_apis" {
   description = "List of primary Google Cloud APIs to be enabled for this deployment"
   type        = list(string)
   default = [
-    "anthos.googleapis.com",
-    "anthosgke.googleapis.com",
     "cloudresourcemanager.googleapis.com",
   ]
 }
@@ -122,6 +120,8 @@ variable "secondary_apis" {
   description = "List of secondary Google Cloud APIs to be enabled for this deployment"
   type        = list(string)
   default = [
+    "anthos.googleapis.com",
+    "anthosgke.googleapis.com",
     "container.googleapis.com",
     "gkeconnect.googleapis.com",
     "gkehub.googleapis.com",

@@ -1,0 +1,11 @@
+name: defaults_on_editor_project
+attributes:
+  - name: project_id
+    required: true
+    type: string
+  - name: region
+    required: true
+    type: string
+  - name: zone
+    required: true
+    type: string

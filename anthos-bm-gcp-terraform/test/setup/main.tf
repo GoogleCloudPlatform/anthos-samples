@@ -26,6 +26,7 @@ locals {
     "roles/editor",
     "roles/resourcemanager.projectIamAdmin"
   ]
+  apis_to_be_activated = ["serviceusage.googleapis.com"]
 }
 
 resource "random_id" "random_project_id_suffix" {
@@ -43,6 +44,7 @@ module "abm_infra_owner_project" {
   org_id              = var.org_id
   folder_id           = var.folder_id
   billing_account     = var.billing_account
+  activate_apis       = local.apis_to_be_activated
 }
 
 resource "google_service_account" "int_test_owner_sa" {
@@ -78,6 +80,7 @@ module "abm_infra_editor_project" {
   org_id              = var.org_id
   folder_id           = var.folder_id
   billing_account     = var.billing_account
+  activate_apis       = local.apis_to_be_activated
 }
 
 resource "google_service_account" "int_test_editor_sa" {
