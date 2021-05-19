@@ -51,14 +51,14 @@ gcloud compute ssh tfadmin@abm-ws0-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZON
 
 2. Install the Anthos cluster on the provisioned Compute Engine VM based bare metal infrastructure
 ```sh
-sudo ./preflights.sh && \
+sudo ./run_initialization_checks.sh && \
 sudo bmctl create config -c anthos-gce-cluster && \
 sudo cp ~/anthos-gce-cluster.yaml bmctl-workspace/anthos-gce-cluster && \
 sudo bmctl create cluster -c anthos-gce-cluster
 ```
 ---
 
-Running the commands from the Terraform output starts setting up a new Anthos cluster. This includes doing preflight checks on the nodes, creating the admin and user clusters and also registering the cluster with Google Cloud using [Connect](https://cloud.google.com/anthos/multicluster-management/connect/overview). The whole setup can take up to 15 minutes. You see the following output as the cluster is being created:
+Running the commands from the Terraform output starts setting up a new Anthos cluster. This includes checking the initialization state of the nodes, creating the admin and user clusters and also registering the cluster with Google Cloud using [Connect](https://cloud.google.com/anthos/multicluster-management/connect/overview). The whole setup can take up to 15 minutes. You see the following output as the cluster is being created:
 
 > **Note:** The logs for checks on node initialization has been left out. They appear before the following logs from Anthos setup
 
