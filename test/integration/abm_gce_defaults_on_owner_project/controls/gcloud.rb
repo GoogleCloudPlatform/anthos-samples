@@ -19,7 +19,7 @@ zone = attribute('zone')
 
 control "gcloud" do
   title "Google Compute Instances configuration"
-  describe command("gcloud compute instances list --project=#{project_id} --zone=#{zone} --format=json") do
+  describe command("gcloud compute instances list --project=#{project_id} --format=json") do
     its(:exit_status) { should eq 0 }
     its(:stderr) { should eq '' }
 
