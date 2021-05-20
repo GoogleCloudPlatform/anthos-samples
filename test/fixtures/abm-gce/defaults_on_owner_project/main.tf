@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
-terraform {
-  required_version = "~> 0.14.9"
+module "anthos_bm_gcp" {
+  source           = "../../../../anthos-bm-gcp-terraform"
+  project_id       = var.owner_project_id
+  credentials_file = var.owner_sa_key_file_path
+  resources_path   = "../../../../anthos-bm-gcp-terraform/resources"
 }

@@ -27,6 +27,11 @@ variable "credentials_file" {
   type        = string
 }
 
+variable "resources_path" {
+  description = "Path to the resources folder with the template files"
+  type        = string
+}
+
 variable "region" {
   description = "Google Cloud Region in which the Compute Engine VMs should be provisioned"
   type        = string

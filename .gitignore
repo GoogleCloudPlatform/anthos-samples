@@ -1,11 +1,11 @@
 .DS_Store
 terraform.tfvars
 terraform.tfstate.backup
-terraform.tfstate
+terraform.tfstate**
 .terraform.tfstate*
 plan
 .terraform.lock.hcl
-.terraform*
+**.terraform*
 cleanup.sh
 .*.yaml
 .debug.local.sh
@@ -16,3 +16,4 @@ plan.json
 plan.tfplan
 .vscode
 .kitchen
+**ci-abm*.json
