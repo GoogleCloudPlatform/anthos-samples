@@ -30,17 +30,17 @@ platforms:
   - name: local
 
 suites:
-  - name: "defaults_on_owner_project"
+  - name: "abm_gce_defaults_on_owner_project"
     driver:
-      root_module_directory: test/fixtures/abm-gce/defaults_on_owner_project
+      root_module_directory: test/fixtures/abm_gce_defaults_on_owner_project
     verifier:
       systems:
-        - name: defaults_on_owner_project
+        - name: abm_gce_defaults_on_owner_project
           backend: local
-  - name: "defaults_on_editor_project"
+  - name: "abm_gce_defaults_on_editor_project"
     driver:
-      root_module_directory: test/fixtures/abm-gce/defaults_on_editor_project
+      root_module_directory: test/fixtures/abm_gce_defaults_on_editor_project
     verifier:
       systems:
-        - name: defaults_on_editor_project
+        - name: abm_gce_defaults_on_editor_project
           backend: local
