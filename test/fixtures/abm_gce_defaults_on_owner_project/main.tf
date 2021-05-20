@@ -15,8 +15,8 @@
  */
 
 module "anthos_bm_gcp" {
-  source           = "../../../../anthos-bm-gcp-terraform"
+  source           = "../../../anthos-bm-gcp-terraform"
   project_id       = var.owner_project_id
   credentials_file = var.owner_sa_key_file_path
-  resources_path   = "../../../../anthos-bm-gcp-terraform/resources"
+  resources_path   = "../../../anthos-bm-gcp-terraform/resources"
 }

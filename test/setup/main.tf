@@ -38,7 +38,7 @@ resource "random_id" "random_project_id_suffix" {
 module "abm_infra_owner_project" {
   source              = "terraform-google-modules/project-factory/google"
   version             = "~> 10.1"
-  name                = "ci-anthos-samples-abm-${random_id.random_project_id_suffix.hex}"
+  name                = "ci-abm-${random_id.random_project_id_suffix.hex}"
   random_project_id   = true
   auto_create_network = true
   org_id              = var.org_id
@@ -74,7 +74,7 @@ resource "local_file" "int_test_owner_sa_key_file" {
 module "abm_infra_editor_project" {
   source              = "terraform-google-modules/project-factory/google"
   version             = "~> 10.1"
-  name                = "ci-anthos-samples-abm-${random_id.random_project_id_suffix.hex}"
+  name                = "ci-abm-${random_id.random_project_id_suffix.hex}"
   random_project_id   = true
   auto_create_network = true
   org_id              = var.org_id
