@@ -14,33 +14,6 @@
  * limitations under the License.
  */
 
-terraform {
-  required_providers {
-    google = {
-      source  = "hashicorp/google"
-      version = "3.67.0"
-    }
-    google-beta = {
-      source  = "hashicorp/google-beta"
-      version = "3.67.0"
-    }
-  }
-}
-
-provider "google" {
-  project     = var.project_id
-  region      = var.region
-  zone        = var.zone
-  credentials = file(var.credentials_file)
-}
-
-provider "google-beta" {
-  project     = var.project_id
-  region      = var.region
-  zone        = var.zone
-  credentials = file(var.credentials_file)
-}
-
 locals {
   init_script_logfile_name            = "init.log"
   vm_name_template                    = "abm-%s%d"
@@ -53,14 +26,14 @@ locals {
   admin_vm_hostnames                  = [for vm in module.admin_vm_hosts.vm_info : vm.hostname]
   vm_vxlan_ip                         = { for idx, vmName in local.vm_names : vmName => format("10.200.0.%d", idx + 2) }
   vmHostnameToVmName                  = { for vmName in local.vm_names : "${vmName}-001" => vmName }
-  public_key_file_path_template       = "${path.module}/resources/.temp/%s/ssh-key.pub"
-  private_key_file_path_template      = "${path.module}/resources/.temp/%s/ssh-key.priv"
-  init_script_vars_file_path_template = "${path.module}/resources/.temp/%s/init.vars"
-  cluster_yaml_file                   = "${path.module}/resources/.temp/.${var.abm_cluster_id}.yaml"
-  cluster_yaml_template_file          = "${path.module}/resources/anthos_gce_cluster.tpl"
-  init_script_vars_file               = "${path.module}/resources/init.vars.tpl"
-  init_script                         = "${path.module}/resources/init.sh"
-  init_check_script                   = "${path.module}/resources/run_initialization_checks.sh"
+  public_key_file_path_template       = "${var.resources_path}/.temp/%s/ssh-key.pub"
+  private_key_file_path_template      = "${var.resources_path}/.temp/%s/ssh-key.priv"
+  init_script_vars_file_path_template = "${var.resources_path}/.temp/%s/init.vars"
+  cluster_yaml_file                   = "${var.resources_path}/.temp/.${var.abm_cluster_id}.yaml"
+  cluster_yaml_template_file          = "${var.resources_path}/anthos_gce_cluster.tpl"
+  init_script_vars_file               = "${var.resources_path}/init.vars.tpl"
+  init_script                         = "${var.resources_path}/init.sh"
+  init_check_script                   = "${var.resources_path}/run_initialization_checks.sh"
   vm_hostnames_str                    = join("|", local.vm_hostnames)
   vm_hostnames = concat(
     local.admin_vm_hostnames,
@@ -220,6 +193,7 @@ module "init_hosts" {
   hostname               = each.value
   username               = var.username
   credentials_file       = var.credentials_file
+  resources_path         = var.resources_path
   publicIp               = local.publicIps[each.value]
   init_script            = local.init_script
   init_check_script      = local.init_check_script

@@ -1,15 +1,13 @@
 .DS_Store
 terraform.tfvars
 terraform.tfstate.backup
-terraform.tfstate
+terraform.tfstate**
 .terraform.tfstate*
 .terraform.lock.hcl
-*/.terraform/*
-
+**.terraform*
 plan
 *.tfplan
 plan.json
-
 cleanup.sh
 .*.yaml
 .debug.local.sh
@@ -19,5 +17,6 @@ cleanup.sh
 
 .vscode
 *.err
-
 credentials_file.json
+.kitchen
+**ci-abm*.json

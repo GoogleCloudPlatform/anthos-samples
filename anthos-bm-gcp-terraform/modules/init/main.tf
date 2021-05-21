@@ -15,7 +15,7 @@
  */
 
 locals {
-  ssh_pub_key_template_file = "${path.module}/../../resources/ssh-keys.tpl"
+  ssh_pub_key_template_file = "${var.resources_path}/ssh-keys.tpl"
   ssh_pub_key_file          = format(var.pub_key_path_template, var.hostname)
   ssh_private_key_file      = format(var.priv_key_path_template, var.hostname)
   cluster_yaml_file_name    = trimprefix(basename(var.cluster_yaml_path), ".")
@@ -46,7 +46,7 @@ resource "local_file" "temp_ssh_priv_key_file" {
 
 module "gcloud_add_ssh_key_metadata" {
   source                   = "terraform-google-modules/gcloud/google"
-  version                  = "2.0.3"
+  version                  = "2.1.0"
   platform                 = "linux"
   service_account_key_file = var.credentials_file
   module_depends_on = [

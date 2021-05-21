@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -193,12 +193,12 @@ spec:
         - name: GOOGLE_APPLICATION_CREDENTIALS
           value: /google-cloud-credentials/credentials.json
         args:
-        # USER DOES NOT NEED TO CHANGE THESE 
+        # USER DOES NOT NEED TO CHANGE THESE
         - "--config-file=/etc/sidecar/config.yaml"
         - "--prometheus.wal-directory=/data/wal"
         - "--stackdriver.metrics-prefix=kubernetes.io/anthos"
         - "--stackdriver.generic.namespace=kube-system"
-        # USER NEEDS TO UPDATE THESE VALUES BEFORE DEPLOY 
+        # USER NEEDS TO UPDATE THESE VALUES BEFORE DEPLOY
         - "--stackdriver.project-id=[PROJECT_ID]"
         - "--stackdriver.kubernetes.location=[CLUSTER_LOCATION]"
         - "--stackdriver.generic.location=[CLUSTER_LOCATION]"
@@ -248,9 +248,9 @@ spec:
     - metadata:
         name: stackdriver-prometheus-data
       spec:
-        # storageClassName: standard #GCP 
-        # storageClassName: gp2 #AWS EKS 
-        # storageClassName: default #Azure AKS 
+        # storageClassName: standard #GCP
+        # storageClassName: gp2 #AWS EKS
+        # storageClassName: default #Azure AKS
         accessModes:
           - ReadWriteOnce
         resources:
