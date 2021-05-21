@@ -44,6 +44,7 @@ steps:
 - id: create abm-gce-defaults-on-editor-project-local
   waitFor:
     - prepare
+    - create abm-gce-defaults-on-editor-project-local
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do create abm-gce-defaults-on-editor-project-local']
 - id: converge abm-gce-defaults-on-editor-project-local
