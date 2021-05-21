@@ -14,7 +14,8 @@
 # limitations under the License.
 
 """
-This script can be used to prepare a bundle of files describing the state of a GKE cluster.
+This script can be used to prepare a bundle of files describing the state of a
+GKE cluster.
 
 Usage examples:
  * Using default kubeconfig:
@@ -25,8 +26,8 @@ Usage examples:
    $ python3 create_snapshot.py --timeout 10
 
 Output:
-snapshot-{timestamp}.tar.gz file containing outputs of various kubectl commands that were executed.
-The file is created in the current working directory.
+snapshot-{timestamp}.tar.gz file containing outputs of various kubectl commands
+that were executed. The file is created in the current working directory.
 
 Requirements:
  * Python 3.8 (but probably work with lower versions of Python 3 too)
@@ -74,11 +75,14 @@ KUBECTL_PER_POD_CMDS = [
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description='Create a snapshot of important information about Anthos K8S '
-                                                 'cluster to be used by GCP support.')
-    parser.add_argument('--kubeconfig', dest='kubeconfig', action='store',
-                        default=os.getenv('KUBECONFIG', ''),
-                        help='Path to kubeconfig file to be used to gather the snapshot')
+    parser = argparse.ArgumentParser(
+      description='Create a snapshot of important information about Anthos K8S '
+                  'cluster to be used by GCP support.')
+    parser.add_argument('--kubeconfig',
+      dest='kubeconfig',
+      action='store',
+      default=os.getenv('KUBECONFIG', ''),
+      help='Path to kubeconfig file to be used to gather the''snapshot')
     parser.add_argument('--timeout', dest='timeout', action='store',
                         default=CMD_TIMEOUT_SEC, type=int,
                         help='Timeout for kubectl commands.')
@@ -97,21 +101,24 @@ def run_cmd(cmd: str, subfolder: str, output_dir: pathlib.Path):
             if backoff_count > BACKOFF_LIMIT:
                 print('[ FAIL ]')
                 return
-            process = subprocess.run(cmd, stdout=output_file, stderr=output_file,
-                                     timeout=60, shell=True)
+            process = subprocess.run(cmd, stdout=output_file,
+                                          stderr=output_file,
+                                          timeout=60,
+                                          shell=True)
             if not process.returncode:
                 print("[ DONE ]")
                 return
-            print("\nCommand failed, trying again in {}s. Error output: {}".format(backoff_timer,
-                                                                                   process.stderr))
+            print("\nCommand failed, trying again in {}s. ' \
+                  'Error output: {}".format(backoff_timer, process.stderr))
             time.sleep(backoff_timer)
             backoff_timer *= 2
             backoff_count += 1
 
 
-def get_kubectl_list(object_type, kubeconfig, timeout, namespace=None, object_name='',
-                     jsonpath="{.items[*].metadata.name}"):
-    cmd = 'kubectl get {obj_type} {kubeconfig_arg} --request-timeout {timeout} ' \
+def get_kubectl_list(object_type, kubeconfig, timeout, namespace=None,
+                      object_name='', jsonpath="{.items[*].metadata.name}"):
+    cmd = 'kubectl get {obj_type} {kubeconfig_arg} ' \
+          '--request-timeout {timeout} ' \
           '-o jsonpath="{jsonpath}" {obj_name}'.format(
         kubeconfig_arg=kubeconfig,
         jsonpath=jsonpath,
@@ -134,8 +141,8 @@ def get_kubectl_list(object_type, kubeconfig, timeout, namespace=None, object_na
             if '' in obj_list:
                 obj_list.remove('')
             return obj_list
-        print("\nCommand failed, trying again in {}s. Error output: {}".format(backoff_timer,
-                                                                               process.stderr))
+        print("\nCommand failed, trying again in {}s. ' \
+              'Error output: {}".format(backoff_timer, process.stderr))
         time.sleep(backoff_timer)
         backoff_timer *= 2
         backoff_count += 1
@@ -145,7 +152,8 @@ def main():
     kubeconfig, timeout = parse_args()
     timeout = "{}s".format(timeout)
     if kubeconfig:
-        kubeconfig = '--kubeconfig {}'.format(pathlib.Path(kubeconfig).absolute())
+        kubeconfig = \
+          '--kubeconfig {}'.format(pathlib.Path(kubeconfig).absolute())
 
     namespaces_list = get_kubectl_list('namespaces', kubeconfig, timeout)
 
