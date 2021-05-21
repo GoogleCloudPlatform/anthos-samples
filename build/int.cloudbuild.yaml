@@ -21,46 +21,46 @@ steps:
   - 'TF_VAR_org_id=$_ORG_ID'
   - 'TF_VAR_folder_id=$_FOLDER_ID'
   - 'TF_VAR_billing_account=$_BILLING_ACCOUNT'
-- id: create defaults-on-owner-project-local
+- id: create abm_gce_defaults_on_owner_project
   waitFor:
     - prepare
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
-  args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do create simple-regional-local']
-- id: converge defaults-on-owner-project-local
+  args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do create abm_gce_defaults_on_owner_project']
+- id: converge abm_gce_defaults_on_owner_project
   waitFor:
-    - create defaults-on-owner-project-local
+    - create abm_gce_defaults_on_owner_project
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
-  args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do converge defaults-on-owner-project-local']
-- id: verify defaults-on-owner-project-local
+  args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do converge abm_gce_defaults_on_owner_project']
+- id: verify abm_gce_defaults_on_owner_project
   waitFor:
-    - converge defaults-on-owner-project-local
+    - converge abm_gce_defaults_on_owner_project
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
-  args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do verify defaults-on-owner-project-local']
-- id: destroy defaults-on-owner-project-local
+  args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do verify abm_gce_defaults_on_owner_project']
+- id: destroy abm_gce_defaults_on_owner_project
   waitFor:
-    - verify defaults-on-owner-project-local
+    - verify abm_gce_defaults_on_owner_project
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
-  args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do destroy defaults-on-owner-project-local']
-- id: create defaults-on-editor-project-local
+  args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do destroy abm_gce_defaults_on_owner_project']
+- id: create abm_gce_defaults_on_editor_project
   waitFor:
     - prepare
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
-  args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do create simple-regional-local']
-- id: converge defaults-on-editor-project-local
+  args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do create abm_gce_defaults_on_editor_project']
+- id: converge abm_gce_defaults_on_editor_project
   waitFor:
-    - create defaults-on-editor-project-local
+    - create abm_gce_defaults_on_editor_project
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
-  args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do converge defaults-on-editor-project-local']
-- id: verify defaults-on-editor-project-local
+  args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do converge abm_gce_defaults_on_editor_project']
+- id: verify abm_gce_defaults_on_editor_project
   waitFor:
-    - converge defaults-on-editor-project-local
+    - converge abm_gce_defaults_on_editor_project
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
-  args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do verify defaults-on-editor-project-local']
-- id: destroy defaults-on-editor-project-local
+  args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do verify abm_gce_defaults_on_editor_project']
+- id: destroy abm_gce_defaults_on_editor_project
   waitFor:
-    - verify defaults-on-editor-project-local
+    - verify abm_gce_defaults_on_editor_project
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
-  args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do destroy defaults-on-editor-project-local']
+  args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do destroy abm_gce_defaults_on_editor_project']
 tags:
 - 'ci'
 - 'integration'
