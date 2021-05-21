@@ -49,40 +49,41 @@ BACKOFF_LIMIT = 4
 KUBECTL_GLOBAL_CMDS = [
     'kubectl version {kubeconfig_arg} --request-timeout {timeout}',
     'kubectl cluster-info {kubeconfig_arg} --request-timeout {timeout}',
-    'kubectl get clusterroles -o wide {kubeconfig_arg} --request-timeout {timeout}',
-    'kubectl get clusterrolebindings -o wide {kubeconfig_arg} --request-timeout {timeout}',
+    'kubectl get clusterroles -o wide {kubeconfig_arg} --request-timeout {timeout}',          # noqa: E501
+    'kubectl get clusterrolebindings -o wide {kubeconfig_arg} --request-timeout {timeout}',   # noqa: E501
     'kubectl get crd -o wide {kubeconfig_arg} --request-timeout {timeout}',
     'kubectl get nodes -o wide {kubeconfig_arg} --request-timeout {timeout}',
-    'kubectl get clusterroles -o yaml {kubeconfig_arg} --request-timeout {timeout}',
-    'kubectl get clusterrolebindings -o yaml {kubeconfig_arg} --request-timeout {timeout}',
+    'kubectl get clusterroles -o yaml {kubeconfig_arg} --request-timeout {timeout}',          # noqa: E501
+    'kubectl get clusterrolebindings -o yaml {kubeconfig_arg} --request-timeout {timeout}',   # noqa: E501
     'kubectl get crd -o yaml {kubeconfig_arg} --request-timeout {timeout}',
     'kubectl get nodes -o yaml {kubeconfig_arg} --request-timeout {timeout}',
-    'kubectl describe clusterroles {kubeconfig_arg} --request-timeout {timeout}',
-    'kubectl describe clusterrolebindings {kubeconfig_arg} --request-timeout {timeout}',
+    'kubectl describe clusterroles {kubeconfig_arg} --request-timeout {timeout}',             # noqa: E501
+    'kubectl describe clusterrolebindings {kubeconfig_arg} --request-timeout {timeout}',      # noqa: E501
     'kubectl describe crd {kubeconfig_arg} --request-timeout {timeout}',
     'kubectl describe nodes {kubeconfig_arg} --request-timeout {timeout}',
 ]
 
 KUBECTL_PER_NS_CMDS = [
-    'kubectl get all -o wide {kubeconfig_arg} --request-timeout {timeout} --namespace {namespace}',
-    'kubectl get all -o yaml {kubeconfig_arg} --request-timeout {timeout} --namespace {namespace}',
-    'kubectl describe all {kubeconfig_arg} --request-timeout {timeout} --namespace {namespace}',
+    'kubectl get all -o wide {kubeconfig_arg} --request-timeout {timeout} --namespace {namespace}',  # noqa: E501
+    'kubectl get all -o yaml {kubeconfig_arg} --request-timeout {timeout} --namespace {namespace}',  # noqa: E501
+    'kubectl describe all {kubeconfig_arg} --request-timeout {timeout} --namespace {namespace}',     # noqa: E501
 ]
 
 KUBECTL_PER_POD_CMDS = [
-    'kubectl logs {kubeconfig_arg} {pod} --container {container} --request-timeout {timeout} --namespace {namespace}',
+    'kubectl logs {kubeconfig_arg} {pod} --container {container} --request-timeout {timeout} --namespace {namespace}',  # noqa: E501
 ]
 
 
 def parse_args():
     parser = argparse.ArgumentParser(
-      description='Create a snapshot of important information about Anthos K8S '
-                  'cluster to be used by GCP support.')
+      description='Create a snapshot of important information about Anthos K8'
+                  ' cluster to be used by GCP support.')
     parser.add_argument('--kubeconfig',
-      dest='kubeconfig',
-      action='store',
-      default=os.getenv('KUBECONFIG', ''),
-      help='Path to kubeconfig file to be used to gather the''snapshot')
+                        dest='kubeconfig',
+                        action='store',
+                        default=os.getenv('KUBECONFIG', ''),
+                        help='Path to kubeconfig file to be used to gather the'
+                        'snapshot')
     parser.add_argument('--timeout', dest='timeout', action='store',
                         default=CMD_TIMEOUT_SEC, type=int,
                         help='Timeout for kubectl commands.')
@@ -90,7 +91,7 @@ def parse_args():
     return args.kubeconfig, args.timeout
 
 
-def run_cmd(cmd: str, subfolder: str, output_dir: pathlib.Path):
+def run_cmd(cmd: str, subfolder: str, output_dir: pathlib.Path):  # noqa: E999
     output_path = output_dir / subfolder / cmd.replace(' ', '_')
     output_path.parent.mkdir(parents=True, exist_ok=True)
     print("Executing: {}... ".format(cmd), end='')
@@ -102,9 +103,9 @@ def run_cmd(cmd: str, subfolder: str, output_dir: pathlib.Path):
                 print('[ FAIL ]')
                 return
             process = subprocess.run(cmd, stdout=output_file,
-                                          stderr=output_file,
-                                          timeout=60,
-                                          shell=True)
+                                     stderr=output_file,
+                                     timeout=60,
+                                     shell=True)
             if not process.returncode:
                 print("[ DONE ]")
                 return
@@ -116,14 +117,14 @@ def run_cmd(cmd: str, subfolder: str, output_dir: pathlib.Path):
 
 
 def get_kubectl_list(object_type, kubeconfig, timeout, namespace=None,
-                      object_name='', jsonpath="{.items[*].metadata.name}"):
+                     object_name='', jsonpath="{.items[*].metadata.name}"):
     cmd = 'kubectl get {obj_type} {kubeconfig_arg} ' \
           '--request-timeout {timeout} ' \
-          '-o jsonpath="{jsonpath}" {obj_name}'.format(
-        kubeconfig_arg=kubeconfig,
-        jsonpath=jsonpath,
-        timeout=timeout,
-        obj_type=object_type, obj_name=object_name)
+          '-o jsonpath="{jsonpath}" {obj_name}'. \
+          format(kubeconfig_arg=kubeconfig,
+                 jsonpath=jsonpath,
+                 timeout=timeout,
+                 obj_type=object_type, obj_name=object_name)
     if namespace:
         cmd = "{} -n {}".format(cmd, namespace)
     backoff_timer = 1
@@ -167,18 +168,29 @@ def main():
         for namespace in namespaces_list:
             for cmd in KUBECTL_PER_NS_CMDS:
                 run_cmd(
-                    cmd.format(kubeconfig_arg=kubeconfig, timeout=timeout, namespace=namespace),
+                    cmd.format(
+                      kubeconfig_arg=kubeconfig,
+                      timeout=timeout,
+                      namespace=namespace
+                    ),
                     'namespaces/{}'.format(namespace),
                     output_dir
                 )
-            for pod in get_kubectl_list('pods', kubeconfig, timeout, namespace):
-                containers = get_kubectl_list('pod', kubeconfig, timeout, namespace=namespace,
-                                              jsonpath="{.spec.containers[*].name}", object_name=pod)
+            for pod in get_kubectl_list('pods',
+                                        kubeconfig, timeout, namespace):
+                containers = get_kubectl_list('pod',
+                                              kubeconfig, timeout,
+                                              namespace=namespace,
+                                              jsonpath="{.spec.containers[*].name}",  # noqa: E501
+                                              object_name=pod)
                 for container in containers:
                     for cmd in KUBECTL_PER_POD_CMDS:
                         run_cmd(
-                            cmd.format(kubeconfig_arg=kubeconfig, timeout=timeout, namespace=namespace,
-                                       pod=pod, container=container),
+                            cmd.format(kubeconfig_arg=kubeconfig,
+                                       timeout=timeout,
+                                       namespace=namespace,
+                                       pod=pod,
+                                       container=container),
                             'namespaces/{}/{}'.format(namespace, pod),
                             output_dir
                         )
