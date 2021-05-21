@@ -19,13 +19,13 @@
 # double underscores denote functions defined in this script.
 ##############################################################################
 
-ZONE=$(cut -d "=" -f2- <<< $(cat init.vars | grep ZONE))
-IS_ADMIN_VM=$(cut -d "=" -f2- <<< $(cat init.vars | grep IS_ADMIN_VM))
-VXLAN_IP_ADDRESS=$(cut -d "=" -f2- <<< $(cat init.vars | grep VXLAN_IP_ADDRESS))
-SERVICE_ACCOUNT=$(cut -d "=" -f2- <<< $(cat init.vars | grep SERVICE_ACCOUNT))
-HOSTNAMES=$(cut -d "=" -f2- <<< $(cat init.vars | grep HOSTNAMES))
-VM_INTERNAL_IPS=$(cut -d "=" -f2- <<< $(cat init.vars | grep VM_INTERNAL_IPS))
-LOG_FILE=$(cut -d "=" -f2- <<< $(cat init.vars | grep LOG_FILE))
+ZONE=$(cut -d "=" -f2- <<< "$(grep < init.vars ZONE)")
+IS_ADMIN_VM=$(cut -d "=" -f2- <<< "$(grep < init.vars IS_ADMIN_VM)")
+VXLAN_IP_ADDRESS=$(cut -d "=" -f2- <<< "$(grep < init.vars VXLAN_IP_ADDRESS)")
+SERVICE_ACCOUNT=$(cut -d "=" -f2- <<< "$(grep < init.vars SERVICE_ACCOUNT)")
+HOSTNAMES=$(cut -d "=" -f2- <<< "$(grep < init.vars HOSTNAMES)")
+VM_INTERNAL_IPS=$(cut -d "=" -f2- <<< "$(grep < init.vars VM_INTERNAL_IPS)")
+LOG_FILE=$(cut -d "=" -f2- <<< "$(grep < init.vars LOG_FILE)")
 
 DATE=$(date)
 HOSTNAME=$(hostname)
@@ -72,7 +72,7 @@ function __setup_vxlan__ () {
 
   __update_bridge_entries__
 
-  ip addr add $VXLAN_IP_ADDRESS/24 dev vxlan0
+  ip addr add "$VXLAN_IP_ADDRESS"/24 dev vxlan0
   __check_exit_status__ $? \
     "[+] Successfully associated ip address $VXLAN_IP_ADDRESS/24 to the new vxlan network interface" \
     "[-] Failed to associate ip address $VXLAN_IP_ADDRESS/24 to the new vxlan network interface. Check for failures on [ip addr add] in ~/$LOG_FILE"
@@ -94,10 +94,10 @@ function __update_bridge_entries__ () {
   current_ip=$(ip --json a show dev ens4 | jq '.[0].addr_info[0].local' -r)
 
   echo "Cluster VM IPs retreived => $VM_INTERNAL_IPS"
-  for ip in $(echo $VM_INTERNAL_IPS | sed "s/|/ /g")
+  for ip in ${VM_INTERNAL_IPS//|/ }
   do
     if [ "$ip" != "$current_ip" ]; then
-      bridge fdb append to 00:00:00:00:00:00 dst $ip dev vxlan0
+      bridge fdb append to 00:00:00:00:00:00 dst "$ip" dev vxlan0
       __check_exit_status__ $? \
         "[+] Successfully added forwarding entry on bridge for ip [$ip]" \
         "[-] Failed to add forwarding entry on bridge for ip [$ip]. Check for failures on [bridge fdb append] in ~/$LOG_FILE"
@@ -149,7 +149,7 @@ function __setup_admin_host__ () {
 ##############################################################################
 function __setup_service_account__ () {
   PROJECT_ID=$(gcloud config get-value project)
-  gcloud iam service-accounts keys create /root/bm-gcr.json --iam-account=${SERVICE_ACCOUNT}@${PROJECT_ID}.iam.gserviceaccount.com
+  gcloud iam service-accounts keys create /root/bm-gcr.json --iam-account="${SERVICE_ACCOUNT}"@"${PROJECT_ID}".iam.gserviceaccount.com
   __check_exit_status__ $? \
     "[+] Successfully downloaded key for service account [$SERVICE_ACCOUNT]" \
     "[-] Failed to download key for service account [$SERVICE_ACCOUNT]. Check for failures on [gcloud iam service-accounts] in ~/$LOG_FILE"
@@ -175,7 +175,7 @@ function __setup_kubctl__ () {
 # Install the bmctl CLI for managing the Anthos cluster
 ##############################################################################
 function __setup_bmctl__ () {
-  mkdir baremetal && cd baremetal
+  mkdir baremetal && cd baremetal || return
   gsutil cp gs://anthos-baremetal-release/bmctl/1.7.0/linux-amd64/bmctl .
   chmod a+x bmctl
   mv bmctl /usr/local/sbin/
@@ -190,7 +190,7 @@ function __setup_bmctl__ () {
 # Install docker
 ##############################################################################
 function __setup_docker__ () {
-  cd ~
+  cd ~ || return
   echo "Installing docker"
   curl -fsSL https://get.docker.com -o get-docker.sh
   sh get-docker.sh
@@ -206,15 +206,15 @@ function __setup_docker__ () {
 # The gcloud CLI is used here update the SSH key information on the hosts.
 ##############################################################################
 function __setup_ssh_access__ () {
-  ssh-keygen -t rsa -N "" -f $HOME/.ssh/id_rsa
+  ssh-keygen -t rsa -N "" -f "$HOME"/.ssh/id_rsa
   __check_exit_status__ $? \
     "[+] Successfully generated SSH key pair" \
     "[-] Failed to generate SSH key pair. Check for failures on [ssh-keygen] in ~/$LOG_FILE"
 
   sed "s/ssh-rsa/$USER:ssh-rsa/" ~/.ssh/id_rsa.pub > ssh-metadata
-  for hostname in $(echo $HOSTNAMES | sed "s/|/ /g")
+  for hostname in ${HOSTNAMES//|/ }
   do
-    gcloud compute instances add-metadata $hostname --zone ${ZONE} --metadata-from-file ssh-keys=ssh-metadata
+    gcloud compute instances add-metadata "$hostname" --zone "${ZONE}" --metadata-from-file ssh-keys=ssh-metadata
     __check_exit_status__ $? \
       "[+] Successfully copied ssh-key to host [$hostname]" \
       "[-] Failed to copy ssh-key to host [$hostname]. Check for failures on [gcloud compute instances add-metadata] in ~/$LOG_FILE"
@@ -227,12 +227,12 @@ function __check_exit_status__ () {
   SUCCESS_MSG=$2
   FAILURE_MSG=$3
 
-  if [ $EXIT_CODE -eq 0 ]
+  if [ "$EXIT_CODE" -eq 0 ]
   then
-    echo $SUCCESS_MSG
+    echo "$SUCCESS_MSG"
   else
-    echo $FAILURE_MSG >&2
-    exit $EXIT_CODE
+    echo "$FAILURE_MSG" >&2
+    exit "$EXIT_CODE"
   fi
 }
 
