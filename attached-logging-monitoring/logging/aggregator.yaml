@@ -129,9 +129,9 @@ spec:
       labels:
         app: stackdriver-log-aggregator
     spec:
-      # storageClassName: standard #GCP 
-      # storageClassName: gp2 #AWS EKS 
-      # storageClassName: default #Azure AKS 
+      # storageClassName: standard #GCP
+      # storageClassName: gp2 #AWS EKS
+      # storageClassName: default #Azure AKS
       accessModes:
       - ReadWriteOnce
       resources:
