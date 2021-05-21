@@ -48,7 +48,7 @@ function __main__ () {
 function __check_cluster_nodes__ () {
   PIDS=""
   COUNT=0
-  for host in $(echo "$HOSTNAMES" | sed "s/|/ /g")
+  for host in ${HOSTNAMES//|/ }
   do
     if [ "$host" != "$(hostname)" ]; then
       ((COUNT=COUNT+1))
@@ -90,7 +90,7 @@ function __cleanup__ () {
 function __trap_with_arg__ () {
   FUNC="$1" ; shift
   for SIG ; do
-    trap "$FUNC $SIG" "$SIG"
+    trap '$FUNC $SIG' '$SIG'
   done
 }
 

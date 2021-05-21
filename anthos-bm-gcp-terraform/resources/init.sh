@@ -94,7 +94,7 @@ function __update_bridge_entries__ () {
   current_ip=$(ip --json a show dev ens4 | jq '.[0].addr_info[0].local' -r)
 
   echo "Cluster VM IPs retreived => $VM_INTERNAL_IPS"
-  for ip in $(echo "$VM_INTERNAL_IPS" | sed "s/|/ /g")
+  for ip in ${VM_INTERNAL_IPS//|/ }
   do
     if [ "$ip" != "$current_ip" ]; then
       bridge fdb append to 00:00:00:00:00:00 dst "$ip" dev vxlan0
@@ -212,7 +212,7 @@ function __setup_ssh_access__ () {
     "[-] Failed to generate SSH key pair. Check for failures on [ssh-keygen] in ~/$LOG_FILE"
 
   sed "s/ssh-rsa/$USER:ssh-rsa/" ~/.ssh/id_rsa.pub > ssh-metadata
-  for hostname in $(echo "$HOSTNAMES" | sed "s/|/ /g")
+  for hostname in ${HOSTNAMES//|/ }
   do
     gcloud compute instances add-metadata "$hostname" --zone "${ZONE}" --metadata-from-file ssh-keys=ssh-metadata
     __check_exit_status__ $? \
