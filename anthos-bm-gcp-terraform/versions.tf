@@ -15,6 +15,9 @@
  */
 
 terraform {
+  provider_meta "google" {
+    module_name = "anthos-samples/terraform/anthos-bm-terraform:gce/v0.1.0"
+  }
   required_version = "~> 0.14.9"
   required_providers {
     google = {
