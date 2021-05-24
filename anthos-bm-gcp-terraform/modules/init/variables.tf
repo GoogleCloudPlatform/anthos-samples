@@ -27,6 +27,11 @@ variable "credentials_file" {
   type        = string
 }
 
+variable "resources_path" {
+  description = "Path to the resources folder with the template files"
+  type        = string
+}
+
 variable "zone" {
   description = "Google Cloud Zone where the target VM is in"
   type        = string
