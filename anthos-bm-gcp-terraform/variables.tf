@@ -27,6 +27,11 @@ variable "credentials_file" {
   type        = string
 }
 
+variable "resources_path" {
+  description = "Path to the resources folder with the template files"
+  type        = string
+}
+
 variable "region" {
   description = "Google Cloud Region in which the Compute Engine VMs should be provisioned"
   type        = string
@@ -54,6 +59,7 @@ variable "min_cpu_platform" {
 variable "machine_type" {
   description = "Google Cloud machine type to use when provisioning the Compute Engine VMs"
   type        = string
+  default     = "n1-standard-8"
 }
 
 variable "image_project" {
@@ -111,8 +117,6 @@ variable "primary_apis" {
   description = "List of primary Google Cloud APIs to be enabled for this deployment"
   type        = list(string)
   default = [
-    "anthos.googleapis.com",
-    "anthosgke.googleapis.com",
     "cloudresourcemanager.googleapis.com",
   ]
 }
@@ -121,6 +125,8 @@ variable "secondary_apis" {
   description = "List of secondary Google Cloud APIs to be enabled for this deployment"
   type        = list(string)
   default = [
+    "anthos.googleapis.com",
+    "anthosgke.googleapis.com",
     "container.googleapis.com",
     "gkeconnect.googleapis.com",
     "gkehub.googleapis.com",
