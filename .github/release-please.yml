@@ -13,6 +13,6 @@
 # limitations under the License.
 
 path: anthos-bm-gcp-terraform
-changelogPath: anthos-bm-gcp-terraform/CHANGELOG.md
+changelogPath: CHANGELOG.md
 releaseType: terraform-module
 handleGHRelease: true
