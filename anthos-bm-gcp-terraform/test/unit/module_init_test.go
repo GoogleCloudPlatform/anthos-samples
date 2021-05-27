@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,6 +37,7 @@ func TestUnit_InitModule(goTester *testing.T) {
 	projectID := "test_project"
 	zone := "test_zone"
 	credentialsFile := "../test/../path/../credentials_file.json"
+	resourcesPath := "../../resources"
 	username := "test_username"
 	hostname := "test_hostname"
 	publicIP := "10.10.10.01"
@@ -53,12 +54,13 @@ func TestUnit_InitModule(goTester *testing.T) {
 	tfVarsMap := map[string]interface{}{
 		"project_id":             projectID,
 		"credentials_file":       credentialsFile,
+		"resources_path":         resourcesPath,
 		"zone":                   zone,
 		"username":               username,
 		"hostname":               hostname,
 		"publicIp":               publicIP,
 		"init_script":            initScript,
-		"init_check_script":       initCheckScript,
+		"init_check_script":      initCheckScript,
 		"init_logs":              initLogs,
 		"init_vars_file":         initVarsFile,
 		"cluster_yaml_path":      clusterYamlPath,
@@ -170,12 +172,14 @@ func TestUnit_InitModule_DefaultValues(goTester *testing.T) {
 	hostname := "test_hostname"
 	publicIP := "10.10.10.01"
 	initVarsFile := "../test/../path/../init_vars_file.var"
+	resourcesPath := "../../resources"
 
 	tfPlanOutput := "terraform_test.tfplan"
 	tfPlanOutputArg := fmt.Sprintf("-out=%s", tfPlanOutput)
 	tfVarsMap := map[string]interface{}{
 		"project_id":       projectID,
 		"credentials_file": credentialsFile,
+		"resources_path":   resourcesPath,
 		"hostname":         hostname,
 		"publicIp":         publicIP,
 		"init_vars_file":   initVarsFile,
@@ -288,6 +292,14 @@ func validateVariables(goTester *testing.T, tfPlan *util.InitModulePlan) {
 	)
 	util.ExitIf(hasVar, false)
 
+	// verify plan has resources_path input variable
+	hasVar = assert.NotNil(
+		goTester,
+		tfPlan.Variables.ResourcesPath,
+		"Variable not found in plan: resources_path",
+	)
+	util.ExitIf(hasVar, false)
+
 	// verify plan has zone input variable
 	hasVar = assert.NotNil(
 		goTester,
@@ -392,6 +404,14 @@ func validateVariableValues(goTester *testing.T, initModulePlan *util.InitModule
 		(*vars)["credentials_file"],
 		initModulePlan.Variables.CredentialsFile.Value,
 		"Variable does not match in plan: credentials_file.",
+	)
+
+	// verify input variable resources_path in plan matches
+	assert.Equal(
+		goTester,
+		(*vars)["resources_path"],
+		initModulePlan.Variables.ResourcesPath.Value,
+		"Variable does not match in plan: resources_path.",
 	)
 
 	// verify input variable zone in plan matches

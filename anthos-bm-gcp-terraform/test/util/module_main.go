@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,6 +36,7 @@ type MainVariables struct {
 	BootDiskSize             *Variable     `json:"boot_disk_size"`
 	BootDiskType             *Variable     `json:"boot_disk_type"`
 	CrendetialsFile          *Variable     `json:"credentials_file"`
+	ResourcesPath            *Variable     `json:"resources_path"`
 	Image                    *Variable     `json:"image"`
 	ImageFamily              *Variable     `json:"image_family"`
 	ImageProject             *Variable     `json:"image_project"`
@@ -60,14 +61,12 @@ type Outputs struct {
 	AdminVMSSH *AdminVMSSH `json:"admin_vm_ssh"`
 }
 
-
 // AdminVMSSH represents the final output from the main terraform script with
 // instructions as to how to SSH into the admin host and create a new
 // ABM cluster
 type AdminVMSSH struct {
 	Value string `json:"value"`
 }
-
 
 // MainConfiguration represents the configuration output in the execution plan
 // resulting from the input variables and the main terraform script

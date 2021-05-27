@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -49,6 +49,7 @@ func TestUnit_MainScript(goTester *testing.T) {
 	defer tmpFile.Close()
 	defer os.Remove(credentialsFile)
 
+	resourcesPath := "./resources"
 	username := "test_username"
 	minCPUPlatform := "test_cpu_platform"
 	machineType := "test_machine_type"
@@ -70,12 +71,12 @@ func TestUnit_MainScript(goTester *testing.T) {
 	}
 	primaryApis := []string{
 		"test_primary_api_1.googleapis.com",
-		"test_primary_api_2.googleapis.com",
 	}
 	secondaryApis := []string{
 		"test_secondary_api_1.googleapis.com",
 		"test_secondary_api_2.googleapis.com",
 		"test_secondary_api_3.googleapis.com",
+		"test_secondary_api_4.googleapis.com",
 	}
 	instanceCount := map[string]int{
 		"controlplane": 3,
@@ -87,6 +88,7 @@ func TestUnit_MainScript(goTester *testing.T) {
 	tfVarsMap := map[string]interface{}{
 		"project_id":                  projectID,
 		"credentials_file":            credentialsFile,
+		"resources_path":              resourcesPath,
 		"region":                      region,
 		"zone":                        zone,
 		"username":                    username,
@@ -221,7 +223,7 @@ func TestUnit_MainScript(goTester *testing.T) {
 	// validate the virtual machines modules
 	validateVirtualMachineMoodules(goTester, &virtualMachineModules, &tfVarsMap)
 	// validate the service account module
-	validateServiceAccMoodule(goTester, &serviceAccModules[0], &tfVarsMap)
+	validateServiceAccModule(goTester, &serviceAccModules[0], &tfVarsMap)
 	// validate the google APIs module
 	validateAPIsMoodule(goTester, &googleAPIsModules, &tfVarsMap)
 	// validate the outputs from the script
@@ -235,6 +237,7 @@ func TestUnit_MainScript_ValidateDefaults(goTester *testing.T) {
 	workingDir, err := os.Getwd()
 	util.LogError(err, "Failed to read current working directory")
 	credentialsFile := fmt.Sprintf("%s/credentials_file.json", workingDir)
+	resourcesPath := "./resources"
 
 	tmpFile, err := os.Create(credentialsFile)
 	util.LogError(err, fmt.Sprintf("Could not create temporary file at %s", credentialsFile))
@@ -247,6 +250,7 @@ func TestUnit_MainScript_ValidateDefaults(goTester *testing.T) {
 	tfVarsMap := map[string]interface{}{
 		"project_id":       projectID,
 		"credentials_file": credentialsFile,
+		"resources_path":   resourcesPath,
 		"machine_type":     machineType,
 		"boot_disk_size":   200,
 	}
@@ -363,11 +367,11 @@ func TestUnit_MainScript_ValidateDefaults(goTester *testing.T) {
 	defaultTags := []string{"http-server", "https-server"}
 	defaultAccessScopes := []string{"cloud-platform"}
 	defaultPrimaryApis := []string{
-		"anthos.googleapis.com",
-		"anthosgke.googleapis.com",
 		"cloudresourcemanager.googleapis.com",
 	}
 	defaultSecondaryApis := []string{
+		"anthosgke.googleapis.com",
+		"anthos.googleapis.com",
 		"container.googleapis.com",
 		"gkeconnect.googleapis.com",
 		"gkehub.googleapis.com",
@@ -649,6 +653,13 @@ func validateVariablesInMain(goTester *testing.T, tfPlan *util.MainModulePlan) {
 		"Variable not found in plan: region",
 	)
 
+	// verify plan has resources_path input variable
+	assert.NotNil(
+		goTester,
+		tfPlan.Variables.ResourcesPath,
+		"Variable not found in plan: resources_path",
+	)
+
 	// verify plan has zone input variable
 	assert.NotNil(
 		goTester,
@@ -798,6 +809,14 @@ func validateVariableValuesInMain(goTester *testing.T, tfPlan *util.MainModulePl
 		(*vars)["region"],
 		tfPlan.Variables.Region.Value,
 		"Variable does not match in plan: credentials_file.",
+	)
+
+	// verify input variable resources_path in plan matches
+	assert.Equal(
+		goTester,
+		(*vars)["resources_path"],
+		tfPlan.Variables.ResourcesPath.Value,
+		"Variable does not match in plan: resources_path.",
 	)
 
 	// verify input variable zone in plan matches
@@ -1132,7 +1151,7 @@ func validateVirtualMachineMoodules(goTester *testing.T, modules *[]util.TFModul
 	}
 }
 
-func validateServiceAccMoodule(goTester *testing.T, module *util.TFModule, vars *map[string]interface{}) {
+func validateServiceAccModule(goTester *testing.T, module *util.TFModule, vars *map[string]interface{}) {
 	for _, accResource := range module.Resources {
 		if accResource.Type == "google_service_account" {
 			assert.Equal(

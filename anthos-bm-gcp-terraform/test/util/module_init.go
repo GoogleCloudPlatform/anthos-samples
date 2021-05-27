@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,6 +34,7 @@ type InitVariables struct {
 	InitLogsFile           *Variable `json:"init_logs"`
 	InitScriptPath         *Variable `json:"init_script"`
 	ClusterYamlPath        *Variable `json:"cluster_yaml_path"`
+	ResourcesPath          *Variable `json:"resources_path"`
 	CredentialsFile        *Variable `json:"credentials_file"`
 	InitCheckScript        *Variable `json:"init_check_script"`
 	PublicKeyTemplatePath  *Variable `json:"pub_key_path_template"`
