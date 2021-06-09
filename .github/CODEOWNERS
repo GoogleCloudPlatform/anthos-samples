@@ -5,4 +5,4 @@
 # https://help.github.com/en/github/creating-cloning-and-archiving-repositories/about-code-owners#codeowners-syntax
 
 # The @googleapis/cdpe-devplat is the default owner for changes in this repo
-*                       @googleapis/cdpe-devplat
+*                       @googleapis/anthos-dpe
