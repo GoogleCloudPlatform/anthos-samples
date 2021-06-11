@@ -6,6 +6,7 @@ This repository contains code samples for [Anthos](https://cloud.google.com/anth
 
 ---
 
+Minor change!
 ## Contributing
 
 #### Contributing new samples
