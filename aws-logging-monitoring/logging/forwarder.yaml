@@ -19,7 +19,7 @@ metadata:
   name: stackdriver-log-forwarder
   namespace: kube-system
 ---
-# ClusterRole with permissions required by Log Forwarder (Fluent Bit).
+# ClusterRole with permissions required by Log Forwarder (Fluent Bit) and its sidecar.
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -28,12 +28,19 @@ rules:
 - apiGroups:
   - ""
   resources:
+  - nodes
   - pods
   - namespaces
   verbs:
   - watch
   - get
   - list
+- apiGroups:
+  - '*'
+  resources:
+  - 'serviceaccounts/token'
+  verbs:
+  - 'create'
 ---
 # ClusterRoleBinding for Log Forwarder (Fluent Bit).
 apiVersion: rbac.authorization.k8s.io/v1
@@ -69,20 +76,33 @@ spec:
         app: stackdriver-log-forwarder
         managed-by: stackdriver
     spec:
+      nodeSelector:
+        kubernetes.io/os: linux
       containers:
+      - name: stackdriver-gke-addon
+        image: gcr.io/gke-multi-cloud-release/gke-addon-sidecar:gke_multicloud.docker_images_20210323_1546_RC00
+        imagePullPolicy: IfNotPresent
+        command:
+        - /app/cloud/kubernetes/multicloud/addonsidecar/gke_addon_sidecar
+        - --http_server=localhost:9681
+        - --ksa_name=stackdriver
+        - --ksa_namespace=kube-system
+        - --token_audience=[PROJECT_ID].svc.id.goog
+        - --gcp_project_id=[PROJECT_ID]
+        - --gcp_sts_audience=identitynamespace:[PROJECT_ID].svc.id.goog:https://gkehub.googleapis.com/projects/[PROJECT_ID]/locations/global/memberships/[CLUSTER_NAME]
       - name: stackdriver-log-forwarder
-        image: fluent/fluent-bit:1.6.4
+        image: gcr.io/gke-multi-cloud-release/fluent-bit:v1.7.7-gke.1
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 2020
         resources:
           limits:
-            cpu: 100m
-            memory: 50Mi
+            memory: 120Mi
           requests:
-            cpu: 100m
             memory: 50Mi
         env:
+        - name: METADATA_SERVER
+          value: http://127.0.0.1:9681
         - name: NODE_NAME
           valueFrom:
             fieldRef:
@@ -91,9 +111,6 @@ spec:
         volumeMounts:
         - name: varlog
           mountPath: /var/log
-        - name: varlibdockercontainers
-          mountPath: /var/lib/docker/containers
-          readOnly: true
         - name: stackdriver-log-forwarder-config
           mountPath: /fluent-bit/etc/
         terminationMessagePath: /dev/termination-log
@@ -103,17 +120,12 @@ spec:
       tolerations:
       - key: "CriticalAddonsOnly"
         operator: "Exists"
-      - key: node-role.kubernetes.io/master
-        effect: NoSchedule
       - key: node-role.gke.io/observability
         effect: NoSchedule
       volumes:
       - name: varlog
         hostPath:
           path: /var/log
-      - name: varlibdockercontainers
-        hostPath:
-          path: /var/lib/docker/containers
       - name: stackdriver-log-forwarder-config
         configMap:
           name: stackdriver-log-forwarder-config
@@ -158,12 +170,36 @@ data:
         storage.checksum           off
         storage.backlog.mem_limit  10M
 
+    @INCLUDE input-systemd.conf
     @INCLUDE input-containers.conf
     @INCLUDE filter-kubernetes.conf
-    @INCLUDE output-fluentd.conf
+    @INCLUDE output-stackdriver.conf
+  input-systemd.conf: |
+    [INPUT]
+      # https://docs.fluentbit.io/manual/input/systemd
+      Name            systemd
+      Tag             container-runtime
+      Path            /var/log/journal
+      DB              /var/log/fluent-bit-k8s-node-journald-containerd.db
+      Systemd_Filter  _SYSTEMD_UNIT=containerd.service
+      storage.type    filesystem
+
+    [INPUT]
+      # https://docs.fluentbit.io/manual/input/systemd
+      Name            systemd
+      Tag             kubelet
+      Path            /var/log/journal
+      DB              /var/log/fluent-bit-k8s-node-journald-kubelet.db
+      Systemd_Filter  _SYSTEMD_UNIT=kubelet.service
+      storage.type    filesystem
+
+    [FILTER]
+      # https://docs.fluentbit.io/manual/pipeline/filters/modify
+      Name                modify
+      Match_Regex         ^(container-runtime|kubelet)$
+      Add                 logging.googleapis.com/local_resource_id k8s_node.${NODE_NAME}
+      Add                 gke.googleapis.com/log_type system
   input-containers.conf: |
-
-
     [INPUT]
         # https://docs.fluentbit.io/manual/input/tail
         Name               tail
@@ -400,14 +436,28 @@ data:
         Wildcard gke.googleapis.com*
         Nest_under logging.googleapis.com/labels
 
-  output-fluentd.conf: |
+  output-stackdriver.conf: |
     [OUTPUT]
-        # https://docs.fluentbit.io/manual/input/forward
-        Name        forward
-        Match       *
-        Host        stackdriver-log-aggregator-in-forward.kube-system
-        Port        8989
-        Retry_Limit 5
+      # https://docs.fluentbit.io/manual/pipeline/outputs/stackdriver
+      Name                        stackdriver
+      Match                       k8s_container.*
+      Resource                    k8s_container
+      k8s_cluster_name            [CLUSTER_NAME]
+      k8s_cluster_location        [CLUSTER_LOCATION]
+      # Custom RegEx for matching the fields in the local_resource_id
+      # https://github.com/fluent/fluent-bit/pull/3200
+      custom_k8s_regex            ^(?<namespace_name>[^_.]+)\.(?<pod_name>[a-z0-9](?:[-a-z0-9]*[a-z0-9])?(?:\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)\.(?<container_name>[^.]+)$
+
+    [OUTPUT]
+      # https://docs.fluentbit.io/manual/pipeline/outputs/stackdriver
+      Name                        stackdriver
+      Match_Regex                 ^(container-runtime|kubelet)$
+      Resource                    k8s_node
+      k8s_cluster_name            [CLUSTER_NAME]
+      k8s_cluster_location        [CLUSTER_LOCATION]
+      # Custom RegEx for matching the fields in the local_resource_id
+      # https://github.com/fluent/fluent-bit/pull/3200
+      custom_k8s_regex            ^(?<node_name>[a-z0-9](?:[-a-z0-9]*[a-z0-9])?(?:\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)$
   parsers.conf: |
     [PARSER]
         Name    k8s-container-custom-tag
