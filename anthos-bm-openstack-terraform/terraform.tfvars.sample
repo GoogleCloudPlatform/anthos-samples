@@ -1,0 +1,6 @@
+external_network_id = "<OPENSTACK_PUBLIC_NETWORK_ID>"
+os_user_name        = "<OPENSTACK_USERNAME>"
+os_tenant_name      = "<OPENSTACK_TENANT_NAME>"
+os_password         = "<OPENSTACK_PASSWORD>"
+os_auth_url         = "<OPENSTACK_AUTHENTICATION_URL>"
+os_endpoint_type    = "public"

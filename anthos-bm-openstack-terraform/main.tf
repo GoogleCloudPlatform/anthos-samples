@@ -14,16 +14,6 @@
  * limitations under the License.
  */
 
-provider "openstack" {
-  user_name     = var.os_user_name
-  tenant_name   = var.os_tenant_name
-  password      = var.os_password
-  auth_url      = var.os_auth_url
-  region        = var.os_region
-  endpoint_type = var.os_endpoint_type
-  use_octavia   = true
-}
-
 resource "openstack_networking_router_v2" "abm" {
   name                = "abm"
   admin_state_up      = true
@@ -98,11 +88,6 @@ resource "openstack_networking_floatingip_v2" "abm-ws" {
   pool = "public"
 }
 
-resource "openstack_compute_floatingip_associate_v2" "abm-ws" {
-  floating_ip = openstack_networking_floatingip_v2.abm-ws.address
-  instance_id = openstack_compute_instance_v2.abm-ws.id
-}
-
 resource "openstack_compute_secgroup_v2" "basic-access" {
   name        = "basic-access"
   description = "allow 443,SSH and icmp"
@@ -142,41 +127,43 @@ data "template_file" "cloud-config" {
   }
 }
 
-resource "openstack_compute_instance_v2" "abm-ws" {
-  name            = "abm-ws"
-  image_name      = "ubuntu-1804"
-  flavor_name     = "m1.xlarge"
-  key_pair        = "mykey"
-  security_groups = ["default", openstack_compute_secgroup_v2.basic-access.name]
+module "admin_vm_hosts" {
+  source          = "./modules/vm"
+  vm_names        = ["abm-ws"]
+  image           = "ubuntu-1804"
+  flavor          = "m1.xlarge"
+  key             = "mykey"
+  ip              = "10.200.0.10"
+  network         = openstack_networking_network_v2.abm.id
   user_data       = data.template_file.cloud-config.rendered
-  network {
-    uuid        = openstack_networking_network_v2.abm.id
-    fixed_ip_v4 = "10.200.0.10"
-  }
+  security_groups = ["default", openstack_compute_secgroup_v2.basic-access.name]
 }
 
-resource "openstack_compute_instance_v2" "abm-cp1" {
-  name            = "abm-cp1"
-  image_name      = "ubuntu-1804"
-  flavor_name     = "m1.xlarge"
-  key_pair        = "mykey"
+module "controlplane_vm_hosts" {
+  source          = "./modules/vm"
+  vm_names        = ["abm-cp1"]
+  image           = "ubuntu-1804"
+  flavor          = "m1.xlarge"
+  key             = "mykey"
+  ip              = "10.200.0.11"
+  network         = openstack_networking_network_v2.abm.id
   user_data       = data.template_file.cloud-config.rendered
   security_groups = ["default", openstack_compute_secgroup_v2.basic-access.name]
-  network {
-    uuid        = openstack_networking_network_v2.abm.id
-    fixed_ip_v4 = "10.200.0.11"
-  }
 }
 
-resource "openstack_compute_instance_v2" "abm-w1" {
-  name            = "abm-w1"
-  image_name      = "ubuntu-1804"
-  flavor_name     = "m1.xlarge"
-  key_pair        = "mykey"
-  security_groups = ["default", openstack_compute_secgroup_v2.basic-access.name]
+module "worker_vm_hosts" {
+  source          = "./modules/vm"
+  vm_names        = ["abm-w1"]
+  image           = "ubuntu-1804"
+  flavor          = "m1.xlarge"
+  key             = "mykey"
+  ip              = "10.200.0.12"
+  network         = openstack_networking_network_v2.abm.id
   user_data       = data.template_file.cloud-config.rendered
-  network {
-    uuid        = openstack_networking_network_v2.abm.id
-    fixed_ip_v4 = "10.200.0.12"
-  }
+  security_groups = ["default", openstack_compute_secgroup_v2.basic-access.name]
 }
+
+# resource "openstack_compute_floatingip_associate_v2" "abm-ws" {
+#   floating_ip = openstack_networking_floatingip_v2.abm-ws.address
+#   instance_id = openstack_compute_instance_v2.abm-ws.id
+# }

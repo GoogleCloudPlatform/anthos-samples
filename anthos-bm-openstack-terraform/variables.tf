@@ -46,4 +46,17 @@ variable "os_region" {
   default = "RegionOne"
 }
 
-
+# [START anthos_bm_openstack_node_prefix]
+###################################################################################
+# The recommended instance count for High Availability (HA) is 3 for Control plane
+# and 2 for Worker nodes.
+###################################################################################
+variable "instance_count" {
+  description = "Number of instances to provision per layer (Control plane and Worker nodes) of the cluster"
+  type        = map(any)
+  default = {
+    "controlplane" : 1
+    "worker" : 1
+  }
+}
+# [END anthos_bm_openstack_node_prefix]
