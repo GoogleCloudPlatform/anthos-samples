@@ -76,8 +76,8 @@ variable "instance_count" {
   description = "Number of instances to provision per layer (Control plane and Worker nodes) of the cluster"
   type        = map(any)
   default = {
-    "controlplane" : 2
-    "worker" : 1
+    "controlplane" : 3
+    "worker" : 2
   }
 }
 # [END anthos_bm_openstack_node_prefix]

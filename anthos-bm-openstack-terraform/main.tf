@@ -127,8 +127,7 @@ resource "openstack_lb_monitor_v2" "abm-cp-lb" {
 resource "openstack_lb_member_v2" "cp-lb-cp1" {
   for_each      = { for index, vm in local.controlplane_vm_info : index => vm }
   pool_id       = openstack_lb_pool_v2.abm-cp-lb-pool.id
-  # address       = each.value.ip
-  address       = "10.200.0.11"
+  address       = each.value.ip
   protocol_port = 6444
 }
 
@@ -188,7 +187,7 @@ module "admin_vm_hosts" {
   source          = "./modules/vm"
   vm_info         = local.admin_vm_info
   image           = "ubuntu-1804"
-  flavor          = "m1.xlarge"
+  flavor          = "m1.small"
   key             = "mykey"
   network         = openstack_networking_network_v2.abm_network.id
   user_data       = data.template_file.cloud-config.rendered
@@ -197,12 +196,9 @@ module "admin_vm_hosts" {
 
 module "cp_vm_hosts" {
   source = "./modules/vm"
-  # vm_info         = local.controlplane_vm_info
-  vm_info = [
-    { name : "abm-cp1", ip : "10.200.0.11" }
-  ]
+  vm_info         = local.controlplane_vm_info
   image           = "ubuntu-1804"
-  flavor          = "m1.xlarge"
+  flavor          = "m1.small"
   key             = "mykey"
   network         = openstack_networking_network_v2.abm_network.id
   user_data       = data.template_file.cloud-config.rendered
@@ -213,7 +209,7 @@ module "worker_vm_hosts" {
   source          = "./modules/vm"
   vm_info         = local.worker_vm_info
   image           = "ubuntu-1804"
-  flavor          = "m1.xlarge"
+  flavor          = "m1.small"
   key             = "mykey"
   network         = openstack_networking_network_v2.abm_network.id
   user_data       = data.template_file.cloud-config.rendered
