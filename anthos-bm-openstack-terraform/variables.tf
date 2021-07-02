@@ -58,6 +58,15 @@ variable "network_mtu" {
   default     = 1400
 }
 
+variable "lb_protocol" {
+  description = "The protocol (HTTP, HTTPS) over which the OpenStack load balancer serves requests"
+  type        = object({ protocol = string, port = number })
+  default = {
+    protocol : "HTTPS"
+    port : 443
+  }
+}
+
 # [START anthos_bm_openstack_node_prefix]
 ###################################################################################
 # The recommended instance count for High Availability (HA) is 3 for Control plane
@@ -67,7 +76,7 @@ variable "instance_count" {
   description = "Number of instances to provision per layer (Control plane and Worker nodes) of the cluster"
   type        = map(any)
   default = {
-    "controlplane" : 1
+    "controlplane" : 2
     "worker" : 1
   }
 }

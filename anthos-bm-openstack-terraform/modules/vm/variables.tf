@@ -1,7 +1,7 @@
 
-variable "vm_names" {
+variable "vm_info" {
   description = "List of names to be given to the OpenStack VMs that are provisioned"
-  type        = list(any)
+  type        = list(object({ name = string, ip = string }))
 }
 
 variable "image" {
@@ -51,10 +51,5 @@ variable "user_data" {
 
 variable "network" {
   description = "The OpenStack network to which the VM is to be attached to."
-  type        = string
-}
-
-### For testing
-variable "ip" {
   type        = string
 }
