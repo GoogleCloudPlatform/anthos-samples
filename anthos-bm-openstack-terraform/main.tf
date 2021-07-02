@@ -14,45 +14,55 @@
  * limitations under the License.
  */
 
-resource "openstack_networking_router_v2" "abm" {
-  name                = "abm"
-  admin_state_up      = true
+locals {
+  abm_name_template    = "abm-%s"
+  router_name          = format(local.abm_name_template, "router")
+  network_name         = format(local.abm_name_template, "network")
+  subnetwork_name      = format(local.abm_name_template, "subnetwork")
+  controlplane_lb_name = format(local.abm_name_template, "controlplane-lb")
+  subnet_cidr_prefix   = "10.200.0.%s"
+  dns_servers          = ["8.8.8.8", "8.8.4.4"]
+}
+
+resource "openstack_networking_router_v2" "abm_network_router" {
+  name                = local.router_name
   external_network_id = var.external_network_id
+  admin_state_up      = true
 }
 
-resource "openstack_networking_network_v2" "abm" {
-  name           = "abm"
+resource "openstack_networking_network_v2" "abm_network" {
+  name           = local.network_name
+  mtu            = var.network_mtu
   admin_state_up = "true"
-  mtu            = 1400
 }
 
-resource "openstack_networking_subnet_v2" "abm-private" {
-  name            = "abm-private"
-  network_id      = openstack_networking_network_v2.abm.id
-  cidr            = "10.200.0.0/24"
-  dns_nameservers = ["8.8.8.8", "8.8.4.4"]
+resource "openstack_networking_subnet_v2" "abm-subnetwork" {
+  name            = local.subnetwork_name
+  network_id      = openstack_networking_network_v2.abm_network.id
+  dns_nameservers = local.dns_servers
+  cidr            = format(local.subnet_cidr_prefix, "0/24")
   allocation_pool {
-    start = "10.200.0.3"
-    end   = "10.200.0.100"
+    start = format(local.subnet_cidr_prefix, "3")
+    end   = format(local.subnet_cidr_prefix, "100")
   }
   ip_version = 4
 }
 
 resource "openstack_networking_router_interface_v2" "abm-interface-1" {
-  router_id = openstack_networking_router_v2.abm.id
-  subnet_id = openstack_networking_subnet_v2.abm-private.id
+  router_id = openstack_networking_router_v2.abm_network_router.id
+  subnet_id = openstack_networking_subnet_v2.abm-subnetwork.id
 }
 
-resource "openstack_lb_loadbalancer_v2" "cp-lb" {
-  name          = "cp-lb"
-  vip_subnet_id = openstack_networking_subnet_v2.abm-private.id
+resource "openstack_lb_loadbalancer_v2" "abm-controlplane-lb" {
+  name          = local.controlplane_lb_name
+  vip_subnet_id = openstack_networking_subnet_v2.abm-subnetwork.id
   vip_address   = "10.200.0.101"
 }
 
 resource "openstack_lb_listener_v2" "cp-lb" {
   protocol        = "HTTPS"
   protocol_port   = 443
-  loadbalancer_id = openstack_lb_loadbalancer_v2.cp-lb.id
+  loadbalancer_id = openstack_lb_loadbalancer_v2.abm-controlplane-lb.id
 }
 
 resource "openstack_lb_pool_v2" "cp-lb" {
@@ -75,13 +85,14 @@ resource "openstack_lb_member_v2" "cp-lb-cp1" {
   address       = "10.200.0.11"
   protocol_port = 6444
 }
+
 resource "openstack_networking_floatingip_v2" "abm-cp-lb" {
   pool = "public"
 }
 
 resource "openstack_networking_floatingip_associate_v2" "abm-cp-lb" {
   floating_ip = openstack_networking_floatingip_v2.abm-cp-lb.address
-  port_id     = openstack_lb_loadbalancer_v2.cp-lb.vip_port_id
+  port_id     = openstack_lb_loadbalancer_v2.abm-controlplane-lb.vip_port_id
 }
 
 resource "openstack_networking_floatingip_v2" "abm-ws" {
@@ -134,7 +145,7 @@ module "admin_vm_hosts" {
   flavor          = "m1.xlarge"
   key             = "mykey"
   ip              = "10.200.0.10"
-  network         = openstack_networking_network_v2.abm.id
+  network         = openstack_networking_network_v2.abm_network.id
   user_data       = data.template_file.cloud-config.rendered
   security_groups = ["default", openstack_compute_secgroup_v2.basic-access.name]
 }
@@ -146,7 +157,7 @@ module "controlplane_vm_hosts" {
   flavor          = "m1.xlarge"
   key             = "mykey"
   ip              = "10.200.0.11"
-  network         = openstack_networking_network_v2.abm.id
+  network         = openstack_networking_network_v2.abm_network.id
   user_data       = data.template_file.cloud-config.rendered
   security_groups = ["default", openstack_compute_secgroup_v2.basic-access.name]
 }
@@ -158,7 +169,7 @@ module "worker_vm_hosts" {
   flavor          = "m1.xlarge"
   key             = "mykey"
   ip              = "10.200.0.12"
-  network         = openstack_networking_network_v2.abm.id
+  network         = openstack_networking_network_v2.abm_network.id
   user_data       = data.template_file.cloud-config.rendered
   security_groups = ["default", openstack_compute_secgroup_v2.basic-access.name]
 }

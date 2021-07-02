@@ -15,35 +15,47 @@
  */
 
 variable "external_network_id" {
+  description = "The id of the external network that is used for floating IP addresses"
   type        = string
-  description = "The id of the external network that is used for floating IP addresses."
-}
-
-variable "os_user_name" {
-  type = string
-}
-
-variable "os_password" {
-  type = string
-}
-
-variable "os_tenant_name" {
-  type    = string
-  default = "admin"
 }
 
 variable "os_auth_url" {
-  type = string
+  description = "The OpenStack authentication URL to be used by the provider"
+  type        = string
+}
+
+variable "os_user_name" {
+  description = "The username to be used to authenticate the OpenStack provider client"
+  type        = string
+}
+
+variable "os_password" {
+  description = "The password to be used to authenticate the OpenStack provider client"
+  type        = string
+}
+
+variable "os_tenant_name" {
+  description = "The OpenStack tenant information for the current setup"
+  type        = string
+  default     = "admin"
 }
 
 variable "os_endpoint_type" {
-  type    = string
-  default = "internalURL"
+  description = "The type of the OpenStack endpoint to use; whether its public or internal"
+  type        = string
+  default     = "internalURL"
 }
 
 variable "os_region" {
-  type    = string
-  default = "RegionOne"
+  description = "The OpenStack region in which the VMs are to be provisioned"
+  type        = string
+  default     = "RegionOne"
+}
+
+variable "network_mtu" {
+  description = "The Maximum Transport Unit for packets over the OpenStack network"
+  type        = number
+  default     = 1400
 }
 
 # [START anthos_bm_openstack_node_prefix]
