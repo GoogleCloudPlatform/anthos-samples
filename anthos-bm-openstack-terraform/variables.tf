@@ -93,7 +93,7 @@ variable "ssh_key" {
   type        = string
 }
 
-# [START anthos_bm_openstack_node_prefix]
+# [START anthos_bm_openstack_node_count]
 ###################################################################################
 # The recommended instance count for High Availability (HA) is 3 for Control plane
 # and 2 for Worker nodes.
@@ -106,4 +106,4 @@ variable "instance_count" {
     "worker" : 1
   }
 }
-# [END anthos_bm_openstack_node_prefix]
+# [END anthos_bm_openstack_node_count]
