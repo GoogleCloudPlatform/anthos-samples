@@ -19,6 +19,7 @@ locals {
   subnet_cidr_prefix    = "10.200.0.%s"
   dns_servers           = ["8.8.8.8", "8.8.4.4"]
   vm_name_template      = "${local.abm_name_template}%d"
+  cloud_config_path     = "${path.module}/cloud-config.yaml"
   subnet_cidr           = format(local.subnet_cidr_prefix, "0/24") // 10.200.0.0/24
   subnet_start_ip       = format(local.subnet_cidr_prefix, "3")    // 10.200.0.3
   subnet_end_ip         = format(local.subnet_cidr_prefix, "100")  // 10.200.0.100
@@ -115,38 +116,31 @@ resource "openstack_lb_pool_v2" "abm-cp-lb-pool" {
   listener_id = openstack_lb_listener_v2.abm-cp-lb-listener.id
 }
 
-resource "openstack_lb_monitor_v2" "abm-cp-lb" {
+resource "openstack_lb_monitor_v2" "abm-cp-lb-monitor" {
   pool_id     = openstack_lb_pool_v2.abm-cp-lb-pool.id
   type        = var.lb_protocol.protocol
   delay       = 5
-  timeout     = 25
+  timeout     = 5
   max_retries = 5
   url_path    = "/readyz"
 }
 
-resource "openstack_lb_member_v2" "cp-lb-cp1" {
+resource "openstack_lb_member_v2" "lb-membership-cp-nodes" {
   for_each      = { for index, vm in local.controlplane_vm_info : index => vm }
   pool_id       = openstack_lb_pool_v2.abm-cp-lb-pool.id
   address       = each.value.ip
   protocol_port = 6444
 }
 
-resource "openstack_networking_floatingip_v2" "abm-cp-lb" {
-  pool = "public"
-}
-
-resource "openstack_networking_floatingip_associate_v2" "abm-cp-lb" {
-  floating_ip = openstack_networking_floatingip_v2.abm-cp-lb.address
-  port_id     = openstack_lb_loadbalancer_v2.abm-cp-lb.vip_port_id
-}
-
-resource "openstack_networking_floatingip_v2" "abm-ws" {
-  pool = "public"
-}
-
+###############################################################################
+# Create security groups for configuring access for the Anthos BareMeal hosts
+# - Allow TCP port 443 for HTTPS traffic
+# - Allow TCP port 22 for SSH traffic
+# - Allow all ICMP traffic
+###############################################################################
 resource "openstack_compute_secgroup_v2" "basic-access" {
   name        = "basic-access"
-  description = "allow 443,SSH and icmp"
+  description = "Allow HTTPS(443), SSH(22) and ICMP"
 
   rule {
     from_port   = 22
@@ -170,19 +164,32 @@ resource "openstack_compute_secgroup_v2" "basic-access" {
   }
 }
 
-resource "tls_private_key" "abm" {
+###############################################################################
+# Create public-private key pair for use by the Anthos BareMetal hosts
+###############################################################################
+resource "tls_private_key" "abm-key" {
   algorithm = "RSA"
   rsa_bits  = 4096
 }
 
+###############################################################################
+# Generate the cloud-init configuration by filling in the templated details
+# in the cloud-config file
+###############################################################################
 data "template_file" "cloud-config" {
-  template = file("${path.module}/cloud-config.yaml")
+  template = file(local.cloud_config_path)
   vars = {
-    private_key = tls_private_key.abm.private_key_pem,
-    public_key  = tls_private_key.abm.public_key_openssh
+    private_key = tls_private_key.abm-key.private_key_pem,
+    public_key  = tls_private_key.abm-key.public_key_openssh
   }
 }
 
+###############################################################################
+# Create the VMs for the Anthos BareMetal setup
+# - 1 VM for the Admin workstation
+# - VMs for the Controlplane based on the input variable 'instance_count'
+# - VMs for the worker nodes based on the input variable 'instance_count'
+###############################################################################
 module "admin_vm_hosts" {
   source          = "./modules/vm"
   vm_info         = local.admin_vm_info
@@ -195,7 +202,7 @@ module "admin_vm_hosts" {
 }
 
 module "cp_vm_hosts" {
-  source = "./modules/vm"
+  source          = "./modules/vm"
   vm_info         = local.controlplane_vm_info
   image           = "ubuntu-1804"
   flavor          = "m1.small"
@@ -216,7 +223,23 @@ module "worker_vm_hosts" {
   security_groups = ["default", openstack_compute_secgroup_v2.basic-access.name]
 }
 
-# resource "openstack_compute_floatingip_associate_v2" "abm-ws" {
-#   floating_ip = openstack_networking_floatingip_v2.abm-ws.address
-#   instance_id = openstack_compute_instance_v2.abm-ws.id
-# }
+###############################################################################
+# Associate floating virtual IPs for the control plane and admin workstation
+###############################################################################
+resource "openstack_networking_floatingip_v2" "abm-ws-floatingip" {
+  pool = "public"
+}
+
+resource "openstack_networking_floatingip_v2" "abm-cp-floatingip" {
+  pool = "public"
+}
+
+resource "openstack_networking_floatingip_associate_v2" "abm-cp-ip-lb-association" {
+  floating_ip = openstack_networking_floatingip_v2.abm-cp-floatingip.address
+  port_id     = openstack_lb_loadbalancer_v2.abm-cp-lb.vip_port_id
+}
+
+resource "openstack_compute_floatingip_associate_v2" "abm-ws-ip-lb-association" {
+  floating_ip = openstack_networking_floatingip_v2.abm-ws-floatingip.address
+  instance_id = module.admin_vm_hosts.vm_ids[0]
+}
