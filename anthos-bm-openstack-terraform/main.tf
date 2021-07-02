@@ -193,9 +193,9 @@ data "template_file" "cloud-config" {
 module "admin_vm_hosts" {
   source          = "./modules/vm"
   vm_info         = local.admin_vm_info
-  image           = "ubuntu-1804"
-  flavor          = "m1.small"
-  key             = "mykey"
+  image           = var.image
+  flavor          = var.machine_type
+  key             = var.ssh_key
   network         = openstack_networking_network_v2.abm_network.id
   user_data       = data.template_file.cloud-config.rendered
   security_groups = ["default", openstack_compute_secgroup_v2.basic-access.name]
@@ -204,9 +204,9 @@ module "admin_vm_hosts" {
 module "cp_vm_hosts" {
   source          = "./modules/vm"
   vm_info         = local.controlplane_vm_info
-  image           = "ubuntu-1804"
-  flavor          = "m1.small"
-  key             = "mykey"
+  image           = var.image
+  flavor          = var.machine_type
+  key             = var.ssh_key
   network         = openstack_networking_network_v2.abm_network.id
   user_data       = data.template_file.cloud-config.rendered
   security_groups = ["default", openstack_compute_secgroup_v2.basic-access.name]
@@ -215,9 +215,9 @@ module "cp_vm_hosts" {
 module "worker_vm_hosts" {
   source          = "./modules/vm"
   vm_info         = local.worker_vm_info
-  image           = "ubuntu-1804"
-  flavor          = "m1.small"
-  key             = "mykey"
+  image           = var.image
+  flavor          = var.machine_type
+  key             = var.ssh_key
   network         = openstack_networking_network_v2.abm_network.id
   user_data       = data.template_file.cloud-config.rendered
   security_groups = ["default", openstack_compute_secgroup_v2.basic-access.name]

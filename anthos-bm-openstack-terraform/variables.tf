@@ -67,6 +67,32 @@ variable "lb_protocol" {
   }
 }
 
+variable "machine_type" {
+  description = <<EOF
+    The machine type to use when provisioning the OpenStack VMs.
+    Use 'openstack flavor list' to find a list of all available flavors
+  EOF
+  type        = string
+  default     = "m1.xlarge"
+}
+
+variable "image" {
+  description = <<EOF
+    The source image to use when provisioning the OpenStack VMs.
+    Use 'openstack image list' to find a list of all available images
+  EOF
+  type        = string
+  default     = "ubuntu-1804"
+}
+
+variable "ssh_key" {
+  description = <<EOF
+    The SSH key pair to associate with the provisioned the OpenStack VMs.
+    Use 'openstack key list' to find a list of all available flavors
+  EOF
+  type        = string
+}
+
 # [START anthos_bm_openstack_node_prefix]
 ###################################################################################
 # The recommended instance count for High Availability (HA) is 3 for Control plane
