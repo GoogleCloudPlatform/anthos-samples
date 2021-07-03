@@ -67,6 +67,7 @@ jobs:
         run: |
           echo "Terraform validating: $SAMPLE_DIR"
           cd $SAMPLE_DIR
+          tfenv use 0.14.9
           terraform init -backend=false
           terraform validate -json .
   go-unit-tests:

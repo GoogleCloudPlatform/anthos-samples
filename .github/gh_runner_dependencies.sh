@@ -28,11 +28,15 @@ source ~/.profile
 go get -u github.com/google/addlicense
 sudo ln -s $HOME/go/bin/addlicense /bin
 
-sudo git clone https://github.com/tfutils/tfenv.git /root/.tfenv
-sudo ln -s /root/.tfenv/bin/tfenv /bin
+git clone https://github.com/tfutils/tfenv.git ~/.tfenv
+sudo ln -s ~/.tfenv/bin/* /bin
 
 tfenv install 0.14.9
 tfenv install 0.15.5
 tfenv install 1.0.0
+tfenv install 1.0.1
 
 tfenv use 0.14.9
+
+go get -u golang.org/x/lint/golint
+sudo ln -s go/bin/golint /bin/
