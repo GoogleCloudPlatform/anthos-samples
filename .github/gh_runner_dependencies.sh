@@ -23,7 +23,8 @@ sudo chown -R root:root ./go
 sudo mv go /usr/local
 echo "export GOPATH=$HOME/go" >> "$HOME"/.profile
 echo "export PATH=$PATH:/usr/local/go/bin:$GOPATH/bin" >> "$HOME"/.profile
-. ~/.profile
+# shellcheck source="$HOME"/.profile
+. "$HOME"/.profile
 
 go get -u github.com/google/addlicense
 sudo ln -s "$HOME"/go/bin/addlicense /bin
