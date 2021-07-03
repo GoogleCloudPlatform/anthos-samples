@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
+# shellcheck disable=SC1090
 cd "$HOME" || exit
 sudo apt-get install -y curl wget vim git unzip gcc
 
@@ -23,8 +23,7 @@ sudo chown -R root:root ./go
 sudo mv go /usr/local
 echo "export GOPATH=$HOME/go" >> "$HOME"/.profile
 echo "export PATH=$PATH:/usr/local/go/bin:$GOPATH/bin" >> "$HOME"/.profile
-# shellcheck source=~/.profile
-source ~/.profile
+source "$HOME"/.profile
 
 go get -u github.com/google/addlicense
 sudo ln -s "$HOME"/go/bin/addlicense /bin
