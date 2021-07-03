@@ -14,16 +14,16 @@
 # limitations under the License.
 
 
-cd "$HOME"
+cd "$HOME" || exit
 sudo apt-get install -y curl wget vim git unzip gcc
 
 wget "https://dl.google.com/go/$(curl https://golang.org/VERSION?m=text).linux-amd64.tar.gz"
 sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go*
 sudo chown -R root:root ./go
 sudo mv go /usr/local
-echo "export GOPATH=$HOME/go" >> $HOME/.profile
+echo "export GOPATH=$HOME/go" >> "$HOME"/.profile
 echo "export PATH=$PATH:/usr/local/go/bin:$GOPATH/bin" >> "$HOME"/.profile
-source "$HOME"/.profile
+. "$HOME"/.profile
 
 go get -u github.com/google/addlicense
 sudo ln -s "$HOME"/go/bin/addlicense /bin
