@@ -21,15 +21,15 @@ wget "https://dl.google.com/go/$(curl https://golang.org/VERSION?m=text).linux-a
 sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go*
 sudo chown -R root:root ./go
 sudo mv go /usr/local
-echo 'export GOPATH=$HOME/go' >> ~/.profile
-echo 'export PATH=$PATH:/usr/local/go/bin:$GOPATH/bin' >> ~/.profile
-source ~/.profile
+echo "export GOPATH=$HOME/go" >> $HOME/.profile
+echo "export PATH=$PATH:/usr/local/go/bin:$GOPATH/bin" >> $HOME/.profile
+source $HOME/.profile
 
 go get -u github.com/google/addlicense
 sudo ln -s $HOME/go/bin/addlicense /bin
 
 git clone https://github.com/tfutils/tfenv.git ~/.tfenv
-sudo ln -s ~/.tfenv/bin/* /bin
+sudo ln -s $HOME/.tfenv/bin/* /bin
 
 tfenv install 0.14.9
 tfenv install 0.15.5
@@ -39,4 +39,4 @@ tfenv install 1.0.1
 tfenv use 0.14.9
 
 go get -u golang.org/x/lint/golint
-sudo ln -s go/bin/golint /bin/
+sudo ln -s $HOME/go/bin/golint /bin/
