@@ -35,8 +35,19 @@ tfenv install 0.14.9
 tfenv install 0.15.5
 tfenv install 1.0.0
 tfenv install 1.0.1
-
 tfenv use 0.14.9
 
 go get -u golang.org/x/lint/golint
 sudo ln -s "$HOME"/go/bin/golint /bin/
+
+sudo mkdir -p /var/local/gh-runner
+echo "All dependencies have been installed."
+echo "You have to download the Service Account key into this host, store it under /var/local/gh-runner and give it 444 permissions"
+echo "
+  > gcloud auth login
+  > PROJECT_ID=anthos-gke-samples-ci
+  > SERVICE_ACCOUNT_NAME=gh-actions-anthos-samples-sa
+  > gcloud iam service-accounts keys create sa-key.json --iam-account=${SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com
+  > sudo mv ./sa-key.json /var/local/gh-runner/
+  > sudo chmod 444 /var/local/gh-runner/sa-key.json
+"
