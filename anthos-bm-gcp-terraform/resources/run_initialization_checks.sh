@@ -90,7 +90,7 @@ function __cleanup__ () {
 function __trap_with_arg__ () {
   FUNC="$1" ; shift
   for SIG ; do
-    trap '$FUNC $SIG' '$SIG'
+    trap "$FUNC $SIG" "$SIG"
   done
 }
 
