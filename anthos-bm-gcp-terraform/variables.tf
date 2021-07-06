@@ -148,6 +148,21 @@ variable "secondary_apis" {
   ]
 }
 
+variable "gpu_machine_type" {
+  description = <<EOF
+    The type of GPU to be attached to the provisioned GCE instances.
+    See https://cloud.google.com/compute/docs/gpus for supported types
+  EOF
+  type        = string
+  default     = "nvidia-tesla-k80"
+}
+
+variable "gpu_count" {
+  description = "The number of GPUs to be attached to the GCE instances"
+  type        = number
+  default     = 1
+}
+
 variable "abm_cluster_id" {
   description = "Unique id to represent the Anthos Cluster to be created"
   type        = string

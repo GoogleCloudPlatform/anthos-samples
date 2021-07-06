@@ -115,6 +115,10 @@ module "instance_template" {
     email  = ""
     scopes = var.access_scopes # --scopes cloud-platform
   }
+  # gpu = {
+  #   type  = var.gpu_machine_type
+  #   count = var.gpu_count
+  # }
 }
 
 module "admin_vm_hosts" {
