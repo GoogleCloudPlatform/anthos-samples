@@ -54,7 +54,7 @@ locals {
 
 module "enable_google_apis_primary" {
   source                      = "terraform-google-modules/project-factory/google//modules/project_services"
-  version                     = "10.3.2"
+  version                     = "11.1.0"
   project_id                  = var.project_id
   activate_apis               = var.primary_apis
   disable_services_on_destroy = false
@@ -62,7 +62,7 @@ module "enable_google_apis_primary" {
 
 module "enable_google_apis_secondary" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "10.3.2"
+  version = "11.1.0"
   # fetched from previous module to explicitely express dependency
   project_id                  = module.enable_google_apis_primary.project_id
   depends_on                  = [module.enable_google_apis_primary]
