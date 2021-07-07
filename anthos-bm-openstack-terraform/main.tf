@@ -105,20 +105,20 @@ resource "openstack_lb_loadbalancer_v2" "abm_cp_lb" {
 }
 
 resource "openstack_lb_listener_v2" "abm_cp_lb_listener" {
-  protocol        = var.lb_protocol.protocol
-  protocol_port   = var.lb_protocol.port
+  protocol        = "HTTPS"
+  protocol_port   = 443
   loadbalancer_id = openstack_lb_loadbalancer_v2.abm_cp_lb.id
 }
 
 resource "openstack_lb_pool_v2" "abm_cp_lb_pool" {
-  protocol    = var.lb_protocol.protocol
-  lb_method   = "ROUND_ROBIN"
+  protocol    = "HTTPS"
+  lb_method   = var.lb_method
   listener_id = openstack_lb_listener_v2.abm_cp_lb_listener.id
 }
 
 resource "openstack_lb_monitor_v2" "abm_cp_lb_monitor" {
   pool_id     = openstack_lb_pool_v2.abm_cp_lb_pool.id
-  type        = var.lb_protocol.protocol
+  type        = "HTTPS"
   delay       = 5
   timeout     = 5
   max_retries = 5
@@ -138,8 +138,8 @@ resource "openstack_lb_member_v2" "lb_membership_cp_nodes" {
 # - Allow TCP port 22 for SSH traffic
 # - Allow all ICMP traffic
 ###############################################################################
-resource "openstack_compute_secgroup_v2" "basic-access" {
-  name        = "basic-access"
+resource "openstack_compute_secgroup_v2" "basic_access" {
+  name        = "basic_access"
   description = "Allow HTTPS(443), SSH(22) and ICMP"
 
   rule {
@@ -198,7 +198,7 @@ module "admin_vm_hosts" {
   key             = var.ssh_key
   network         = openstack_networking_network_v2.abm_network.id
   user_data       = data.template_file.cloud_config.rendered
-  security_groups = ["default", openstack_compute_secgroup_v2.basic-access.name]
+  security_groups = ["default", openstack_compute_secgroup_v2.basic_access.name]
 }
 
 module "cp_vm_hosts" {
@@ -209,7 +209,7 @@ module "cp_vm_hosts" {
   key             = var.ssh_key
   network         = openstack_networking_network_v2.abm_network.id
   user_data       = data.template_file.cloud_config.rendered
-  security_groups = ["default", openstack_compute_secgroup_v2.basic-access.name]
+  security_groups = ["default", openstack_compute_secgroup_v2.basic_access.name]
 }
 
 module "worker_vm_hosts" {
@@ -220,7 +220,7 @@ module "worker_vm_hosts" {
   key             = var.ssh_key
   network         = openstack_networking_network_v2.abm_network.id
   user_data       = data.template_file.cloud_config.rendered
-  security_groups = ["default", openstack_compute_secgroup_v2.basic-access.name]
+  security_groups = ["default", openstack_compute_secgroup_v2.basic_access.name]
 }
 
 ###############################################################################

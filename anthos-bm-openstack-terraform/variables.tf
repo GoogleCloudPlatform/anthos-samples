@@ -58,13 +58,13 @@ variable "network_mtu" {
   default     = 1400
 }
 
-variable "lb_protocol" {
-  description = "The protocol (HTTP, HTTPS) over which the OpenStack load balancer serves requests"
-  type        = object({ protocol = string, port = number })
-  default = {
-    protocol : "HTTPS"
-    port : 443
-  }
+variable "lb_method" {
+  description = <<EOF
+    The algorithm to use for load balancing requests. Valid values are
+    ROUND_ROBIN, LEAST_CONNECTIONS, SOURCE_IP, or SOURCE_IP_PORT
+  EOF
+  type        = string
+  default     = "ROUND_ROBIN"
 }
 
 variable "machine_type" {
