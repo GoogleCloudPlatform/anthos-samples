@@ -87,9 +87,9 @@ spec:
         - --http_server=localhost:9681
         - --ksa_name=stackdriver
         - --ksa_namespace=kube-system
-        - --token_audience=[PROJECT_ID].svc.id.goog
-        - --gcp_project_id=[PROJECT_ID]
-        - --gcp_sts_audience=identitynamespace:[PROJECT_ID].svc.id.goog:https://gkehub.googleapis.com/projects/[PROJECT_ID]/locations/global/memberships/[CLUSTER_NAME]
+        - --token_audience=PROJECT_ID.svc.id.goog
+        - --gcp_project_id=PROJECT_ID
+        - --gcp_sts_audience=identitynamespace:PROJECT_ID.svc.id.goog:https://gkehub.googleapis.com/projects/PROJECT_ID/locations/global/memberships/CLUSTER_NAME
       - name: gke-metrics-agent
         image: gcr.io/gke-multi-cloud-release/gke-metrics-agent:0.3.12-gke.0
         imagePullPolicy: IfNotPresent
@@ -101,10 +101,12 @@ spec:
         ports:
         - containerPort: 8888
         resources:
-          limits:
-            memory: 4Gi
           requests:
+            cpu: 50m
             memory: 50Mi
+          limits:
+            cpu: 100m
+            memory: 500Mi
         env:
         - name: GCE_METADATA_HOST
           value: 127.0.0.1:9681
@@ -229,9 +231,9 @@ data:
           target_resource_label: node_name
       resource:
         labels:
-          cluster_name: [CLUSTER_NAME]
-          location: [CLUSTER_LOCATION]
-          project_id: [PROJECT_ID]
+          cluster_name: CLUSTER_NAME
+          location: CLUSTER_LOCATION
+          project_id: PROJECT_ID
     receivers:
       prometheus/metrics:
         config:

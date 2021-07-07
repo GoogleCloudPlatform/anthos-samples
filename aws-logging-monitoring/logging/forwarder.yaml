@@ -87,19 +87,21 @@ spec:
         - --http_server=localhost:9681
         - --ksa_name=stackdriver
         - --ksa_namespace=kube-system
-        - --token_audience=[PROJECT_ID].svc.id.goog
-        - --gcp_project_id=[PROJECT_ID]
-        - --gcp_sts_audience=identitynamespace:[PROJECT_ID].svc.id.goog:https://gkehub.googleapis.com/projects/[PROJECT_ID]/locations/global/memberships/[CLUSTER_NAME]
+        - --token_audience=PROJECT_ID.svc.id.goog
+        - --gcp_project_id=PROJECT_ID
+        - --gcp_sts_audience=identitynamespace:PROJECT_ID.svc.id.goog:https://gkehub.googleapis.com/projects/PROJECT_ID/locations/global/memberships/CLUSTER_NAME
       - name: stackdriver-log-forwarder
-        image: gcr.io/gke-multi-cloud-release/fluent-bit:v1.7.7-gke.1
+        image: gcr.io/gke-multi-cloud-release/fluent-bit:v1.7.7-gke.4
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 2020
         resources:
-          limits:
-            memory: 120Mi
           requests:
+            cpu: 50m
             memory: 50Mi
+          limits:
+            cpu: 100m
+            memory: 600Mi
         env:
         - name: METADATA_SERVER
           value: http://127.0.0.1:9681
@@ -442,8 +444,8 @@ data:
       Name                        stackdriver
       Match                       k8s_container.*
       Resource                    k8s_container
-      k8s_cluster_name            [CLUSTER_NAME]
-      k8s_cluster_location        [CLUSTER_LOCATION]
+      k8s_cluster_name            CLUSTER_NAME
+      k8s_cluster_location        CLUSTER_LOCATION
       # Custom RegEx for matching the fields in the local_resource_id
       # https://github.com/fluent/fluent-bit/pull/3200
       custom_k8s_regex            ^(?<namespace_name>[^_.]+)\.(?<pod_name>[a-z0-9](?:[-a-z0-9]*[a-z0-9])?(?:\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)\.(?<container_name>[^.]+)$
@@ -453,8 +455,8 @@ data:
       Name                        stackdriver
       Match_Regex                 ^(container-runtime|kubelet)$
       Resource                    k8s_node
-      k8s_cluster_name            [CLUSTER_NAME]
-      k8s_cluster_location        [CLUSTER_LOCATION]
+      k8s_cluster_name            CLUSTER_NAME
+      k8s_cluster_location        CLUSTER_LOCATION
       # Custom RegEx for matching the fields in the local_resource_id
       # https://github.com/fluent/fluent-bit/pull/3200
       custom_k8s_regex            ^(?<node_name>[a-z0-9](?:[-a-z0-9]*[a-z0-9])?(?:\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)$
