@@ -19,7 +19,7 @@ locals {
   subnet_cidr_prefix    = "10.200.0.%s"
   dns_servers           = ["8.8.8.8", "8.8.4.4"]
   vm_name_template      = "${local.abm_name_template}%d"
-  cloud_config_path     = "${path.module}/cloud-config.yaml"
+  cloud_config_path     = "${path.module}/resources/cloud-config.yaml"
   subnet_cidr           = format(local.subnet_cidr_prefix, "0/24") // 10.200.0.0/24
   subnet_start_ip       = format(local.subnet_cidr_prefix, "3")    // 10.200.0.3
   subnet_end_ip         = format(local.subnet_cidr_prefix, "100")  // 10.200.0.100
