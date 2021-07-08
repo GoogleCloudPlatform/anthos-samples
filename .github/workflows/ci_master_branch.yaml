@@ -22,7 +22,7 @@ on:
       - release/*
 jobs:
   static-code-tests:
-    runs-on: [self-hosted]
+    runs-on: [self-hosted, runner-july-21]
     steps:
       - uses: actions/checkout@v2
         with:
@@ -30,10 +30,11 @@ jobs:
           repository: ${{github.event.pull_request.head.repo.full_name}}
       - name: License Check
         run: |
-          addlicense -check ./
+          addlicense -check -skip cloud-config.yaml ./
       - name: Terraform Checkstyle
         timeout-minutes: 20
         run: |
+          tfenv use 0.14.9
           terraform fmt -recursive -check -diff ./
       - name: Golang Checkstyle
         timeout-minutes: 20
@@ -48,7 +49,7 @@ jobs:
             exit 1
           fi
   tf-validate:
-    runs-on: [self-hosted]
+    runs-on: [self-hosted, runner-july-21]
     strategy:
       matrix:
         # list of directories in the repo that hosts Terraform samples
@@ -68,10 +69,11 @@ jobs:
         run: |
           echo "Terraform validating: $SAMPLE_DIR"
           cd $SAMPLE_DIR
+          tfenv use 0.14.9
           terraform init -backend=false
           terraform validate -json .
   go-unit-tests:
-    runs-on: [self-hosted]
+    runs-on: [self-hosted, runner-july-21]
     needs: tf-validate
     strategy:
       matrix:

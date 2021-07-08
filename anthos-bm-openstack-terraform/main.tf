@@ -19,7 +19,7 @@ locals {
   subnet_cidr_prefix    = "10.200.0.%s"
   dns_servers           = ["8.8.8.8", "8.8.4.4"]
   vm_name_template      = "${local.abm_name_template}%d"
-  cloud_config_path     = "${path.module}/cloud-config.yaml"
+  cloud_config_path     = "${path.module}/resources/cloud-config.yaml"
   subnet_cidr           = format(local.subnet_cidr_prefix, "0/24") // 10.200.0.0/24
   subnet_start_ip       = format(local.subnet_cidr_prefix, "3")    // 10.200.0.3
   subnet_end_ip         = format(local.subnet_cidr_prefix, "100")  // 10.200.0.100
@@ -73,7 +73,7 @@ resource "openstack_networking_network_v2" "abm_network" {
   admin_state_up = "true"
 }
 
-resource "openstack_networking_subnet_v2" "abm-subnetwork" {
+resource "openstack_networking_subnet_v2" "abm_subnetwork" {
   name            = local.subnetwork_name
   cidr            = local.subnet_cidr
   network_id      = openstack_networking_network_v2.abm_network.id
@@ -85,9 +85,9 @@ resource "openstack_networking_subnet_v2" "abm-subnetwork" {
   ip_version = 4
 }
 
-resource "openstack_networking_router_interface_v2" "abm-interface-1" {
+resource "openstack_networking_router_interface_v2" "abm_interface_1" {
   router_id = openstack_networking_router_v2.abm_network_router.id
-  subnet_id = openstack_networking_subnet_v2.abm-subnetwork.id
+  subnet_id = openstack_networking_subnet_v2.abm_subnetwork.id
 }
 
 ###############################################################################
@@ -98,36 +98,36 @@ resource "openstack_networking_router_interface_v2" "abm-interface-1" {
 # - LoadBalancer Monitor
 # - LoadBalancer Members (one each for controlplane nodes)
 ###############################################################################
-resource "openstack_lb_loadbalancer_v2" "abm-cp-lb" {
+resource "openstack_lb_loadbalancer_v2" "abm_cp_lb" {
   name          = local.controlplane_lb_name
   vip_address   = local.controlplane_lb_vip
-  vip_subnet_id = openstack_networking_subnet_v2.abm-subnetwork.id
+  vip_subnet_id = openstack_networking_subnet_v2.abm_subnetwork.id
 }
 
-resource "openstack_lb_listener_v2" "abm-cp-lb-listener" {
-  protocol        = var.lb_protocol.protocol
-  protocol_port   = var.lb_protocol.port
-  loadbalancer_id = openstack_lb_loadbalancer_v2.abm-cp-lb.id
+resource "openstack_lb_listener_v2" "abm_cp_lb_listener" {
+  protocol        = "HTTPS"
+  protocol_port   = 443
+  loadbalancer_id = openstack_lb_loadbalancer_v2.abm_cp_lb.id
 }
 
-resource "openstack_lb_pool_v2" "abm-cp-lb-pool" {
-  protocol    = var.lb_protocol.protocol
-  lb_method   = "ROUND_ROBIN"
-  listener_id = openstack_lb_listener_v2.abm-cp-lb-listener.id
+resource "openstack_lb_pool_v2" "abm_cp_lb_pool" {
+  protocol    = "HTTPS"
+  lb_method   = var.lb_method
+  listener_id = openstack_lb_listener_v2.abm_cp_lb_listener.id
 }
 
-resource "openstack_lb_monitor_v2" "abm-cp-lb-monitor" {
-  pool_id     = openstack_lb_pool_v2.abm-cp-lb-pool.id
-  type        = var.lb_protocol.protocol
+resource "openstack_lb_monitor_v2" "abm_cp_lb_monitor" {
+  pool_id     = openstack_lb_pool_v2.abm_cp_lb_pool.id
+  type        = "HTTPS"
   delay       = 5
   timeout     = 5
   max_retries = 5
   url_path    = "/readyz"
 }
 
-resource "openstack_lb_member_v2" "lb-membership-cp-nodes" {
+resource "openstack_lb_member_v2" "lb_membership_cp_nodes" {
   for_each      = { for index, vm in local.controlplane_vm_info : index => vm }
-  pool_id       = openstack_lb_pool_v2.abm-cp-lb-pool.id
+  pool_id       = openstack_lb_pool_v2.abm_cp_lb_pool.id
   address       = each.value.ip
   protocol_port = 6444
 }
@@ -138,8 +138,8 @@ resource "openstack_lb_member_v2" "lb-membership-cp-nodes" {
 # - Allow TCP port 22 for SSH traffic
 # - Allow all ICMP traffic
 ###############################################################################
-resource "openstack_compute_secgroup_v2" "basic-access" {
-  name        = "basic-access"
+resource "openstack_compute_secgroup_v2" "basic_access" {
+  name        = "basic_access"
   description = "Allow HTTPS(443), SSH(22) and ICMP"
 
   rule {
@@ -167,7 +167,7 @@ resource "openstack_compute_secgroup_v2" "basic-access" {
 ###############################################################################
 # Create public-private key pair for use by the Anthos BareMetal hosts
 ###############################################################################
-resource "tls_private_key" "abm-key" {
+resource "tls_private_key" "abm_key" {
   algorithm = "RSA"
   rsa_bits  = 4096
 }
@@ -176,11 +176,11 @@ resource "tls_private_key" "abm-key" {
 # Generate the cloud-init configuration by filling in the templated details
 # in the cloud-config file
 ###############################################################################
-data "template_file" "cloud-config" {
+data "template_file" "cloud_config" {
   template = file(local.cloud_config_path)
   vars = {
-    private_key = tls_private_key.abm-key.private_key_pem,
-    public_key  = tls_private_key.abm-key.public_key_openssh
+    private_key = tls_private_key.abm_key.private_key_pem,
+    public_key  = tls_private_key.abm_key.public_key_openssh
   }
 }
 
@@ -197,8 +197,8 @@ module "admin_vm_hosts" {
   flavor          = var.machine_type
   key             = var.ssh_key
   network         = openstack_networking_network_v2.abm_network.id
-  user_data       = data.template_file.cloud-config.rendered
-  security_groups = ["default", openstack_compute_secgroup_v2.basic-access.name]
+  user_data       = data.template_file.cloud_config.rendered
+  security_groups = ["default", openstack_compute_secgroup_v2.basic_access.name]
 }
 
 module "cp_vm_hosts" {
@@ -208,8 +208,8 @@ module "cp_vm_hosts" {
   flavor          = var.machine_type
   key             = var.ssh_key
   network         = openstack_networking_network_v2.abm_network.id
-  user_data       = data.template_file.cloud-config.rendered
-  security_groups = ["default", openstack_compute_secgroup_v2.basic-access.name]
+  user_data       = data.template_file.cloud_config.rendered
+  security_groups = ["default", openstack_compute_secgroup_v2.basic_access.name]
 }
 
 module "worker_vm_hosts" {
@@ -219,27 +219,27 @@ module "worker_vm_hosts" {
   flavor          = var.machine_type
   key             = var.ssh_key
   network         = openstack_networking_network_v2.abm_network.id
-  user_data       = data.template_file.cloud-config.rendered
-  security_groups = ["default", openstack_compute_secgroup_v2.basic-access.name]
+  user_data       = data.template_file.cloud_config.rendered
+  security_groups = ["default", openstack_compute_secgroup_v2.basic_access.name]
 }
 
 ###############################################################################
 # Associate floating virtual IPs for the control plane and admin workstation
 ###############################################################################
-resource "openstack_networking_floatingip_v2" "abm-ws-floatingip" {
+resource "openstack_networking_floatingip_v2" "abm_ws_floatingip" {
   pool = "public"
 }
 
-resource "openstack_networking_floatingip_v2" "abm-cp-floatingip" {
+resource "openstack_networking_floatingip_v2" "abm_cp_floatingip" {
   pool = "public"
 }
 
-resource "openstack_networking_floatingip_associate_v2" "abm-cp-ip-lb-association" {
-  floating_ip = openstack_networking_floatingip_v2.abm-cp-floatingip.address
-  port_id     = openstack_lb_loadbalancer_v2.abm-cp-lb.vip_port_id
+resource "openstack_networking_floatingip_associate_v2" "abm_cp_ip_lb_association" {
+  floating_ip = openstack_networking_floatingip_v2.abm_cp_floatingip.address
+  port_id     = openstack_lb_loadbalancer_v2.abm_cp_lb.vip_port_id
 }
 
-resource "openstack_compute_floatingip_associate_v2" "abm-ws-ip-lb-association" {
-  floating_ip = openstack_networking_floatingip_v2.abm-ws-floatingip.address
+resource "openstack_compute_floatingip_associate_v2" "abm_ws_ip_lb_association" {
+  floating_ip = openstack_networking_floatingip_v2.abm_ws_floatingip.address
   instance_id = module.admin_vm_hosts.vm_ids[0]
 }
