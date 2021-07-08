@@ -20,3 +20,7 @@ cleanup.sh
 credentials_file.json
 .kitchen
 **ci-abm*.json
+
+files.log
+legacy_headder_check.log
+new_header_check.log
