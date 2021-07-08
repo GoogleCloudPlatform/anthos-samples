@@ -768,24 +768,6 @@ data:
               - __meta_kubernetes_node_name
               target_label: anthos_node
             scheme: http
-          - job_name: node-exporter
-            kubernetes_sd_configs:
-            - role: node
-              selectors:
-              - field: metadata.name=$NODE_NAME
-                role: node
-            relabel_configs:
-            - action: replace
-              regex: ([^:]+)(?::\d+)?
-              replacement: $$1:9100
-              source_labels:
-              - __address__
-              target_label: __address__
-            - action: replace
-              source_labels:
-              - __meta_kubernetes_node_name
-              target_label: anthos_node
-            scheme: http
           - job_name: stackdriver-log-forwarder
             kubernetes_sd_configs:
             - role: pod
@@ -801,7 +783,7 @@ data:
             - action: keep
               regex: stackdriver-log-forwarder
               source_labels:
-              - __meta_kubernetes_pod_label_app
+              - __meta_kubernetes_pod_container_name
             - action: replace
               source_labels:
               - __meta_kubernetes_namespace
@@ -849,20 +831,14 @@ data:
               - field: spec.nodeName=$NODE_NAME
                 role: pod
             relabel_configs:
-            - action: replace
-              regex: ([^:]+)(?::\d+)?
-              replacement: $$1:8888
-              source_labels:
-              - __address__
-              target_label: __address__
             - action: keep
               regex: kube-system
               source_labels:
               - __meta_kubernetes_namespace
             - action: keep
-              regex: gke-metrics-agent|gke-metrics-agent-global
+              regex: gke-metrics-agent
               source_labels:
-              - __meta_kubernetes_pod_label_app
+              - __meta_kubernetes_pod_container_name
             - action: replace
               source_labels:
               - __meta_kubernetes_pod_name
