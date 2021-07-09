@@ -56,15 +56,22 @@ func TestUnit_MainScript(goTester *testing.T) {
 	resourcesPath := "./resources"
 	username := "test_username"
 	minCPUPlatform := "test_cpu_platform"
-	machineType := "test_machine_type"
-	image := "test_image"
-	imageProject := "test_image_project"
-	imageFamily := "test_image_family"
-	bootDiskType := "test_boot_disk_type"
-	abmClusterID := "test_abm_cluster_id"
 	network := "test_network"
-	bootDiskSize := 175
+	abmClusterID := "test_abm_cluster_id"
 	anthosServiceAccountName := gcp.RandomValidGcpName()
+	machineType := map[string]string{
+		"controlplane": "test_machine_type",
+		"worker":       "test_machine_type",
+	}
+	image := map[string]string{
+		"name":    "test_image",
+		"project": "test_image_project",
+		"family":  "test_image_family",
+	}
+	bootDisk := map[string]util.BootDisk{
+		"controlplane": {Size: 220, Type: "contorl-plane"},
+		"worker":       {Size: 220, Type: "worker-disk"},
+	}
 	tags := []string{
 		"test_tag_1",
 		"test_tag_2",
@@ -99,10 +106,7 @@ func TestUnit_MainScript(goTester *testing.T) {
 		"min_cpu_platform":            minCPUPlatform,
 		"machine_type":                machineType,
 		"image":                       image,
-		"image_project":               imageProject,
-		"image_family":                imageFamily,
-		"boot_disk_type":              bootDiskType,
-		"boot_disk_size":              bootDiskSize,
+		"boot_disk":                   bootDisk,
 		"network":                     network,
 		"tags":                        tags,
 		"access_scopes":               accessScopes,

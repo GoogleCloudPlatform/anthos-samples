@@ -56,57 +56,6 @@ variable "min_cpu_platform" {
   default     = "Intel Haswell"
 }
 
-# variable "image" {
-#   description = <<EOF
-#     The source image to use when provisioning the Compute Engine VMs.
-#     Use 'gcloud compute images list' to find a list of all available images
-#   EOF
-#   type        = string
-#   default     = "ubuntu-2004-focal-v20210429"
-# }
-
-# variable "image_project" {
-#   description = "Project name of the source image to use when provisioning the Compute Engine VMs"
-#   type        = string
-#   default     = "ubuntu-os-cloud"
-# }
-
-# variable "image_family" {
-#   description = <<EOT
-#     Source image to use when provisioning the Compute Engine VMs.
-#     The source image should be one that is in the selected image_project
-#   EOT
-#   type        = string
-#   default     = "ubuntu-2004-lts"
-# }
-
-# variable "boot_disk_type" {
-#   description = "Type of the boot disk to be attached to the Compute Engine VMs"
-#   type        = string
-#   default     = "pd-ssd"
-# }
-
-# variable "boot_disk_size" {
-#   description = "Size of the primary boot disk to be attached to the Compute Engine VMs in GBs"
-#   type        = number
-#   default     = 200
-# }
-
-# variable "gpu_machine_type" {
-#   description = <<EOF
-#     The type of GPU to be attached to the provisioned GCE instances.
-#     See https://cloud.google.com/compute/docs/gpus for supported types
-#   EOF
-#   type        = string
-#   default     = ""
-# }
-
-# variable "gpu_count" {
-#   description = "The number of GPUs to be attached to the GCE instances"
-#   type        = number
-#   default     = 1
-# }
-
 variable "image" {
   description = <<EOF
     The source image to use when provisioning the Compute Engine VMs.
@@ -123,12 +72,10 @@ variable "image" {
 variable "machine_type" {
   description = "Google Cloud machine type to use when provisioning the Compute Engine VMs"
   type = object({
-    admin_ws      = string
     control_plane = string
     worker        = string
   })
   default = {
-    admin_ws      = "n1-standard-8"
     control_plane = "n1-standard-8"
     worker        = "n1-standard-8"
   }
@@ -137,12 +84,10 @@ variable "machine_type" {
 variable "boot_disk" {
   description = "Type of the boot disk to be attached to the Compute Engine VMs"
   type = object({
-    admin_ws      = object({ type = string, size = number })
     control_plane = object({ type = string, size = number })
     worker        = object({ type = string, size = number })
   })
   default = {
-    admin_ws      = { size = 200, type = "pd-ssd" }
     control_plane = { size = 200, type = "pd-ssd" }
     worker        = { size = 200, type = "pd-ssd" }
   }

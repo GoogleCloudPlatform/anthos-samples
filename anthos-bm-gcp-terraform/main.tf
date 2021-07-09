@@ -92,37 +92,7 @@ module "create_service_accounts" {
   ]
 }
 
-# module "instance_template" {
-#   source  = "terraform-google-modules/vm/google//modules/instance_template"
-#   version = "~> 6.3.0"
-#   depends_on = [
-#     module.enable_google_apis_primary,
-#     module.enable_google_apis_secondary
-#   ]
-#   # fetched from previous module to explicitely express dependency
-#   project_id           = module.enable_google_apis_secondary.project_id
-#   region               = var.region           # --zone=${ZONE}
-#   source_image         = var.image.name       # --image=ubuntu-2004-focal-v20210429
-#   source_image_family  = var.image.family     # --image-family=ubuntu-2004-lts
-#   source_image_project = var.image.project    # --image-project=ubuntu-os-cloud
-#   machine_type         = var.machine_type     # --machine-type $MACHINE_TYPE
-#   disk_size_gb         = var.boot_disk_size   # --boot-disk-size 200G
-#   disk_type            = var.boot_disk_type   # --boot-disk-type pd-ssd
-#   network              = var.network          # --network default
-#   tags                 = var.tags             # --tags http-server,https-server
-#   min_cpu_platform     = var.min_cpu_platform # --min-cpu-platform "Intel Haswell"
-#   can_ip_forward       = true                 # --can-ip-forward
-#   service_account = {
-#     email  = ""
-#     scopes = var.access_scopes # --scopes cloud-platform
-#   }
-#   gpu = !var.gpu_enabled ? null : {
-#     type  = var.gpu_machine_type
-#     count = var.gpu_count
-#   }
-# }
-
-module "admin_control_plane_template" {
+module "control_plane_template" {
   source  = "terraform-google-modules/vm/google//modules/instance_template"
   version = "~> 6.3.0"
   depends_on = [
@@ -131,17 +101,17 @@ module "admin_control_plane_template" {
   ]
   # fetched from previous module to explicitely express dependency
   project_id           = module.enable_google_apis_secondary.project_id
-  region               = var.region                  # --zone=${ZONE}
-  source_image         = var.image.name              # --image=ubuntu-2004-focal-v20210429
-  source_image_family  = var.image.family            # --image-family=ubuntu-2004-lts
-  source_image_project = var.image.project           # --image-project=ubuntu-os-cloud
-  machine_type         = var.machine_type.admin_ws   # --machine-type $MACHINE_TYPE
-  disk_size_gb         = var.boot_disk.admin_ws.size # --boot-disk-size 200G
-  disk_type            = var.boot_disk.admin_ws.type # --boot-disk-type pd-ssd
-  network              = var.network                 # --network default
-  tags                 = var.tags                    # --tags http-server,https-server
-  min_cpu_platform     = var.min_cpu_platform        # --min-cpu-platform "Intel Haswell"
-  can_ip_forward       = true                        # --can-ip-forward
+  region               = var.region                       # --zone=${ZONE}
+  source_image         = var.image.name                   # --image=ubuntu-2004-focal-v20210429
+  source_image_family  = var.image.family                 # --image-family=ubuntu-2004-lts
+  source_image_project = var.image.project                # --image-project=ubuntu-os-cloud
+  machine_type         = var.machine_type.control_plane   # --machine-type n1-standard-8
+  disk_size_gb         = var.boot_disk.control_plane.size # --boot-disk-size 200G
+  disk_type            = var.boot_disk.control_plane.type # --boot-disk-type pd-ssd
+  network              = var.network                      # --network default
+  tags                 = var.tags                         # --tags http-server,https-server
+  min_cpu_platform     = var.min_cpu_platform             # --min-cpu-platform "Intel Haswell"
+  can_ip_forward       = true                             # --can-ip-forward
   service_account = {
     email  = ""
     scopes = var.access_scopes # --scopes cloud-platform
@@ -157,24 +127,24 @@ module "worker_template" {
   ]
   # fetched from previous module to explicitely express dependency
   project_id           = module.enable_google_apis_secondary.project_id
-  region               = var.region                  # --zone=${ZONE}
-  source_image         = var.image.name              # --image=ubuntu-2004-focal-v20210429
-  source_image_family  = var.image.family            # --image-family=ubuntu-2004-lts
-  source_image_project = var.image.project           # --image-project=ubuntu-os-cloud
-  machine_type         = var.machine_type            # --machine-type $MACHINE_TYPE
-  disk_size_gb         = var.boot_disk.admin_ws.size # --boot-disk-size 200G
-  disk_type            = var.boot_disk.admin_ws.type # --boot-disk-type pd-ssd
-  network              = var.network                 # --network default
-  tags                 = var.tags                    # --tags http-server,https-server
-  min_cpu_platform     = var.min_cpu_platform        # --min-cpu-platform "Intel Haswell"
-  can_ip_forward       = true                        # --can-ip-forward
+  region               = var.region                # --zone=${ZONE}
+  source_image         = var.image.name            # --image=ubuntu-2004-focal-v20210429
+  source_image_family  = var.image.family          # --image-family=ubuntu-2004-lts
+  source_image_project = var.image.project         # --image-project=ubuntu-os-cloud
+  machine_type         = var.machine_type.worker   # --machine-type n1-standard-8
+  disk_size_gb         = var.boot_disk.worker.size # --boot-disk-size 200G
+  disk_type            = var.boot_disk.worker.type # --boot-disk-type pd-ssd
+  network              = var.network               # --network default
+  tags                 = var.tags                  # --tags http-server,https-server
+  min_cpu_platform     = var.min_cpu_platform      # --min-cpu-platform "Intel Haswell"
+  can_ip_forward       = true                      # --can-ip-forward
   service_account = {
     email  = ""
     scopes = var.access_scopes # --scopes cloud-platform
   }
-  gpu = !var.gpu_enabled ? null : {
-    type  = var.gpu_machine_type
-    count = var.gpu_count
+  gpu = !local.gpu_enabled ? null : {
+    type  = var.gpu.type
+    count = var.gpu.count
   }
 }
 
@@ -187,7 +157,7 @@ module "admin_vm_hosts" {
   region            = var.region
   network           = var.network
   vm_names          = local.admin_vm_name
-  instance_template = module.admin_control_plane_template.self_link
+  instance_template = module.control_plane_template.self_link
 }
 
 module "controlplane_vm_hosts" {
@@ -199,7 +169,7 @@ module "controlplane_vm_hosts" {
   region            = var.region
   network           = var.network
   vm_names          = local.controlplane_vm_names
-  instance_template = module.admin_control_plane_template.self_link
+  instance_template = module.control_plane_template.self_link
 }
 
 module "worker_vm_hosts" {

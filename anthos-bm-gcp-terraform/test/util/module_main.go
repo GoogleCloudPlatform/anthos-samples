@@ -77,3 +77,17 @@ type AdminVMSSH struct {
 type MainConfiguration struct {
 	RootModule TFModule `json:"root_module"`
 }
+
+// BootDisk represents the configuration for a disk that can be associated to a
+// VM, with the boot image installed in it
+type BootDisk struct {
+	Size int
+	Type string
+}
+
+// Gpu represents the configuration for a GPU instance that can be associated
+// to a created VM
+type Gpu struct {
+	Count int
+	Type string
+}
