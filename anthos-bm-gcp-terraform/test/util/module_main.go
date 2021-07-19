@@ -30,27 +30,27 @@ type MainModulePlan struct {
 // script. When new variables are added to the script this struct needs to be
 // modified
 type MainVariables struct {
-	ProjectID                *Variable     `json:"project_id"`
-	Region                   *Variable     `json:"region"`
-	Zone                     *Variable     `json:"zone"`
-	Network                  *Variable     `json:"network"`
-	Username                 *Variable     `json:"username"`
-	ABMClusterID             *Variable     `json:"abm_cluster_id"`
-	AnthosServiceAccountName *Variable     `json:"anthos_service_account_name"`
-	BootDiskSize             *Variable     `json:"boot_disk_size"`
-	BootDiskType             *Variable     `json:"boot_disk_type"`
-	CrendetialsFile          *Variable     `json:"credentials_file"`
-	ResourcesPath            *Variable     `json:"resources_path"`
-	Image                    *Variable     `json:"image"`
-	ImageFamily              *Variable     `json:"image_family"`
-	ImageProject             *Variable     `json:"image_project"`
-	MachineType              *Variable     `json:"machine_type"`
-	MinCPUPlatform           *Variable     `json:"min_cpu_platform"`
-	Tags                     *ListVariable `json:"tags"`
-	AccessScope              *ListVariable `json:"access_scopes"`
-	PrimaryAPIs              *ListVariable `json:"primary_apis"`
-	SecondaryAPIs            *ListVariable `json:"secondary_apis"`
-	InstanceCount            *MapVariable  `json:"instance_count"`
+	ProjectID                *Variable       `json:"project_id"`
+	Region                   *Variable       `json:"region"`
+	Zone                     *Variable       `json:"zone"`
+	Network                  *Variable       `json:"network"`
+	Username                 *Variable       `json:"username"`
+	ABMClusterID             *Variable       `json:"abm_cluster_id"`
+	AnthosServiceAccountName *Variable       `json:"anthos_service_account_name"`
+	BootDiskSize             *Variable       `json:"boot_disk_size"`
+	BootDiskType             *Variable       `json:"boot_disk_type"`
+	CrendetialsFile          *Variable       `json:"credentials_file"`
+	ResourcesPath            *Variable       `json:"resources_path"`
+	Image                    *Variable       `json:"image"`
+	ImageFamily              *Variable       `json:"image_family"`
+	ImageProject             *Variable       `json:"image_project"`
+	MachineType              *Variable       `json:"machine_type"`
+	MinCPUPlatform           *Variable       `json:"min_cpu_platform"`
+	Tags                     *ListVariable   `json:"tags"`
+	AccessScope              *ListVariable   `json:"access_scopes"`
+	PrimaryAPIs              *ListVariable   `json:"primary_apis"`
+	SecondaryAPIs            *ListVariable   `json:"secondary_apis"`
+	InstanceCount            *MapIntVariable `json:"instance_count"`
 }
 
 // MainPlannedValues represents the planned state of the terraform run resulting
@@ -76,18 +76,4 @@ type AdminVMSSH struct {
 // resulting from the input variables and the main terraform script
 type MainConfiguration struct {
 	RootModule TFModule `json:"root_module"`
-}
-
-// BootDisk represents the configuration for a disk that can be associated to a
-// VM, with the boot image installed in it
-type BootDisk struct {
-	Size int
-	Type string
-}
-
-// Gpu represents the configuration for a GPU instance that can be associated
-// to a created VM
-type Gpu struct {
-	Count int
-	Type string
 }

@@ -104,8 +104,22 @@ type ListVariable struct {
 	Value []string `json:"value"`
 }
 
-// MapVariable represents an instance of a single terraform input variable
-// which is of type map
-type MapVariable struct {
+// MapIntVariable represents an instance of a single terraform input variable
+// which is of type map. It has a string type key mapping to an integer value
+type MapIntVariable struct {
 	Value map[string]int `json:"value"`
+}
+
+// MapIntVariable represents an instance of a single terraform input variable
+// which is of type map. It has a string type key mapping to an string value
+type MapStringVariable struct {
+	Value map[string]string `json:"value"`
+}
+type GpuVariable struct {
+	Value Gpu `json:"value"`
+}
+
+type Gpu struct {
+	Count int    `json:"count"`
+	Type  string `json:"type"`
 }
