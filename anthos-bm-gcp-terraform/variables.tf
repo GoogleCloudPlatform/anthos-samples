@@ -56,41 +56,46 @@ variable "min_cpu_platform" {
   default     = "Intel Haswell"
 }
 
+variable "machine_type" {
+  description = "Google Cloud machine type to use when provisioning the Compute Engine VMs"
+  type        = string
+  default     = "n1-standard-8"
+}
+
 variable "image" {
   description = <<EOF
     The source image to use when provisioning the Compute Engine VMs.
-    Use 'gcloud compute images list' to find a list of all available images.
+    Use 'gcloud compute images list' to find a list of all available images
   EOF
-  type        = object({ name = string, project = string, family = string })
-  default = {
-    family  = "ubuntu-2004-lts"
-    project = "ubuntu-os-cloud"
-    name    = "ubuntu-2004-focal-v20210429"
-  }
+  type        = string
+  default     = "ubuntu-2004-focal-v20210429"
 }
 
-variable "machine_type" {
-  description = "Google Cloud machine type to use when provisioning the Compute Engine VMs"
-  type = object({
-    control_plane = string
-    worker        = string
-  })
-  default = {
-    control_plane = "n1-standard-8"
-    worker        = "n1-standard-8"
-  }
+variable "image_project" {
+  description = "Project name of the source image to use when provisioning the Compute Engine VMs"
+  type        = string
+  default     = "ubuntu-os-cloud"
 }
 
-variable "boot_disk" {
+variable "image_family" {
+  description = <<EOT
+    Source image to use when provisioning the Compute Engine VMs.
+    The source image should be one that is in the selected image_project
+  EOT
+  type        = string
+  default     = "ubuntu-2004-lts"
+}
+
+variable "boot_disk_type" {
   description = "Type of the boot disk to be attached to the Compute Engine VMs"
-  type = object({
-    control_plane = object({ type = string, size = number })
-    worker        = object({ type = string, size = number })
-  })
-  default = {
-    control_plane = { size = 200, type = "pd-ssd" }
-    worker        = { size = 200, type = "pd-ssd" }
-  }
+  type        = string
+  default     = "pd-ssd"
+}
+
+variable "boot_disk_size" {
+  description = "Size of the primary boot disk to be attached to the Compute Engine VMs in GBs"
+  type        = number
+  default     = 200
 }
 
 variable "gpu" {

@@ -2,13 +2,10 @@
 //TODO:https://github.com/GoogleCloudPlatform/cloud-foundation-toolkit/issues/926
 /*
 Copyright 2021 Google LLC
-
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
-
     https://www.apache.org/licenses/LICENSE-2.0
-
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -104,22 +101,8 @@ type ListVariable struct {
 	Value []string `json:"value"`
 }
 
-// MapIntVariable represents an instance of a single terraform input variable
-// which is of type map. It has a string type key mapping to an integer value
-type MapIntVariable struct {
+// MapVariable represents an instance of a single terraform input variable
+// which is of type map
+type MapVariable struct {
 	Value map[string]int `json:"value"`
-}
-
-// MapIntVariable represents an instance of a single terraform input variable
-// which is of type map. It has a string type key mapping to an string value
-type MapStringVariable struct {
-	Value map[string]string `json:"value"`
-}
-type GpuVariable struct {
-	Value Gpu `json:"value"`
-}
-
-type Gpu struct {
-	Count int    `json:"count"`
-	Type  string `json:"type"`
 }
