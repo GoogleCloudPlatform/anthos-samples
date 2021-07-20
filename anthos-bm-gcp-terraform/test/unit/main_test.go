@@ -1158,12 +1158,6 @@ func validateInstanceTemplateModule(goTester *testing.T, module *util.TFModule, 
 					fmt.Sprintf("Invalid value for resources[%d].values.service_account[0].scopes[%d] in the instance_template child module", idx, it),
 				)
 			}
-
-			// assert.Nil(
-			// 	goTester,
-			// 	resource.Values.Gpu,
-			// 	fmt.Sprintf("Invalid value for GPU settings. Should be null by default."),
-			// )
 		}
 	}
 }
