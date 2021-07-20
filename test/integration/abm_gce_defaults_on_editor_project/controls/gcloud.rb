@@ -30,5 +30,33 @@ control "gcloud" do
         {}
       end
     end
+
+    describe "number of nodes" do
+      it "should be 6 (1 admin-ws, 3 control plane and 2 worker nodes) " do
+        expect(data.length).to eq 6
+      end
+    end
+
+    describe "VM attributes" do
+      it "should have all the default values" do
+        x = 0
+        while x < 6
+          expect(data[x]).to include(
+            "status" => "RUNNING"
+          )
+
+          expect(data[x]).to include(
+            "canIpForward" => true
+          )
+
+          expect([
+            "abm-cp1-001", "abm-cp2-001", "abm-cp3-001",
+            "abm-w1-001", "abm-w2-001", "abm-ws0-001"]).to include(
+              data[x]["name"]
+            )
+          x = x + 1
+        end
+      end
+    end
   end
 end
