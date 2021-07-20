@@ -59,6 +59,7 @@ type TFValues struct {
 	Disk              []Disk           `json:"disk"`
 	ServiceAccount    []ServiceAccount `json:"service_account"`
 	NetworkInterfaces []Interface      `json:"network_interface"`
+	Gpu               *Gpu              `json:"gpu"`
 }
 
 // TFProvisioner represents the provisioners configured in the terraform output
@@ -105,4 +106,16 @@ type ListVariable struct {
 // which is of type map
 type MapVariable struct {
 	Value map[string]int `json:"value"`
+}
+
+// GpuVariable represents an instance of a variable carrying Gpu information
+type GpuVariable struct {
+	Value Gpu `json:"value"`
+}
+
+// Gpu represents an instance of a single terraform input which holds
+// information about a Gpu instance to be associated to a VM
+type Gpu struct {
+	Count int    `json:"count"`
+	Type  string `json:"type"`
 }
