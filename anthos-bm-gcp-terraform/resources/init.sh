@@ -92,7 +92,7 @@ function __setup_vxlan__ () {
 # internal IPs of the hosts in the cluster.
 ##############################################################################
 function __update_bridge_entries__ () {
-  current_ip=$(ip --json a show dev $DEFAULT_IFACE | jq '.[0].addr_info[0].local' -r)
+  current_ip=$(ip --json a show dev "$DEFAULT_IFACE" | jq '.[0].addr_info[0].local' -r)
 
   echo "Cluster VM IPs retreived => $VM_INTERNAL_IPS"
   for ip in ${VM_INTERNAL_IPS//|/ }
