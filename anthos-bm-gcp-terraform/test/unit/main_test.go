@@ -478,14 +478,14 @@ func TestUnit_MainScript_ValidateDefaults(goTester *testing.T) {
 		goTester,
 		defaultGpuSetup.Count,
 		terraformPlan.Variables.Gpu.Value.Count,
-		"Variable does not match expected default value: abm_cluster_id.",
+		"Variable does not match expected default value: gpu.count",
 	)
 
 	assert.Equal(
 		goTester,
 		defaultGpuSetup.Type,
 		terraformPlan.Variables.Gpu.Value.Type,
-		"Variable does not match expected default value: abm_cluster_id.",
+		"Variable does not match expected default value: gpu.type",
 	)
 }
 
