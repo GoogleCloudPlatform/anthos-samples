@@ -60,12 +60,7 @@ control "gcloud" do
               data[x]["name"]
             )
 
-          expect(data[x]["guestAccelerators"]).not_to include(
-            {
-              "acceleratorCount" => 1,
-              "acceleratorType" => "https://www.googleapis.com/compute/v1/projects/#{project_id}/zones/us-central1-a/acceleratorTypes/nvidia-tesla-k80"
-            }
-          )
+          expect(data[x]).not_to include("guestAccelerators")
           x = x + 1
         end
       end
