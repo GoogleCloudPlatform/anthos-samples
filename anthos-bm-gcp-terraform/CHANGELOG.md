@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.1.1](https://www.github.com/GoogleCloudPlatform/anthos-samples/compare/v0.1.0...v0.1.1) (2021-07-21)
+
+
+### Bug Fixes
+
+* bash trap signal error on gce-tf sample initialization script ([#66](https://www.github.com/GoogleCloudPlatform/anthos-samples/issues/66)) ([4c8a87a](https://www.github.com/GoogleCloudPlatform/anthos-samples/commit/4c8a87a9b989d7246fcb2e93097cda281ec5831b))
+
 ## 0.1.0 (2021-06-01)
 
 
