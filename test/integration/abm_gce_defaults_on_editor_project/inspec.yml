@@ -23,3 +23,6 @@ attributes:
   - name: docker_version_check
     required: true
     type: string
+  - name: vxlan_check
+    required: true
+    type: string
