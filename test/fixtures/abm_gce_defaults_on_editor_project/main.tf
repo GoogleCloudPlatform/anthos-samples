@@ -15,8 +15,8 @@
  */
 
 locals {
-  bmctl_version_cmd = "gcloud compute ssh tfadmin@abm-ws0-001 --project=${var.owner_project_id} --zone=us-central1-a --ssh-flag=\"-T\" -q -- bmctl version"
-  docker_version_cmd = "gcloud compute ssh root@abm-ws0-001 --project=${var.owner_project_id} --zone=us-central1-a --ssh-flag=\"-T\" -q -- docker version"
+  bmctl_version_cmd = "gcloud compute ssh tfadmin@abm-ws0-001 --project=${var.editor_project_id} --zone=us-central1-a --ssh-flag=\"-T\" -q -- bmctl version"
+  docker_version_cmd = "gcloud compute ssh root@abm-ws0-001 --project=${var.editor_project_id} --zone=us-central1-a --ssh-flag=\"-T\" -q -- docker version"
 }
 
 module "anthos_bm_gcp" {
