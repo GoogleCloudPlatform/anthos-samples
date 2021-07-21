@@ -18,3 +18,13 @@
 output "project_id" {
   value = var.editor_project_id
 }
+
+output "bmctl_version_check" {
+  description = "gcloud command to check bmctl version on host via ssh"
+  value       = local.bmctl_version_cmd
+}
+
+output "docker_version_check" {
+  description = "gcloud command to check docker version on host via ssh"
+  value       = local.docker_version_cmd
+}

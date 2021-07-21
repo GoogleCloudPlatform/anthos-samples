@@ -14,8 +14,11 @@
 
 
 project_id = attribute('project_id')
-region = attribute('region')
-zone = attribute('zone')
+bmctl_version_check = attribute('bmctl_version_check')
+docker_version_check = attribute('docker_version_check')
+# pre run ssh command so that ssh-keygen can run
+%x( #{bmctl_version_check} )
+%x( #{docker_version_check} )
 
 control "gcloud" do
   title "Google Compute Instances configuration"
@@ -56,6 +59,44 @@ control "gcloud" do
             )
           x = x + 1
         end
+      end
+    end
+  end
+
+  describe command(bmctl_version_check) do
+    its(:exit_status) { should eq 0 }
+    its(:stderr) { should eq '' }
+    let!(:data) do
+      if subject.exit_status == 0
+        subject.stdout
+      else
+        ""
+      end
+    end
+    describe "bmctl version" do
+      it "should be 1.7.x" do
+        expect(data).to include("bmctl version: 1.7")
+      end
+    end
+  end
+
+  describe command(docker_version_check) do
+    its(:exit_status) { should eq 0 }
+    its(:stderr) { should eq '' }
+    let!(:data) do
+      if subject.exit_status == 0
+        subject.stdout
+      else
+        ""
+      end
+    end
+    describe "docker version" do
+      it "should have Version, API Version for Server and Client" do
+        expect(data).to include("Client: Docker Engine")
+        expect(data).to include("Server: Docker Engine")
+        expect(data).to include("API version")
+        expect(data).to include("Version")
+        expect(data).to include("linux/amd64")
       end
     end
   end
