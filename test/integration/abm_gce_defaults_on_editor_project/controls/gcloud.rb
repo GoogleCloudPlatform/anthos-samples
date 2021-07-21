@@ -59,6 +59,13 @@ control "gcloud" do
             "abm-w1-001", "abm-w2-001", "abm-ws0-001"]).to include(
               data[x]["name"]
             )
+
+          expect(data[x]["guestAccelerators"]).not_to include(
+            {
+              "acceleratorCount" => 1,
+              "acceleratorType" => "https://www.googleapis.com/compute/v1/projects/#{project_id}/zones/us-central1-a/acceleratorTypes/nvidia-tesla-k80"
+            }
+          )
           x = x + 1
         end
       end
