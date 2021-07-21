@@ -33,3 +33,8 @@ output "vxlan_check" {
   description = "gcloud command to check vxlan setup on host via ssh"
   value       = local.ip_addr_cmd
 }
+
+output "abm_install_check" {
+  description = "gcloud command to check installation of Anthos BareMetal via ssh"
+  value       = local.install_abm_cmd
+}
