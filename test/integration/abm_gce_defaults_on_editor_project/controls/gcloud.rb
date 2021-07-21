@@ -20,6 +20,7 @@ vxlan_check = attribute('vxlan_check')
 abm_install_check = attribute('abm_install_check')
 # pre run ssh command so that ssh-keygen can run
 %x( #{bmctl_version_check} )
+%x( #{abm_install_check} )
 
 control "gcloud" do
   title "Google Compute Instances configuration"
