@@ -1,0 +1,865 @@
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: gke-metrics-agent
+  namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: stackdriver-user:gke-metrics-agent
+  namespace: kube-system
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - nodes
+  - services
+  - endpoints
+  - pods
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - '*'
+  resources:
+  - 'serviceaccounts/token'
+  verbs:
+  - 'create'
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: stackdriver-user:gke-metrics-agent
+  namespace: kube-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: stackdriver-user:gke-metrics-agent
+subjects:
+- kind: ServiceAccount
+  name: gke-metrics-agent
+  namespace: kube-system
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: gke-metrics-agent
+  namespace: kube-system
+  labels:
+    app: gke-metrics-agent
+spec:
+  selector:
+    matchLabels:
+      app: gke-metrics-agent
+      managed-by: stackdriver
+  template:
+    metadata:
+      labels:
+        app: gke-metrics-agent
+        managed-by: stackdriver
+    spec:
+      nodeSelector:
+        kubernetes.io/os: linux
+      containers:
+        # Once gke-metrics-agent image is built with latest google client library that supports
+        # workload identity, remove the addon sidecar. Ref: https://cloud.google.com/anthos/multicluster-management/fleets/workload-identity
+      - name: stackdriver-gke-addon
+        image: gcr.io/gke-multi-cloud-release/gke-addon-sidecar:gke_multicloud.docker_images_20210323_1546_RC00
+        imagePullPolicy: IfNotPresent
+        command:
+        - /app/cloud/kubernetes/multicloud/addonsidecar/gke_addon_sidecar
+        - --http_server=localhost:9681
+        - --ksa_name=stackdriver
+        - --ksa_namespace=kube-system
+        - --token_audience=PROJECT_ID.svc.id.goog
+        - --gcp_project_id=PROJECT_ID
+        - --gcp_sts_audience=identitynamespace:PROJECT_ID.svc.id.goog:https://gkehub.googleapis.com/projects/PROJECT_ID/locations/global/memberships/CLUSTER_NAME
+      - name: gke-metrics-agent
+        image: gcr.io/gke-multi-cloud-release/gke-metrics-agent:0.3.12-gke.0
+        imagePullPolicy: IfNotPresent
+        command:
+        - /otelsvc
+        - --config=/gke-metrics-agent/config.yaml
+        - --log-level=INFO
+        - --metrics-addr=0.0.0.0:8888
+        ports:
+        - containerPort: 8888
+        resources:
+          requests:
+            cpu: 50m
+            memory: 50Mi
+          limits:
+            cpu: 100m
+            memory: 500Mi
+        env:
+        - name: GCE_METADATA_HOST
+          value: 127.0.0.1:9681
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: spec.nodeName
+        - name: KUBELET_HOST
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: KUBERNETES_SERVICE_HOST
+          value: kubernetes.default.svc.cluster.local
+        volumeMounts:
+        - mountPath: /gke-metrics-agent/
+          name: gke-metrics-agent-config
+      serviceAccountName: gke-metrics-agent
+      terminationGracePeriodSeconds: 60
+      tolerations:
+      - key: "CriticalAddonsOnly"
+        operator: "Exists"
+      - key: node-role.gke.io/observability
+        effect: NoSchedule
+      volumes:
+      - name: gke-metrics-agent-config
+        configMap:
+          name: gke-metrics-agent-config
+  updateStrategy:
+    rollingUpdate:
+      maxUnavailable: 1
+    type: RollingUpdate
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gke-metrics-agent-config
+  namespace: kube-system
+  labels:
+    app: gke-metrics-agent
+data:
+  config.yaml: |+
+    exporters:
+      stackdriver/metrics:
+        endpoint: monitoring.googleapis.com:443
+        metric:
+          prefix: kubernetes.io/anthos
+          skip_create_descriptor: true
+        resource_mappings:
+        - label_mappings:
+          - source_key: project_id
+            target_key: project_id
+          - source_key: location
+            target_key: location
+          - source_key: cluster_name
+            target_key: cluster_name
+          - source_key: container_name
+            target_key: container_name
+          - source_key: namespace_name
+            target_key: namespace_name
+          - source_key: pod_name
+            target_key: pod_name
+          source_type: k8s_container
+          target_type: k8s_container
+        - label_mappings:
+          - source_key: project_id
+            target_key: project_id
+          - source_key: location
+            target_key: location
+          - source_key: cluster_name
+            target_key: cluster_name
+          - source_key: namespace_name
+            target_key: namespace_name
+          - source_key: pod_name
+            target_key: pod_name
+          source_type: k8s_pod
+          target_type: k8s_pod
+        - label_mappings:
+          - source_key: project_id
+            target_key: project_id
+          - source_key: location
+            target_key: location
+          - source_key: cluster_name
+            target_key: cluster_name
+          - source_key: node_name
+            target_key: node_name
+          source_type: k8s_node
+          target_type: k8s_node
+    processors:
+      infer_resource:
+        resources:
+        - labels:
+          - name: project_id
+          - name: location
+          - name: cluster_name
+          - name: container_name
+          - name: pod_name
+          - name: namespace_name
+          type: k8s_container
+        - labels:
+          - name: project_id
+          - name: location
+          - name: cluster_name
+          - name: pod_name
+          - name: namespace_name
+          type: k8s_pod
+        - labels:
+          - name: project_id
+          - name: location
+          - name: cluster_name
+          - name: node_name
+          type: k8s_node
+      metric_to_resource:
+        label_mapping:
+        - source_metric_label: anthos_container
+          target_resource_label: container_name
+        - source_metric_label: anthos_pod
+          target_resource_label: pod_name
+        - source_metric_label: anthos_namespace
+          target_resource_label: namespace_name
+        - source_metric_label: anthos_node
+          target_resource_label: node_name
+      resource:
+        labels:
+          cluster_name: CLUSTER_NAME
+          location: CLUSTER_LOCATION
+          project_id: PROJECT_ID
+    receivers:
+      prometheus/metrics:
+        config:
+          global:
+            scrape_interval: 1m
+          scrape_configs:
+          - job_name: gke-monitoring-io-endpoints-http-pod-type
+            kubernetes_sd_configs:
+            - role: endpoints
+            metric_relabel_configs:
+            - action: replace
+              source_labels:
+              - namespace
+              target_label: exported_namespace
+            - action: labeldrop
+              regex: namespace
+            relabel_configs:
+            - action: keep
+              regex: true
+              source_labels:
+              - __meta_kubernetes_service_annotation_monitoring_gke_io_scrape
+            - action: replace
+              regex: (.+)
+              source_labels:
+              - __meta_kubernetes_service_annotation_monitoring_gke_io_path
+              target_label: __metrics_path__
+            - action: replace
+              regex: (https?)
+              source_labels:
+              - __meta_kubernetes_service_annotation_monitoring_gke_io_scheme
+              target_label: __scheme__
+            - action: replace
+              regex: ([^:]+)(?::\d+)?;(\d+)
+              replacement: $$1:$$2
+              source_labels:
+              - __address__
+              - __meta_kubernetes_service_annotation_monitoring_gke_io_port
+              target_label: __address__
+            - action: keep
+              regex: $NODE_NAME
+              source_labels:
+              - __meta_kubernetes_endpoint_node_name
+            - action: replace
+              source_labels:
+              - __meta_kubernetes_namespace
+              target_label: anthos_namespace
+            - action: replace
+              source_labels:
+              - __meta_kubernetes_pod_name
+              target_label: anthos_pod
+            - action: drop
+              regex: (.+)
+              source_labels:
+              - __meta_kubernetes_pod_container_name
+            - action: keep
+              regex: (.+)
+              source_labels:
+              - __meta_kubernetes_endpoint_port_name
+            - action: keep
+              regex: (^$|^http$)
+              source_labels:
+              - __meta_kubernetes_service_annotation_monitoring_gke_io_scheme
+          - job_name: gke-monitoring-io-endpoints-http-container-type
+            kubernetes_sd_configs:
+            - role: endpoints
+            metric_relabel_configs:
+            - action: replace
+              source_labels:
+              - namespace
+              target_label: exported_namespace
+            - action: labeldrop
+              regex: namespace
+            relabel_configs:
+            - action: keep
+              regex: true
+              source_labels:
+              - __meta_kubernetes_service_annotation_monitoring_gke_io_scrape
+            - action: replace
+              regex: (.+)
+              source_labels:
+              - __meta_kubernetes_service_annotation_monitoring_gke_io_path
+              target_label: __metrics_path__
+            - action: replace
+              regex: (https?)
+              source_labels:
+              - __meta_kubernetes_service_annotation_monitoring_gke_io_scheme
+              target_label: __scheme__
+            - action: replace
+              regex: ([^:]+)(?::\d+)?;(\d+)
+              replacement: $$1:$$2
+              source_labels:
+              - __address__
+              - __meta_kubernetes_service_annotation_monitoring_gke_io_port
+              target_label: __address__
+            - action: keep
+              regex: $NODE_NAME
+              source_labels:
+              - __meta_kubernetes_endpoint_node_name
+            - action: replace
+              source_labels:
+              - __meta_kubernetes_namespace
+              target_label: anthos_namespace
+            - action: replace
+              source_labels:
+              - __meta_kubernetes_pod_name
+              target_label: anthos_pod
+            - action: replace
+              source_labels:
+              - __meta_kubernetes_pod_container_name
+              target_label: anthos_container
+            - action: keep
+              regex: (.+)
+              source_labels:
+              - __meta_kubernetes_pod_container_name
+            - action: keep
+              regex: (.+)
+              source_labels:
+              - __meta_kubernetes_endpoint_port_name
+            - action: keep
+              regex: (^$|^http$)
+              source_labels:
+              - __meta_kubernetes_service_annotation_monitoring_gke_io_scheme
+          - job_name: gke-monitoring-io-pods-http-pod-type
+            kubernetes_sd_configs:
+            - role: pod
+              selectors:
+              - field: spec.nodeName=$NODE_NAME
+                role: pod
+            relabel_configs:
+            - action: keep
+              regex: true
+              source_labels:
+              - __meta_kubernetes_pod_annotation_monitoring_gke_io_scrape
+            - action: replace
+              regex: (.+)
+              source_labels:
+              - __meta_kubernetes_pod_annotation_monitoring_gke_io_path
+              target_label: __metrics_path__
+            - action: replace
+              regex: ([^:]+)(?::\d+)?;(\d+)
+              replacement: $$1:$$2
+              source_labels:
+              - __address__
+              - __meta_kubernetes_pod_annotation_monitoring_gke_io_port
+              target_label: __address__
+            - action: replace
+              source_labels:
+              - __meta_kubernetes_namespace
+              target_label: anthos_namespace
+            - action: replace
+              source_labels:
+              - __meta_kubernetes_pod_name
+              target_label: anthos_pod
+            - action: drop
+              regex: (.+)
+              source_labels:
+              - __meta_kubernetes_pod_container_name
+            - action: keep
+              regex: (^$|^http$)
+              source_labels:
+              - __meta_kubernetes_pod_annotation_monitoring_gke_io_scheme
+          - job_name: gke-monitoring-io-pods-http-container-type
+            kubernetes_sd_configs:
+            - role: pod
+              selectors:
+              - field: spec.nodeName=$NODE_NAME
+                role: pod
+            relabel_configs:
+            - action: keep
+              regex: true
+              source_labels:
+              - __meta_kubernetes_pod_annotation_monitoring_gke_io_scrape
+            - action: replace
+              regex: (.+)
+              source_labels:
+              - __meta_kubernetes_pod_annotation_monitoring_gke_io_path
+              target_label: __metrics_path__
+            - action: replace
+              regex: ([^:]+)(?::\d+)?;(\d+)
+              replacement: $$1:$$2
+              source_labels:
+              - __address__
+              - __meta_kubernetes_pod_annotation_monitoring_gke_io_port
+              target_label: __address__
+            - action: replace
+              source_labels:
+              - __meta_kubernetes_namespace
+              target_label: anthos_namespace
+            - action: replace
+              source_labels:
+              - __meta_kubernetes_pod_name
+              target_label: anthos_pod
+            - action: replace
+              source_labels:
+              - __meta_kubernetes_pod_container_name
+              target_label: anthos_container
+            - action: keep
+              regex: (.+)
+              source_labels:
+              - __meta_kubernetes_pod_container_name
+            - action: keep
+              regex: (^$|^http$)
+              source_labels:
+              - __meta_kubernetes_pod_annotation_monitoring_gke_io_scheme
+          - job_name: gke-monitoring-io-endpoints-https-none-pod-type
+            kubernetes_sd_configs:
+            - role: endpoints
+            metric_relabel_configs:
+            - action: replace
+              source_labels:
+              - namespace
+              target_label: exported_namespace
+            - action: labeldrop
+              regex: namespace
+            relabel_configs:
+            - action: keep
+              regex: true
+              source_labels:
+              - __meta_kubernetes_service_annotation_monitoring_gke_io_scrape
+            - action: replace
+              regex: (.+)
+              source_labels:
+              - __meta_kubernetes_service_annotation_monitoring_gke_io_path
+              target_label: __metrics_path__
+            - action: replace
+              regex: (https?)
+              source_labels:
+              - __meta_kubernetes_service_annotation_monitoring_gke_io_scheme
+              target_label: __scheme__
+            - action: replace
+              regex: ([^:]+)(?::\d+)?;(\d+)
+              replacement: $$1:$$2
+              source_labels:
+              - __address__
+              - __meta_kubernetes_service_annotation_monitoring_gke_io_port
+              target_label: __address__
+            - action: keep
+              regex: $NODE_NAME
+              source_labels:
+              - __meta_kubernetes_endpoint_node_name
+            - action: replace
+              source_labels:
+              - __meta_kubernetes_namespace
+              target_label: anthos_namespace
+            - action: replace
+              source_labels:
+              - __meta_kubernetes_pod_name
+              target_label: anthos_pod
+            - action: drop
+              regex: (.+)
+              source_labels:
+              - __meta_kubernetes_pod_container_name
+            - action: keep
+              regex: (.+)
+              source_labels:
+              - __meta_kubernetes_endpoint_port_name
+            - action: keep
+              regex: ^https$
+              source_labels:
+              - __meta_kubernetes_service_annotation_monitoring_gke_io_scheme
+            - action: drop
+              regex: ^(monitoring-ca|seesaw-ca)$
+              source_labels:
+              - __meta_kubernetes_service_annotation_monitoring_gke_io_tls_config
+            scheme: https
+          - job_name: gke-monitoring-io-endpoints-https-none-container-type
+            kubernetes_sd_configs:
+            - role: endpoints
+            metric_relabel_configs:
+            - action: replace
+              source_labels:
+              - namespace
+              target_label: exported_namespace
+            - action: labeldrop
+              regex: namespace
+            relabel_configs:
+            - action: keep
+              regex: true
+              source_labels:
+              - __meta_kubernetes_service_annotation_monitoring_gke_io_scrape
+            - action: replace
+              regex: (.+)
+              source_labels:
+              - __meta_kubernetes_service_annotation_monitoring_gke_io_path
+              target_label: __metrics_path__
+            - action: replace
+              regex: (https?)
+              source_labels:
+              - __meta_kubernetes_service_annotation_monitoring_gke_io_scheme
+              target_label: __scheme__
+            - action: replace
+              regex: ([^:]+)(?::\d+)?;(\d+)
+              replacement: $$1:$$2
+              source_labels:
+              - __address__
+              - __meta_kubernetes_service_annotation_monitoring_gke_io_port
+              target_label: __address__
+            - action: keep
+              regex: $NODE_NAME
+              source_labels:
+              - __meta_kubernetes_endpoint_node_name
+            - action: replace
+              source_labels:
+              - __meta_kubernetes_namespace
+              target_label: anthos_namespace
+            - action: replace
+              source_labels:
+              - __meta_kubernetes_pod_name
+              target_label: anthos_pod
+            - action: replace
+              source_labels:
+              - __meta_kubernetes_pod_container_name
+              target_label: anthos_container
+            - action: keep
+              regex: (.+)
+              source_labels:
+              - __meta_kubernetes_pod_container_name
+            - action: keep
+              regex: (.+)
+              source_labels:
+              - __meta_kubernetes_endpoint_port_name
+            - action: keep
+              regex: ^https$
+              source_labels:
+              - __meta_kubernetes_service_annotation_monitoring_gke_io_scheme
+            - action: drop
+              regex: ^(monitoring-ca|seesaw-ca)$
+              source_labels:
+              - __meta_kubernetes_service_annotation_monitoring_gke_io_tls_config
+            scheme: https
+          - job_name: gke-monitoring-io-pods-https-none-pod-type
+            kubernetes_sd_configs:
+            - role: pod
+              selectors:
+              - field: spec.nodeName=$NODE_NAME
+                role: pod
+            relabel_configs:
+            - action: keep
+              regex: true
+              source_labels:
+              - __meta_kubernetes_pod_annotation_monitoring_gke_io_scrape
+            - action: replace
+              regex: (.+)
+              source_labels:
+              - __meta_kubernetes_pod_annotation_monitoring_gke_io_path
+              target_label: __metrics_path__
+            - action: replace
+              regex: ([^:]+)(?::\d+)?;(\d+)
+              replacement: $$1:$$2
+              source_labels:
+              - __address__
+              - __meta_kubernetes_pod_annotation_monitoring_gke_io_port
+              target_label: __address__
+            - action: replace
+              source_labels:
+              - __meta_kubernetes_namespace
+              target_label: anthos_namespace
+            - action: replace
+              source_labels:
+              - __meta_kubernetes_pod_name
+              target_label: anthos_pod
+            - action: drop
+              regex: (.+)
+              source_labels:
+              - __meta_kubernetes_pod_container_name
+            - action: keep
+              regex: ^https$
+              source_labels:
+              - __meta_kubernetes_pod_annotation_monitoring_gke_io_scheme
+            - action: drop
+              regex: ^(monitoring-ca|seesaw-ca)$
+              source_labels:
+              - __meta_kubernetes_pod_annotation_monitoring_gke_io_tls_config
+            scheme: https
+          - job_name: gke-monitoring-io-pods-https-none-container-type
+            kubernetes_sd_configs:
+            - role: pod
+              selectors:
+              - field: spec.nodeName=$NODE_NAME
+                role: pod
+            relabel_configs:
+            - action: keep
+              regex: true
+              source_labels:
+              - __meta_kubernetes_pod_annotation_monitoring_gke_io_scrape
+            - action: replace
+              regex: (.+)
+              source_labels:
+              - __meta_kubernetes_pod_annotation_monitoring_gke_io_path
+              target_label: __metrics_path__
+            - action: replace
+              regex: ([^:]+)(?::\d+)?;(\d+)
+              replacement: $$1:$$2
+              source_labels:
+              - __address__
+              - __meta_kubernetes_pod_annotation_monitoring_gke_io_port
+              target_label: __address__
+            - action: replace
+              source_labels:
+              - __meta_kubernetes_namespace
+              target_label: anthos_namespace
+            - action: replace
+              source_labels:
+              - __meta_kubernetes_pod_name
+              target_label: anthos_pod
+            - action: replace
+              source_labels:
+              - __meta_kubernetes_pod_container_name
+              target_label: anthos_container
+            - action: keep
+              regex: (.+)
+              source_labels:
+              - __meta_kubernetes_pod_container_name
+            - action: keep
+              regex: ^https$
+              source_labels:
+              - __meta_kubernetes_pod_annotation_monitoring_gke_io_scheme
+            - action: drop
+              regex: ^(monitoring-ca|seesaw-ca)$
+              source_labels:
+              - __meta_kubernetes_pod_annotation_monitoring_gke_io_tls_config
+            scheme: https
+          - job_name: cadvisor
+            kubernetes_sd_configs:
+            - role: node
+              selectors:
+              - field: metadata.name=$NODE_NAME
+                role: node
+            metric_relabel_configs:
+            - action: keep
+              regex: (/|/kubepods.*|/system.slice/kubelet.service|/system.slice/docker.service|/system.slice/node-problem-detector.service|/system.slice/systemd-journald.service|/system.slice/containerd.service)
+              source_labels:
+              - id
+            relabel_configs:
+            - action: replace
+              regex: ([^:]+)(?::\d+)?
+              replacement: $$1:10255
+              source_labels:
+              - __address__
+              target_label: __address__
+            - replacement: /metrics/cadvisor
+              target_label: __metrics_path__
+            - action: replace
+              source_labels:
+              - __meta_kubernetes_node_name
+              target_label: anthos_node
+            scheme: http
+          - job_name: core-dns
+            kubernetes_sd_configs:
+            - role: endpoints
+            scheme: http
+            relabel_configs:
+            - action: replace
+              regex: ([^:]+)(?::\d+)?
+              replacement: $$1:9153
+              source_labels:
+              - __address__
+              target_label: __address__
+            - action: keep
+              regex: kube-system
+              source_labels:
+              - __meta_kubernetes_namespace
+            - action: keep
+              regex: kube-dns
+              source_labels:
+              - __meta_kubernetes_service_name
+            - action: keep
+              regex: $NODE_NAME
+              source_labels:
+              - __meta_kubernetes_endpoint_node_name
+            - action: replace
+              source_labels:
+              - __meta_kubernetes_namespace
+              target_label: anthos_namespace
+            - action: replace
+              source_labels:
+              - __meta_kubernetes_pod_name
+              target_label: anthos_pod
+            - action: replace
+              source_labels:
+              - __meta_kubernetes_pod_container_name
+              target_label: anthos_container
+          - job_name: kube-state-metrics
+            kubernetes_sd_configs:
+            - role: pod
+              selectors:
+              - field: spec.nodeName=$NODE_NAME
+                role: pod
+            relabel_configs:
+            - action: replace
+              regex: ([^:]+)(?::\d+)?
+              replacement: $$1:8080
+              source_labels:
+              - __address__
+              target_label: __address__
+            - action: keep
+              regex: kube-state-metrics
+              source_labels:
+              - __meta_kubernetes_pod_label_k8s_app
+            - action: replace
+              source_labels:
+              - __meta_kubernetes_namespace
+              target_label: anthos_namespace
+            - action: replace
+              source_labels:
+              - __meta_kubernetes_pod_name
+              target_label: anthos_pod
+            - action: replace
+              source_labels:
+              - __meta_kubernetes_pod_container_name
+              target_label: anthos_container
+            - action: keep
+              regex: kube-state-metrics
+              source_labels:
+              - __meta_kubernetes_pod_container_name
+            scheme: http
+          - job_name: kubelet
+            kubernetes_sd_configs:
+            - role: node
+              selectors:
+              - field: metadata.name=$NODE_NAME
+                role: node
+            relabel_configs:
+            - action: replace
+              regex: ([^:]+)(?::\d+)?
+              replacement: $$1:10255
+              source_labels:
+              - __address__
+              target_label: __address__
+            - action: replace
+              source_labels:
+              - __meta_kubernetes_node_name
+              target_label: anthos_node
+            scheme: http
+          - job_name: stackdriver-log-forwarder
+            kubernetes_sd_configs:
+            - role: pod
+              selectors:
+              - field: spec.nodeName=$NODE_NAME
+                role: pod
+            metrics_path: /api/v1/metrics/prometheus
+            relabel_configs:
+            - action: keep
+              regex: kube-system
+              source_labels:
+              - __meta_kubernetes_namespace
+            - action: keep
+              regex: stackdriver-log-forwarder
+              source_labels:
+              - __meta_kubernetes_pod_container_name
+            - action: replace
+              source_labels:
+              - __meta_kubernetes_namespace
+              target_label: anthos_namespace
+            - action: replace
+              source_labels:
+              - __meta_kubernetes_pod_name
+              target_label: anthos_pod
+            - action: replace
+              source_labels:
+              - __meta_kubernetes_pod_container_name
+              target_label: anthos_container
+          - job_name: stackdriver-metadata-agent
+            kubernetes_sd_configs:
+            - role: pod
+              selectors:
+              - field: spec.nodeName=$NODE_NAME
+                role: pod
+            relabel_configs:
+            - action: keep
+              regex: kube-system
+              source_labels:
+              - __meta_kubernetes_namespace
+            - action: keep
+              regex: stackdriver-metadata-agent
+              source_labels:
+              - __meta_kubernetes_pod_label_app
+            - action: replace
+              source_labels:
+              - __meta_kubernetes_namespace
+              target_label: anthos_namespace
+            - action: replace
+              source_labels:
+              - __meta_kubernetes_pod_name
+              target_label: anthos_pod
+            - action: replace
+              source_labels:
+              - __meta_kubernetes_pod_container_name
+              target_label: anthos_container
+          - job_name: gke-metrics-agent
+            scheme: http
+            kubernetes_sd_configs:
+            - role: pod
+              selectors:
+              - field: spec.nodeName=$NODE_NAME
+                role: pod
+            relabel_configs:
+            - action: keep
+              regex: kube-system
+              source_labels:
+              - __meta_kubernetes_namespace
+            - action: keep
+              regex: gke-metrics-agent
+              source_labels:
+              - __meta_kubernetes_pod_container_name
+            - action: replace
+              source_labels:
+              - __meta_kubernetes_pod_name
+              target_label: anthos_pod
+            - action: replace
+              source_labels:
+              - __meta_kubernetes_pod_container_name
+              target_label: anthos_container
+            - action: replace
+              source_labels:
+              - __meta_kubernetes_namespace
+              target_label: anthos_namespace
+        use_start_time_metric: false
+    service:
+      pipelines:
+        metrics/metrics:
+          exporters:
+          - stackdriver/metrics
+          processors:
+          - resource
+          - metric_to_resource
+          - infer_resource
+          receivers:
+          - prometheus/metrics
