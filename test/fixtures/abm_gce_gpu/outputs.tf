@@ -18,3 +18,13 @@
 output "project_id" {
   value = var.owner_project_id
 }
+
+output "ssh_as_tfadmin" {
+  description = "gcloud command to ssh into the admin workstation as tfadmin user"
+  value       = local.ssh_as_tfadmin_cmd
+}
+
+output "abm_install_check" {
+  description = "gcloud command to check installation of Anthos BareMetal via ssh"
+  value       = local.install_abm_cmd
+}

@@ -14,6 +14,8 @@
 
 
 project_id = attribute('project_id')
+abm_install_check = attribute('abm_install_check')
+%x( #{ssh_as_tfadmin} )
 
 control "gcloud" do
   title "Google Compute Instances configuration"
@@ -48,6 +50,23 @@ control "gcloud" do
           )
           x = x + 1
         end
+      end
+    end
+  end
+
+  describe command(abm_install_check) do
+    its(:exit_status) { should eq 0 }
+    its(:stderr) { should eq '' }
+    let!(:data) do
+      if subject.exit_status == 0
+        subject.stdout
+      else
+        ""
+      end
+    end
+    describe "abm installation setup" do
+      it "should not have any failed setup stages" do
+        expect(data).not_to include("[-]")
       end
     end
   end
