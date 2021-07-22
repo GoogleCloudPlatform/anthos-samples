@@ -26,6 +26,9 @@ attributes:
   - name: vxlan_check
     required: true
     type: string
+  - name: ssh_as_tfadmin
+    required: true
+    type: string
   - name: abm_install_check
     required: true
     type: string
