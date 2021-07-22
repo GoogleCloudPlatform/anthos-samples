@@ -14,6 +14,7 @@
 
 
 project_id = attribute('project_id')
+ssh_as_tfadmin = attribute('ssh_as_tfadmin')
 abm_install_check = attribute('abm_install_check')
 %x( #{ssh_as_tfadmin} )
 
