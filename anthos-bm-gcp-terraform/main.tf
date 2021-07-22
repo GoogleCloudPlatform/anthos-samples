@@ -112,6 +112,9 @@ module "instance_template" {
   tags                 = var.tags             # --tags http-server,https-server
   min_cpu_platform     = var.min_cpu_platform # --min-cpu-platform "Intel Haswell"
   can_ip_forward       = true                 # --can-ip-forward
+  metadata = {
+    enable-oslogin = "false"
+  }
   service_account = {
     email  = ""
     scopes = var.access_scopes # --scopes cloud-platform
