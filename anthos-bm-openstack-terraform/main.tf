@@ -74,8 +74,8 @@ resource "openstack_lb_pool_v2" "cp-lb" {
 resource "openstack_lb_monitor_v2" "cp-lb" {
   pool_id     = openstack_lb_pool_v2.cp-lb.id
   type        = "HTTPS"
-  delay       = 20
-  timeout     = 10
+  delay       = 5
+  timeout     = 5
   max_retries = 5
   url_path    = "/readyz"
 }
