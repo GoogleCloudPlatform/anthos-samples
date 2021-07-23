@@ -98,6 +98,15 @@ variable "boot_disk_size" {
   default     = 200
 }
 
+variable "gpu" {
+  description = <<EOF
+    GPU information to be attached to the provisioned GCE instances.
+    See https://cloud.google.com/compute/docs/gpus for supported types
+  EOF
+  type        = object({ type = string, count = number })
+  default     = { count = 0, type = "" }
+}
+
 variable "network" {
   description = "VPC network to which the provisioned Compute Engine VMs is to be connected to"
   type        = string

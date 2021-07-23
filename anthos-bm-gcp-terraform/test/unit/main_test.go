@@ -86,6 +86,10 @@ func TestUnit_MainScript(goTester *testing.T) {
 		"controlplane": 3,
 		"worker":       2,
 	}
+	gpu := map[string]interface{}{
+		"count": 3,
+		"type":  "google_gpu",
+	}
 
 	tfPlanOutput := "terraform_test.tfplan"
 	tfPlanOutputArg := fmt.Sprintf("-out=%s", tfPlanOutput)
@@ -111,6 +115,7 @@ func TestUnit_MainScript(goTester *testing.T) {
 		"secondary_apis":              secondaryApis,
 		"abm_cluster_id":              abmClusterID,
 		"instance_count":              instanceCount,
+		"gpu":                         gpu,
 	}
 
 	tfOptions := terraform.WithDefaultRetryableErrors(goTester, &terraform.Options{
@@ -225,7 +230,7 @@ func TestUnit_MainScript(goTester *testing.T) {
 	// validate the instance template module
 	validateInstanceTemplateModule(goTester, &instanceTemplateModules[0], &tfVarsMap)
 	// validate the virtual machines modules
-	validateVirtualMachineMoodules(goTester, &virtualMachineModules, &tfVarsMap)
+	validateVirtualMachineModules(goTester, &virtualMachineModules, &tfVarsMap)
 	// validate the service account module
 	validateServiceAccModule(goTester, &serviceAccModules[0], &tfVarsMap)
 	// validate the google APIs module
@@ -462,6 +467,25 @@ func TestUnit_MainScript_ValidateDefaults(goTester *testing.T) {
 		defaultNodeCounts["worker"],
 		terraformPlan.Variables.InstanceCount.Value["worker"],
 		"Variable does not match expected default value: instance_count.worker.",
+	)
+
+	defaultGpuSetup := util.Gpu{
+		Count: 0,
+		Type:  "",
+	}
+	// verify input variable gpu in plan matches the default value
+	assert.Equal(
+		goTester,
+		defaultGpuSetup.Count,
+		terraformPlan.Variables.Gpu.Value.Count,
+		"Variable does not match expected default value: gpu.count",
+	)
+
+	assert.Equal(
+		goTester,
+		defaultGpuSetup.Type,
+		terraformPlan.Variables.Gpu.Value.Type,
+		"Variable does not match expected default value: gpu.type",
 	)
 }
 
@@ -796,6 +820,13 @@ func validateVariablesInMain(goTester *testing.T, tfPlan *util.MainModulePlan) {
 		tfPlan.Variables.InstanceCount,
 		"Variable not found in plan: instance_count",
 	)
+
+	// verify plan has gpu input variable
+	assert.NotNil(
+		goTester,
+		tfPlan.Variables.Gpu,
+		"Variable not found in plan: gpu",
+	)
 }
 
 func validateVariableValuesInMain(goTester *testing.T, tfPlan *util.MainModulePlan, vars *map[string]interface{}) {
@@ -990,6 +1021,20 @@ func validateVariableValuesInMain(goTester *testing.T, tfPlan *util.MainModulePl
 			fmt.Sprintf("Variable does not match in plan: instance_count for %s.", name),
 		)
 	}
+
+	assert.Equal(
+		goTester,
+		(*vars)["gpu"].(map[string]interface{})["count"],
+		tfPlan.Variables.Gpu.Value.Count,
+		fmt.Sprintf("Variable does not match in plan: gpu.count"),
+	)
+
+	assert.Equal(
+		goTester,
+		(*vars)["gpu"].(map[string]interface{})["type"],
+		tfPlan.Variables.Gpu.Value.Type,
+		fmt.Sprintf("Variable does not match in plan: gpu.type"),
+	)
 }
 
 func validateInstanceTemplateModule(goTester *testing.T, module *util.TFModule, vars *map[string]interface{}) {
@@ -1117,7 +1162,7 @@ func validateInstanceTemplateModule(goTester *testing.T, module *util.TFModule, 
 	}
 }
 
-func validateVirtualMachineMoodules(goTester *testing.T, modules *[]util.TFModule, vars *map[string]interface{}) {
+func validateVirtualMachineModules(goTester *testing.T, modules *[]util.TFModule, vars *map[string]interface{}) {
 	instanceCountMapInTest := (*vars)["instance_count"].(map[string]int)
 	instanceCountMapInTest["admin"] = 1 // add entry for admin VMs too to making life easier
 
