@@ -20,3 +20,4 @@ cleanup.sh
 credentials_file.json
 .kitchen
 **ci-abm*.json
+out.json
