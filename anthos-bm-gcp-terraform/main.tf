@@ -17,6 +17,7 @@
 locals {
   init_script_logfile_name            = "init.log"
   vm_name_template                    = "abm-%s%d"
+  gpu_enabled                         = var.gpu.type != ""
   admin_vm_name                       = [format(local.vm_name_template, "ws", 0)]
   vm_names                            = concat(local.admin_vm_name, local.controlplane_vm_names, local.worker_vm_names)
   controlplane_vm_names               = [for i in range(var.instance_count.controlplane) : format(local.vm_name_template, "cp", i + 1)]
@@ -114,6 +115,10 @@ module "instance_template" {
   service_account = {
     email  = ""
     scopes = var.access_scopes # --scopes cloud-platform
+  }
+  gpu = !local.gpu_enabled ? null : {
+    type  = var.gpu.type
+    count = var.gpu.count
   }
 }
 
