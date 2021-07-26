@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://www.github.com/GoogleCloudPlatform/anthos-samples/compare/v0.2.0...v0.2.0) (2021-07-26)
+
+
+### process
+
+* test and upgrade terraform version to 0.15.5 for the GCE ABM sample ([#63](https://www.github.com/GoogleCloudPlatform/anthos-samples/issues/63)) ([c7a4acc](https://www.github.com/GoogleCloudPlatform/anthos-samples/commit/c7a4acc509e4e33c5347c4aabf729fa7300e6944))
+
 ## [0.2.0](https://www.github.com/GoogleCloudPlatform/anthos-samples/compare/v0.1.0...v0.2.0) (2021-07-22)
 
 
