@@ -163,6 +163,12 @@ variable "abm_cluster_id" {
   default     = "anthos-gce-cluster"
 }
 
+variable "oslogin" {
+  description = "Indicate whether to enable oslogin for the VM instance"
+  type        = string
+  default     = "false"
+}
+
 # [START anthos_bm_node_prefix]
 ###################################################################################
 # The recommended instance count for High Availability (HA) is 3 for Control plane

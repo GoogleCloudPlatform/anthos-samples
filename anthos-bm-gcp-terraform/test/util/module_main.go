@@ -46,6 +46,7 @@ type MainVariables struct {
 	ImageProject             *Variable     `json:"image_project"`
 	MachineType              *Variable     `json:"machine_type"`
 	MinCPUPlatform           *Variable     `json:"min_cpu_platform"`
+	OSLogin                  *Variable     `json:"oslogin"`
 	Tags                     *ListVariable `json:"tags"`
 	AccessScope              *ListVariable `json:"access_scopes"`
 	PrimaryAPIs              *ListVariable `json:"primary_apis"`

@@ -62,6 +62,7 @@ func TestUnit_MainScript(goTester *testing.T) {
 	imageFamily := "test_image_family"
 	bootDiskType := "test_boot_disk_type"
 	abmClusterID := "test_abm_cluster_id"
+	oslogin := "true"
 	network := "test_network"
 	bootDiskSize := 175
 	anthosServiceAccountName := gcp.RandomValidGcpName()
@@ -114,6 +115,7 @@ func TestUnit_MainScript(goTester *testing.T) {
 		"primary_apis":                primaryApis,
 		"secondary_apis":              secondaryApis,
 		"abm_cluster_id":              abmClusterID,
+		"oslogin":                     oslogin,
 		"instance_count":              instanceCount,
 		"gpu":                         gpu,
 	}
@@ -371,6 +373,14 @@ func TestUnit_MainScript_ValidateDefaults(goTester *testing.T) {
 		"anthos-gce-cluster",
 		terraformPlan.Variables.ABMClusterID.Value,
 		"Variable does not match expected default value: abm_cluster_id.",
+	)
+
+	// verify input variable oslogin in plan matches the default value
+	assert.Equal(
+		goTester,
+		"false",
+		terraformPlan.Variables.OSLogin.Value,
+		"Variable does not match expected default value: oslogin.",
 	)
 
 	defaultTags := []string{"http-server", "https-server"}
@@ -716,6 +726,13 @@ func validateVariablesInMain(goTester *testing.T, tfPlan *util.MainModulePlan) {
 		"Variable not found in plan: abm_cluster_id",
 	)
 
+	// verify plan has oslogin input variable
+	assert.NotNil(
+		goTester,
+		tfPlan.Variables.OSLogin,
+		"Variable not found in plan: oslogin",
+	)
+
 	// verify plan has anthos_service_account_name input variable
 	assert.NotNil(
 		goTester,
@@ -884,6 +901,14 @@ func validateVariableValuesInMain(goTester *testing.T, tfPlan *util.MainModulePl
 		(*vars)["abm_cluster_id"],
 		tfPlan.Variables.ABMClusterID.Value,
 		"Variable does not match in plan: abm_cluster_id.",
+	)
+
+	// verify input variable oslogin in plan matches
+	assert.Equal(
+		goTester,
+		(*vars)["oslogin"],
+		tfPlan.Variables.OSLogin.Value,
+		"Variable does not match in plan: oslogin.",
 	)
 
 	// verify input variable anthos_service_account_name in plan matches

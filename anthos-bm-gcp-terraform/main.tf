@@ -116,6 +116,9 @@ module "instance_template" {
     email  = ""
     scopes = var.access_scopes # --scopes cloud-platform
   }
+  metadata = {
+    enable-oslogin = var.oslogin
+  }
   gpu = !local.gpu_enabled ? null : {
     type  = var.gpu.type
     count = var.gpu.count
