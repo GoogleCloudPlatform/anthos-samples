@@ -88,10 +88,8 @@ jobs:
       - name: Golang unit tests
         timeout-minutes: 20
         env:
-          # these env variables are required by the golang tests
-          GOOGLE_CLOUD_PROJECT: ${{ secrets.GOOGLE_CLOUD_PROJECT }}
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
           GOLANG_TEST_DIR: ${{ matrix.go-test-dir }}
         run: |
+          source /var/local/gh-runner/env_vars
           cd $GOLANG_TEST_DIR
           /usr/local/go/bin/go test -v -timeout 30m ./
