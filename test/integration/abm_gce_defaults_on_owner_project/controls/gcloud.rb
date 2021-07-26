@@ -97,8 +97,8 @@ control "gcloud" do
       end
     end
     describe "bmctl version" do
-      it "should be 1.7.x" do
-        expect(data).to include("bmctl version: 1.7")
+      it "should be 1.8.x" do
+        expect(data).to include("bmctl version: 1.8")
       end
     end
   end
