@@ -34,6 +34,7 @@ The [Quick starter](docs/quickstart.md) guide sets up the following infrastructu
 
 #### Pre-requisites
 - The same [pre-requisites](#pre-requisites) to run this sample is required for testing as well
+
 #### Pull requests
 - For improvements to this sample submit your pull requests to the `master` branch
 
