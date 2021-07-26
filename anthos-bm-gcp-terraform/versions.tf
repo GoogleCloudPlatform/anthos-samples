@@ -21,7 +21,7 @@ terraform {
     # scripts on the master branch
     module_name           = "anthos-samples/terraform/anthos-bm-terraform:gce/v0.1.0"
     gcloud                = "terraform-google-modules/gcloud/google/v2.1.0"
-    gcp_apis              = "terraform-google-modules/project-factory/google//modules/project_services/v10.3.2"
+    gcp_apis              = "terraform-google-modules/project-factory/google//modules/project_services/v11.1.0"
     gcp_service_accounts  = "terraform-google-modules/service-accounts/google/v~> 4.0"
     gcp_compute_instances = "terraform-google-modules/vm/google//modules/compute_instance/v~> 6.3.0"
   }
