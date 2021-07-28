@@ -12,18 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: defaults_on_owner_project
+name: gpu
 attributes:
   - name: project_id
-    required: true
-    type: string
-  - name: bmctl_version_check
-    required: true
-    type: string
-  - name: docker_version_check
-    required: true
-    type: string
-  - name: vxlan_check
     required: true
     type: string
   - name: ssh_as_tfadmin

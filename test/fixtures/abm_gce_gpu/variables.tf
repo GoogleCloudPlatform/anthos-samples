@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-terraform {
-  required_version = "~> 0.15.5"
-  required_providers {
-    google = {
-      source  = "hashicorp/google"
-      version = ">= 3.67.0"
-    }
-    google-beta = {
-      source  = "hashicorp/google-beta"
-      version = ">= 3.67.0"
-    }
-  }
+variable "owner_project_id" {
+  type = string
+}
+
+variable "owner_sa_key_file_path" {
+  type = string
 }
