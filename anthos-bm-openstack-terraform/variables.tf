@@ -87,8 +87,8 @@ variable "image" {
 
 variable "ssh_key" {
   description = <<EOF
-    The SSH key pair to associate with the provisioned the OpenStack VMs.
-    Use 'openstack key list' to find a list of all available flavors
+    The SSH key pair to associate with the provisioned OpenStack VMs.
+    Use 'openstack key list' to find a list of all available keys
   EOF
   type        = string
 }
