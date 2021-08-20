@@ -117,11 +117,11 @@ def upload_preflight(sa_keyfile, bucket):
     create_cmd = 'gsutil mb -c standard --retention 30d gs://{}'.format(bucket)
     list_bucket_cmd = 'gsutil ls -b gs://{}'.format(bucket)
 
-    print('Authenticating as service account from key file... ', end='')
+    print('Authenticating as service account from key file... ')
     auth_return_code, auth_output = run_gsutil_cmd(auth_cmd)
     if not auth_return_code:
         print('[ SUCCESS ]')
-        print('Checking if Cloud Storage Bucket exsists... ', end='')
+        print('Checking if Cloud Storage Bucket exsists... ')
         list_bucket_return_code, _ = run_gsutil_cmd(list_bucket_cmd)
         if not list_bucket_return_code:
             print('[ SUCCESS ]')
@@ -129,7 +129,7 @@ def upload_preflight(sa_keyfile, bucket):
             return list_bucket_return_code
         else:
             print('[ FAIL ]')
-            print('Creating {}... '.format(bucket), end='')
+            print('Creating {}... '.format(bucket))
             create_return_code, create_output = run_gsutil_cmd(create_cmd)
             if not create_return_code:
                 print('[ SUCCESS ]')
@@ -148,7 +148,7 @@ def upload_preflight(sa_keyfile, bucket):
 def upload_file(bucket: str, snap_file: str):
     bucket_path = 'gs://{}'.format(bucket)
     upload_cmd = 'gsutil cp {} {}'.format(snap_file, bucket_path)
-    print('Uploading snapshot to bucket... ', end='')
+    print('Uploading snapshot to bucket... ')
     upload_return_code, upload_output = run_gsutil_cmd(upload_cmd)
     if upload_return_code:
         print('[ FAIL ]')
@@ -171,7 +171,7 @@ def run_gsutil_cmd(command: str):
 def run_cmd(cmd: str, subfolder: str, output_dir: pathlib.Path):  # noqa: E999
     output_path = output_dir / subfolder / cmd.replace(' ', '_')
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    print("Executing: {}... ".format(cmd), end='')
+    print("Executing: {}... ".format(cmd))
     backoff_timer = 1
     backoff_count = 0
     with open(output_path, mode='w') as output_file:
@@ -206,7 +206,7 @@ def get_kubectl_list(object_type, kubeconfig, timeout, namespace=None,
         cmd = "{} -n {}".format(cmd, namespace)
     backoff_timer = 1
     backoff_count = 0
-    print("Executing: {}... ".format(cmd), end='')
+    print("Executing: {}... ".format(cmd))
     while True:
         if backoff_count > BACKOFF_LIMIT:
             print('[ FAIL ]')
