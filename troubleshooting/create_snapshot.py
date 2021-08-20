@@ -129,7 +129,7 @@ def upload_preflight(sa_keyfile, bucket):
             return list_bucket_return_code
         else:
             print('[ FAIL ]')
-            print('Creating a Cloud Storage Bucket... '.format(bucket), end='')
+            print('Creating {}... '.format(bucket), end='')
             create_return_code, create_output = run_gsutil_cmd(create_cmd)
             if not create_return_code:
                 print('[ SUCCESS ]')
@@ -164,8 +164,8 @@ def run_gsutil_cmd(command: str):
         if process.returncode:
             return process.returncode, process.stderr.decode('utf-8')
         return process.returncode, process.stdout.decode('utf-8')
-    except e:
-        return 1, e
+    except subprocess.SubprocessError as error:
+        return 1, error
 
 
 def run_cmd(cmd: str, subfolder: str, output_dir: pathlib.Path):  # noqa: E999
