@@ -91,52 +91,58 @@ def parse_args():
                         action="store",
                         dest='bucket',
                         default='',
-                        help='Upload the snapshot to a exsiting or new Cloud Storage Bucket.', )
+                        help='Upload the snapshot to a exsiting or new'
+                        'Cloud Storage Bucket.', )
     parser.add_argument('--service-account-key-file',
                         dest='sa_keyfile',
-                        help='Path to service account key file for snapshot Cloud Storage Bucket.')
+                        help='Path to service account key file for snapshot'
+                        'Cloud Storage Bucket.')
 
     args = parser.parse_args()
     if args.bucket:
         if not args.sa_keyfile:
-            parser.error('When uploading --service-account-key-file must be provided.')
-        upload_preflight_return_code = upload_preflight(args.sa_keyfile, args.bucket)
+            parser.error('When uploading --service-account-key-file'
+                         'must be provided.')
+        upload_preflight_return_code = upload_preflight(args.sa_keyfile,
+                                                        args.bucket)
         if upload_preflight_return_code:
             parser.exit()
 
     return args.kubeconfig, args.timeout, args.bucket
 
+
 def upload_preflight(sa_keyfile: str, bucket: str):
-    auth_cmd = 'gcloud auth activate-service-account --key-file {}'.format(sa_keyfile)
+    auth_cmd = ('gcloud auth activate-service-account'
+                '--key-file {}'.format(sa_keyfile))
     create_cmd = 'gsutil mb -c standard --retention 30d gs://{}'.format(bucket)
     list_bucket_cmd = 'gsutil ls -b gs://{}'.format(bucket)
 
     print('Authenticating as service account from key file... ', end='')
     auth_return_code, auth_output = run_gsutil_cmd(auth_cmd)
     if not auth_return_code:
-      print('[ SUCCESS ]')
-      print('Checking if Cloud Storage Bucket exsists... ', end='')
-      list_bucket_return_code, bucket_output = run_gsutil_cmd(list_bucket_cmd)
-      if not list_bucket_return_code:
         print('[ SUCCESS ]')
-        # listing the bucket was sucessful
-        return list_bucket_return_code
-      else:
-        print('[ FAIL ]')
-        print('Creating a Cloud Storage Bucket... '.format(bucket), end='')
-        create_return_code, create_output = run_gsutil_cmd(create_cmd)
-        if not create_return_code:
-          print('[ SUCCESS ]')
-          # creating the bucket was successful
-          return create_return_code
+        print('Checking if Cloud Storage Bucket exsists... ', end='')
+        list_bucket_return_code, bucket_output = run_gsutil_cmd(list_bucket_cmd)
+        if not list_bucket_return_code:
+            print('[ SUCCESS ]')
+            # listing the bucket was sucessful
+            return list_bucket_return_code
         else:
-          print('[ FAIL ]')
-          print(create_output)
-          return create_return_code
+            print('[ FAIL ]')
+            print('Creating a Cloud Storage Bucket... '.format(bucket), end='')
+            create_return_code, create_output = run_gsutil_cmd(create_cmd)
+            if not create_return_code:
+                print('[ SUCCESS ]')
+                # creating the bucket was successful
+                return create_return_code
+            else:
+                print('[ FAIL ]')
+                print(create_output)
+                return create_return_code
     else:
-      print('[ FAIL ]')
-      print(auth_output)
-      return auth_return_code
+        print('[ FAIL ]')
+        print(auth_output)
+        return auth_return_code
 
 
 def upload_file(bucket: str, snap_file: str):
@@ -145,21 +151,21 @@ def upload_file(bucket: str, snap_file: str):
     print('Uploading snapshot to bucket... ', end='')
     upload_return_code, upload_output = run_gsutil_cmd(upload_cmd)
     if upload_return_code:
-      print('[ FAIL ]')
-      print(upload_output)
-      return upload_return_code
+        print('[ FAIL ]')
+        print(upload_output)
+        return upload_return_code
     print('[ DONE ]')
     print(upload_output)
 
 
 def run_gsutil_cmd(command: str):
-  try:
-    process = subprocess.run(command, shell=True, capture_output=True)
-    if process.returncode:
-      return process.returncode, process.stderr.decode('utf-8')
-    return process.returncode, process.stdout.decode('utf-8')
-  except e:
-    return 1, e
+    try:
+        process = subprocess.run(command, shell=True, capture_output=True)
+        if process.returncode:
+            return process.returncode, process.stderr.decode('utf-8')
+        return process.returncode, process.stdout.decode('utf-8')
+    except e:
+        return 1, e
 
 
 def run_cmd(cmd: str, subfolder: str, output_dir: pathlib.Path):  # noqa: E999
@@ -273,6 +279,7 @@ def main():
         print("Created snapshot: {}".format(snap_file.name))
         if bucket:
             upload_file(bucket, snap_file.name)
+
 
 if __name__ == '__main__':
     main()
