@@ -111,17 +111,17 @@ def parse_args():
     return args.kubeconfig, args.timeout, args.bucket
 
 
-def upload_preflight(sa_keyfile, bucket):
+def upload_preflight(sa_keyfile: str, bucket: str):  # noqa: E999
     auth_cmd = ('gcloud auth activate-service-account'
                 '--key-file {}'.format(sa_keyfile))
     create_cmd = 'gsutil mb -c standard --retention 30d gs://{}'.format(bucket)
     list_bucket_cmd = 'gsutil ls -b gs://{}'.format(bucket)
 
-    print('Authenticating as service account from key file... ')
+    print('Authenticating as service account from key file... ', end='')
     auth_return_code, auth_output = run_gsutil_cmd(auth_cmd)
     if not auth_return_code:
         print('[ SUCCESS ]')
-        print('Checking if Cloud Storage Bucket exsists... ')
+        print('Checking if Cloud Storage Bucket exsists... ', end='')
         list_bucket_return_code, _ = run_gsutil_cmd(list_bucket_cmd)
         if not list_bucket_return_code:
             print('[ SUCCESS ]')
@@ -129,7 +129,7 @@ def upload_preflight(sa_keyfile, bucket):
             return list_bucket_return_code
         else:
             print('[ FAIL ]')
-            print('Creating {}... '.format(bucket))
+            print(('Creating {}... '.format(bucket)), end='')
             create_return_code, create_output = run_gsutil_cmd(create_cmd)
             if not create_return_code:
                 print('[ SUCCESS ]')
@@ -145,10 +145,10 @@ def upload_preflight(sa_keyfile, bucket):
         return auth_return_code
 
 
-def upload_file(bucket: str, snap_file: str):
+def upload_file(bucket: str, snap_file: str):  # noqa: E999
     bucket_path = 'gs://{}'.format(bucket)
     upload_cmd = 'gsutil cp {} {}'.format(snap_file, bucket_path)
-    print('Uploading snapshot to bucket... ')
+    print('Uploading snapshot to bucket... ', end='')
     upload_return_code, upload_output = run_gsutil_cmd(upload_cmd)
     if upload_return_code:
         print('[ FAIL ]')
@@ -158,20 +158,20 @@ def upload_file(bucket: str, snap_file: str):
     print(upload_output)
 
 
-def run_gsutil_cmd(command: str):
+def run_gsutil_cmd(command: str):  # noqa: E999
     try:
         process = subprocess.run(command, shell=True, capture_output=True)
         if process.returncode:
             return process.returncode, process.stderr.decode('utf-8')
         return process.returncode, process.stdout.decode('utf-8')
-    except subprocess.SubprocessError as error:
-        return 1, error
+    except subprocess.SubprocessError as e:
+        return 1, e
 
 
 def run_cmd(cmd: str, subfolder: str, output_dir: pathlib.Path):  # noqa: E999
     output_path = output_dir / subfolder / cmd.replace(' ', '_')
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    print("Executing: {}... ".format(cmd))
+    print("Executing: {}... ".format(cmd), end='')
     backoff_timer = 1
     backoff_count = 0
     with open(output_path, mode='w') as output_file:
@@ -206,7 +206,7 @@ def get_kubectl_list(object_type, kubeconfig, timeout, namespace=None,
         cmd = "{} -n {}".format(cmd, namespace)
     backoff_timer = 1
     backoff_count = 0
-    print("Executing: {}... ".format(cmd))
+    print("Executing: {}... ".format(cmd), end='')
     while True:
         if backoff_count > BACKOFF_LIMIT:
             print('[ FAIL ]')
