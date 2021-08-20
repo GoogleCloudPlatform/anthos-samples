@@ -111,7 +111,7 @@ def parse_args():
     return args.kubeconfig, args.timeout, args.bucket
 
 
-def upload_preflight(sa_keyfile: str, bucket: str):
+def upload_preflight(sa_keyfile, bucket):
     auth_cmd = ('gcloud auth activate-service-account'
                 '--key-file {}'.format(sa_keyfile))
     create_cmd = 'gsutil mb -c standard --retention 30d gs://{}'.format(bucket)
