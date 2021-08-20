@@ -122,7 +122,7 @@ def upload_preflight(sa_keyfile: str, bucket: str):
     if not auth_return_code:
         print('[ SUCCESS ]')
         print('Checking if Cloud Storage Bucket exsists... ', end='')
-        list_bucket_return_code, bucket_output = run_gsutil_cmd(list_bucket_cmd)
+        list_bucket_return_code, _ = run_gsutil_cmd(list_bucket_cmd)
         if not list_bucket_return_code:
             print('[ SUCCESS ]')
             # listing the bucket was sucessful
