@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://www.github.com/GoogleCloudPlatform/anthos-samples/compare/v0.3.0...v0.4.0) (2021-08-24)
+
+
+### Miscellaneous Chores
+
+* release 0.4.0 ([1c805c6](https://www.github.com/GoogleCloudPlatform/anthos-samples/commit/1c805c626ea986f6f8c3a14a341cf7c2af864ddd))
+
 ## [0.3.0](https://www.github.com/GoogleCloudPlatform/anthos-samples/compare/v0.2.0...v0.3.0) (2021-07-26)
 
 
