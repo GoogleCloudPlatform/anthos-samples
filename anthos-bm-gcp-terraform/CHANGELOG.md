@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.4.0](https://www.github.com/GoogleCloudPlatform/anthos-samples/compare/v0.3.0...v0.4.0) (2021-08-30)
+
+
+### Features
+
+* add oslogin metadata to override project wide setting ([#71](https://www.github.com/GoogleCloudPlatform/anthos-samples/issues/71)) ([d7a29d6](https://www.github.com/GoogleCloudPlatform/anthos-samples/commit/d7a29d62c7755b66348ca774b7169eebea3367bb))
+
+
+### Miscellaneous Chores
+
+* release 0.4.0 ([1c805c6](https://www.github.com/GoogleCloudPlatform/anthos-samples/commit/1c805c626ea986f6f8c3a14a341cf7c2af864ddd))
+
 ## [0.3.0](https://www.github.com/GoogleCloudPlatform/anthos-samples/compare/v0.2.0...v0.3.0) (2021-07-26)
 
 
