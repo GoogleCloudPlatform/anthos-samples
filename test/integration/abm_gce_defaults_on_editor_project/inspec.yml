@@ -17,3 +17,18 @@ attributes:
   - name: project_id
     required: true
     type: string
+  - name: bmctl_version_check
+    required: true
+    type: string
+  - name: docker_version_check
+    required: true
+    type: string
+  - name: vxlan_check
+    required: true
+    type: string
+  - name: ssh_as_tfadmin
+    required: true
+    type: string
+  - name: abm_install_check
+    required: true
+    type: string

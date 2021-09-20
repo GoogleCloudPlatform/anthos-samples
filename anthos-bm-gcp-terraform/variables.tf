@@ -62,6 +62,15 @@ variable "machine_type" {
   default     = "n1-standard-8"
 }
 
+variable "image" {
+  description = <<EOF
+    The source image to use when provisioning the Compute Engine VMs.
+    Use 'gcloud compute images list' to find a list of all available images
+  EOF
+  type        = string
+  default     = "ubuntu-2004-focal-v20210429"
+}
+
 variable "image_project" {
   description = "Project name of the source image to use when provisioning the Compute Engine VMs"
   type        = string
@@ -87,6 +96,15 @@ variable "boot_disk_size" {
   description = "Size of the primary boot disk to be attached to the Compute Engine VMs in GBs"
   type        = number
   default     = 200
+}
+
+variable "gpu" {
+  description = <<EOF
+    GPU information to be attached to the provisioned GCE instances.
+    See https://cloud.google.com/compute/docs/gpus for supported types
+  EOF
+  type        = object({ type = string, count = number })
+  default     = { count = 0, type = "" }
 }
 
 variable "network" {
