@@ -45,7 +45,7 @@ func TestABMEditor(t *testing.T) {
 		}
 
 		abmInstall := runSSHCmd(t, projectID, "tfadmin@abm-ws0-001", "sudo ./run_initialization_checks.sh")
-		assert.NotContains(t, abmInstall, "[-]", "abm installation should not have any failed setup stages")
+		assert.NotContains(abmInstall, "[-]", "abm installation should not have any failed setup stages")
 
 		bmctl := runSSHCmd(t, projectID, "root@abm-ws0-001", "bmctl version")
 		assert.Contains(bmctl, "bmctl version: 1.8", "bmctl version should be 1.8.x")

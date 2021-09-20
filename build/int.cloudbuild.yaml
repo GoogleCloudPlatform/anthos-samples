@@ -55,7 +55,7 @@ steps:
   waitFor:
     - converge abm-gce-defaults-on-editor-project-local
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
-  args: ['/bin/bash', '-c', 'cd test/integration && RUN_STAGE=verify go test -v -run TestABMEditor ./... -p 1']
+  args: ['/bin/bash', '-c', 'cd test/integration && sleep 60 &&  RUN_STAGE=verify go test -v -run TestABMEditor ./... -p 1']
 - id: destroy abm-gce-defaults-on-editor-project-local
   waitFor:
     - verify abm-gce-defaults-on-editor-project-local
