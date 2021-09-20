@@ -112,6 +112,10 @@ module "instance_template" {
   tags                 = var.tags             # --tags http-server,https-server
   min_cpu_platform     = var.min_cpu_platform # --min-cpu-platform "Intel Haswell"
   can_ip_forward       = true                 # --can-ip-forward
+  # Disable oslogin explicitly since we rely on metadata based ssh-key (issues/70).
+  metadata = {
+    enable-oslogin = "false"
+  }
   service_account = {
     email  = ""
     scopes = var.access_scopes # --scopes cloud-platform
