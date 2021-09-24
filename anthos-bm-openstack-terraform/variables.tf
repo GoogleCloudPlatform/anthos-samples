@@ -82,7 +82,7 @@ variable "image" {
     Use 'openstack image list' to find a list of all available images
   EOF
   type        = string
-  default     = "ubuntu-1804"
+  default     = "ubuntu-2004"
 }
 
 variable "ssh_key" {
