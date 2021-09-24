@@ -6,6 +6,10 @@ metal in High Availability (HA) mode using Virtual Machines (VMs) running on
 [Ussuri](https://releases.openstack.org/ussuri/index.html) and assumes that you
 already have a similar OpenStack environment running.
 
+If you don't have an OpenStack environment and still want to try this sample
+then first follow [this guide](/docs/install_openstack_on_gce.md) to get an
+OpenStack _(Ussuri)_ environment running on a [Google Compute Engine VM with _nested KVM_](https://cloud.google.com/compute/docs/instances/nested-virtualization/overview).
+
 ### Pre-requisites
 - A baremetal environment running [OpenStack Ussuri](https://releases.openstack.org/ussuri/index.html)
   or similar with [LBaaS v2](https://docs.openstack.org/mitaka/networking-guide/config-lbaas.html)
