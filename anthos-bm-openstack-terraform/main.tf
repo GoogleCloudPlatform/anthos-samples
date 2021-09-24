@@ -227,14 +227,14 @@ module "worker_vm_hosts" {
 # Associate floating virtual IPs for the control plane and admin workstation
 ###############################################################################
 resource "openstack_networking_floatingip_v2" "abm_ws_floatingip" {
-  pool = "public"
-  tags = ["abm_ws_floatingip"]
+  pool        = "public"
+  tags        = ["abm_ws_floatingip"]
   description = "abm_ws_floatingip"
 }
 
 resource "openstack_networking_floatingip_v2" "abm_cp_floatingip" {
-  pool = "public"
-  tags = ["abm_cp_floatingip"]
+  pool        = "public"
+  tags        = ["abm_cp_floatingip"]
   description = "abm_cp_floatingip"
 }
 
