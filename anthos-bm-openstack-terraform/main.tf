@@ -195,7 +195,7 @@ module "admin_vm_hosts" {
   vm_info         = local.admin_vm_info
   image           = var.image
   flavor          = var.machine_type
-  key             = var.ssh_key
+  key             = var.ssh_key_name
   network         = openstack_networking_network_v2.abm_network.id
   user_data       = data.template_file.cloud_config.rendered
   security_groups = ["default", openstack_compute_secgroup_v2.basic_access.name]
@@ -206,7 +206,7 @@ module "cp_vm_hosts" {
   vm_info         = local.controlplane_vm_info
   image           = var.image
   flavor          = var.machine_type
-  key             = var.ssh_key
+  key             = var.ssh_key_name
   network         = openstack_networking_network_v2.abm_network.id
   user_data       = data.template_file.cloud_config.rendered
   security_groups = ["default", openstack_compute_secgroup_v2.basic_access.name]
@@ -217,7 +217,7 @@ module "worker_vm_hosts" {
   vm_info         = local.worker_vm_info
   image           = var.image
   flavor          = var.machine_type
-  key             = var.ssh_key
+  key             = var.ssh_key_name
   network         = openstack_networking_network_v2.abm_network.id
   user_data       = data.template_file.cloud_config.rendered
   security_groups = ["default", openstack_compute_secgroup_v2.basic_access.name]

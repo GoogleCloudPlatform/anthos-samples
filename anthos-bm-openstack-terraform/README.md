@@ -16,7 +16,7 @@ already have a similar OpenStack environment running.
   - [Google Cloud SDK](https://cloud.google.com/sdk/docs/install)
   - [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) (~v0.14.10)
 
-- A [Google Cloud Project](https://console.cloud.google.com/cloud-resource-manager?_ga=2.187862184.1029435410.1614837439-1338907320.1614299892) _(in which the resources for the setup will be provisioned)_
+- A [Google Cloud Project](https://console.cloud.google.com/cloud-resource-manager) _(in which the resources for the setup will be provisioned)_
 
 - A [Service Account](https://cloud.devsite.corp.google.com/iam/docs/creating-managing-service-accounts)
   in the project that satisfies **one** of the following requirements and its **[key file downloaded](https://cloud.devsite.corp.google.com/iam/docs/creating-managing-service-account-keys)** to

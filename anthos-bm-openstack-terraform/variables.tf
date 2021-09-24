@@ -85,9 +85,9 @@ variable "image" {
   default     = "ubuntu-1804"
 }
 
-variable "ssh_key" {
+variable "ssh_key_name" {
   description = <<EOF
-    The SSH key pair to associate with the provisioned the OpenStack VMs.
+    The name of the SSH key pair to associate with the provisioned OpenStack VMs.
     Use 'openstack key list' to find a list of all available flavors
   EOF
   type        = string
