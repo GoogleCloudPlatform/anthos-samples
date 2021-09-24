@@ -91,7 +91,7 @@ gcloud compute instances describe openstack-1 \
     --zone ${ZONE} \
     --format='get(networkInterfaces[0].accessConfigs[0].natIP)'
 ```
-> **Note:** We will need these two IP addresses in a [later step](), so note it
+> **Note:** We will need these two IP addresses in a [later step](#3-setup-proper-tls-certificates-for-accessing-openstack-your-workstation), so note it
 > down somewhere
 
 1.6) Create Firewall rules to expose the Web UI and [noVNC](https://novnc.com/info.html)
@@ -193,7 +193,7 @@ scripts/bootstrap-aio.sh
 # open the configuration file and make the changes described below in comments
 vi /etc/ansible/roles/openstack_hosts/defaults/main.yml
 
-# Inside vi editor:
+# inside the vi editor:
 #   - Go to line 109 by typing :109 then [return] key
 #   - The line should have "109:  - { key: 'net.bridge.bridge-nf-call-iptables', value: 1 }"
 #   - Go to the end of the line and delete "1" by pressing [x] whilst the cursor is on it
