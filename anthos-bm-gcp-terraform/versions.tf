@@ -25,7 +25,7 @@ terraform {
     gcp_service_accounts  = "terraform-google-modules/service-accounts/google/v~> 4.0"
     gcp_compute_instances = "terraform-google-modules/vm/google//modules/compute_instance/v~> 6.3.0"
   }
-  required_version = ">= 0.15.5"
+  required_version = "~> 0.15.5, ~> 1.0.0"
   required_providers {
     google = {
       source  = "hashicorp/google"
