@@ -45,22 +45,22 @@ steps:
   waitFor:
     - destroy abm-gce-defaults-on-owner-project-local
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
-  args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do create abm-gce-defaults-on-editor-project-local']
+  args: ['/bin/bash', '-c', 'cd test/integration && RUN_STAGE=init go test -v -run TestABMEditor ./... -p 1']
 - id: converge abm-gce-defaults-on-editor-project-local
   waitFor:
     - create abm-gce-defaults-on-editor-project-local
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
-  args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do converge abm-gce-defaults-on-editor-project-local']
+  args: ['/bin/bash', '-c', 'cd test/integration && RUN_STAGE=apply go test -v -run TestABMEditor ./... -p 1']
 - id: verify abm-gce-defaults-on-editor-project-local
   waitFor:
     - converge abm-gce-defaults-on-editor-project-local
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
-  args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do verify abm-gce-defaults-on-editor-project-local']
+  args: ['/bin/bash', '-c', 'cd test/integration && sleep 60 &&  RUN_STAGE=verify go test -v -run TestABMEditor ./... -p 1']
 - id: destroy abm-gce-defaults-on-editor-project-local
   waitFor:
     - verify abm-gce-defaults-on-editor-project-local
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
-  args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do destroy abm-gce-defaults-on-editor-project-local']
+  args: ['/bin/bash', '-c', 'cd test/integration && RUN_STAGE=teardown go test -v -run TestABMEditor ./... -p 1']
 - id: create abm-gce-gpu
   waitFor:
     - destroy abm-gce-defaults-on-editor-project-local
