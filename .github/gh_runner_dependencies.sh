@@ -35,6 +35,7 @@ tfenv install 0.14.9
 tfenv install 0.15.5
 tfenv install 1.0.0
 tfenv install 1.0.1
+tfenv install 1.0.6
 tfenv use 0.14.9
 
 go get -u golang.org/x/lint/golint
@@ -50,4 +51,6 @@ echo "
   > gcloud iam service-accounts keys create sa-key.json --iam-account=${SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com
   > sudo mv ./sa-key.json /var/local/gh-runner/
   > sudo chmod 444 /var/local/gh-runner/sa-key.json
+  > sudo bash -c 'echo export GOOGLE_APPLICATION_CREDENTIALS=/var/local/gh-runner/sa-key.json > /var/local/gh-runner/env_vars'
+  > sudo bash -c 'echo export GOOGLE_CLOUD_PROJECT=anthos-gke-samples-ci >> /var/local/gh-runner/env_vars'
 "

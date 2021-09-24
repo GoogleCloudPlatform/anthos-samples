@@ -82,13 +82,13 @@ variable "image" {
     Use 'openstack image list' to find a list of all available images
   EOF
   type        = string
-  default     = "ubuntu-1804"
+  default     = "ubuntu-2004"
 }
 
 variable "ssh_key_name" {
   description = <<EOF
     The name of the SSH key pair to associate with the provisioned OpenStack VMs.
-    Use 'openstack key list' to find a list of all available flavors
+    Use 'openstack key list' to find a list of all available keys
   EOF
   type        = string
 }

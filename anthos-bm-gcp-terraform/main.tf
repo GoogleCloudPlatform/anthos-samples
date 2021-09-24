@@ -17,6 +17,7 @@
 locals {
   init_script_logfile_name            = "init.log"
   vm_name_template                    = "abm-%s%d"
+  gpu_enabled                         = var.gpu.type != ""
   admin_vm_name                       = [format(local.vm_name_template, "ws", 0)]
   vm_names                            = concat(local.admin_vm_name, local.controlplane_vm_names, local.worker_vm_names)
   controlplane_vm_names               = [for i in range(var.instance_count.controlplane) : format(local.vm_name_template, "cp", i + 1)]
@@ -54,7 +55,7 @@ locals {
 
 module "enable_google_apis_primary" {
   source                      = "terraform-google-modules/project-factory/google//modules/project_services"
-  version                     = "10.3.2"
+  version                     = "11.2.0"
   project_id                  = var.project_id
   activate_apis               = var.primary_apis
   disable_services_on_destroy = false
@@ -62,7 +63,7 @@ module "enable_google_apis_primary" {
 
 module "enable_google_apis_secondary" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "10.3.2"
+  version = "11.2.0"
   # fetched from previous module to explicitely express dependency
   project_id                  = module.enable_google_apis_primary.project_id
   depends_on                  = [module.enable_google_apis_primary]
@@ -93,7 +94,7 @@ module "create_service_accounts" {
 
 module "instance_template" {
   source  = "terraform-google-modules/vm/google//modules/instance_template"
-  version = "~> 6.3.0"
+  version = "~> 7.1.0"
   depends_on = [
     module.enable_google_apis_primary,
     module.enable_google_apis_secondary
@@ -111,9 +112,17 @@ module "instance_template" {
   tags                 = var.tags             # --tags http-server,https-server
   min_cpu_platform     = var.min_cpu_platform # --min-cpu-platform "Intel Haswell"
   can_ip_forward       = true                 # --can-ip-forward
+  # Disable oslogin explicitly since we rely on metadata based ssh-key (issues/70).
+  metadata = {
+    enable-oslogin = "false"
+  }
   service_account = {
     email  = ""
     scopes = var.access_scopes # --scopes cloud-platform
+  }
+  gpu = !local.gpu_enabled ? null : {
+    type  = var.gpu.type
+    count = var.gpu.count
   }
 }
 

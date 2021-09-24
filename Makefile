@@ -18,7 +18,9 @@
 # Make will use bash instead of sh
 SHELL := /usr/bin/env bash
 
-DOCKER_TAG_VERSION_DEVELOPER_TOOLS := 0.14
+# release images are available at:
+# console.google.com/gcr/images/cloud-foundation-cicd/global/cft/developer-tools?project=cloud-foundation-cicd
+DOCKER_TAG_VERSION_DEVELOPER_TOOLS := 1.1
 DOCKER_IMAGE_DEVELOPER_TOOLS := cft/developer-tools
 REGISTRY_URL := gcr.io/cloud-foundation-cicd
 

@@ -3,9 +3,13 @@ region           = "<GOOGLE_CLOUD_REGION_TO_USE>"
 zone             = "<GOOGLE_CLOUD_ZONE_TO_USE>"
 credentials_file = "<PATH_TO_GOOGLE_CLOUD_SERVICE_ACCOUNT_FILE>"
 abm_cluster_id   = "anthos-gce-cluster"
-machine_type     = "n1-standard-8"
 resources_path   = "./resources"
+machine_type     = "n1-standard-8"
 instance_count   = {
   "controlplane" : 3
   "worker" : 2
 }
+#gpu              = {
+#  count = 1,
+#  type = "nvidia-tesla-k80"
+#}

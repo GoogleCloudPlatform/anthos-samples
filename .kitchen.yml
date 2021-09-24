@@ -37,10 +37,10 @@ suites:
       systems:
         - name: abm_gce_defaults_on_owner_project
           backend: local
-  - name: "abm_gce_defaults_on_editor_project"
+  - name: "abm_gce_gpu"
     driver:
-      root_module_directory: test/fixtures/abm_gce_defaults_on_editor_project
+      root_module_directory: test/fixtures/abm_gce_gpu
     verifier:
       systems:
-        - name: abm_gce_defaults_on_editor_project
+        - name: abm_gce_gpu
           backend: local

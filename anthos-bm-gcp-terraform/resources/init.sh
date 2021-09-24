@@ -26,6 +26,7 @@ SERVICE_ACCOUNT=$(cut -d "=" -f2- <<< "$(grep < init.vars SERVICE_ACCOUNT)")
 HOSTNAMES=$(cut -d "=" -f2- <<< "$(grep < init.vars HOSTNAMES)")
 VM_INTERNAL_IPS=$(cut -d "=" -f2- <<< "$(grep < init.vars VM_INTERNAL_IPS)")
 LOG_FILE=$(cut -d "=" -f2- <<< "$(grep < init.vars LOG_FILE)")
+DEFAULT_IFACE=$(ip link | awk -F: '$0 !~ "lo|vir|wl|^[^0-9]"{print $2;getline}' | xargs)
 
 DATE=$(date)
 HOSTNAME=$(hostname)
@@ -65,7 +66,7 @@ function __install_deps__ () {
 ##############################################################################
 function __setup_vxlan__ () {
   echo "Setting up ip address [$VXLAN_IP_ADDRESS/24] for net device vxlan0"
-  ip link add vxlan0 type vxlan id 42 dev ens4 dstport 0
+  ip link add vxlan0 type vxlan id 42 dev "$DEFAULT_IFACE" dstport 0
   __check_exit_status__ $? \
     "[+] Successfully added a new network device of type vxlan" \
     "[-] Failed to add new network device for vxlan setup. Check for failures on [ip link add] in ~/$LOG_FILE"
@@ -91,7 +92,7 @@ function __setup_vxlan__ () {
 # internal IPs of the hosts in the cluster.
 ##############################################################################
 function __update_bridge_entries__ () {
-  current_ip=$(ip --json a show dev ens4 | jq '.[0].addr_info[0].local' -r)
+  current_ip=$(ip --json a show dev "$DEFAULT_IFACE" | jq '.[0].addr_info[0].local' -r)
 
   echo "Cluster VM IPs retreived => $VM_INTERNAL_IPS"
   for ip in ${VM_INTERNAL_IPS//|/ }
@@ -176,7 +177,7 @@ function __setup_kubctl__ () {
 ##############################################################################
 function __setup_bmctl__ () {
   mkdir baremetal && cd baremetal || return
-  gsutil cp gs://anthos-baremetal-release/bmctl/1.7.0/linux-amd64/bmctl .
+  gsutil cp gs://anthos-baremetal-release/bmctl/1.8.0/linux-amd64/bmctl .
   chmod a+x bmctl
   mv bmctl /usr/local/sbin/
   __check_exit_status__ $? \

@@ -8,7 +8,7 @@ This repository shows you how to use Terraform to try Anthos clusters on bare me
 - A workstation with access to internet _(i.e. Google Cloud APIs)_ with the following installed
   - [Git](https://www.atlassian.com/git/tutorials/install-git)
   - [Google Cloud SDK](https://cloud.google.com/sdk/docs/install)
-  - [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) (~v0.14.10)
+  - [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) (>= v0.15.5, < v1.1)
 
 - A [Google Cloud Project](https://console.cloud.google.com/cloud-resource-manager?_ga=2.187862184.1029435410.1614837439-1338907320.1614299892) _(in which the resources for the setup will be provisioned)_
 
@@ -34,8 +34,9 @@ The [Quick starter](docs/quickstart.md) guide sets up the following infrastructu
 
 #### Pre-requisites
 - The same [pre-requisites](#pre-requisites) to run this sample is required for testing as well
+
 #### Pull requests
-- For improvements to this sample, submit your pull requests to the `master` branch
+- For improvements to this sample submit your pull requests to the `master` branch
 
 #### Testing
 - Ensure that the improvements have _unit/integration tests_ where appropriate
