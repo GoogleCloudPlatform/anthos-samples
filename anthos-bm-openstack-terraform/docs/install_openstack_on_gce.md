@@ -3,7 +3,7 @@
 This guide explains how to install an OpenStack _(Ussuri)_ environment on Google
 Compute Engine (GCE) VMs using [nested virtualization](https://cloud.google.com/compute/docs/instances/nested-virtualization/overview).
 
-The guide is split into 3 sections:
+The guide is split into 4 sections:
 - Create a GCE instance with KVM enabled in Google Cloud Platform
 - Install **OpenStack Ussuri** using the **[openstack-ansible in all-in-one](https://docs.openstack.org/openstack-ansible/latest/user/aio/quickstart.html)** mode
 - Setup proper TLS certificates for accessing OpenStack your workstation
@@ -79,7 +79,22 @@ gcloud compute instances create openstack-1
     --machine-type n1-standard-32
 ```
 
-1.5) Create Firewall rules to expose the Web UI and [noVNC](https://novnc.com/info.html)
+1.5) Get the `Internal` and `External` IPs assigned to the created GCE VM
+```sh
+# get the internal IP and note it down
+gcloud compute instances describe openstack-1 \
+    --zone ${ZONE} \
+    --format='get(networkInterfaces[0].networkIP)'
+
+# get the external IP and note it down
+gcloud compute instances describe openstack-1 \
+    --zone ${ZONE} \
+    --format='get(networkInterfaces[0].accessConfigs[0].natIP)'
+```
+> **Note:** We will need these two IP addresses in a [later step](), so note it
+> down somewhere
+
+1.6) Create Firewall rules to expose the Web UI and [noVNC](https://novnc.com/info.html)
 ```sh
 gcloud compute firewall-rules create default-allow-novnc \
     --network default \
@@ -112,7 +127,7 @@ gcloud compute firewall-rules create default-allow-https \
     --allow tcp:443
 ```
 
-1.6) SSH into the VM and install KVM
+1.7) SSH into the VM and install KVM
 ```sh
 # SSH into the GCE instance
 gcloud compute ssh openstack-1 --zone ${ZONE}
@@ -122,7 +137,7 @@ sudo -i
 apt-get update && apt-get install qemu-kvm -y
 ```
 
-1.7) Verify that KVM has been installed successfully
+1.8) Verify that KVM has been installed successfully
 ```sh
 kvm-ok
 
@@ -175,6 +190,7 @@ scripts/bootstrap-aio.sh
 
 2.4) Make a change to the Ansible playbook configs to overcome a [known issue](https://bugs.launchpad.net/openstack-ansible/+bug/1903344)
 ```sh
+# open the configuration file and make the changes described below in comments
 vi /etc/ansible/roles/openstack_hosts/defaults/main.yml
 
 # Inside vi editor:
@@ -205,11 +221,48 @@ openstack-ansible \
 
 ### 3. Setup proper TLS certificates for accessing OpenStack your workstation
 
-3.1) Download the utility script to create a self-signed certificate with IP SAN
+3.1) Download the [utility script](/anthos-bm-openstack-terraform/resources/create-certs.sh)
+to create a self-signed certificate with IP SAN
 ```sh
-curl -O https://gist.githubusercontent.com/sethvargo/81227d2316207b7bd110df328d83fad8/raw/836c5c2650584d3279cb386f17b2a00aa91008fd/create-certs.sh
+wget https://raw.githubusercontent.com/GoogleCloudPlatform/anthos-samples/main/anthos-bm-openstack-terraform/resources/create-certs.sh
 ```
 
 3.2) Edit the script to match your IP addresses and hostnames
 ```sh
+# open the downloaded script and make the changes described below in comments
+vi create-certs.sh
+
+# replace every occurence of <EXTERNAL_IP> with the external IP of this GCE VM
+# replace every occurence of <INTERNAL_IP> with the external IP of this GCE VM
+```
+
+3.3) Generate the certificates using the downloaded [utility script](/anthos-bm-openstack-terraform/resources/create-certs.sh)
+```sh
+# running this will create all the necessary certificates inside a folder called "tls"
+bash create-certs.sh
+```
+
+3.4) Configure the **OpenStack HA-Proxy** to use the newly generated certificate
+files
+```sh
+# move the necessary files to proper location
+mkdir /etc/openstack_deploy/ssl/
+cp tls/my-service.crt /etc/openstack_deploy/ssl/openstack.crt
+cp tls/my-service.key /etc/openstack_deploy/ssl/openstack.key
+cp tls/ca.crt /etc/openstack_deploy/ssl/ca.crt
+
+# Update the configuration file to point to these file paths
+cat >> /etc/openstack_deploy/user_variables.yml << EOF
+haproxy_user_ssl_cert: /etc/openstack_deploy/ssl/openstack.crt
+haproxy_user_ssl_key: /etc/openstack_deploy/ssl/openstack.key
+haproxy_user_ssl_ca_cert: /etc/openstack_deploy/ssl/ca.crt
+EOF
+
+# run the ansible playbook to configure the ha-proxy
+cd /opt/openstack-ansible/playbooks/
+openstack-ansible haproxy-install.yml
+
+# -----------------------------------------------------
+#                   Expected Output
+# -----------------------------------------------------
 ```
