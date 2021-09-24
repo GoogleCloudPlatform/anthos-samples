@@ -7,7 +7,7 @@ metal in High Availability (HA) mode using Virtual Machines (VMs) running on
 already have a similar OpenStack environment running.
 
 If you don't have an OpenStack environment and still want to try this sample
-then first follow [this guide](/docs/install_openstack_on_gce.md) to get an
+then first follow [this guide](/anthos-bm-openstack-terraform/docs/install_openstack_on_gce.md) to get an
 OpenStack _(Ussuri)_ environment running on a [Google Compute Engine VM with _nested KVM_](https://cloud.google.com/compute/docs/instances/nested-virtualization/overview).
 
 ### Pre-requisites
