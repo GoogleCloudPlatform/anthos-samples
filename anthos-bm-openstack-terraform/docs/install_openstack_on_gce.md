@@ -271,12 +271,12 @@ aio1_octavia_server_container-96d05879 : ok=231  changed=133  unreachable=0    f
 aio1_placement_container-fb0d80cc : ok=178  changed=93   unreachable=0    failed=0    skipped=35   rescued=0    ignored=0
 aio1_rabbit_mq_container-1bde823a : ok=147  changed=70   unreachable=0    failed=0    skipped=23   rescued=0    ignored=0
 aio1_repo_container-043a9681 : ok=112  changed=59   unreachable=0    failed=0    skipped=24   rescued=0    ignored=0
-aio1_utility_container-d8e19ea8 : ok=218  changed=114  unreachable=0    failed=1    skipped=76   rescued=0    ignored=0
+aio1_utility_container-d8e19ea8 : ok=219  changed=114  unreachable=0    failed=0    skipped=76   rescued=0    ignored=0
 localhost                  : ok=3    changed=3    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
 
 
 
-EXIT NOTICE [Playbook execution failure] **************************************
+EXIT NOTICE [Playbook execution success] **************************************
 ===============================================================================
 ```
 > **Note 1:** _This step can take upto ***X minutes*** to complete_
