@@ -67,7 +67,7 @@ gcloud compute images create ubuntu-2004-nested \
 
 1.4) Create the GCE VM where we will install and run OpenStack
 ```sh
-gcloud compute instances create openstack-1
+gcloud compute instances create openstack-1 \
     --zone ${ZONE} \
     --image ubuntu-2004-nested \
     --boot-disk-size 600G \
