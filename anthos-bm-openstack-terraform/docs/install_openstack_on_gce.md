@@ -25,6 +25,8 @@ OpenStack spins up user VMs in the GCE VM.
   - [OpenStack CLI Client](https://docs.openstack.org/newton/user-guide/common/cli-install-openstack-command-line-clients.html) (>= 5.5.x)
   - [sshuttle tool](https://sshuttle.readthedocs.io/en/stable/)
 
+- **Time**:
+  - This entire guide can take upto **90 minutes** to complete
 ---
 
 ### 1. Create a GCE instance with KVM enabled in Google Cloud Platform
@@ -508,8 +510,8 @@ export OS_CACERT=~/.ssh/openstack-ca.crt
 #### 4.7) Access the APIs using the **openstack CLI** client and the **OpenStack** Web UI
 
 With the *VPN tunnel* running and the `OS_CACERT` environment variable set, you
-should be able to use the **openstack CLI** client and also access the **OpenStack**
-Web UI via the *Internal IP* of the GCE VM **from your local workstation**.
+should be able to use the **openstack CLI** client and also access the **OpenStack Web UI**
+via the *Internal IP* of the GCE VM **from your local workstation**.
 
 ```sh
 openstack endpoint list
@@ -537,14 +539,14 @@ echo https://$INTERNAL_IP
 ```
 ---
 
-### Pro Tip!
+### Pro Tip (Optional)!
 
 If you want to re-create a similar **OpenStack installation on GCE VM** again,
 now is a good time to `Create new machine image` of the GCE VM we created in
 this guide.
 
 Next time, instead of running all the steps above you can simply create a VM
-from thi machine image.
+from this machine image.
 
 <p align="center">
   <img src="images/create-machine-image.png">
@@ -553,5 +555,9 @@ from thi machine image.
 ---
 ### Clean up
 
-- If you used a fresh Google Cloud Project, then simply delete it
-- If you used an existing Google Cloud Project, then just delete the GCE VM `openstack-1`
+- If you used a fresh Google Cloud Project, then you can simply delete it
+- If you used an existing Google Cloud Project, then delete the following resources:
+  - The [Compute Engine VM](https://console.google.com/compute/instances): `openstack-1`
+  - The [Storage Disks](https://console.google.com/compute/disks): `openstack-1` and `ubuntu2004disk`
+  - The [Storage Image](https://console.google.com/compute/images): `ubuntu-2004-nested`
+  - The [Firewall Rules](https://console.google.com/networking/firewalls/list): `default-allow-novnc` and  `default-allow-openstack-apis`
