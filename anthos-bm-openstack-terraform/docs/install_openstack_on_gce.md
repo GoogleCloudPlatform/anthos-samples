@@ -208,16 +208,8 @@ scripts/bootstrap-aio.sh
 # -----------------------------------------------------
 #                   Expected Output
 # -----------------------------------------------------
-TASK [Check that new network interfaces are up] *************************************************************************************************************************
-ok: [localhost] => {
-    "changed": false,
-    "msg": "All assertions passed"
-}
-
 PLAY RECAP *************************************************************************************************************************
 localhost                  : ok=130  changed=61   unreachable=0    failed=0    skipped=39   rescued=0    ignored=0
-
-
 
 EXIT NOTICE [Playbook execution success] **************************************
 ===============================================================================
@@ -237,7 +229,7 @@ EXIT NOTICE [Playbook execution success] **************************************
 vi /etc/ansible/roles/openstack_hosts/defaults/main.yml
 
 # inside the vi editor:
-#   - Go to line 109 by typing :109 then [return] key
+#   - Go to line 109 by typing [:109] then [return] key
 #   - The line should have "109:  - { key: 'net.bridge.bridge-nf-call-iptables', value: 1 }"
 #   - Go to the end of the line and delete "1" by pressing [x] whilst the cursor is on it
 #   - Then, press [i] to get into insert mode and add "0" to where there was "1" before
@@ -246,8 +238,7 @@ vi /etc/ansible/roles/openstack_hosts/defaults/main.yml
 #       109:  - { key: 'net.bridge.bridge-nf-call-iptables', value: 0 }
 ```
 
-#### 2.5) Run the ansible-playbooks to install **OpenStack Ussuri** on the GCE
-instance.
+#### 2.5) Run the ansible-playbooks to install **OpenStack Ussuri** on the GCE instance.
 ```sh
 openstack-ansible \
     playbooks/setup-hosts.yml \
@@ -259,24 +250,22 @@ openstack-ansible \
 # -----------------------------------------------------
 
 PLAY RECAP *************************************************************************************************************************
-aio1                       : ok=500  changed=216  unreachable=0    failed=0    skipped=204  rescued=0    ignored=0
-aio1_barbican_container-0de710ea : ok=183  changed=100  unreachable=0    failed=0    skipped=42   rescued=0    ignored=0
-aio1_cinder_api_container-ad124741 : ok=238  changed=116  unreachable=0    failed=0    skipped=51   rescued=0    ignored=0
-aio1_galera_container-74407745 : ok=140  changed=71   unreachable=0    failed=0    skipped=20   rescued=0    ignored=0
-aio1_glance_container-a54deb97 : ok=206  changed=103  unreachable=0    failed=0    skipped=45   rescued=0    ignored=0
-aio1_horizon_container-5f9448d5 : ok=152  changed=83   unreachable=0    failed=0    skipped=31   rescued=0    ignored=0
-aio1_keystone_container-0e3600da : ok=208  changed=103  unreachable=0    failed=0    skipped=63   rescued=0    ignored=0
-aio1_memcached_container-13f77ac9 : ok=103  changed=54   unreachable=0    failed=0    skipped=18   rescued=0    ignored=0
-aio1_neutron_server_container-58626da0 : ok=175  changed=95   unreachable=0    failed=0    skipped=36   rescued=0    ignored=0
-aio1_nova_api_container-5e6a8727 : ok=235  changed=115  unreachable=0    failed=0    skipped=56   rescued=0    ignored=0
-aio1_octavia_server_container-96d05879 : ok=231  changed=133  unreachable=0    failed=0    skipped=37   rescued=0    ignored=0
-aio1_placement_container-fb0d80cc : ok=178  changed=93   unreachable=0    failed=0    skipped=35   rescued=0    ignored=0
-aio1_rabbit_mq_container-1bde823a : ok=147  changed=70   unreachable=0    failed=0    skipped=23   rescued=0    ignored=0
-aio1_repo_container-043a9681 : ok=112  changed=59   unreachable=0    failed=0    skipped=24   rescued=0    ignored=0
-aio1_utility_container-d8e19ea8 : ok=219  changed=114  unreachable=0    failed=0    skipped=76   rescued=0    ignored=0
-localhost                  : ok=3    changed=3    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
-
-
+aio1                                    : ok=500  changed=216  unreachable=0    failed=0    skipped=204  rescued=0    ignored=0
+aio1_barbican_container-0de710ea        : ok=183  changed=100  unreachable=0    failed=0    skipped=42   rescued=0    ignored=0
+aio1_cinder_api_container-ad124741      : ok=238  changed=116  unreachable=0    failed=0    skipped=51   rescued=0    ignored=0
+aio1_galera_container-74407745          : ok=140  changed=71   unreachable=0    failed=0    skipped=20   rescued=0    ignored=0
+aio1_glance_container-a54deb97          : ok=206  changed=103  unreachable=0    failed=0    skipped=45   rescued=0    ignored=0
+aio1_horizon_container-5f9448d5         : ok=152  changed=83   unreachable=0    failed=0    skipped=31   rescued=0    ignored=0
+aio1_keystone_container-0e3600da        : ok=208  changed=103  unreachable=0    failed=0    skipped=63   rescued=0    ignored=0
+aio1_memcached_container-13f77ac9       : ok=103  changed=54   unreachable=0    failed=0    skipped=18   rescued=0    ignored=0
+aio1_neutron_server_container-58626da0  : ok=175  changed=95   unreachable=0    failed=0    skipped=36   rescued=0    ignored=0
+aio1_nova_api_container-5e6a8727        : ok=235  changed=115  unreachable=0    failed=0    skipped=56   rescued=0    ignored=0
+aio1_octavia_server_container-96d05879  : ok=231  changed=133  unreachable=0    failed=0    skipped=37   rescued=0    ignored=0
+aio1_placement_container-fb0d80cc       : ok=178  changed=93   unreachable=0    failed=0    skipped=35   rescued=0    ignored=0
+aio1_rabbit_mq_container-1bde823a       : ok=147  changed=70   unreachable=0    failed=0    skipped=23   rescued=0    ignored=0
+aio1_repo_container-043a9681            : ok=112  changed=59   unreachable=0    failed=0    skipped=24   rescued=0    ignored=0
+aio1_utility_container-d8e19ea8         : ok=219  changed=114  unreachable=0    failed=0    skipped=76   rescued=0    ignored=0
+localhost                               : ok=3    changed=3    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
 
 EXIT NOTICE [Playbook execution success] **************************************
 ===============================================================================
@@ -300,9 +289,6 @@ wget https://raw.githubusercontent.com/GoogleCloudPlatform/anthos-samples/main/a
 
 #### 3.2) Edit the script to match your IP addresses and hostnames.
 ```sh
-# open the downloaded script and make the changes described below in comments
-vi create-certs.sh
-
 # replace 'xx.xx.xx.xx' in the following command with the External IP of this GCE VM
 sed -i 's/<EXTERNAL_IP>/xx.xx.xx.xx/g' create-certs.sh
 
@@ -339,23 +325,8 @@ openstack-ansible haproxy-install.yml
 # -----------------------------------------------------
 #                   Expected Output
 # -----------------------------------------------------
-
-
-TASK [haproxy_server : Make log socket available to chrooted filesystem] *************************************************************************************************************************
-ok: [aio1]
-
-RUNNING HANDLER [haproxy_server : regen pem] *************************************************************************************************************************
-changed: [aio1]
-
-RUNNING HANDLER [haproxy_server : Reload haproxy] *************************************************************************************************************************
-changed: [aio1]
-
-TASK [haproxy_server : include_tasks] *************************************************************************************************************************
-
 PLAY RECAP *************************************************************************************************************************
 aio1                       : ok=29   changed=5    unreachable=0    failed=0    skipped=20   rescued=0    ignored=0
-
-
 
 EXIT NOTICE [Playbook execution success] **************************************
 ===============================================================================
@@ -408,18 +379,12 @@ grep "keystone_auth_admin_password" /etc/openstack_deploy/user_secrets.yml
 
 #### 4.3) Exit out of the GCE instance where **OpenStack** is running.
 ```sh
-# exit from screen session inside the GCE VM
-exit
-
-# exit from sudo user inside the GCE VM
-exit
-
-# exit from the SSH session to GCE VM altogether
+# you might have to type exit 2 times or 3-times until you get to your workstation shell
+# workstation -> GCE VM -> sudo user in GCE VM -> screen session
 exit
 ```
 
-#### 4.3) Access the **OpenStack** API server via the `External IP` of the GCE
-instance.
+#### 4.3) Access the **OpenStack** API server via the `External IP` of the GCE instance.
 ```sh
 ### NOTE: YOU MUST BE IN THE ORIGINAL TERMINAL SESSION IN YOUR WORKSTATION
 
@@ -429,8 +394,8 @@ echo https://$EXTERNAL_IP
 ```
 
 Copy the output of the previous step and try accessing it _(URL)_ in a browser.
-Use `admin` as the **username** and the value copied from step **4.2** as the
-`password` to log into the **OpenStack UI**.
+Use `admin` as the **username** and the value copied from step **[4.2](#42-get-the-password-for-the-openstack-admin-user)**
+as the `password` to log into the **OpenStack UI**.
 
 <p align="center">
   <img src="images/openstack-login.png">
@@ -446,17 +411,16 @@ file. This file contains the configurations needed by the `openstack CLI client`
   <img src="images/openstack-download-config.png">
 </p>
 
-#### 4.4) Move and source the downloaded `admin-openrc.sh` file into your working directory in the
-current terminal.
+#### 4.4) Move and source the downloaded `admin-openrc.sh` file into your working directory in the current terminal.
 
 ```sh
 mv <DOWNLOAD_PATH>/admin-openrc.sh ./
+
+# you will see a prompt to enter the password; use the password from step 4.2
 source ./admin-openrc.sh
 ```
 
-#### 4.5) The **openstack CLI** client uses the ***keystone identity API*** for
-authentication. The ***keystone identity API*** is only reachable via the
-*Internal IP* address of the GCE VM.
+#### 4.5) The **openstack CLI** client uses the ***keystone identity API*** for authentication. The ***keystone identity API*** is only reachable via the *Internal IP* address of the GCE VM.
 
 You can notice _(if you see the contents of the `admin-openrc.sh` file)_ the
 `OS_AUTH_URL` is set to point to the *Intenal IP* of the GCE VM. However, since
@@ -474,8 +438,21 @@ sshuttle -r <YOUR_GCP_USERNAME>@<EXTERNAL_IP> 10.0.0.0/8 172.16.0.0/12 192.168.0
 Keep it running and continue with the next steps in your original terminal
 window.
 
-#### 4.6) Now you should be able to use the **openstack CLI** client and also access
-the **OpenStack** Web UI via the *Internal IP* of the GCE VM.
+#### 4.6) Download the `CA Certificate`
+
+This is the `CA Certificate` created when configuring the **OpenStack HA-Proxy**
+in step [**3.4**](#34-configure-the-openstack-ha-proxy-to-use-the-newly-generated-certificate).
+This certificate is required by openstack clients.
+
+```sh
+gcloud compute scp --zone=${ZONE} \
+    root@openstack-1:/opt/openstack-ansible/tls/ca.crt \
+    ~/.ssh/openstack-ca.crt
+
+export OS_CACERT=~/.ssh/openstack-ca.crt
+```
+
+#### 4.7) Now you should be able to use the **openstack CLI** client and also access the **OpenStack** Web UI via the *Internal IP* of the GCE VM.
 
 ```sh
 openstack endpoint list
@@ -503,22 +480,6 @@ echo https://$INTERNAL_IP
 ```
 ---
 
-### Optional
-
-If you intend to use this **OpenStack setup running on GCE** to configure the
-*VMs that will run Anthos on Bare Metal* using the [terrafrom scripts](/anthos-bm-openstack-terraform/README.md)
-provided in this sample then you will need to download the `CA Certificate`.
-This is the `CA Certificate` created when configuring the **OpenStack HA-Proxy**.
-This certificate is required for the **OpenStack Terraform Provider**.
-
-```sh
-gcloud compute scp --zone=${ZONE} \
-    root@openstack-1:/opt/openstack-ansible/tls/ca.crt
-    ~/.ssh/openstack-ca.crt
-
-export OS_CACERT=~/.ssh/openstack-ca.crt
-```
----
 ### Pro Tip!
 
 If you want to re-create a similar **OpenStack installation on GCE VM** again,
