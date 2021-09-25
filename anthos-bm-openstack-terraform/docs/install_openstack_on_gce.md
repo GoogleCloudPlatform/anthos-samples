@@ -479,20 +479,22 @@ the *Intenal IP* is only reachable from within the Google Cloud VPC we will use
 [sshuttle](https://sshuttle.readthedocs.io/en/stable/) to set up a VPN tunnel
 to route **OpenStack** traffic via the *External IP* of the GCE VM.
 
-In a seperate new terminal window execute the following command:
+In a ***seperate new terminal window*** execute the following command:
 - Replace `<YOUR_GCP_USERNAME>` with the username associated to to the Google Cloud Account you are using
-- Replace `<EXTERNAL_IP>` with the External IP of the GCE VM _(the new terminal will not have the environment variable)_
+- Replace `<EXTERNAL_IP>` with the External IP of the GCE VM from [**1.5**](#15-get-the-internal-and-external-ips-assigned-to-the-created-gce-vm) _(the new terminal will not have the environment variable)_
+
+Keep it running and continue with the next steps in your ***original terminal window***.
+
 ```sh
 # this will route any traffic to IPs within the given CIDRs via the External IP of the VM
 sshuttle -r <YOUR_GCP_USERNAME>@<EXTERNAL_IP> 10.0.0.0/8 172.16.0.0/12 192.168.0.0/16
 ```
-Keep it running and continue with the next steps in your original terminal
-window.
+
 
 #### 4.6) Download the `CA Certificate`
 
 This is the `CA Certificate` created when configuring the **OpenStack HA-Proxy**
-in step [**3.4**](#34-configure-the-openstack-ha-proxy-to-use-the-newly-generated-certificate).
+in step [**3.4**](#34-configure-the-openstack-ha-proxy-to-use-the-newly-generated-certificate-files).
 This certificate is required by openstack clients.
 
 ```sh
