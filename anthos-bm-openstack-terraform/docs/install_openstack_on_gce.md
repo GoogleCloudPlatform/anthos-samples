@@ -505,7 +505,11 @@ gcloud compute scp --zone=${ZONE} \
 export OS_CACERT=~/.ssh/openstack-ca.crt
 ```
 
-#### 4.7) Now you should be able to use the **openstack CLI** client and also access the **OpenStack** Web UI via the *Internal IP* of the GCE VM.
+#### 4.7) Access the APIs using the **openstack CLI** client and the **OpenStack** Web UI
+
+With the *VPN tunnel* running and the `OS_CACERT` environment variable set, you
+should be able to use the **openstack CLI** client and also access the **OpenStack**
+Web UI via the *Internal IP* of the GCE VM **from your local workstation**.
 
 ```sh
 openstack endpoint list
