@@ -556,7 +556,7 @@ from this machine image.
 
 - If you used a fresh Google Cloud Project, then you can simply delete it
 - If you used an existing Google Cloud Project, then delete the following resources:
-  - The [Compute Engine VM](https://console.google.com/compute/instances): `openstack-1`
-  - The [Storage Disks](https://console.google.com/compute/disks): `openstack-1` and `ubuntu2004disk`
-  - The [Storage Image](https://console.google.com/compute/images): `ubuntu-2004-nested`
-  - The [Firewall Rules](https://console.google.com/networking/firewalls/list): `default-allow-novnc` and  `default-allow-openstack-apis`
+  - The [Compute Engine VM](https://console.cloud.google.com/compute/instances): `openstack-1`
+  - The [Storage Disks](https://console.cloud.google.com/compute/disks): `openstack-1` and `ubuntu2004disk`
+  - The [Storage Image](https://console.cloud.google.com/compute/images): `ubuntu-2004-nested`
+  - The [Firewall Rules](https://console.cloud.google.com/networking/firewalls/list): `default-allow-novnc` and  `default-allow-openstack-apis`
