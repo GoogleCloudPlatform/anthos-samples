@@ -237,7 +237,6 @@ diff /etc/ansible/roles/openstack_hosts/defaults/main.yml /etc/ansible/roles/ope
 # -----------------------------------------------------
 #                   Expected Output
 # -----------------------------------------------------
-
 109c109
 <   - { key: 'net.bridge.bridge-nf-call-iptables', value: 0 }
 ---
@@ -254,7 +253,6 @@ openstack-ansible \
 # -----------------------------------------------------
 #                   Expected Output
 # -----------------------------------------------------
-
 PLAY RECAP *************************************************************************************************************************
 aio1                                    : ok=500  changed=216  unreachable=0    failed=0    skipped=204  rescued=0    ignored=0
 aio1_barbican_container-0de710ea        : ok=183  changed=100  unreachable=0    failed=0    skipped=42   rescued=0    ignored=0
@@ -277,41 +275,82 @@ EXIT NOTICE [Playbook execution success] **************************************
 ===============================================================================
 ```
 
-> **Note 1:** _This step can take upto ***45 minutes*** to complete_
+> **Note 1:** _This step can take upto ***55 minutes*** to complete_
 >
-> **Note 2:** Sometimes you might hit an issue where the **setup-hosts.yml** playbook hangs with `RETRYING: Ensure that the LXC cache has been prepared (14 retries left)`. The root cause is that downloading the packages sometimes gets stuck, so just rerun the playbook **openstack-ansible playbooks/setup-hosts.yml**. You can read more about using openstack-ansible [here](https://docs.openstack.org/openstack-ansible/stein/user/aio/quickstart.html)
+> **Note 2:** If the output says `Playbook execution failed` and the only
+> failure was (`failed=1`) on the **aio1_utility_container**, then you can
+> safely ignore it and continue
 >
-> **Note 3:** You can safely ignore the 1 failure in setting up the **aio1_utility_container** in the above output
+> **Note 3:** Sometimes you might hit an issue where the **setup-hosts.yml** playbook hangs with `RETRYING: Ensure that the LXC cache has been prepared (14 retries left)`. The root cause is that downloading the packages sometimes gets stuck, so just rerun the playbook **openstack-ansible playbooks/setup-hosts.yml**. You can read more about using openstack-ansible [here](https://docs.openstack.org/openstack-ansible/stein/user/aio/quickstart.html)
+>
+>
 
 ---
 
 ### 3. Setup proper TLS certificates for accessing OpenStack your workstation
 
-#### 3.1) Download the [utility script](/anthos-bm-openstack-terraform/resources/create-certs.sh)
-to create a self-signed certificate with IP SAN.
+#### 3.1) Download the [utility script](/anthos-bm-openstack-terraform/resources/create-certs.sh) to create a self-signed certificate with IP SAN.
+
 ```sh
 wget https://raw.githubusercontent.com/GoogleCloudPlatform/anthos-samples/main/anthos-bm-openstack-terraform/resources/create-certs.sh
 ```
 
 #### 3.2) Edit the script to match your IP addresses and hostnames.
 ```sh
+# make a copy of the script
+cp create-certs.sh.backup create-certs.sh
+
 # replace 'xx.xx.xx.xx' in the following command with the External IP of this GCE VM
 sed -i 's/<EXTERNAL_IP>/xx.xx.xx.xx/g' create-certs.sh
 
 # replace 'xx.xx.xx.xx' in the following command with the Internal IP of this GCE VM
 sed -i 's/<INTERNAL_IP>/xx.xx.xx.xx/g' create-certs.sh
 
-# validate that the "create-certs.sh" file has
+# validate that the changes to the script
+diff create-certs.sh create-certs.sh.backup
+
+# -----------------------------------------------------
+#                   Expected Output
+# -----------------------------------------------------
+31c31
+< CN = 35.222.172.0
+---
+> CN = <EXTERNAL_IP>
+45,54c45,54
+< IP.1  = 35.222.172.0
+< IP.2  = 10.128.0.2
+< DNS.1 = 35.222.172.0
+< DNS.2 = 35.222.172.0:5000
+< DNS.3 = 35.222.172.0:9876
+< DNS.4 = 35.222.172.0:8780
+< DNS.5 = 10.128.0.2
+< DNS.6 = 10.128.0.2:5000
+< DNS.7 = 10.128.0.2:9876
+< DNS.8 = 10.128.0.2:8780
+---
+> IP.1  = <EXTERNAL_IP>
+> IP.2  = <INTERNAL_IP>
+> DNS.1 = <EXTERNAL_IP>
+> DNS.2 = <EXTERNAL_IP>:5000
+> DNS.3 = <EXTERNAL_IP>:9876
+> DNS.4 = <EXTERNAL_IP>:8780
+> DNS.5 = <INTERNAL_IP>
+> DNS.6 = <INTERNAL_IP>:5000
+> DNS.7 = <INTERNAL_IP>:9876
+> DNS.8 = <INTERNAL_IP>:8780
 ```
 
+> **Note:** The IP addresses in the above output will be different for you
+
 #### 3.3) Generate the certificates using the downloaded [utility script](/anthos-bm-openstack-terraform/resources/create-certs.sh).
+
 ```sh
 # running this will create all the necessary certificates inside a folder called "tls"
 bash create-certs.sh
 ```
 
-#### 3.4) Configure the **OpenStack HA-Proxy** to use the newly generated certificate
-files.
+#### 3.4) Configure the **OpenStack HA-Proxy** to use the newly generated certificate files.
+
 ```sh
 # move the necessary files to proper location
 mkdir /etc/openstack_deploy/ssl/
@@ -340,7 +379,7 @@ EXIT NOTICE [Playbook execution success] **************************************
 ===============================================================================
 ```
 
-> **Note 1:** _This step can take upto ***40 seconds*** to complete_
+> **Note:** _This step can take upto ***40 seconds*** to complete_
 
 ### 4. Access and validate the deployed environment
 
@@ -428,7 +467,11 @@ mv <DOWNLOAD_PATH>/admin-openrc.sh ./
 source ./admin-openrc.sh
 ```
 
-#### 4.5) The **openstack CLI** client uses the ***keystone identity API*** for authentication. The ***keystone identity API*** is only reachable via the *Internal IP* address of the GCE VM.
+#### 4.5) Create a VPN tunnel to route traffic to the **OpenStack** APIs
+
+The **openstack CLI** client uses the ***keystone identity API*** for
+authentication. The ***keystone identity API*** is only reachable via the
+*Internal IP* address of the GCE VM.
 
 You can notice _(if you see the contents of the `admin-openrc.sh` file)_ the
 `OS_AUTH_URL` is set to point to the *Intenal IP* of the GCE VM. However, since
