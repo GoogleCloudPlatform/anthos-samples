@@ -34,7 +34,7 @@ a special license attached. Note that this is required; at this point in time
 you can not enable nested KVM without this license being attached. So you have
 to create a new GCE VM and can’t use nested KVM on an existing GCE instance.
 
-1.1) Setup your environment.
+#### 1.1) Setup your environment.
 ```sh
 export PROJECT_ID="<YOUR_GCP_PROJECT_ID>"
 export REGION="us-central1"   # this is an example; change to your preferred choice
@@ -49,7 +49,7 @@ gcloud config set compute/zone "${ZONE}"
 > **Note:** This step can take upto **90 seconds** to complete given the step for
 > enabling the `Compute` APIs
 
-1.2) Create a Compute Engine Disk.
+#### 1.2) Create a Compute Engine Disk.
 ```sh
 gcloud compute disks create ubuntu2004disk \
     --image-project ubuntu-os-cloud \
@@ -57,7 +57,7 @@ gcloud compute disks create ubuntu2004disk \
     --zone ${ZONE}
 ```
 
-1.3) Create a `Ubuntu 20.04` image with the _required license for nested virtualization_.
+#### 1.3) Create a `Ubuntu 20.04` image with the _required license for nested virtualization_.
 ```sh
 gcloud compute images create ubuntu-2004-nested \
     --source-disk ubuntu2004disk \
@@ -65,7 +65,7 @@ gcloud compute images create ubuntu-2004-nested \
     --licenses "https://www.googleapis.com/compute/v1/projects/vm-options/global/licenses/enable-vmx"
 ```
 
-1.4) Create the GCE VM where we will install and run OpenStack.
+#### 1.4) Create the GCE VM where we will install and run OpenStack.
 ```sh
 gcloud compute instances create openstack-1 \
     --zone ${ZONE} \
@@ -79,7 +79,7 @@ gcloud compute instances create openstack-1 \
     --machine-type n1-standard-32
 ```
 
-1.5) Get the `Internal` and `External` IPs assigned to the created GCE VM.
+#### 1.5) Get the `Internal` and `External` IPs assigned to the created GCE VM.
 ```sh
 # get the internal IP
 export INTERNAL_IP=$(gcloud compute instances describe openstack-1 \
@@ -99,7 +99,7 @@ echo $EXTERNAL_IP
 > **Note:** We will need these two IP addresses in a [later step](#3-setup-proper-tls-certificates-for-accessing-openstack-your-workstation), so note it
 > down somewhere
 
-1.6) Create Firewall rules to expose the Web UI and [noVNC](https://novnc.com/info.html).
+#### 1.6) Create Firewall rules to expose the Web UI and [noVNC](https://novnc.com/info.html).
 ```sh
 gcloud compute firewall-rules create default-allow-novnc \
     --network default \
@@ -115,7 +115,7 @@ gcloud compute firewall-rules create default-allow-openstack-apis \
     --direction ingress \
     --allow tcp:8773-8777
 
-# The remaining 2 firewall rules are likely already created so don't worry if it
+# The following 2 firewall rules are likely already created so don't worry if it
 # fails with: "The resource 'bl/default-allow-http' already exists"
 gcloud compute firewall-rules create default-allow-http \
     --network default \
@@ -132,7 +132,7 @@ gcloud compute firewall-rules create default-allow-https \
     --allow tcp:443
 ```
 
-1.7) SSH into the VM and install KVM.
+#### 1.7) SSH into the VM and install KVM.
 ```sh
 # SSH into the GCE instance
 gcloud compute ssh openstack-1 --zone ${ZONE}
@@ -158,7 +158,7 @@ KVM acceleration can be used
 ---
 ### 2. Install _OpenStack Ussuri_ using the _openstack-ansible in all-in-one_ mode
 
-2.1) Clone the **OpenStack** repository into the GCE instance.
+#### 2.1) Clone the **OpenStack** repository into the GCE instance.
 ```sh
 ### NOTE: YOU MUST BE SSH'ed INTO THE 'openstack-1' GCE VM WE CREATED
 
@@ -171,7 +171,7 @@ cd /opt/openstack-ansible
 git checkout stable/ussuri
 ```
 
-2.2) Install [Ansible](https://www.ansible.com/) and all the required Ansible
+#### 2.2) Install [Ansible](https://www.ansible.com/) and all the required Ansible
 roles on the GCE instance.
 ```sh
 scripts/bootstrap-ansible.sh
@@ -197,9 +197,9 @@ localhost                  : ok=9    changed=3    unreachable=0    failed=0    s
 + echo 'System is bootstrapped and ready for use.'
 System is bootstrapped and ready for use.
 ```
-> **Note:** _This step can take upto ***X seconds*** to complete_
+> **Note:** _This step can take upto ***3 minutes and 30 seconds*** to complete_
 
-2.3) Setup the environment on the GCE instance for **OpenStack** installation.
+#### 2.3) Setup the environment on the GCE instance for **OpenStack** installation.
 ```sh
 export SCENARIO='aio_lxc_barbican_octavia'
 # run the following script again if you hit any issues
@@ -229,7 +229,9 @@ EXIT NOTICE [Playbook execution success] **************************************
 + unset GROUP_VARS_PATH
 ```
 
-2.4) Make a change to the Ansible playbook configs to overcome a [known issue](https://bugs.launchpad.net/openstack-ansible/+bug/1903344).
+> **Note:** _This step can take upto ***2 minutes and 30 seconds*** to complete_
+
+#### 2.4) Make a change to the Ansible playbook configs to overcome a [known issue](https://bugs.launchpad.net/openstack-ansible/+bug/1903344).
 ```sh
 # open the configuration file and make the changes described below in comments
 vi /etc/ansible/roles/openstack_hosts/defaults/main.yml
@@ -244,7 +246,7 @@ vi /etc/ansible/roles/openstack_hosts/defaults/main.yml
 #       109:  - { key: 'net.bridge.bridge-nf-call-iptables', value: 0 }
 ```
 
-2.5) Run the ansible-playbooks to install **OpenStack Ussuri** on the GCE
+#### 2.5) Run the ansible-playbooks to install **OpenStack Ussuri** on the GCE
 instance.
 ```sh
 openstack-ansible \
@@ -279,7 +281,8 @@ localhost                  : ok=3    changed=3    unreachable=0    failed=0    s
 EXIT NOTICE [Playbook execution success] **************************************
 ===============================================================================
 ```
-> **Note 1:** _This step can take upto ***X minutes*** to complete_
+
+> **Note 1:** _This step can take upto ***45 minutes*** to complete_
 >
 > **Note 2:** Sometimes you might hit an issue where the **setup-hosts.yml** playbook hangs with `RETRYING: Ensure that the LXC cache has been prepared (14 retries left)`. The root cause is that downloading the packages sometimes gets stuck, so just rerun the playbook **openstack-ansible playbooks/setup-hosts.yml**. You can read more about using openstack-ansible [here](https://docs.openstack.org/openstack-ansible/stein/user/aio/quickstart.html)
 >
@@ -289,13 +292,13 @@ EXIT NOTICE [Playbook execution success] **************************************
 
 ### 3. Setup proper TLS certificates for accessing OpenStack your workstation
 
-3.1) Download the [utility script](/anthos-bm-openstack-terraform/resources/create-certs.sh)
+#### 3.1) Download the [utility script](/anthos-bm-openstack-terraform/resources/create-certs.sh)
 to create a self-signed certificate with IP SAN.
 ```sh
 wget https://raw.githubusercontent.com/GoogleCloudPlatform/anthos-samples/main/anthos-bm-openstack-terraform/resources/create-certs.sh
 ```
 
-3.2) Edit the script to match your IP addresses and hostnames.
+#### 3.2) Edit the script to match your IP addresses and hostnames.
 ```sh
 # open the downloaded script and make the changes described below in comments
 vi create-certs.sh
@@ -307,13 +310,13 @@ sed -i 's/<EXTERNAL_IP>/xx.xx.xx.xx/g' create-certs.sh
 sed -i 's/<INTERNAL_IP>/xx.xx.xx.xx/g' create-certs.sh
 ```
 
-3.3) Generate the certificates using the downloaded [utility script](/anthos-bm-openstack-terraform/resources/create-certs.sh).
+#### 3.3) Generate the certificates using the downloaded [utility script](/anthos-bm-openstack-terraform/resources/create-certs.sh).
 ```sh
 # running this will create all the necessary certificates inside a folder called "tls"
 bash create-certs.sh
 ```
 
-3.4) Configure the **OpenStack HA-Proxy** to use the newly generated certificate
+#### 3.4) Configure the **OpenStack HA-Proxy** to use the newly generated certificate
 files.
 ```sh
 # move the necessary files to proper location
@@ -358,9 +361,11 @@ EXIT NOTICE [Playbook execution success] **************************************
 ===============================================================================
 ```
 
+> **Note 1:** _This step can take upto ***40 seconds*** to complete_
+
 ### 4. Access and validate the deployed environment
 
-4.1) Validate access to the **OpenStack** server from inside the GCE VM.
+#### 4.1) Validate access to the **OpenStack** server from inside the GCE VM.
 ```sh
 ### NOTE: YOU MUST BE STILL SSH'ed INTO THE 'openstack-1' GCE VM WE CREATED
 
@@ -395,14 +400,17 @@ openstack endpoint list
 exit
 ```
 
-4.2) Get the `password` for the **OpenStack** admin user.
+#### 4.2) Get the `password` for the **OpenStack** admin user.
 ```sh
 # copy the output and note it somewhere
 grep "keystone_auth_admin_password" /etc/openstack_deploy/user_secrets.yml
 ```
 
-4.3) Exit out of the GCE instance where **OpenStack** is running.
+#### 4.3) Exit out of the GCE instance where **OpenStack** is running.
 ```sh
+# exit from screen session inside the GCE VM
+exit
+
 # exit from sudo user inside the GCE VM
 exit
 
@@ -410,7 +418,7 @@ exit
 exit
 ```
 
-4.3) Access the **OpenStack** API server via the `External IP` of the GCE
+#### 4.3) Access the **OpenStack** API server via the `External IP` of the GCE
 instance.
 ```sh
 ### NOTE: YOU MUST BE IN THE ORIGINAL TERMINAL SESSION IN YOUR WORKSTATION
@@ -438,7 +446,7 @@ file. This file contains the configurations needed by the `openstack CLI client`
   <img src="images/openstack-download-config.png">
 </p>
 
-4.4) Move and source the downloaded `admin-openrc.sh` file into your working directory in the
+#### 4.4) Move and source the downloaded `admin-openrc.sh` file into your working directory in the
 current terminal.
 
 ```sh
@@ -446,7 +454,7 @@ mv <DOWNLOAD_PATH>/admin-openrc.sh ./
 source ./admin-openrc.sh
 ```
 
-4.5) The **openstack CLI** client uses the ***keystone identity API*** for
+#### 4.5) The **openstack CLI** client uses the ***keystone identity API*** for
 authentication. The ***keystone identity API*** is only reachable via the
 *Internal IP* address of the GCE VM.
 
@@ -466,7 +474,7 @@ sshuttle -r <YOUR_GCP_USERNAME>@<EXTERNAL_IP> 10.0.0.0/8 172.16.0.0/12 192.168.0
 Keep it running and continue with the next steps in your original terminal
 window.
 
-4.6) Now you should be able to use the **openstack CLI** client and also access
+#### 4.6) Now you should be able to use the **openstack CLI** client and also access
 the **OpenStack** Web UI via the *Internal IP* of the GCE VM.
 
 ```sh
