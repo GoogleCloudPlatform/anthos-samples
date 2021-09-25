@@ -6,7 +6,7 @@ Compute Engine (GCE) VMs using [nested virtualization](https://cloud.google.com/
 The guide is split into 4 sections:
 - Create a GCE instance with KVM enabled in Google Cloud Platform
 - Install **OpenStack Ussuri** using the **[openstack-ansible in all-in-one](https://docs.openstack.org/openstack-ansible/latest/user/aio/quickstart.html)** mode
-- Setup proper TLS certificates for accessing OpenStack your workstation
+- Setup proper TLS certificates for accessing **OpenStack** your workstation
 - Access and validate the deployed environment
 
 Nested virtualization refers to the ability of running a virtual machine within
@@ -22,8 +22,8 @@ OpenStack spins up user VMs in the GCE VM.
 - A workstation with access to internet _(i.e. Google Cloud APIs)_ with the
   following installed
   - [Google Cloud SDK](https://cloud.google.com/sdk/docs/install)
-  - [OpenStack](https://docs.openstack.org/newton/user-guide/common/cli-install-openstack-command-line-clients.html) (>= 5.5.x)
-
+  - [OpenStack CLI Client](https://docs.openstack.org/newton/user-guide/common/cli-install-openstack-command-line-clients.html) (>= 5.5.x)
+  - [sshuttle tool](https://sshuttle.readthedocs.io/en/stable/)
 
 ---
 
@@ -46,7 +46,7 @@ gcloud services enable compute.googleapis.com
 gcloud config set compute/region "${REGION}"
 gcloud config set compute/zone "${ZONE}"
 ```
-> **Note:** This step can take upto 90 seconds to complete given the step for
+> **Note:** This step can take upto **90 seconds** to complete given the step for
 > enabling the `Compute` APIs
 
 1.2) Create a Compute Engine Disk
@@ -81,15 +81,20 @@ gcloud compute instances create openstack-1
 
 1.5) Get the `Internal` and `External` IPs assigned to the created GCE VM
 ```sh
-# get the internal IP and note it down
-gcloud compute instances describe openstack-1 \
+# get the internal IP
+export INTERNAL_IP=$(gcloud compute instances describe openstack-1 \
     --zone ${ZONE} \
-    --format='get(networkInterfaces[0].networkIP)'
+    --format='get(networkInterfaces[0].networkIP)')
 
-# get the external IP and note it down
-gcloud compute instances describe openstack-1 \
+# get the external IP
+export EXTERNAL_IP=$(gcloud compute instances describe openstack-1 \
     --zone ${ZONE} \
-    --format='get(networkInterfaces[0].accessConfigs[0].natIP)'
+    --format='get(networkInterfaces[0].accessConfigs[0].natIP)')
+
+# echo and note them down somewhere, since when you need it next you will be
+# SSH'ed into the GCE instance and won't have access to this shell session
+echo $INTERNAL_IP
+echo $EXTERNAL_IP
 ```
 > **Note:** We will need these two IP addresses in a [later step](#3-setup-proper-tls-certificates-for-accessing-openstack-your-workstation), so note it
 > down somewhere
@@ -155,7 +160,7 @@ KVM acceleration can be used
 
 2.1) Clone the **OpenStack** repository into the GCE instance
 ```sh
-### NOTE: YOU MUST BE SSH'ed INTO THE 'openstack-1' GCE VM we created earlier
+### NOTE: YOU MUST BE SSH'ed INTO THE 'openstack-1' GCE VM WE CREATED
 
 # start a screen session because some commands are going to take a while you
 # can always re-attach later with "screen -r -D" if you lose your SSH session
@@ -265,4 +270,75 @@ openstack-ansible haproxy-install.yml
 # -----------------------------------------------------
 #                   Expected Output
 # -----------------------------------------------------
+```
+
+### 4. Access and validate the deployed environment
+
+4.1) Validate access to the **OpenStack** server from inside the GCE VM
+```sh
+### NOTE: YOU MUST BE STILL SSH'ed INTO THE 'openstack-1' GCE VM WE CREATED
+
+# get into the utility container using the native lxc-attach command
+lxc-attach -n `lxc-ls -1 | grep utility | head -n 1`
+
+# now you should be inside the utility container
+source ~/openrc
+
+# see if you are able to list the endpoints from the OpenStack server
+openstack endpoint list
+
+# -----------------------------------------------------
+#                   Expected Output
+# -----------------------------------------------------
+
+
+# exit from the utility container
+exit
+```
+
+4.2) Get the `password` for the **OpenStack** admin user
+```sh
+# copy the output and note it somewhere
+grep "keystone_auth_admin_password" /etc/openstack_deploy/user_secrets.yml
+```
+
+4.3) Exit out of the GCE instance where **OpenStack** is running
+```sh
+# exit from sudo user inside the GCE VM
+exit
+
+# exit from the SSH session to GCE VM altogether
+exit
+```
+
+4.2) Access the **OpenStack** API server via the `External IP` of the GCE
+instance
+```sh
+### NOTE: YOU MUST BE IN THE ORIGINAL TERMINAL SESSION IN YOUR WORKSTATION
+
+# The terminal session should already have the `EXTERNAL_IP` environment variable
+# if not regenerate by following steps in section 1.5
+echo https://$EXTERNAL_IP
+```
+
+Copy the output of the previous step and try accessing it _(URL)_ in a browser.
+
+<TODO::: IMAGE OF LOGIN SCREEN>
+
+Use `admin` as the **username** and the value copied from step **4.2** as the
+`password` to log into the **OpenStack UI**.
+
+<TODO::: IMAGE OF LOGGED IN SCREEN>
+
+Use the toggle on the ***top right corner*** to download the `admin-openrc.sh`
+file. This file contains the configurations needed by the `openstack CLI client`.
+
+<TODO::: IMAGE OF DOWNLOADING OPENRC>
+
+
+
+```sh
+gcloud compute scp --zone=${ZONE} \
+    root@openstack-1:/opt/openstack-ansible/tls/ca.crt
+    ~/.ssh/openstack-ca.crt
 ```
