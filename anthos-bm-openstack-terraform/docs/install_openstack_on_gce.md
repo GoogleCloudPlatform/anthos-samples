@@ -25,8 +25,7 @@ OpenStack spins up user VMs in the GCE VM.
   - [OpenStack CLI Client](https://docs.openstack.org/newton/user-guide/common/cli-install-openstack-command-line-clients.html) (>= 5.5.x)
   - [sshuttle tool](https://sshuttle.readthedocs.io/en/stable/)
 
-- **Time**:
-  - This entire guide can take upto **90 minutes** to complete
+- **Time**: this entire guide can take upto **90 minutes** to complete
 ---
 
 ### 1. Create a GCE instance with KVM enabled in Google Cloud Platform
