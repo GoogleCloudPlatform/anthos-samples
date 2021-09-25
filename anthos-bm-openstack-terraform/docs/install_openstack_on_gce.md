@@ -142,7 +142,7 @@ sudo -i
 apt-get update && apt-get install qemu-kvm -y
 ```
 
-1.8) Verify that KVM has been installed successfully.
+#### 1.8) Verify that KVM has been installed successfully.
 ```sh
 kvm-ok
 
@@ -171,8 +171,7 @@ cd /opt/openstack-ansible
 git checkout stable/ussuri
 ```
 
-#### 2.2) Install [Ansible](https://www.ansible.com/) and all the required Ansible
-roles on the GCE instance.
+#### 2.2) Install [Ansible](https://www.ansible.com/) and all the required Ansible roles on the GCE instance.
 ```sh
 scripts/bootstrap-ansible.sh
 
@@ -225,17 +224,24 @@ EXIT NOTICE [Playbook execution success] **************************************
 
 #### 2.4) Make a change to the Ansible playbook configs to overcome a [known issue](https://bugs.launchpad.net/openstack-ansible/+bug/1903344).
 ```sh
-# open the configuration file and make the changes described below in comments
-vi /etc/ansible/roles/openstack_hosts/defaults/main.yml
+# take a copy of the configuration file
+cp /etc/ansible/roles/openstack_hosts/defaults/main.yml /etc/ansible/roles/openstack_hosts/defaults/main.yml.backup
 
-# inside the vi editor:
-#   - Go to line 109 by typing [:109] then [return] key
-#   - The line should have "109:  - { key: 'net.bridge.bridge-nf-call-iptables', value: 1 }"
-#   - Go to the end of the line and delete "1" by pressing [x] whilst the cursor is on it
-#   - Then, press [i] to get into insert mode and add "0" to where there was "1" before
-#   - Exit vi (ノಠ益ಠ)ノ彡┻━┻ by pressing: [Esc] then [:wq] and [return] key
-#   - Line 109 should look like this after the change:
-#       109:  - { key: 'net.bridge.bridge-nf-call-iptables', value: 0 }
+# change line 109 as follows
+sed -i "s/{ key: 'net.bridge.bridge-nf-call-iptables', value: 1 }/{ key: 'net.bridge.bridge-nf-call-iptables', value: 0 }/g" \
+        /etc/ansible/roles/openstack_hosts/defaults/main.yml
+
+# validate the change
+diff /etc/ansible/roles/openstack_hosts/defaults/main.yml /etc/ansible/roles/openstack_hosts/defaults/main.yml.backup
+
+# -----------------------------------------------------
+#                   Expected Output
+# -----------------------------------------------------
+
+109c109
+<   - { key: 'net.bridge.bridge-nf-call-iptables', value: 0 }
+---
+>   - { key: 'net.bridge.bridge-nf-call-iptables', value: 1 }
 ```
 
 #### 2.5) Run the ansible-playbooks to install **OpenStack Ussuri** on the GCE instance.
@@ -294,6 +300,8 @@ sed -i 's/<EXTERNAL_IP>/xx.xx.xx.xx/g' create-certs.sh
 
 # replace 'xx.xx.xx.xx' in the following command with the Internal IP of this GCE VM
 sed -i 's/<INTERNAL_IP>/xx.xx.xx.xx/g' create-certs.sh
+
+# validate that the "create-certs.sh" file has
 ```
 
 #### 3.3) Generate the certificates using the downloaded [utility script](/anthos-bm-openstack-terraform/resources/create-certs.sh).
