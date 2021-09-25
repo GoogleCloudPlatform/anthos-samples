@@ -483,7 +483,7 @@ In a ***seperate new terminal window*** execute the following command:
 - Replace `<YOUR_GCP_USERNAME>` with the username associated to to the Google Cloud Account you are using
 - Replace `<EXTERNAL_IP>` with the External IP of the GCE VM from [**1.5**](#15-get-the-internal-and-external-ips-assigned-to-the-created-gce-vm) _(the new terminal will not have the environment variable)_
 
-Keep it running and continue with the next steps in your ***original terminal window***.
+Keep the following running and continue with the next steps in your ***original terminal window***.
 
 ```sh
 # this will route any traffic to IPs within the given CIDRs via the External IP of the VM
