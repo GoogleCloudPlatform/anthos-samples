@@ -47,8 +47,7 @@ gcloud services enable compute.googleapis.com
 gcloud config set compute/region "${REGION}"
 gcloud config set compute/zone "${ZONE}"
 ```
-> **Note:** This step can take upto **90 seconds** to complete given the step for
-> enabling the `Compute` APIs
+> **Note:** _This step can take upto **90 seconds** to complete given the step for enabling the `Compute` APIs_
 
 #### 1.2) Create a Compute Engine Disk.
 ```sh

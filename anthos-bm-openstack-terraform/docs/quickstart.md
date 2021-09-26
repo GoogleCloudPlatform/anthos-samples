@@ -54,6 +54,7 @@ openstack image create ubuntu-2004 \
    	--container-format bare --public \
    	--file focal-server-cloudimg-amd64.img
 ```
+> **Note:** _This step can take upto ***10 minutes*** to complete. **1 minute** for downloading the image and **9 minutes** to upload it to **OpenStack**_
 
 #### 2.2) Create and upload SSH keys to be used by the OpenStack VMs
 ```sh
@@ -195,9 +196,9 @@ Outputs:
 
 admin_ws_public_ip = "172.29.249.165"
 ```
-> **Note 1:** This step can take upto **X seconds** to complete
+> **Note 1:** When prompted to confirm the Terraform plan, type 'Yes' and enter
 >
-> **Note 2:** When prompted to confirm the Terraform plan, type 'Yes' and enter
+> **Note 2:** This step can take upto **90 seconds** to complete
 
 ---
 ### 4. Configure the admin workstation VM on OpenStack
@@ -214,6 +215,9 @@ export FLOATING_IP=$(terraform output admin_ws_public_ip | tr -d '"')
 
 # fetch the ip address using the OpenStack API
 export FLOATING_IP=$(openstack floating ip list --tags=abm_ws_floatingip -f json | jq -c '.[]."Floating IP Address"' | tr -d '"')
+
+# echo and note down the floating IP
+echo $FLOATING_IP
 ```
 
 #### 4.2) Copy into and configure the initilization scripts in the admin workstation
@@ -301,6 +305,7 @@ gcloud auth application-default login
 #   - docker
 ./abm_init_host.sh
 ```
+> **Note:** This step can take upto **60 seconds** to complete
 
 #### 4.6) Initialize the Google Cloud Project as required for the Anthos on Bare Metal installation
 ```sh
@@ -310,6 +315,7 @@ gcloud auth application-default login
 #   - add IAM policy bindings for the Service Account
 ./abm_setup_gcp.sh
 ```
+> **Note:** This step can take upto **60 seconds** to complete
 
 ---
 ### 5. Install Anthos on Bare Metal
@@ -364,7 +370,7 @@ Please check the logs at bmctl-workspace/abm-on-openstack/log/create-cluster-202
 [2021-09-26 02:25:53+0000] Flushing logs... OK
 [2021-09-26 02:25:53+0000] Deleting bootstrap cluster...
 ```
-> **Note:** _This step can take upto ***3 minutes and 30 seconds*** to complete_
+> **Note:** _This step can take between ***15 to 20 minutes*** to complete_
 
 ---
 ### 6. Verifying installation and interacting with the Anthos on Bare Metal cluster
