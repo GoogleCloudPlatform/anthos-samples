@@ -440,7 +440,7 @@ in the Google Cloud console.
 - If you used a fresh Google Cloud Project, then you can simply delete it
 - If you used an existing Google Cloud Project, then you have to do the following:
   - **Deregister** the Anthos cluster from the [`Kubernetes clusters page`](https://console.cloud.google.com/kubernetes/list/overview) in the Google Cloud console
-  - **Delete** the [`IAM Service Account`](https://cloud.console.google.com/iam-admin/serviceaccounts) with email username `abm-gcr`
+  - **Delete** the [`IAM Service Account`](https://console.cloud.google.com/iam-admin/serviceaccounts) with email username `abm-gcr`
 
 ---
 ### Troubleshooting Anthos on Bare Metal cluster creation
