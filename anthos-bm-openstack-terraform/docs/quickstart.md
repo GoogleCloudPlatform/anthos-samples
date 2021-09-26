@@ -180,7 +180,7 @@ terraform plan
 #### 3.5) Apply the changes described in the Terraform script
 Review the **Terraform** script _([main.tf](/main.tf))_ to see details of the
 configuration. Running this script will create the required VMs and setup the
-networking inside OpenStack to install Anthos on Bare Metal.
+networking inside **OpenStack** to install **Anthos on Bare Metal**.
 
 ```sh
 # executes the plan on the given provider (i.e: GCP) to reach the desired state of resources
@@ -200,12 +200,12 @@ admin_ws_public_ip = "172.29.249.165"
 > **Note 2:** When prompted to confirm the Terraform plan, type 'Yes' and enter
 
 ---
-### 3. Configure the admin workstation VM on OpenStack
+### 4. Configure the admin workstation VM on OpenStack
 Running the **Terraform** scripts from section [3.5](#35-apply-the-changes-described-in-the-terraform-script)
 would have created a VM in **OpenStack** that will serve as our ***admin workstation***.
 We will confgure and use it to install **Anthos on Bare Metal**.
 
-#### 3.1) Fetch the Floating IP of the admin workstation
+#### 4.1) Fetch the Floating IP of the admin workstation
 > **Note:** Use one of the two commands below to setup the environment variable
 
 ```sh
@@ -216,7 +216,7 @@ export FLOATING_IP=$(terraform output admin_ws_public_ip | tr -d '"')
 export FLOATING_IP=$(openstack floating ip list --tags=abm_ws_floatingip -f json | jq -c '.[]."Floating IP Address"' | tr -d '"')
 ```
 
-#### 3.2) Copy into and configure the initilization scripts in the admin workstation
+#### 4.2) Copy into and configure the initilization scripts in the admin workstation
 ```sh
 scp resources/abm* ubuntu@$FLOATING_IP:~
 
@@ -236,7 +236,7 @@ chmod +x abm*
 > **Important:** *All the steps from here on forth are to be run inside the admin
 > workstation, unless an explicit `exit` statement is provided*
 
-#### 3.3) Verify SSH access to other nodes from the admin workstation
+#### 4.3) Verify SSH access to other nodes from the admin workstation
 ```sh
 # ssh access into the control plane node
 ssh abm@10.200.0.11 'echo SSH to $HOSTNAME succeeded'
@@ -257,7 +257,7 @@ ssh abm@10.200.0.12 'echo SSH to $HOSTNAME succeeded'
 SSH to abm-w1 succeeded
 ```
 
-#### 3.4) Configure the shell environment in the admin workstation
+#### 4.4) Configure the shell environment in the admin workstation
 ```sh
 # set the GCP Project where the Anthos Hub and Service Accounts will be setup
 export PROJECT_ID="<YOUR_GCP_PROJECT_ID>"
@@ -281,7 +281,7 @@ gcloud config set project $PROJECT_ID
 gcloud auth application-default login
 ```
 
-#### 3.5) Install the necessary tools in the admin workstation
+#### 4.5) Install the necessary tools in the admin workstation
 ```sh
 # this script will install the following tools:
 #   - kubectl
@@ -291,7 +291,7 @@ gcloud auth application-default login
 ./abm_init_host.sh
 ```
 
-#### 3.6) Initialize the Google Cloud Project as required for the Anthos on Bare Metal installation
+#### 4.6) Initialize the Google Cloud Project as required for the Anthos on Bare Metal installation
 ```sh
 # this script will do the following:
 #   - enable GCP services
@@ -301,19 +301,19 @@ gcloud auth application-default login
 ```
 
 ---
-### 4. Install Anthos on Bare Metal
+### 5. Install Anthos on Bare Metal
 
-#### 4.1) Create a workspace for the new Anthos on Bare Metal cluster
+#### 5.1) Create a workspace for the new Anthos on Bare Metal cluster
 ```sh
 bmctl create config -c ${ABM_CLUSTER_NAME}
 ```
 
-#### 4.2) Create a cluster configuration from the provided template file
+#### 5.2) Create a cluster configuration from the provided template file
 ```sh
 envsubst < abm_cluster.yaml.tpl > bmctl-workspace/${ABM_CLUSTER_NAME}/${ABM_CLUSTER_NAME}.yaml
 ```
 
-#### 4.3) Increase the size of kernel connection tracking table
+#### 5.3) Increase the size of kernel connection tracking table
 > **Note:** This step is only required for **Anthos on Bare Metal** versions
 > `<1.8.3`, due to a [known issue](https://cloud.google.com/anthos/clusters/docs/bare-metal/1.8/troubleshooting/known-issues#ubuntu_2004_lts_and_bmctl)
 
@@ -321,7 +321,7 @@ envsubst < abm_cluster.yaml.tpl > bmctl-workspace/${ABM_CLUSTER_NAME}/${ABM_CLUS
 sudo sysctl net/netfilter/nf_conntrack_max=131072
 ```
 
-#### 4.4) Create the Anthos on Bare Metal cluster
+#### 5.4) Create the Anthos on Bare Metal cluster
 ```sh
 bmctl create cluster -c ${ABM_CLUSTER_NAME}
 
@@ -355,3 +355,60 @@ Please check the logs at bmctl-workspace/abm-on-openstack/log/create-cluster-202
 ```
 > **Note:** _This step can take upto ***3 minutes and 30 seconds*** to complete_
 
+---
+### 6. Verifying installation and interacting with the Anthos on Bare Metal cluster
+
+You can find your cluster's `kubeconfig` file on the admin machine in the
+`bmctl-workspace` directory. To verify your deployment, complete the following
+steps.
+
+#### 6.1) Try fetching the cluster node details using kubectl
+```sh
+export KUBECONFIG=bmctl-workspace/${ABM_CLUSTER_NAME}/${ABM_CLUSTER_NAME}-kubeconfig
+kubectl get nodes
+
+# -----------------------------------------------------
+#                   Expected Output
+# -----------------------------------------------------
+NAME      STATUS   ROLES                  AGE     VERSION
+abm-cp1   Ready    control-plane,master   5m24s   v1.20.5-gke.1301
+abm-w1    Ready    <none>                 2m17s   v1.20.5-gke.1301
+```
+
+#### 6.2) Login to the Anthos on Bare Metal cluster in the Google Cloud console
+
+During the setup process, your cluster will be auto-registered in Google Cloud
+using [Connect](https://cloud.google.com/anthos/multicluster-management/connect/overview).
+In order to interact with the cluster from the GCP console you must first **login**
+to the cluster.
+
+```sh
+# run the utility script copied in section 4.2 to create Kubernetes Service Account
+./abm_cluster_login.sh
+
+# -----------------------------------------------------
+#                   Expected Output
+# -----------------------------------------------------
+💡 Retreiving Kubernetes Service Account Token
+
+🚀 ------------------------------TOKEN-------------------------------- 🚀
+eyJhbGciOiJSUzI1NiIsImtpZCI6Imk2X3duZ3BzckQyWmszb09sZHFMN0FoWU9mV1kzOWNGZzMyb0x2WlMyalkifQ.eyJpc3MiOiJrdW
+mljZS1hY2NvdW50LnVpZCI6IjQwYWQxNDk2LWM2MzEtNDhiNi05YmUxLWY5YzgwODJjYzgzOSIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYW
+iZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6ImVkZ2Etc2EtdG9rZW4tc2R4MmQiLCJrdWJlcm5ldGVzLmlvL3Nl
+cnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoiZWRnYS1zYSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2Vyd
+4CwanGlof6s-fbu8IUy1_bTgCminylNKb3VudC5uYW1lIjoiZWRnYS1zYSIsImt1YmVybmV0ZXuaP-hDEKURb5O6IxulTXWH6dxYxg66x
+Njb3VudDpkZWZhdWx0OmVkZ2Etc2EifQ.IXqXwX5pg9RIyNHJZTM6cBKTEWOMfQ4IQQa398f0qwuYlSe12CA1l6P8TInf0S1aood7NJWx
+xe-5ojRvcG8pdOuINq2yHyQ5hM7K7R4h2qRwUznRwuzOp_eXC0z0Yg7VVXCkaqnUR1_NzK7qSu4LJcuLzkCYkFdSnvKIQABHSvfvZMrJP
+Jlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJkZWZhdWx0Iiwia3V
+MgyLOd9FJyhZgjbf-a-3cbDci5YABEzioJlHVnV8GOX_q-MnIagA9-t1KpHA
+🚀 ------------------------------------------------------------------- 🚀
+```
+
+Once you have run the above steps, copy the **`Token`** that is printed out and
+login to the kubernetes cluster from the [`Kubernetes clusters page`](https://console.cloud.google.com/kubernetes/list/overview)
+in the Google Cloud console.
+
+<p align="center">
+  <img src="docs/images/login-k8s.png">
+  <img src="docs/images/login-k8s-token.png">
+</p>
