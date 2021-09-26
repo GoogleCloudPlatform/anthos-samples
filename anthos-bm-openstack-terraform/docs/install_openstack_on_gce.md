@@ -470,11 +470,9 @@ source ./admin-openrc.sh
 
 #### 4.5) Create a VPN tunnel to route traffic to the **OpenStack** APIs
 
-The **openstack CLI** client uses the ***keystone identity API*** for
+**Openstack** clients uses the ***keystone identity API*** for
 authentication. The ***keystone identity API*** is only reachable via the
-*Internal IP* address of the GCE VM.
-
-You can notice _(if you see the contents of the `admin-openrc.sh` file)_ the
+*Internal IP* address of the GCE VM. You can notice _(if you see the contents of the `admin-openrc.sh` file)_ the
 `OS_AUTH_URL` is set to point to the *Intenal IP* of the GCE VM. However, since
 the *Intenal IP* is only reachable from within the Google Cloud VPC we will use
 [sshuttle](https://sshuttle.readthedocs.io/en/stable/) to set up a VPN tunnel
