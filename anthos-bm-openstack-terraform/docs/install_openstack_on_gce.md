@@ -539,20 +539,6 @@ echo https://$INTERNAL_IP
 
 - Also make sure you have `sshuttle` running in another terminal window as shown in step [4.5](#45-create-a-vpn-tunnel-to-route-traffic-to-the-openstack-apis).
 ---
-### Pro Tip (Optional)!
-
-If you want to re-create a similar **OpenStack installation on GCE VM** again,
-now is a good time to `Create new machine image` of the GCE VM we created in
-this guide.
-
-Next time, instead of running all the steps above you can simply create a VM
-from this machine image.
-
-<p align="center">
-  <img src="images/create-machine-image.png">
-</p>
-
----
 ### Clean up
 
 - If you used a fresh Google Cloud Project, then you can simply delete it
