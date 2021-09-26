@@ -448,10 +448,10 @@ This section provides some guidance as to how to troubleshoot the bare metal
 cluster installtion process _(step [**5.4**](#54-create-the-anthos-on-bare-metal-cluster))_.
 The **bmctl** tool creates a [**Kind cluster**](https://kind.sigs.k8s.io/) to
 bootstrap the Anthos on Bare Metal cluster installation process. So we can look
-for logs from this ***kind cluster** to see what's happening.
+for logs from this **kind cluster** to see what's happening.
 
 Whilst the bare metal cluster installation is happening, log into the **admin workstation**
-from your **OpenStack** environment in a new terminal instance.
+from your **OpenStack** environment in a ***new terminal*** window.
 ```sh
 # move into the directory where this repository was cloned
 cd <PATH_TO_CLONE_LOCATION>/anthos-samples/anthos-bm-openstack-terraform
@@ -464,6 +464,7 @@ export FLOATING_IP=$(terraform output admin_ws_public_ip | tr -d '"')
 # you have to replace "<SSH_KEY_NAME>" with the ssh key name used above
 ssh -o IdentitiesOnly=yes -i ./<SSH_KEY_NAME> ubuntu@${FLOATING_IP}
 
+# switch to the "abm" user
 sudo -u abm -i
 ```
 
