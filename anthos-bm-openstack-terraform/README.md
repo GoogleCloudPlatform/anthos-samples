@@ -6,28 +6,22 @@ metal in High Availability (HA) mode using Virtual Machines (VMs) running on
 [Ussuri](https://releases.openstack.org/ussuri/index.html) and assumes that you
 already have a similar OpenStack environment running.
 
-If you don't have an OpenStack environment and still want to try this sample
-then first follow [this guide](/anthos-bm-openstack-terraform/docs/install_openstack_on_gce.md) to get an
-OpenStack _(Ussuri)_ environment running on a [Google Compute Engine VM with _nested KVM_](https://cloud.google.com/compute/docs/instances/nested-virtualization/overview).
-
 ### Pre-requisites
 - A baremetal environment running [OpenStack Ussuri](https://releases.openstack.org/ussuri/index.html)
   or similar with [LBaaS v2](https://docs.openstack.org/mitaka/networking-guide/config-lbaas.html)
   configured and functional
+  > If you don't have an OpenStack environment and still want to try this sample
+    then first follow [this guide](/anthos-bm-openstack-terraform/docs/install_openstack_on_gce.md)
+    to get an OpenStack _(Ussuri)_ environment running on a [Google Compute Engine VM with _nested KVM_](https://cloud.google.com/compute/docs/instances/nested-virtualization/overview).
+
 - A workstation with access to internet _(i.e. Google Cloud APIs)_ with the
   following installed
   - [Git](https://www.atlassian.com/git/tutorials/install-git)
   - [Google Cloud SDK](https://cloud.google.com/sdk/docs/install)
-  - [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) (~v0.14.10)
+  - [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) (>=v0.15.5)
 
-- A [Google Cloud Project](https://console.cloud.google.com/cloud-resource-manager) _(in which the resources for the setup will be provisioned)_
-
-- A [Service Account](https://cloud.devsite.corp.google.com/iam/docs/creating-managing-service-accounts)
-  in the project that satisfies **one** of the following requirements and its **[key file downloaded](https://cloud.devsite.corp.google.com/iam/docs/creating-managing-service-account-keys)** to
-  the workstation:
-  - The Service Account has `Owner` permissions
-  - The Service Account has both `Editor` and `Project IAM Admin` permissions
-
+- A [Google Cloud Project](https://console.cloud.google.com/cloud-resource-manager) _(which will host the Anthos Hub)_
+- **Time**: this entire guide can take upto **90 minutes** to complete
 
 ---
 ### Anthos BareMetal infrastructure on OpenStack
@@ -45,3 +39,8 @@ The [Quick starter](docs/quickstart.md) guide sets up the following infrastructu
 #### \<IMAGE HERE\>
 
 ---
+## Getting started
+
+- [Deploy OpenStack Ussuri on GCE VM](/anthos-bm-openstack-terraform/docs/install_openstack_on_gce.md)
+  - _(required only if you already don't have an **OpenStack Ussuri** or similar with **LBaaS v2** enabled)_
+- [Quick start: Install Anthos Bare Metal on OpenStack](docs/quickstart.md)
