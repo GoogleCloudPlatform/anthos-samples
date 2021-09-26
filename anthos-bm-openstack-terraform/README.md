@@ -9,7 +9,7 @@ already have a similar OpenStack environment running.
 ---
 ### Infrastructure on OpenStack
 
-The [Quick starter](docs/quickstart.md) guide sets up the following
+The [Quick start](docs/quickstart.md) guide sets up the following
 infrastructure on your OpenStack environment. The diagram below assumes that
 none of the default values for the [variables](variables.tf) were changed other
 than the ones mentioned in the guide.

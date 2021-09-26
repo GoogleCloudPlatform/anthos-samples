@@ -1,4 +1,4 @@
-## Quick starter
+## Quick start
 
 ### 1. Setup local environment
 
