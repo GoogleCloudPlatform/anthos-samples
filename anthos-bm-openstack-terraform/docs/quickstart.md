@@ -162,7 +162,7 @@ os_tenant_name      = ""
 os_password         = "54e53c4ecc76fa84bec1374894583b8651332e0abe45c1de421ba797f669f35"
 os_auth_url         = "https://10.128.0.2:5000"
 os_endpoint_type    = ""
-ssh_key_name		    = "abmNodeKey"
+ssh_key_name        = "abmNodeKey"
 ```
 
 #### 3.3) Initialize Terraform
