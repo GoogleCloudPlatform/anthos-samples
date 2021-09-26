@@ -370,7 +370,10 @@ Please check the logs at bmctl-workspace/abm-on-openstack/log/create-cluster-202
 [2021-09-26 02:25:53+0000] Flushing logs... OK
 [2021-09-26 02:25:53+0000] Deleting bootstrap cluster...
 ```
-> **Note:** _This step can take between ***15 to 20 minutes*** to complete_
+> **Note 1:** _This step can take between ***15 to 20 minutes*** to complete_
+>
+> **Note 2:** See the [troubleshooting section](#troubleshooting-anthos-on-bare-metal-cluster-creation)
+> for tips on how to monitor the above installation process
 
 ---
 ### 6. Verifying installation and interacting with the Anthos on Bare Metal cluster
@@ -430,3 +433,57 @@ in the Google Cloud console.
   <img src="images/login-k8s-token.png">
   <img src="images/logged-in-k8s.png">
 </p>
+
+---
+### Clean up
+
+- If you used a fresh Google Cloud Project, then you can simply delete it
+- If you used an existing Google Cloud Project, then you have to do the following:
+  - **Deregister** the Anthos cluster from the [`Kubernetes clusters page`](https://console.cloud.google.com/kubernetes/list/overview) in the Google Cloud console
+  - **Delete** the [`IAM Service Account`](https://cloud.console.google.com/iam-admin/serviceaccounts) with email username `abm-gcr`
+
+---
+### Troubleshooting Anthos on Bare Metal cluster creation
+This section provides some guidance as to how to troubleshoot the bare metal
+cluster installtion process _(step [**5.4**](#54-create-the-anthos-on-bare-metal-cluster))_.
+The **bmctl** tool creates a [**Kind cluster**](https://kind.sigs.k8s.io/) to
+bootstrap the Anthos on Bare Metal cluster installation process. So we can look
+for logs from this ***kind cluster** to see what's happening.
+
+Whilst the bare metal cluster installation is happening, log into the **admin workstation**
+from your **OpenStack** environment in a new terminal instance.
+```sh
+# move into the directory where this repository was cloned
+cd <PATH_TO_CLONE_LOCATION>/anthos-samples/anthos-bm-openstack-terraform
+
+# note that the environment variables will not be available in the new shell
+# get the FLOATING_IP using the terraform output (you can also use the OpenStack Web UI)
+export FLOATING_IP=$(terraform output admin_ws_public_ip | tr -d '"')
+
+# ssh into the admin workstation
+# you have to replace "<SSH_KEY_NAME>" with the ssh key name used above
+ssh -o IdentitiesOnly=yes -i ./<SSH_KEY_NAME> ubuntu@${FLOATING_IP}
+
+sudo -u abm -i
+```
+
+Once, `ssh`'ed into the **admin workstation**, wait until you see the following
+output in the terminal window where the bare metal cluster installation is ongoing _(where step [**5.4**](#54-create-the-anthos-on-bare-metal-cluster) was run)_.
+```sh
+# this means that the bootstrap kind cluster has been created
+"Installing dependency components..."
+```
+
+Now, setup the `KUBECONFIG` for the bootstrap `kind` cluster.
+```sh
+kind get kubeconfig --name bmctl > ~/.kube/config
+```
+
+Finally, interact with the boostrap cluster's pods to see their logs and debug.
+```sh
+kubectl get pods --all-namespaces
+```
+
+> **Note:** The **bootstrap kind cluster** will be deleted once the installation
+> process ends. To prevent it from being deleted, use the `--reuse-bootstrap-cluster`
+> flag when executing `bmctl create` in step [**5.4**](#54-create-the-anthos-on-bare-metal-cluster).
