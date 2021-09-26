@@ -4,7 +4,7 @@ This guide sets up the following VMs in your OpenStack environment.
 
   | VM Name  | IP Address    | Usage         |
   | ---------| ------------- | ------------- |
-  | abm-ws   | **Private:** 10.200.0.10<br/>**Public:** _dynamically assinged floating IP_  | Acts as the **admin workstation** It is used to deploy Anthos on Bare Metal to the other machines.
+  | abm-ws   | 10.200.0.10 ***(private)***<br/>floating IP ***(public)*** | Acts as the **admin workstation** It is used to deploy Anthos on Bare Metal to the other machines.
   | abm-cp1  | 10.200.0.11   | **Anthos cluster control plane:**. This host runs the Kubernetes control plane and load balancer.
   | abm-w1   | 10.200.0.12   | **Anthos cluster worker node:** This host runs the Kubernetes workloads.
 
