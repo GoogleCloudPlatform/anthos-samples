@@ -4,10 +4,10 @@ This guide explains how to install an OpenStack _(Ussuri)_ environment on Google
 Compute Engine (GCE) VMs using [nested virtualization](https://cloud.google.com/compute/docs/instances/nested-virtualization/overview).
 
 The guide is split into 4 sections:
-- Create a GCE instance with KVM enabled in Google Cloud Platform
-- Install **OpenStack Ussuri** using the **[openstack-ansible in all-in-one](https://docs.openstack.org/openstack-ansible/latest/user/aio/quickstart.html)** mode
-- Setup proper TLS certificates for accessing **OpenStack** your workstation
-- Access and validate the deployed environment
+- [Section 1](#1-create-a-gce-instance-with-kvm-enabled-in-google-cloud-platform) Create a GCE instance with KVM enabled in Google Cloud Platform
+- [Section 2](#2-install-openstack-ussuri-using-the-openstack-ansible-in-all-in-one-mode) Install **OpenStack Ussuri** using the **[openstack-ansible in all-in-one](https://docs.openstack.org/openstack-ansible/latest/user/aio/quickstart.html)** mode
+- [Section 3](#3-setup-proper-tls-certificates-for-accessing-openstack-your-workstation) Setup proper TLS certificates for accessing **OpenStack** your workstation
+- [Section 4](#4-access-and-validate-the-deployed-environment) Access and validate the deployed environment
 
 Nested virtualization refers to the ability of running a virtual machine within
 another, enabling this general concept extendable to an arbitrary depth.
@@ -470,17 +470,17 @@ source ./admin-openrc.sh
 
 #### 4.5) Create a VPN tunnel to route traffic to the **OpenStack** APIs
 
-**Openstack** clients uses the ***keystone identity API*** for
-authentication. The ***keystone identity API*** is only reachable via the
-*Internal IP* address of the GCE VM. You can notice _(if you see the contents of the `admin-openrc.sh` file)_ the
-`OS_AUTH_URL` is set to point to the *Intenal IP* of the GCE VM. However, since
-the *Intenal IP* is only reachable from within the Google Cloud VPC we will use
-[sshuttle](https://sshuttle.readthedocs.io/en/stable/) to set up a VPN tunnel
-to route **OpenStack** traffic via the *External IP* of the GCE VM.
+**Openstack** clients uses the ***keystone identity API*** for authentication.
+This API is only reachable via the *Internal IP* address of the GCE VM. You can
+notice _(if you see the contents of the `admin-openrc.sh` file)_ the `OS_AUTH_URL`
+is set to point to the *Intenal IP* of the GCE VM. However, since the *Intenal IP*
+is only reachable from within the Google Cloud VPC. Thus, we will use [sshuttle](https://sshuttle.readthedocs.io/en/stable/)
+to set up a VPN tunnel to route **OpenStack** traffic via the *External IP* of
+the GCE VM.
 
 In a ***seperate new terminal window*** execute the following command:
-- Replace `<YOUR_GCP_USERNAME>` with the username associated to to the Google Cloud Account you are using
-- Replace `<EXTERNAL_IP>` with the External IP of the GCE VM from [**1.5**](#15-get-the-internal-and-external-ips-assigned-to-the-created-gce-vm) _(the new terminal will not have the environment variable)_
+- Replace `<YOUR_GCP_USERNAME>` with the username associated to your Google Cloud Account
+- Replace `<EXTERNAL_IP>` with the External IP of the GCE VM from [**1.5**](#15-get-the-internal-and-external-ips-assigned-to-the-created-gce-vm)
 
 Keep the following running and continue with the next steps in your ***original terminal window***.
 

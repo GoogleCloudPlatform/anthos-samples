@@ -13,6 +13,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+##############################################################################
+# Download the service account key in order to configure the Anthos cluster
+##############################################################################
+function __setup_service_account__ () {
+  gcloud iam service-accounts create ${SERVICE_ACCOUNT}
+  gcloud iam service-accounts keys create bm-gcr.json --iam-account="${SERVICE_ACCOUNT}"@"${PROJECT_ID}".iam.gserviceaccount.com
+  __check_exit_status__ $? \
+    "[+] Successfully downloaded key for service account [$SERVICE_ACCOUNT]" \
+    "[-] Failed to download key for service account [$SERVICE_ACCOUNT]."
+  __print_separator__
+}
+
 cat << EOM
 ------------------------------------------------------------------------------
 |    Enabling the following Google Cloud services in project ${PROJECT_ID}   |
@@ -45,6 +57,9 @@ gcloud services enable \
     opsconfigmonitoring.googleapis.com \
     anthosaudit.googleapis.com
 
+
+echo "Setting up Service Account ${SERVICE_ACCOUNT}"
+__setup_service_account__
 
 cat << EOM
 ------------------------------------------------------------------------------

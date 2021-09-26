@@ -8,13 +8,13 @@ cloudOperationsServiceAccountKeyPath: /home/abm/bm-gcr.json
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: cluster-openstack-1
+  name: openstack-ns
 ---
 apiVersion: baremetal.cluster.gke.io/v1
 kind: Cluster
 metadata:
-  name: openstack-1
-  namespace: cluster-openstack-1
+  name: ${ABM_CLUSTER_NAME}
+  namespace: openstack-ns
   annotations:
     baremetal.cluster.gke.io/external-cloud-provider: "true"
 spec:
@@ -24,7 +24,7 @@ spec:
     projectID: ${PROJECT_ID}
   controlPlane:
     nodePoolSpec:
-      clusterName: openstack-1
+      clusterName: ${ABM_CLUSTER_NAME}
       nodes:
       - address: 10.200.0.11
   clusterNetwork:
@@ -60,8 +60,8 @@ apiVersion: baremetal.cluster.gke.io/v1
 kind: NodePool
 metadata:
   name: node-pool-1
-  namespace: cluster-openstack-1
+  namespace: openstack-ns
 spec:
-  clusterName: openstack-1
+  clusterName: ${ABM_CLUSTER_NAME}
   nodes:
   - address: 10.200.0.12

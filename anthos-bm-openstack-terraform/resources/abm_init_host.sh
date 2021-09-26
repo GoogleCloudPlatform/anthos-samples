@@ -23,24 +23,11 @@ HOSTNAME=$(hostname)
 function __main__ () {
   echo "[$DATE] Init script running for host $HOSTNAME"
   __print_separator__
-  __setup_service_account__
   __setup_kubctl__
   __setup_bmctl__
   __setup_kind__
   __setup_docker__
   echo "[+] Successfully completed initialization of host $HOSTNAME"
-}
-
-##############################################################################
-# Download the service account key in order to configure the Anthos cluster
-##############################################################################
-function __setup_service_account__ () {
-  gcloud iam service-accounts create ${SERVICE_ACCOUNT}
-  gcloud iam service-accounts keys create bm-gcr.json --iam-account="${SERVICE_ACCOUNT}"@"${PROJECT_ID}".iam.gserviceaccount.com
-  __check_exit_status__ $? \
-    "[+] Successfully downloaded key for service account [$SERVICE_ACCOUNT]" \
-    "[-] Failed to download key for service account [$SERVICE_ACCOUNT]."
-  __print_separator__
 }
 
 
@@ -61,7 +48,6 @@ function __setup_kubctl__ () {
 # Install the bmctl CLI for managing the Anthos cluster
 ##############################################################################
 function __setup_bmctl__ () {
-  mkdir baremetal && cd baremetal || return
   gsutil cp gs://anthos-baremetal-release/bmctl/${ABM_VERSION}/linux-amd64/bmctl .
   chmod a+x bmctl
   sudo mv bmctl /usr/local/sbin/
