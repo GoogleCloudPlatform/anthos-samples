@@ -1,4 +1,4 @@
-## Anthos Baremetal on OpenStack with Terraform
+## Anthos on Bare Metal on OpenStack with Terraform
 
 This sample shows you how to use Terraform to try Anthos clusters on bare
 metal in High Availability (HA) mode using Virtual Machines (VMs) running on
@@ -28,7 +28,7 @@ than the ones mentioned in the guide.
 ---
 
 ### Pre-requisites
-- A baremetal environment running [OpenStack Ussuri](https://releases.openstack.org/ussuri/index.html)
+- A bare metal environment running [OpenStack Ussuri](https://releases.openstack.org/ussuri/index.html)
   or similar with [LBaaS v2](https://docs.openstack.org/mitaka/networking-guide/config-lbaas.html)
   configured and functional
   > If you don't have an OpenStack environment and still want to try this sample

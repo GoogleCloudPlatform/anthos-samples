@@ -55,7 +55,7 @@ locals {
 }
 
 ###############################################################################
-# Create the OpenStack network setup for Anthos BareMetal hosts
+# Create the OpenStack network setup for Anthos on Bare Metal hosts
 # - OpenStack router
 # - OpenStack network
 # - OpenStack subnet
@@ -91,7 +91,7 @@ resource "openstack_networking_router_interface_v2" "abm_interface_1" {
 }
 
 ###############################################################################
-# Create the control plane loadbalancer for the Anthos BareMetal setup
+# Create the control plane loadbalancer for the Anthos on Bare Metal setup
 # - LoadBalancer (based on LBaaS v2, i.e: Octavia)
 # - LoadBalancer Listener
 # - LoadBalancer Pool
@@ -165,7 +165,7 @@ resource "openstack_compute_secgroup_v2" "basic_access" {
 }
 
 ###############################################################################
-# Create public-private key pair for use by the Anthos BareMetal hosts
+# Create public-private key pair for use by the Anthos on Bare Metal hosts
 ###############################################################################
 resource "tls_private_key" "abm_key" {
   algorithm = "RSA"
@@ -185,7 +185,7 @@ data "template_file" "cloud_config" {
 }
 
 ###############################################################################
-# Create the VMs for the Anthos BareMetal setup
+# Create the VMs for the Anthos on Bare Metal setup
 # - 1 VM for the Admin workstation
 # - VMs for the Controlplane based on the input variable 'instance_count'
 # - VMs for the worker nodes based on the input variable 'instance_count'
