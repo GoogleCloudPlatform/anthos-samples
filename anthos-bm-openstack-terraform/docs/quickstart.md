@@ -409,6 +409,6 @@ login to the kubernetes cluster from the [`Kubernetes clusters page`](https://co
 in the Google Cloud console.
 
 <p align="center">
-  <img src="docs/images/login-k8s.png">
-  <img src="docs/images/login-k8s-token.png">
+  <img src="images/login-k8s.png">
+  <img src="images/login-k8s-token.png">
 </p>
