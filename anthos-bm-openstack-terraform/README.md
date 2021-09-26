@@ -37,7 +37,9 @@ The [Quick starter](docs/quickstart.md) guide sets up the following infrastructu
 - A cloud-config that sets up SSH access to all VMs from all VMs under
   the user `abm`
 
-#### \<IMAGE HERE\>
+<p align="center">
+  <img src="docs/images/openstack-setup.png">
+</p>
 
 ---
 ## Getting started
