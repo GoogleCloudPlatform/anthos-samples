@@ -18,7 +18,8 @@ already have a similar OpenStack environment running.
   following installed
   - [Git](https://www.atlassian.com/git/tutorials/install-git)
   - [Google Cloud SDK](https://cloud.google.com/sdk/docs/install)
-  - [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) (>=v0.15.5)
+  - [OpenStack CLI Client](https://docs.openstack.org/newton/user-guide/common/cli-install-openstack-command-line-clients.html)
+  - [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) _(>=v0.15.5)_
 
 - A [Google Cloud Project](https://console.cloud.google.com/cloud-resource-manager) _(which will host the Anthos Hub)_
 - **Time**: this entire guide can take upto **90 minutes** to complete

@@ -22,7 +22,7 @@ OpenStack spins up user VMs in the GCE VM.
 - A workstation with access to internet _(i.e. Google Cloud APIs)_ with the
   following installed
   - [Google Cloud SDK](https://cloud.google.com/sdk/docs/install)
-  - [OpenStack CLI Client](https://docs.openstack.org/newton/user-guide/common/cli-install-openstack-command-line-clients.html) (>= 5.5.x)
+  - [OpenStack CLI Client](https://docs.openstack.org/newton/user-guide/common/cli-install-openstack-command-line-clients.html)
   - [sshuttle tool](https://sshuttle.readthedocs.io/en/stable/)
 
 - **Time**: this entire guide can take upto **90 minutes** to complete
@@ -538,6 +538,9 @@ echo https://$INTERNAL_IP
 ```
 ---
 
+#### If you are using this OpenStack setup to install Anthos on Bare Metal make sure you use the same shell session. This is because a new shell session will require you to `source admin-openrc.sh` and set the environment variable for `OS_CACERT` with the path for the CA certificate. The OpenStack CLI client needs those to be configured to interact with the OpenStack APIs inside the GCE VM.
+
+---
 ### Pro Tip (Optional)!
 
 If you want to re-create a similar **OpenStack installation on GCE VM** again,
