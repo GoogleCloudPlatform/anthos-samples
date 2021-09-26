@@ -6,6 +6,27 @@ metal in High Availability (HA) mode using Virtual Machines (VMs) running on
 [Ussuri](https://releases.openstack.org/ussuri/index.html) and assumes that you
 already have a similar OpenStack environment running.
 
+---
+### Infrastructure on OpenStack
+
+The [Quick starter](docs/quickstart.md) guide sets up the following
+infrastructure on your OpenStack environment. The diagram below assumes that
+none of the default values for the [variables](variables.tf) were changed other
+than the ones mentioned in the guide.
+<p align="center">
+  <img src="docs/images/openstack-setup.png" width="700">
+</p>
+
+- Private Network for the VMs
+- Private SSH key that is uploaded to all VMs
+- External Load Balancer using Octavia LBaaS
+- 3 Nova VMs ***(1 Admin workstation, 1 Control plane and 1 Worker node)***
+- Router to provide external connectivity and for floating IP addresses
+- Security Group that allows all ICMP and incoming TCP on port 22 and 443 from 0.0.0.0/0
+- A [***cloud-config***](resources/cloud-config.yaml) that sets up SSH access to all VMs from all VMs under the user **`abm`**
+
+---
+
 ### Pre-requisites
 - A baremetal environment running [OpenStack Ussuri](https://releases.openstack.org/ussuri/index.html)
   or similar with [LBaaS v2](https://docs.openstack.org/mitaka/networking-guide/config-lbaas.html)
@@ -22,24 +43,7 @@ already have a similar OpenStack environment running.
   - [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) _(>=v0.15.5)_
 
 - A [Google Cloud Project](https://console.cloud.google.com/cloud-resource-manager) _(which will host the Anthos Hub)_
-- **Time**: this entire guide can take upto **45 minutes** to complete
-
----
-### Anthos BareMetal infrastructure on OpenStack
-
-The [Quick starter](docs/quickstart.md) guide sets up the following infrastructure on your OpenStack environment. The diagram assumes that none of the default values for the [variables](variables.tf) were changed other than the ones mentioned in the quick starter.
-- External Load Balancer using Octavia LBaaS
-- Private Network for the VMs
-- A router to provide external connectivity and for floating IP addresses
-- 3 Nova VMs: 1 Admin workstation, 1 Control plane and 1 worker node
-- Security Group that allows all ICNM and incoming TCP on port 22 and 443 from 0.0.0.0/0
-- Private SSH key that is uploaded to all VMs
-- A cloud-config that sets up SSH access to all VMs from all VMs under
-  the user `abm`
-
-<p align="center">
-  <img src="docs/images/openstack-setup.png">
-</p>
+- **Time**: this entire guide can take upto **45 minutes** to complete if you already have an OpenStack environment running
 
 ---
 ## Getting started
