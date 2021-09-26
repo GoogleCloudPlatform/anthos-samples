@@ -218,10 +218,10 @@ export FLOATING_IP=$(openstack floating ip list --tags=abm_ws_floatingip -f json
 
 #### 4.2) Copy into and configure the initilization scripts in the admin workstation
 ```sh
-scp -i ./${SSH_KEY_NAME} resources/abm* ubuntu@$FLOATING_IP:~
+scp -o IdentitiesOnly=yes -i ./${SSH_KEY_NAME} resources/abm* ubuntu@$FLOATING_IP:~
 
 # SSH into the admin workstation
-ssh -i ./${SSH_KEY_NAME} ubuntu@$FLOATING_IP
+ssh -o IdentitiesOnly=yes -i ./${SSH_KEY_NAME} ubuntu@$FLOATING_IP
 
 # switch to the "abm" user
 sudo -u abm -i
