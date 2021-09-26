@@ -59,7 +59,7 @@ openstack image create ubuntu-2004 \
 ```sh
 export SSH_KEY_NAME="abmNodeKey"
 # generate the key pair
-ssh-keygen -t -f ./${SSH_KEY_NAME}
+ssh-keygen -t rsa -f ./${SSH_KEY_NAME}
 
 # upload it to OpenStack
 openstack keypair create $SSH_KEY_NAME --public-key ./${SSH_KEY_NAME}.pub
@@ -147,7 +147,7 @@ os_tenant_name      = "$OS_TENANT_NAME"
 os_password         = "$OS_PASSWORD"
 os_auth_url         = "$OS_AUTH_URL"
 os_endpoint_type    = "$OS_ENDPOINT_TYPE"
-ssh_key_name		    = "$SSH_KEY_NAME"
+ssh_key_name        = "$SSH_KEY_NAME"
 EOF
 
 # see it's contents
@@ -218,10 +218,10 @@ export FLOATING_IP=$(openstack floating ip list --tags=abm_ws_floatingip -f json
 
 #### 4.2) Copy into and configure the initilization scripts in the admin workstation
 ```sh
-scp resources/abm* ubuntu@$FLOATING_IP:~
+scp -i ./${SSH_KEY_NAME} resources/abm* ubuntu@$FLOATING_IP:~
 
 # SSH into the admin workstation
-ssh ubuntu@$FLOATING_IP
+ssh -i ./${SSH_KEY_NAME} ubuntu@$FLOATING_IP
 
 # switch to the "abm" user
 sudo -u abm -i
@@ -231,6 +231,17 @@ cp /home/ubuntu/abm* ./
 
 # ensure that the initialization scripts are executable
 chmod +x abm*
+
+# verify that the files have been copied
+ls -1
+
+# -----------------------------------------------------
+#                   Expected Output
+# -----------------------------------------------------
+abm_cluster.yaml.tpl
+abm_cluster_login.sh
+abm_init_host.sh
+abm_setup_gcp.sh
 ```
 
 > **Important:** *All the steps from here on forth are to be run inside the admin
@@ -411,4 +422,5 @@ in the Google Cloud console.
 <p align="center">
   <img src="images/login-k8s.png">
   <img src="images/login-k8s-token.png">
+  <img src="images/logged-in-k8s.png">
 </p>

@@ -19,10 +19,13 @@
 function __setup_service_account__ () {
   gcloud iam service-accounts create ${SERVICE_ACCOUNT}
   gcloud iam service-accounts keys create bm-gcr.json --iam-account="${SERVICE_ACCOUNT}"@"${PROJECT_ID}".iam.gserviceaccount.com
-  __check_exit_status__ $? \
-    "[+] Successfully downloaded key for service account [$SERVICE_ACCOUNT]" \
-    "[-] Failed to download key for service account [$SERVICE_ACCOUNT]."
-  __print_separator__
+  if [ "$?" -eq 0 ]
+  then
+    echo "[+] Successfully downloaded key for service account [$SERVICE_ACCOUNT]"
+  else
+    echo "[-] Failed to download key for service account [$SERVICE_ACCOUNT]." >&2
+    exit "$?"
+  fi
 }
 
 cat << EOM
