@@ -35,6 +35,7 @@ tfenv install 0.14.9
 tfenv install 0.15.5
 tfenv install 1.0.0
 tfenv install 1.0.1
+tfenv install 1.0.6
 tfenv use 0.14.9
 
 go get -u golang.org/x/lint/golint
