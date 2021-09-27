@@ -37,7 +37,8 @@ APIs and that **load-balancer API** is enabled:
 source <PATH_TO_OPENRC_FILE>/openrc.sh
 
 openstack endpoint list --service=load-balancer
-
+```
+```sh
 # -----------------------------------------------------
 #                   Expected Output
 # -----------------------------------------------------
@@ -89,7 +90,8 @@ openstack flavor create --id 5 --ram 16384 --vcpus 6 --disk 320 m1.jumbo
 #### 2.4) Verify that resources were created in OpenStack
 ```sh
 openstack image list
-
+```
+```sh
 # -----------------------------------------------------
 #                   Expected Output
 # -----------------------------------------------------
@@ -104,7 +106,8 @@ openstack image list
 
 ```sh
 openstack keypair list
-
+```
+```sh
 # -----------------------------------------------------
 #                   Expected Output
 # -----------------------------------------------------
@@ -117,7 +120,8 @@ openstack keypair list
 
 ```sh
 openstack flavor list
-
+```
+```sh
 # -----------------------------------------------------
 #                   Expected Output
 # -----------------------------------------------------
@@ -163,7 +167,8 @@ EOF
 
 # see it's contents
 cat terraform.tfvars
-
+```
+```sh
 # -----------------------------------------------------
 #                   Expected Output
 # -----------------------------------------------------
@@ -196,7 +201,8 @@ networking inside **OpenStack** to install **Anthos on Bare Metal**.
 ```sh
 # executes the plan on the given provider (i.e: GCP) to reach the desired state of resources
 terraform apply
-
+```
+```sh
 # -----------------------------------------------------
 #                   Expected Output
 # -----------------------------------------------------
@@ -248,7 +254,8 @@ chmod +x abm*
 
 # verify that the files have been copied
 ls -1
-
+```
+```sh
 # -----------------------------------------------------
 #                   Expected Output
 # -----------------------------------------------------
@@ -265,7 +272,8 @@ abm_setup_gcp.sh
 ```sh
 # ssh access into the control plane node
 ssh abm@10.200.0.11 'echo SSH to $HOSTNAME succeeded'
-
+```
+```sh
 # -----------------------------------------------------
 #                   Expected Output
 # -----------------------------------------------------
@@ -275,7 +283,8 @@ SSH to abm-cp1 succeeded
 ```sh
 # ssh access into the worker node
 ssh abm@10.200.0.12 'echo SSH to $HOSTNAME succeeded'
-
+```
+```sh
 # -----------------------------------------------------
 #                   Expected Output
 # -----------------------------------------------------
@@ -351,7 +360,8 @@ sudo sysctl net/netfilter/nf_conntrack_max=131072
 #### 5.4) Create the Anthos on Bare Metal cluster
 ```sh
 bmctl create cluster -c ${ABM_CLUSTER_NAME}
-
+```
+```sh
 # -----------------------------------------------------
 #                   Expected Output
 # -----------------------------------------------------
@@ -396,7 +406,8 @@ steps.
 ```sh
 export KUBECONFIG=bmctl-workspace/${ABM_CLUSTER_NAME}/${ABM_CLUSTER_NAME}-kubeconfig
 kubectl get nodes
-
+```
+```sh
 # -----------------------------------------------------
 #                   Expected Output
 # -----------------------------------------------------
@@ -415,7 +426,8 @@ to the cluster.
 ```sh
 # run the utility script copied in section 4.2 to create Kubernetes Service Account
 ./abm_cluster_login.sh
-
+```
+```sh
 # -----------------------------------------------------
 #                   Expected Output
 # -----------------------------------------------------

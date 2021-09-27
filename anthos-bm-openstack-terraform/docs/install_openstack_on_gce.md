@@ -145,7 +145,8 @@ apt-get update && apt-get install qemu-kvm -y
 #### 1.8) Verify that KVM has been installed successfully.
 ```sh
 kvm-ok
-
+```
+```sh
 # -----------------------------------------------------
 #                   Expected Output
 # -----------------------------------------------------
@@ -174,7 +175,8 @@ git checkout stable/ussuri
 #### 2.2) Install [Ansible](https://www.ansible.com/) and all the required Ansible roles on the GCE instance.
 ```sh
 scripts/bootstrap-ansible.sh
-
+```
+```sh
 # -----------------------------------------------------
 #                   Expected Output
 # -----------------------------------------------------
@@ -203,7 +205,8 @@ System is bootstrapped and ready for use.
 export SCENARIO='aio_lxc_barbican_octavia'
 # run the following script again if you hit any issues
 scripts/bootstrap-aio.sh
-
+```
+```sh
 # -----------------------------------------------------
 #                   Expected Output
 # -----------------------------------------------------
@@ -233,7 +236,8 @@ sed -i "s/{ key: 'net.bridge.bridge-nf-call-iptables', value: 1 }/{ key: 'net.br
 
 # validate the change
 diff /etc/ansible/roles/openstack_hosts/defaults/main.yml /etc/ansible/roles/openstack_hosts/defaults/main.yml.backup
-
+```
+```sh
 # -----------------------------------------------------
 #                   Expected Output
 # -----------------------------------------------------
@@ -249,7 +253,8 @@ openstack-ansible \
     playbooks/setup-hosts.yml \
     playbooks/setup-infrastructure.yml \
     playbooks/setup-openstack.yml
-
+```
+```sh
 # -----------------------------------------------------
 #                   Expected Output
 # -----------------------------------------------------
@@ -308,7 +313,8 @@ sed -i 's/<INTERNAL_IP>/xx.xx.xx.xx/g' create-certs.sh
 
 # validate that the changes to the script
 diff create-certs.sh create-certs.sh.backup
-
+```
+```sh
 # -----------------------------------------------------
 #                   Expected Output
 # -----------------------------------------------------
@@ -368,7 +374,8 @@ EOF
 # run the ansible playbook to configure the ha-proxy
 cd /opt/openstack-ansible/playbooks/
 openstack-ansible haproxy-install.yml
-
+```
+```sh
 # -----------------------------------------------------
 #                   Expected Output
 # -----------------------------------------------------
@@ -395,7 +402,8 @@ source ~/openrc
 
 # see if you are able to list the endpoints from the OpenStack server
 openstack endpoint list
-
+```
+```sh
 # -----------------------------------------------------
 #                   Expected Output
 # -----------------------------------------------------
@@ -511,7 +519,8 @@ via the *Internal IP* of the GCE VM **from your local workstation**.
 
 ```sh
 openstack endpoint list
-
+```
+```sh
 # -----------------------------------------------------
 #                   Expected Output
 # -----------------------------------------------------
