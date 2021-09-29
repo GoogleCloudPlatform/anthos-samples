@@ -555,7 +555,8 @@ openstack endpoint list
 | ...                                                                                                                                             |
 | ...                                                                                                                                             |
 +----------------------------------+-----------+--------------+---------------+---------+-----------+---------------------------------------------+
-
+```
+```sh
 # try visiting the URL from the output of the following command in a browser
 echo https://$INTERNAL_IP
 ```
