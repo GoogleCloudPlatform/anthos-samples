@@ -39,3 +39,4 @@ tmp/
 openrc
 id_rsa*
 *.pub
+abm_logs_dir/**
