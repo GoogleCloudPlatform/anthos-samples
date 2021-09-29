@@ -303,7 +303,7 @@ wget https://raw.githubusercontent.com/GoogleCloudPlatform/anthos-samples/main/a
 #### 3.2) Edit the script to match your IP addresses and hostnames.
 ```sh
 # make a copy of the script
-cp create-certs.sh.backup create-certs.sh
+cp create-certs.sh create-certs.sh.backup
 
 # replace 'xx.xx.xx.xx' in the following command with the External IP of this GCE VM
 sed -i 's/<EXTERNAL_IP>/xx.xx.xx.xx/g' create-certs.sh
