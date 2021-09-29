@@ -319,16 +319,16 @@ diff create-certs.sh create-certs.sh.backup
 #                   Expected Output
 # -----------------------------------------------------
 31c31
-< CN = 35.222.172.0
+< CN = 34.72.218.110.0
 ---
 > CN = <EXTERNAL_IP>
 45,54c45,54
-< IP.1  = 35.222.172.0
+< IP.1  = 34.72.218.110.0
 < IP.2  = 10.128.0.2
-< DNS.1 = 35.222.172.0
-< DNS.2 = 35.222.172.0:5000
-< DNS.3 = 35.222.172.0:9876
-< DNS.4 = 35.222.172.0:8780
+< DNS.1 = 34.72.218.110.0
+< DNS.2 = 34.72.218.110.0:5000
+< DNS.3 = 34.72.218.110.0:9876
+< DNS.4 = 34.72.218.110.0:8780
 < DNS.5 = 10.128.0.2
 < DNS.6 = 10.128.0.2:5000
 < DNS.7 = 10.128.0.2:9876
@@ -354,7 +354,23 @@ diff create-certs.sh create-certs.sh.backup
 # running this will create all the necessary certificates inside a folder called "tls"
 bash create-certs.sh
 ```
-
+```sh
+# -----------------------------------------------------
+#                   Expected Output
+# -----------------------------------------------------
+...
+...
+            X509v3 Subject Alternative Name:
+                IP Address:34.72.218.110, IP Address:10.128.0.2, DNS:34.72.218.110, DNS:34.72.218.110:5000, DNS:34.72.218.110:9876, DNS:34.72.218.110:8780, DNS:10.128.0.2, DNS:10.128.0.2:5000, DNS:10.128.0.2:9876, DNS:10.128.0.2:8780
+    Signature Algorithm: sha256WithRSAEncryption
+         4c:dc:04:f0:57:9a:90:be:6b:89:b8:df:e7:49:36:65:5c:18:
+         ba:83:cf:d1:26:59:dc:21:49:c5:d8:4e:4a:bc:88:a6:de:a9:
+         8b:15:55:1f:ce:32:d6:77:1e:19:8a:38:88:11:5f:dd:28:f6:
+         54:d5:16:01:cd:f7:f8:a4:67:46:7f:66:97:7f:08:9a:d9:f5:
+         75:41:cd:63:22:be:ea:36:e5:cf:4b:89:7b:9d:63:fc:7c:cf:
+         ...
+         ...
+```
 #### 3.4) Configure the **OpenStack HA-Proxy** to use the newly generated certificate files.
 
 ```sh
