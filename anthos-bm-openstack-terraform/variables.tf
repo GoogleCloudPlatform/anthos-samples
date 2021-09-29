@@ -73,7 +73,7 @@ variable "machine_type" {
     Use 'openstack flavor list' to find a list of all available flavors
   EOF
   type        = string
-  default     = "m1.xlarge"
+  default     = "m1.jumbo"
 }
 
 variable "image" {
