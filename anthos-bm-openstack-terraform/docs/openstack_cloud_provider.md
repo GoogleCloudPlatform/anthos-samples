@@ -9,7 +9,7 @@ for exposing Kubernetes Services.
 _The guide assumes the following:_
 1. You already have an environment with [OpenStack Ussuri](https://releases.openstack.org/ussuri/index.html) or similar deployed with [LBaaS v2](https://docs.openstack.org/mitaka/networking-guide/config-lbaas.html) configured and
 functional
-     - _(either your own OpenStack deployment or an OpenStack on Google Compute Engine deployment following [the guide from this repository](/anthos-bm-openstack-terraform/docs/install_openstack_on_gce.md))_
+     - _(either your own OpenStack deployment or one on Google Compute Engine deployment following [the guide from this repository](/anthos-bm-openstack-terraform/docs/install_openstack_on_gce.md))_
 2. You have completed the [Install Anthos Bare Metal on OpenStack with Terraform](/anthos-bm-openstack-terraform/docs/quickstart.md) quick start guide
 
 If you have completed the *Install Anthos Bare Metal on OpenStack with Terraform*
