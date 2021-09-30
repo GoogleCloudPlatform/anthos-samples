@@ -299,8 +299,8 @@ export PROJECT_ID="<YOUR_GCP_PROJECT_ID>"
 # provide a name for the Service Account that will created for use by Anthos on Bare Metal
 export SERVICE_ACCOUNT="abm-gcr"
 
-# set the Anthos on Bare Metal version to use
-export ABM_VERSION="1.8.0"
+# set the Anthos on Bare Metal version to use; for versions <1.8.2 see note below
+export ABM_VERSION="1.8.4"
 
 # set the Anthos on Bare Metal version to use
 export ABM_CLUSTER_NAME="abm-on-openstack"
@@ -314,6 +314,11 @@ gcloud config set project $PROJECT_ID
 # fetch the credentials for gcloud to use for authenticating against the Project
 gcloud auth application-default login
 ```
+
+> **Note:** For Anthos on bare metal versions `<1.8.2` please refer the [release
+> notes](https://cloud.google.com/anthos/clusters/docs/bare-metal/latest/release-notes)
+> for known issues. You can then look for workarounds for those issues in the
+> [troubleshooting guide](https://cloud.google.com/anthos/clusters/docs/bare-metal/1.8/troubleshooting/known-issues).
 
 #### 4.5) Install the necessary tools in the admin workstation
 ```sh
@@ -349,15 +354,7 @@ bmctl create config -c ${ABM_CLUSTER_NAME}
 envsubst < abm_cluster.yaml.tpl > bmctl-workspace/${ABM_CLUSTER_NAME}/${ABM_CLUSTER_NAME}.yaml
 ```
 
-#### 5.3) Increase the size of kernel connection tracking table
-> **Note:** This step is only required for **Anthos on Bare Metal** versions
-> `<1.8.3`, due to a [known issue](https://cloud.google.com/anthos/clusters/docs/bare-metal/1.8/troubleshooting/known-issues#ubuntu_2004_lts_and_bmctl)
-
-```sh
-sudo sysctl net/netfilter/nf_conntrack_max=131072
-```
-
-#### 5.4) Create the Anthos on Bare Metal cluster
+#### 5.3) Create the Anthos on Bare Metal cluster
 ```sh
 bmctl create cluster -c ${ABM_CLUSTER_NAME}
 ```
@@ -467,7 +464,7 @@ in the Google Cloud console.
 ---
 ### Troubleshooting Anthos on Bare Metal cluster creation
 This section provides some guidance as to how to troubleshoot the bare metal
-cluster installtion process _(step [**5.4**](#54-create-the-anthos-on-bare-metal-cluster))_.
+cluster installtion process _(step [**5.3**](#53-create-the-anthos-on-bare-metal-cluster))_.
 The **bmctl** tool creates a [**Kind cluster**](https://kind.sigs.k8s.io/) to
 bootstrap the Anthos on Bare Metal cluster installation process. So we can look
 for logs from this **kind cluster** to see what's happening.
@@ -491,7 +488,7 @@ sudo -u abm -i
 ```
 
 Once, `ssh`'ed into the **admin workstation**, wait until you see the following
-output in the terminal window where the bare metal cluster installation is ongoing _(where step [**5.4**](#54-create-the-anthos-on-bare-metal-cluster) was run)_.
+output in the terminal window where the bare metal cluster installation is ongoing _(where step [**5.3**](#53-create-the-anthos-on-bare-metal-cluster) was run)_.
 ```sh
 # this means that the bootstrap kind cluster has been created
 "Installing dependency components..."
@@ -509,4 +506,4 @@ kubectl get pods --all-namespaces
 
 > **Note:** The **bootstrap kind cluster** will be deleted once the installation
 > process ends. To prevent it from being deleted, use the `--reuse-bootstrap-cluster`
-> flag when executing `bmctl create` in step [**5.4**](#54-create-the-anthos-on-bare-metal-cluster).
+> flag when executing `bmctl create` in step [**5.3**](#53-create-the-anthos-on-bare-metal-cluster).
