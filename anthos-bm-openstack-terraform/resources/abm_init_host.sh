@@ -26,6 +26,8 @@ function __main__ () {
   __setup_kubctl__
   __setup_bmctl__
   __setup_kind__
+  __setup_openstack__
+  __setup_util__
   __setup_docker__
   echo "[+] Successfully completed initialization of host $HOSTNAME"
 }
@@ -39,7 +41,7 @@ function __setup_kubctl__ () {
   chmod +x kubectl
   sudo mv kubectl /usr/local/sbin/
   __check_exit_status__ $? \
-    "[+] Successfully installed kubectl" \
+    "[+] Successfully installed kubectl." \
     "[-] Failed to install kubectl."
   __print_separator__
 }
@@ -52,7 +54,7 @@ function __setup_bmctl__ () {
   chmod a+x bmctl
   sudo mv bmctl /usr/local/sbin/
   __check_exit_status__ $? \
-    "[+] Successfully installed bmctl" \
+    "[+] Successfully installed bmctl." \
     "[-] Failed to install bmctl."
   __print_separator__
 }
@@ -68,7 +70,7 @@ function __setup_docker__ () {
   sudo usermod -aG docker abm
   newgrp docker
   __check_exit_status__ $? \
-    "[+] Successfully installed docker" \
+    "[+] Successfully installed docker." \
     "[-] Failed to install docker."
   __print_separator__
 }
@@ -81,8 +83,30 @@ function __setup_kind__ () {
   chmod +x kind
   sudo mv ./kind /usr/local/sbin/
   __check_exit_status__ $? \
-    "[+] Successfully installed kind" \
+    "[+] Successfully installed kind." \
     "[-] Failed to install kind."
+  __print_separator__
+}
+
+##############################################################################
+# Install the OpenStack CLI for configuring OpenStack K8s Cloud provider
+##############################################################################
+function __setup_openstack__ () {
+  sudo apt install python3-openstackclient -y
+  __check_exit_status__ $? \
+    "[+] Successfully installed openstack cli client." \
+    "[-] Failed to install openstack cli client."
+  __print_separator__
+}
+
+##############################################################################
+# Install utility tools
+##############################################################################
+function __setup_util__ () {
+  sudo apt install jq -y
+  __check_exit_status__ $? \
+    "[+] Successfully installed utlity tools: jq." \
+    "[-] Failed to install utility tools: jq."
   __print_separator__
 }
 
