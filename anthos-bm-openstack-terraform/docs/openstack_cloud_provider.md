@@ -11,6 +11,7 @@ for exposing Kubernetes Services.
 functional
      - _(either your own OpenStack deployment or one on Google Compute Engine following [the guide from this repository](/anthos-bm-openstack-terraform/docs/install_openstack_on_gce.md))_
 1. You have completed the [Install Anthos Bare Metal on OpenStack with Terraform](/anthos-bm-openstack-terraform/docs/quickstart.md) quick start guide
+---
 
 If you have completed the *Install Anthos Bare Metal on OpenStack with Terraform*
 guide then you would have the following in your workstation:
