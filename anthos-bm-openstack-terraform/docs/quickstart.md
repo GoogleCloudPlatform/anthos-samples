@@ -71,10 +71,10 @@ openstack image create ubuntu-2004 \
 ```sh
 export SSH_KEY_NAME="abmNodeKey"
 # generate the key pair
-ssh-keygen -t rsa -f ./${SSH_KEY_NAME}
+ssh-keygen -t rsa -f ~/.ssh/${SSH_KEY_NAME}
 
 # upload it to OpenStack
-openstack keypair create $SSH_KEY_NAME --public-key ./${SSH_KEY_NAME}.pub
+openstack keypair create $SSH_KEY_NAME --public-key ~/.ssh/${SSH_KEY_NAME}.pub
 ```
 
 #### 2.3) Create OpenStack falvors that can be used to create VMs
@@ -238,10 +238,10 @@ echo $FLOATING_IP
 
 #### 4.2) Copy into and configure the initilization scripts in the admin workstation
 ```sh
-scp -o IdentitiesOnly=yes -i ./${SSH_KEY_NAME} resources/abm* ubuntu@$FLOATING_IP:~
+scp -o IdentitiesOnly=yes -i ~/.ssh/${SSH_KEY_NAME} resources/abm* ubuntu@$FLOATING_IP:~
 
 # SSH into the admin workstation
-ssh -o IdentitiesOnly=yes -i ./${SSH_KEY_NAME} ubuntu@$FLOATING_IP
+ssh -o IdentitiesOnly=yes -i ~/.ssh/${SSH_KEY_NAME} ubuntu@$FLOATING_IP
 
 # switch to the "abm" user
 sudo -u abm -i
@@ -481,7 +481,7 @@ export FLOATING_IP=$(terraform output admin_ws_public_ip | tr -d '"')
 
 # ssh into the admin workstation
 # you have to replace "<SSH_KEY_NAME>" with the ssh key name used above
-ssh -o IdentitiesOnly=yes -i ./<SSH_KEY_NAME> ubuntu@${FLOATING_IP}
+ssh -o IdentitiesOnly=yes -i ~/.ssh/<SSH_KEY_NAME> ubuntu@${FLOATING_IP}
 
 # switch to the "abm" user
 sudo -u abm -i
