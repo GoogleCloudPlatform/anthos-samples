@@ -6,7 +6,7 @@ for exposing Kubernetes Services.
 ---
 ### Pre-requisites
 
-_The guide assumes the following:_
+***The guide assumes the following:***
 1. You already have an environment with [OpenStack Ussuri](https://releases.openstack.org/ussuri/index.html) or similar deployed with [LBaaS v2](https://docs.openstack.org/mitaka/networking-guide/config-lbaas.html) configured and
 functional
      - _(either your own OpenStack deployment or one on Google Compute Engine following [the guide from this repository](/anthos-bm-openstack-terraform/docs/install_openstack_on_gce.md))_
@@ -14,19 +14,21 @@ functional
 
 If you have completed the *Install Anthos Bare Metal on OpenStack with Terraform*
 guide then you would have the following in your workstation:
-- The `openrc.sh` file used by the OpenStack CLI client downloaded
-- The public and private key files for the SSH key named `abmNodeKey` stored at `~/.ssh`
-- The Terraform variables file `terraform.tfvars` created at `<PATH_TO_THIS_REPO>/anthos-samples/anthos-bm-openstack-terraform`
-- The _auto-generated_ Terraform state file `terraform.tfstate` created at `<PATH_TO_THIS_REPO>/anthos-samples/anthos-bm-openstack-terraform`
+- The `openrc.sh` file used by the OpenStack CLI client downloaded.
+- The public and private key files for the SSH key named `abmNodeKey` stored at `~/.ssh`.
+- The Terraform variables file `terraform.tfvars` created at `<PATH_TO_THIS_REPO>/anthos-samples/anthos-bm-openstack-terraform`.
+- The _auto-generated_ Terraform state file `terraform.tfstate` created at `<PATH_TO_THIS_REPO>/anthos-samples/anthos-bm-openstack-terraform`.
 
 > **Note:** The name of the SSH key can be different based on what you used for
 > `SSH_KEY_NAME` in [step 2.2](/anthos-bm-openstack-terraform/docs/quickstart.md#22-create-and-upload-ssh-keys-to-be-used-by-the-openstack-vms) of the quick start
 
-In addition you will also have an infrastructure set up in your OpenStack
-environment similar to what is shown below. The three OpenStack VMs -
-**abm-ws**, **abm-cp1** and **abm-w1** - together will be hosting an Anthos on
-Bare Metal cluster. This cluster would be **registered** and **logged-in** to
-the Google Cloud Platform as shown below.
+In addition:
+- You will also have an infrastructure set up in your OpenStack environment
+  similar to what is shown below.
+- The three OpenStack VMs - **abm-ws**, **abm-cp1** and **abm-w1** - together
+  will be hosting an Anthos on Bare Metal cluster.
+- This cluster would be **registered** and **logged-in** to the Google Cloud
+  Platform as shown below.
 <p align="center">
   <img src="images/openstack-setup.png" width="550">
   <img src="images/logged-in-k8s.png">
