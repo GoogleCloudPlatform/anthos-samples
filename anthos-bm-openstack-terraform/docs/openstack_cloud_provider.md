@@ -22,4 +22,14 @@ guide then you would have the following in your workstation:
 > **Note:** The name of the SSH key can be different based on what you used for
 > `SSH_KEY_NAME` in [step 2.2](/anthos-bm-openstack-terraform/docs/quickstart.md#22-create-and-upload-ssh-keys-to-be-used-by-the-openstack-vms) of the quick start
 
+In addition you will also have an infrastructure set up in your OpenStack
+environment similar to what is shown below. The three OpenStack VMs -
+**abm-ws**, **abm-cp1** and **abm-w1** - together will be hosting an Anthos on
+Bare Metal cluster. This cluster would be **registered** and **logged-in** to
+the Google Cloud Platform as shown below.
+<p align="center">
+  <img src="images/openstack-setup.png" width="550">
+  <img src="images/logged-in-k8s.png">
+</p>
+
 ---
