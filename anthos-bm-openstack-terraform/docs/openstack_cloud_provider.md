@@ -13,8 +13,6 @@ functional.
      - _if you have the setup from the [OpenStack on GCE](/anthos-bm-openstack-terraform/docs/install_openstack_on_gce.md)
       guide then make sure that you have a VPN tunnel set up in a separate
       terminal window using `sshuttle` as shown in [**Step-4.5**](install_openstack_on_gce.md#45-create-a-vpn-tunnel-to-route-traffic-to-the-openstack-apis)_
-      </br>
-      </br>
 1. You have configured and installed Anthos on Bare Metal in your OpenStack environment.
     - _either installed manually or by completing the [Install Anthos Bare Metal on OpenStack with Terraform](/anthos-bm-openstack-terraform/docs/quickstart.md) quick start guide_
 ---
