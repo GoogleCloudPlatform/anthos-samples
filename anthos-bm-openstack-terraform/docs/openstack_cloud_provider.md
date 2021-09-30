@@ -19,7 +19,7 @@ guide then you would have the following in your workstation:
 - The Terraform variables file `terraform.tfvars` created at `<PATH_TO_THIS_REPO>/anthos-samples/anthos-bm-openstack-terraform`
 - The _auto-generated_ Terraform state file `terraform.tfstate` created at `<PATH_TO_THIS_REPO>/anthos-samples/anthos-bm-openstack-terraform`
 
-> **Note:** The name of the SSH key can be different if you had set the
-> environment variable `SSH_KEY_NAME` to something else in [step 2.2](/anthos-bm-openstack-terraform/docs/quickstart.md#22-create-and-upload-ssh-keys-to-be-used-by-the-openstack-vms) of the quick start
+> **Note:** The name of the SSH key can be different based on what you used for
+> `SSH_KEY_NAME` in [step 2.2](/anthos-bm-openstack-terraform/docs/quickstart.md#22-create-and-upload-ssh-keys-to-be-used-by-the-openstack-vms) of the quick start
 
 ---
