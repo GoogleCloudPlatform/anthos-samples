@@ -44,9 +44,9 @@ expectation before continuing. Your OpenStack deployment:
   <img src="images/logged-in-k8s.png">
 </p>
 
-> **Note:** If your have a working Anthos on Bare Metal cluster running on
+> **Note:** _If your have a working Anthos on Bare Metal cluster running on
 > OpenStack whose set up doesn't exactly match the diagram above, you should
-> still be able to use this guide with minor tweaks to match your environment.
+> still be able to use this guide with minor tweaks to match your environment._
 >
 ---
 #### 1) Source your `openrc` file.
@@ -54,23 +54,19 @@ expectation before continuing. Your OpenStack deployment:
 source <PATH_TO_OPENRC_FILE>/openrc.sh
 ```
 
-> **Note:** If you followed the [OpenStack on GCE guide](install_openstack_on_gce.md#43-access-the-openstack-api-server-via-the-external-ip-of-the-gce-instance)
+> **Note:** _If you followed the [OpenStack on GCE guide](install_openstack_on_gce.md#43-access-the-openstack-api-server-via-the-external-ip-of-the-gce-instance)
 > & the [quick start guide](quickstart.md#12-download-the-openrc-file) then your
-> `openrc` file might be named `admin-openrc.sh`
+> `openrc` file might be named `admin-openrc.sh`_
 
 #### 2) Setup CA certificate configuration for the OpenStack CLI.
 ```sh
 export OS_CACERT=<PATH_TO_OPENRC_FILE>/openstack-ca.crt
 ```
-> **Note:** If you followed the OpenStack on GCE guide [step-4.6](install_openstack_on_gce.md#46-download-the-ca-certificate),
-> then the CA certificate in your workstation should be at:</br>
+> **Note:** _If you followed the OpenStack on GCE guide [step-4.6](install_openstack_on_gce.md#46-download-the-ca-certificate),
+> then the CA certificate in your workstation should be at:_</br>
 >  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;**`export OS_CACERT=~/.ssh/openstack-ca.crt`**
 
-#### 3) _(Optional)_ Create a VPN tunnel to route traffic to the **OpenStack** APIs
-This step is required only if you are working on an OpenStack environment
-provisioned by following the
-
-#### 4) Verify that the OpenStack CLI client is working.
+#### 3) Verify that the OpenStack CLI client is working.
 ```sh
 # see if you are able to list the endpoints from the OpenStack server
 openstack endpoint list
@@ -85,58 +81,20 @@ openstack endpoint list
 | 03e84f47ebbe435cb87865da0b780d28 | RegionOne | placement    | placement     | True    | public    | https://10.128.0.2:8780                     |
 | 067e51258831471e9d936f66c24353e8 | RegionOne | placement    | placement     | True    | admin     | http://172.29.236.100:8780                  |
 | 0c1e5ae42269481a8aed9caf6cb7b456 | RegionOne | keystone     | identity      | True    | admin     | http://172.29.236.100:5000                  |
-| 0efcdfe9c3124331b1cdf40d1c9da509 | RegionOne | keystone     | identity      | True    | public    | https://10.128.0.2:5000                     |
-| 13a1b08e1cde484094aec1bf932be43c | RegionOne | cinderv3     | volumev3      | True    | public    | https://10.128.0.2:8776/v3/%(tenant_id)s    |
-| 17285e1785e8439c9d204cfe2fa74437 | RegionOne | cinderv3     | volumev3      | True    | internal  | http://172.29.236.100:8776/v3/%(tenant_id)s |
-| 269407b75c6546db9bfa82cd7e52c7c0 | RegionOne | cinderv3     | volumev3      | True    | admin     | http://172.29.236.100:8776/v3/%(tenant_id)s |
 | ...                                                                                                                                             |
 | ...                                                                                                                                             |
 | ...                                                                                                                                             |
 +----------------------------------+-----------+--------------+---------------+---------+-----------+---------------------------------------------+
 ```
 
+#### 4) Get the ID of the public network in OpenStack
+This is the publicly accessible network in your OpenStack deployment from which
+`Floating IP`s are allocated. It is from this network the `LoadBalancer` IPs
+for the Kubernetes services will be allocated.
 
-
-```sh
-cd <PATH_TO_REPOSITORY>/anthos-samples/anthos-bm-openstack-terraform
-```
-
-```sh
-# change this if you used something else in Step-2.2 of the quick start guide
-export SSH_KEY_NAME="abmNodeKey"
-```
-
-```sh
-# fetch the ip address using the Terraform output
-export FLOATING_IP=$(terraform output admin_ws_public_ip | tr -d '"')
-
-# fetch the ip address using the OpenStack API
-export FLOATING_IP=$(openstack floating ip list --tags=abm_ws_floatingip -f json | jq -c '.[]."Floating IP Address"' | tr -d '"')
-
-# echo and note down the floating IP
-echo $FLOATING_IP
-```
-
-```sh
-# if you followed the OpenStack on GCE guide then the file will be named `admin-openrc.sh`
-scp -o IdentitiesOnly=yes -i ~/.ssh/${SSH_KEY_NAME} <PATH_TO_DOWNLOADED_OPENRC>/openrc.sh ubuntu@$FLOATING_IP:~
-
-# SSH into the admin workstation
-ssh -o IdentitiesOnly=yes -i ~/.ssh/${SSH_KEY_NAME} ubuntu@$FLOATING_IP
-
-# switch to the "abm" user
-sudo -u abm -i
-
-# copy the initialization scripts into the "abm" user's $HOME
-cp /home/ubuntu/*openrc.sh ./
-```
-
-
-```sh
-source ./openrc.sh
-```
-> OS_CACERT
-
+> **Note:** _The following command assumes that you have an OpenStack
+> environment similar to what is created in the [OpenStack on GCE](/anthos-bm-openstack-terraform/docs/install_openstack_on_gce.md) guide. If your environment was set up
+> differently, select the appropriate `public network`._
 ```sh
 # you can use this one line command if you have `jq` CLI tool installed
 # if not use the "openstack network list --name=public" command to get the ID
@@ -145,45 +103,158 @@ export PUBLIC_NETWORK_ID=$(openstack network list --name=public -f json | jq -c 
 # make sure you have the PUBLIC_NETWORK_ID environment variable is set
 echo $PUBLIC_NETWORK_ID
 ```
-
 ```sh
+# -----------------------------------------------------
+#                   Expected Output
+# -----------------------------------------------------
+8c30b34a-1f26-4ad5-9c4d-d4f8f286853b
+```
+
+#### 5) Get the ID of the subnetwork connecting the Anthos on Bare Metal VMs in OpenStack
+This is the subnet on the private network in your OpenStack deployment from
+which `IP`s are allocated for the VMs running Anthos on Bare Metal.
+
+> **Note:** _The following command assumes that the infrastructure for the
+> Anthos on Bare Metal cluster in OpenStack was created using the Terraform
+> scripts from the [Install Anthos Bare Metal on OpenStack with Terraform](quickstart.md#3-configure-and-execute-terraform) guide. If your environment was set up
+> differently select an appropriate `subnetwork`._
+```sh
+# you can use this one line command if you have `jq` CLI tool installed; if not
+# use the "openstack network list --name=abm-network" command to get the subnetwork's ID
 export ABM_NETWORK_SUBNET_ID=$(openstack network list --name=abm-network -f json | jq -c '.[]."Subnets"' | jq -c '.[]' | tr -d '"')
 
+# make sure you have the ABM_NETWORK_SUBNET_ID environment variable is set
 echo $ABM_NETWORK_SUBNET_ID
 ```
+```sh
+# -----------------------------------------------------
+#                   Expected Output
+# -----------------------------------------------------
+33071a29-4fc9-4c8b-9e7a-84f81c97faa8
+```
+
+#### 6) Get the floating IP of the admin workstation in OpenStack
+```sh
+# you can use this one line command if you have `jq` CLI tool installed; if not
+# use the "openstack floating ip list --tags=abm_ws_floatingip" to get the IP
+export FLOATING_IP=$(openstack floating ip list --tags=abm_ws_floatingip -f json | jq -c '.[]."Floating IP Address"' | tr -d '"')
+
+# make sure you have the FLOATING_IP environment variable is set
+echo $FLOATING_IP
+```
+
+```sh
+# -----------------------------------------------------
+#                   Expected Output
+# -----------------------------------------------------
+172.29.249.131
+```
+
+#### 7) Generate the cloud config file to be used by the OpenStack provider
+
+> **Note:** _The default values in the config file (like for `region`,
+> `tenant-name`, `domain-id`, etc) are all based on the assumption that your
+> OpenStack deployment is similar to the one created after following the
+> [OpenStack on GCE](install_openstack_on_gce.md) and [Anthos on Bare Metal on OpenStack with Terraform](quickstart.md)
+> guides._
+>
+> _If your environment was set up differently, you have to set the appropriate
+> values. For more information about all configuration parameters, see the
+> [OpenStack cloud provider docs](https://github.com/kubernetes/cloud-provider-openstack/blob/master/docs/openstack-cloud-controller-manager/using-openstack-cloud-controller-manager.md#config-openstack-cloud-controller-manager)._
 
 ```sh
 cat > cloud.conf << EOF
 [Global]
-auth-url=$OS_AUTH_URL
-username=$OS_USERNAME
-password=$OS_PASSWORD
+auth-url=${OS_AUTH_URL}
+username=${OS_USERNAME}
+password=${OS_PASSWORD}
 region=RegionOne
 tenant-name=admin
 domain-id=default
-# uncomment if you are using self-signed cert or specify with ca-file arg
+# this is for using a self-signed cert if your using a CA then comment this line
+# and point to the CA certificate using the ca-file arg
 tls-Insecure=true
 
 [LoadBalancer]
 use-octavia=true
-# this should be private network subnet where vip is allocated on
-subnet-id=${ABM_NETWORK_SUBNET_ID}
-# this is generally our public network
+# this is generally the public network on OpenStack
 floating-network-id=${PUBLIC_NETWORK_ID}
+# this should be private network subnet where vip is allocated for the ABM nodes
+subnet-id=${ABM_NETWORK_SUBNET_ID}
 
 [BlockStorage]
 bs-version=v2
 EOF
 ```
+```yaml
+# -----------------------------------------------------
+#                Expected File Contents
+# -----------------------------------------------------
+[Global]
+auth-url=https://10.128.0.2:5000
+username=admin
+password=2db98770cebfa9fbe430200824307460df7ceebed7add35361
+region=RegionOne
+tenant-name=admin
+domain-id=default
+# this is for using a self-signed cert if your using a CA then comment this line
+# and point to the CA certificate using the ca-file arg
+tls-Insecure=true
+
+[LoadBalancer]
+use-octavia=true
+# this is generally the public network on OpenStack
+floating-network-id=8c30b34a-1f26-4ad5-9c4d-d4f8f286853b
+# this should be private network subnet where vip is allocated for the ABM nodes
+subnet-id=33071a29-4fc9-4c8b-9e7a-84f81c97faa8
+
+[BlockStorage]
+bs-version=v2
+```
+
+#### 7) Copy the provider configuration into the admin workstation in OpenStack
+
+> **Note:** _The SSH key information used here assumes that you followed the
+> steps from the [Anthos on Bare Metal on OpenStack with Terraform](quickstart.md)
+> guide to create your OpenStack VMs. You may remove/change it if your VMs were
+> created differently._
 
 ```sh
+# use the same SSH key used when creating the OpenStack VMs
+export SSH_KEY_NAME="abmNodeKey"
 
-export KUBECONFIG=~/bmctl-workspace/openstack-1/openstack-1-kubeconfig
+# copy the cloud.conf file into the admin workstation
+scp -o IdentitiesOnly=yes -i ~/.ssh/${SSH_KEY_NAME} ./cloud.conf ubuntu@$FLOATING_IP:~
+
+# SSH into the admin workstation
+ssh -o IdentitiesOnly=yes -i ~/.ssh/${SSH_KEY_NAME} ubuntu@$FLOATING_IP
+
+# switch to the "abm" user
+sudo -u abm -i
+
+# copy the initialization scripts into the "abm" user's $HOME
+cp /home/ubuntu/cloud.conf ./
+```
+
+#### 8) Install the Kubernetes resources for the OpenStack Cloud Provider
+```sh
+export KUBECONFIG=~/bmctl-workspace/abm-on-openstack/abm-on-openstack-kubeconfig
 kubectl create secret -n kube-system generic cloud-config --from-file=cloud.conf
 
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/cloud-provider-openstack/master/manifests/controller-manager/cloud-controller-manager-roles.yaml
+
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/cloud-provider-openstack/master/manifests/controller-manager/cloud-controller-manager-role-bindings.yaml
+
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/cloud-provider-openstack/master/manifests/controller-manager/openstack-cloud-controller-manager-ds.yaml
+```
 
+#### 9) Deploy a sample application exposed via  a Load Balancer type service
+```sh
+kubectl apply -f https://github.com/GoogleCloudPlatform/anthos-samples/blob/k8s-cloud-provider/anthos-bm-openstack-terraform/resources/point-of-sales.yaml
+```
 
+#### 10) Try accessing the service from a browser
+```sh
+# wait for the external IP to be assigned
+kubectl get services
 ```
