@@ -162,8 +162,8 @@ KVM acceleration can be used
 #### 2.1) Clone the **OpenStack** repository into the GCE instance.
 
 First, start a screen session because some commands are going to take a while.
-Make sure you are ***SSH'ed*** into the `openstack-1` GCE VM created earlier.
 ```sh
+# make sure you are SSH'ed into the `openstack-1` GCE VM created earlier
 screen
 ```
 
