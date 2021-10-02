@@ -455,7 +455,7 @@ in the Google Cloud console.
 
 ---
 ### What Next?
-You can now install the OpenStack Cloud Provider on the newly created Anthos on
+You can now install the **OpenStack Cloud Provider** on the newly created Anthos on
 bare metal cluster by [following this guide](openstack_cloud_provider.md).
 This enables you to expose your applications using a `LoadBalancer` type
 service.
