@@ -77,7 +77,7 @@ ssh-keygen -t rsa -f ~/.ssh/${SSH_KEY_NAME}
 openstack keypair create $SSH_KEY_NAME --public-key ~/.ssh/${SSH_KEY_NAME}.pub
 ```
 
-#### 2.3) Create OpenStack falvors that can be used to create VMs
+#### 2.3) Create OpenStack flavors that can be used to create VMs
 ```sh
 openstack flavor create --id 0 --ram 512   --vcpus 1 --disk 10  m1.tiny
 openstack flavor create --id 1 --ram 1024  --vcpus 1 --disk 20  m1.small

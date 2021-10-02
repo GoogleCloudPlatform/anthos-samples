@@ -44,7 +44,7 @@ than the ones mentioned in the guide.
   - [OpenStack CLI Client](https://docs.openstack.org/newton/user-guide/common/cli-install-openstack-command-line-clients.html)
   - [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) _(>=v0.15.5)_
 
-- A [Google Cloud Project](https://console.cloud.google.com/cloud-resource-manager) _(which will host the Anthos Hub)_
+- A [Google Cloud Project](https://cloud.google.com/resource-manager/docs/creating-managing-projects) _(which will host the Anthos Hub)_
 - **Time**: this entire guide can take upto **45 minutes** to complete if you already have an OpenStack environment running
 
 ---
