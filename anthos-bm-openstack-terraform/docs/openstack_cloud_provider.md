@@ -250,7 +250,7 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes/cloud-provider-ope
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/cloud-provider-openstack/master/manifests/controller-manager/openstack-cloud-controller-manager-ds.yaml
 ```
 
-#### 9) Deploy a sample application Point-Of-Sales application
+#### 9) Deploy a sample Point-Of-Sales application
 ```sh
 kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/anthos-samples/main/anthos-bm-openstack-terraform/resources/point-of-sales.yaml
 ```
@@ -264,7 +264,7 @@ api-server-7db4777f7f-zflk5   1/1     Running   0          74s
 inventory-58c6fb5568-dqk2x    1/1     Running   0          74s
 payments-68d5d65d5c-5mjl6     1/1     Running   0          74s
 ```
-#### 10) Exposed the application via service of type Load Balancer
+#### 10) Exposed the application via a service of type Load Balancer
 ```sh
 kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/anthos-samples/main/anthos-bm-openstack-terraform/resources/point-of-sales-service.yaml
 ```
@@ -276,3 +276,17 @@ kubectl get service api-server-lb
 NAME            TYPE           CLUSTER-IP      EXTERNAL-IP      PORT(S)        AGE
 api-server-lb   LoadBalancer   10.203.77.215   172.29.249.159   80:32378/TCP   4m12s
 ```
+---
+
+Point-Of-Sales application accessed using the `EXTERNAL-IP`.
+
+<p align="center">
+  <img src="images/pos-app.png">
+</p>
+
+---
+
+Notice a new **OpenStack Load Balancer** being created in the OpenStack WebUI.
+<p align="center">
+  <img src="images/k8s-lb-openstack.png">
+</p>
