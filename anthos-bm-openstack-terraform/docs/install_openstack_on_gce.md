@@ -166,16 +166,13 @@ First, start a screen session because some commands are going to take a while.
 # make sure you are SSH'ed into the `openstack-1` GCE VM created earlier
 screen
 ```
-
-> **Note:** If you lose your SSH session, SSH back into the VM, switch to a
-> sudo user-shell (**`sudo -i`**) and re-attach to the screen session with
-> **`screen -r -D`**.
-
 ```sh
 git clone https://opendev.org/openstack/openstack-ansible /opt/openstack-ansible
 cd /opt/openstack-ansible
 git checkout stable/ussuri
 ```
+> **Note:** If you lose your SSH session, SSH back into the VM, switch to a
+> sudo user-shell (**`sudo -i`**) and re-attach to the screen session with **`screen -r -D`**.
 
 #### 2.2) Install [Ansible](https://www.ansible.com/) and all the required Ansible roles on the GCE instance.
 ```sh
