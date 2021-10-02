@@ -27,7 +27,6 @@ function __main__ () {
   __setup_bmctl__
   __setup_kind__
   __setup_openstack__
-  __setup_util__
   __setup_docker__
   echo "[+] Successfully completed initialization of host $HOSTNAME"
 }
@@ -96,17 +95,6 @@ function __setup_openstack__ () {
   __check_exit_status__ $? \
     "[+] Successfully installed openstack cli client." \
     "[-] Failed to install openstack cli client."
-  __print_separator__
-}
-
-##############################################################################
-# Install utility tools
-##############################################################################
-function __setup_util__ () {
-  sudo apt install jq -y
-  __check_exit_status__ $? \
-    "[+] Successfully installed utlity tools: jq." \
-    "[-] Failed to install utility tools: jq."
   __print_separator__
 }
 
