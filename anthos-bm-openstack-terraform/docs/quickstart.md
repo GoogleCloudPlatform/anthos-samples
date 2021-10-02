@@ -4,7 +4,7 @@ This guide sets up the following VMs in your OpenStack environment.
 
   | VM Name  | IP Address    | Usage         |
   | ---------| ------------- | ------------- |
-  | abm-ws   | 10.200.0.10 ***(private)***<br/>floating IP ***(public)*** | Acts as the **admin workstation** It is used to deploy Anthos on Bare Metal to the other machines.
+  | abm-ws   | 10.200.0.10 ***(private)***<br/>floating IP ***(public)*** | Acts as the **admin workstation** It is used to deploy Anthos on bare metal to the other machines.
   | abm-cp1  | 10.200.0.11   | **Anthos cluster control plane:**. This host runs the Kubernetes control plane and load balancer.
   | abm-w1   | 10.200.0.12   | **Anthos cluster worker node:** This host runs the Kubernetes workloads.
 
@@ -196,7 +196,7 @@ terraform plan
 #### 3.5) Apply the changes described in the Terraform script
 Review the **Terraform** script _([main.tf](/main.tf))_ to see details of the
 configuration. Running this script will create the required VMs and setup the
-networking inside **OpenStack** to install **Anthos on Bare Metal**.
+networking inside **OpenStack** to install **Anthos on bare metal**.
 
 ```sh
 # executes the plan on the given provider (i.e: GCP) to reach the desired state of resources
@@ -220,7 +220,7 @@ admin_ws_public_ip = "172.29.249.165"
 ### 4. Configure the admin workstation VM on OpenStack
 Running the **Terraform** scripts from section [3.5](#35-apply-the-changes-described-in-the-terraform-script)
 would have created a VM in **OpenStack** that will serve as our ***admin workstation***.
-We will confgure and use it to install **Anthos on Bare Metal**.
+We will confgure and use it to install **Anthos on bare metal**.
 
 #### 4.1) Fetch the Floating IP of the admin workstation
 > **Note:** Use one of the two commands below to setup the environment variable
@@ -296,13 +296,13 @@ SSH to abm-w1 succeeded
 # set the GCP Project where the Anthos Hub and Service Accounts will be setup
 export PROJECT_ID="<YOUR_GCP_PROJECT_ID>"
 
-# provide a name for the Service Account that will created for use by Anthos on Bare Metal
+# provide a name for the Service Account that will created for use by Anthos on bare metal
 export SERVICE_ACCOUNT="abm-gcr"
 
-# set the Anthos on Bare Metal version to use; for versions <1.8.2 see note below
+# set the Anthos on bare metal version to use; for versions <1.8.2 see note below
 export ABM_VERSION="1.8.4"
 
-# set the Anthos on Bare Metal version to use
+# set the Anthos on bare metal version to use
 export ABM_CLUSTER_NAME="abm-on-openstack"
 
 # log into Google Cloud via gcloud using your user account
@@ -331,7 +331,7 @@ gcloud auth application-default login
 ```
 > **Note:** This step can take upto **60 seconds** to complete
 
-#### 4.6) Initialize the Google Cloud Project as required for the Anthos on Bare Metal installation
+#### 4.6) Initialize the Google Cloud Project as required for the Anthos on bare metal installation
 ```sh
 # this script will do the following:
 #   - enable GCP services
@@ -342,9 +342,9 @@ gcloud auth application-default login
 > **Note:** This step can take upto **60 seconds** to complete
 
 ---
-### 5. Install Anthos on Bare Metal
+### 5. Install Anthos on bare metal
 
-#### 5.1) Create a workspace for the new Anthos on Bare Metal cluster
+#### 5.1) Create a workspace for the new Anthos on bare metal cluster
 ```sh
 bmctl create config -c ${ABM_CLUSTER_NAME}
 ```
@@ -354,7 +354,7 @@ bmctl create config -c ${ABM_CLUSTER_NAME}
 envsubst < abm_cluster.yaml.tpl > bmctl-workspace/${ABM_CLUSTER_NAME}/${ABM_CLUSTER_NAME}.yaml
 ```
 
-#### 5.3) Create the Anthos on Bare Metal cluster
+#### 5.3) Create the Anthos on bare metal cluster
 ```sh
 bmctl create cluster -c ${ABM_CLUSTER_NAME}
 ```
@@ -393,7 +393,7 @@ Please check the logs at bmctl-workspace/abm-on-openstack/log/create-cluster-202
 > for tips on how to monitor the above installation process
 
 ---
-### 6. Verifying installation and interacting with the Anthos on Bare Metal cluster
+### 6. Verifying installation and interacting with the Anthos on bare metal cluster
 
 You can find your cluster's `kubeconfig` file on the admin machine in the
 `bmctl-workspace` directory. To verify your deployment, complete the following
@@ -413,7 +413,7 @@ abm-cp1   Ready    control-plane,master   5m24s   v1.20.5-gke.1301
 abm-w1    Ready    <none>                 2m17s   v1.20.5-gke.1301
 ```
 
-#### 6.2) Login to the Anthos on Bare Metal cluster in the Google Cloud console
+#### 6.2) Login to the Anthos on bare metal cluster in the Google Cloud console
 
 During the setup process, your cluster will be auto-registered in Google Cloud
 using [Connect](https://cloud.google.com/anthos/multicluster-management/connect/overview).
@@ -462,11 +462,11 @@ in the Google Cloud console.
   - **Delete** the [`IAM Service Account`](https://console.cloud.google.com/iam-admin/serviceaccounts) with email username `abm-gcr`
 
 ---
-### Troubleshooting Anthos on Bare Metal cluster creation
+### Troubleshooting Anthos on bare metal cluster creation
 This section provides some guidance as to how to troubleshoot the bare metal
 cluster installtion process _(step [**5.3**](#53-create-the-anthos-on-bare-metal-cluster))_.
 The **bmctl** tool creates a [**Kind cluster**](https://kind.sigs.k8s.io/) to
-bootstrap the Anthos on Bare Metal cluster installation process. So we can look
+bootstrap the Anthos on bare metal cluster installation process. So we can look
 for logs from this **kind cluster** to see what's happening.
 
 Whilst the bare metal cluster installation is happening, log into the **admin workstation**

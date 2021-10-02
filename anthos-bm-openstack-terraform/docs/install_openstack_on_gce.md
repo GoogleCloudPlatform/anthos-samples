@@ -562,7 +562,7 @@ echo https://$INTERNAL_IP
 ```
 ---
 ### Important
-- If you are using **this OpenStack setup** to install *Anthos on Bare Metal* make sure you use the same shell session. This is because a new shell session will require you to `source admin-openrc.sh` and set the environment variable for `OS_CACERT` with the path for the `CA certificate`.
+- If you are using **this OpenStack setup** to install *Anthos on bare metal* make sure you use the same shell session. This is because a new shell session will require you to `source admin-openrc.sh` and set the environment variable for `OS_CACERT` with the path for the `CA certificate`.
 
 - Also make sure you have `sshuttle` running in another terminal window as shown in step [4.5](#45-create-a-vpn-tunnel-to-route-traffic-to-the-openstack-apis).
 ---

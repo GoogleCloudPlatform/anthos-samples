@@ -1,8 +1,10 @@
-## Anthos on Bare Metal on OpenStack with Terraform
+## Anthos on bare metal on OpenStack with Terraform
 
 This sample shows you how to use Terraform to try Anthos clusters on bare
 metal in High Availability (HA) mode using Virtual Machines (VMs) running on
-[OpenStack](https://www.openstack.org/). The guide has been tested on OpenStack
+[OpenStack](https://www.openstack.org/). The guide also shows how to configure
+the [OpenStack Cloud Provider for Kubernetes]((https://github.com/kubernetes/cloud-provider-openstack))
+on the Anthos on bare metal cluster. The guide has been tested on OpenStack
 [Ussuri](https://releases.openstack.org/ussuri/index.html) and assumes that you
 already have a similar OpenStack environment running.
 
@@ -50,4 +52,5 @@ than the ones mentioned in the guide.
 
 - [Deploy OpenStack Ussuri on GCE VM](/anthos-bm-openstack-terraform/docs/install_openstack_on_gce.md)
   - _(required only if you already don't have an **OpenStack Ussuri** or similar with **LBaaS v2** enabled)_
-- [Quick start: Install Anthos Bare Metal on OpenStack](docs/quickstart.md)
+- [Quick start: Install Anthos bare metal on OpenStack](docs/quickstart.md)
+- [Configure the OpenStack Cloud Provider on the Anthos on bare metal cluster](docs/openstack_cloud_provider.md)
