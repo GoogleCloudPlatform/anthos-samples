@@ -40,7 +40,7 @@ expectation before continuing. Your OpenStack deployment:
 - Those OpenStack VMs should be hosting an Anthos on Bare Metal cluster.
 - That cluster should be **registered** and **logged-in** to GCP as shown below _(see [quick start step-6](quickstart.md#6-verifying-installation-and-interacting-with-the-anthos-on-bare-metal-cluster) for how-to)_.
 <p align="center">
-  <img src="images/openstack-setup.png" width="550">
+  <img src="images/openstack-setup.png" width="650">
   <img src="images/logged-in-k8s.png">
 </p>
 
@@ -114,10 +114,11 @@ echo $PUBLIC_NETWORK_ID
 This is the subnet on the private network in your OpenStack deployment from
 which `IP`s are allocated for the VMs running Anthos on Bare Metal.
 
-> **Note:** _The following command assumes that the infrastructure for the
-> Anthos on Bare Metal cluster in OpenStack was created using the Terraform
-> scripts from the [Install Anthos Bare Metal on OpenStack with Terraform](quickstart.md#3-configure-and-execute-terraform) guide. If your environment was set up
-> differently select an appropriate `subnetwork`._
+> **Note:** _The following command assumes that the netwprk for the  Anthos on
+> Bare Metal cluster VMs were created using the Terraform scripts from the
+> [Install Anthos Bare Metal on OpenStack with Terraform](quickstart.md#3-configure-and-execute-terraform)
+> guide. If your environment was set up differently select an appropriate
+> `subnetwork`._
 ```sh
 # you can use this one line command if you have `jq` CLI tool installed; if not
 # use the "openstack network list --name=abm-network" command to get the subnetwork's ID
@@ -134,6 +135,14 @@ echo $ABM_NETWORK_SUBNET_ID
 ```
 
 #### 6) Get the floating IP of the admin workstation in OpenStack
+We fetch the IP address of the **admin workstation** to SSH into this VM and
+configure the **OpenStack Cloud Provider**.
+
+> **Note:** _The following command assumes that the admin workstation was
+> created using the Terraform scripts from the [Install Anthos Bare Metal on OpenStack with Terraform](quickstart.md#3-configure-and-execute-terraform)
+> guide. If your environment was set up differently set the IP address of the
+> admin host appropriately._
+
 ```sh
 # you can use this one line command if you have `jq` CLI tool installed; if not
 # use the "openstack floating ip list --tags=abm_ws_floatingip" to get the IP
@@ -150,12 +159,12 @@ echo $FLOATING_IP
 172.29.249.131
 ```
 
-#### 7) Generate the cloud config file to be used by the OpenStack provider
+#### 7) Generate the cloud config file that will be used by the OpenStack provider
 
-> **Note:** _The default values in the config file (like for `region`,
-> `tenant-name`, `domain-id`, etc) are all based on the assumption that your
-> OpenStack deployment is similar to the one created after following the
-> [OpenStack on GCE](install_openstack_on_gce.md) and [Anthos on Bare Metal on OpenStack with Terraform](quickstart.md)
+> **Note:** _The default values for some attributes in the config file (e.g:
+> `region`, `tenant-name`, `domain-id`, etc) are all based on the assumption
+> that your OpenStack deployment is similar to the one created after following
+> the [OpenStack on GCE](install_openstack_on_gce.md) and [Anthos on Bare Metal on OpenStack with Terraform](quickstart.md)
 > guides._
 >
 > _If your environment was set up differently, you have to set the appropriate
