@@ -18,17 +18,6 @@ functional.
     - _either installed manually or by completing the [Install Anthos bare metal on OpenStack with Terraform](/anthos-bm-openstack-terraform/docs/quickstart.md) quick start guide_
 ---
 
-<!-- If you have completed the *Install Anthos bare metal on OpenStack with Terraform*
-guide then you would have the following in your workstation:
-- The `openrc.sh` file used by the OpenStack CLI client downloaded.
-- The **password** for the OpenStack user who generated the above `openrc.sh` stored somewhere.
-- The public and private key files for the SSH key named `abmNodeKey` stored at `~/.ssh`.
-
-> **Note:** The name of the SSH key can be different based on what you used for
-> `SSH_KEY_NAME` in [Step-2.2](/anthos-bm-openstack-terraform/docs/quickstart.md#22-create-and-upload-ssh-keys-to-be-used-by-the-openstack-vms) of the quick start
-
-In addition: -->
-
 If you completed the [quick start guide](/anthos-bm-openstack-terraform/docs/quickstart.md)
 you should already have the expected setup in your OpenStack environment to
 complete this section. However, if you **manually** configured OpenStack and
@@ -40,7 +29,7 @@ expectation before continuing. Your OpenStack deployment:
 - Those OpenStack VMs should be hosting an Anthos on bare metal cluster.
 - That cluster should be **registered** and **logged-in** to GCP as shown below _(see [quick start step-6](quickstart.md#6-verifying-installation-and-interacting-with-the-anthos-on-bare-metal-cluster) for how-to)_.
 <p align="center">
-  <img src="images/openstack-setup.png" width="650">
+  <img src="images/openstack-setup.png" width="700">
   <img src="images/logged-in-k8s.png">
 </p>
 

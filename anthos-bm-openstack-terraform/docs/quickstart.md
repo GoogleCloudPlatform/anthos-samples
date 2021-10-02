@@ -454,6 +454,13 @@ in the Google Cloud console.
 </p>
 
 ---
+### What Next?
+You can now install the OpenStack Cloud Provider on the newly created Anthos on
+bare metal cluster by [following this guide](openstack_cloud_provider.md).
+This enables you to expose your applications using a `LoadBalancer` type
+service.
+
+---
 ### Clean up
 
 - If you used a fresh Google Cloud Project, then you can simply delete it
