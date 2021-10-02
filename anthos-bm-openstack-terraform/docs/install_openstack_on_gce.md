@@ -162,11 +162,16 @@ KVM acceleration can be used
 #### 2.1) Clone the **OpenStack** repository into the GCE instance.
 ```sh
 ### NOTE: YOU MUST BE SSH'ed INTO THE 'openstack-1' GCE VM WE CREATED
-
-# start a screen session because some commands are going to take a while you
-# can always re-attach later with "screen -r -D" if you lose your SSH session
+```
+Start a screen session because some commands are going to take a while.
+```sh
 screen
+```
 
+> **Note:** If you lose your SSH session, ***SSH back into the VM, switch to a
+> sudo user-shell (`sudo -i`) and re-attach to the screen session with `screen -r -D`***.
+
+```sh
 git clone https://opendev.org/openstack/openstack-ansible /opt/openstack-ansible
 cd /opt/openstack-ansible
 git checkout stable/ussuri
