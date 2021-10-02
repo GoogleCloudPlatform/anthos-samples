@@ -248,19 +248,3 @@ spec:
   - name: http
     port: 8080
     targetPort: 8080
----
-####################################################
-#            Services - Type LoadBalancer
-####################################################
-apiVersion: v1
-kind: Service
-metadata:
-  name: api-server-lb
-spec:
-  type: LoadBalancer
-  selector:
-    app: api-server
-  ports:
-  - name: http
-    port: 80
-    targetPort: 8080

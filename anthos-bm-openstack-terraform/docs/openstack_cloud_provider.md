@@ -114,7 +114,7 @@ echo $PUBLIC_NETWORK_ID
 This is the subnet on the private network in your OpenStack deployment from
 which `IP`s are allocated for the VMs running Anthos on Bare Metal.
 
-> **Note:** _The following command assumes that the netwprk for the  Anthos on
+> **Note:** _The following command assumes that the network for the  Anthos on
 > Bare Metal cluster VMs were created using the Terraform scripts from the
 > [Install Anthos Bare Metal on OpenStack with Terraform](quickstart.md#3-configure-and-execute-terraform)
 > guide. If your environment was set up differently select an appropriate
@@ -140,7 +140,7 @@ configure the **OpenStack Cloud Provider**.
 
 > **Note:** _The following command assumes that the admin workstation was
 > created using the Terraform scripts from the [Install Anthos Bare Metal on OpenStack with Terraform](quickstart.md#3-configure-and-execute-terraform)
-> guide. If your environment was set up differently set the IP address of the
+> guide. If your environment was set up differently select the IP address of the
 > admin host appropriately._
 
 ```sh
@@ -241,27 +241,35 @@ ssh -o IdentitiesOnly=yes -i ~/.ssh/${SSH_KEY_NAME} ubuntu@$FLOATING_IP
 # switch to the "abm" user
 sudo -u abm -i
 
-# copy the initialization scripts into the "abm" user's $HOME
+# copy the configuration file into the "abm" user's $HOME
 cp /home/ubuntu/cloud.conf ./
 ```
 
-#### 8) Install the Kubernetes resources for the OpenStack Cloud Provider
+#### 8) Install the Kubernetes resources for the OpenStack Cloud Provider in your Anthos on Bare Metal Cluster
 ```sh
+# make sure the kubectl client is pointing towards your Anthos on Bare Metal cluster
 export KUBECONFIG=~/bmctl-workspace/abm-on-openstack/abm-on-openstack-kubeconfig
+
+# store the provider configurations as a Kubernetes secret
 kubectl create secret -n kube-system generic cloud-config --from-file=cloud.conf
 
+# create the necessary roles for the OpenStack provider
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/cloud-provider-openstack/master/manifests/controller-manager/cloud-controller-manager-roles.yaml
-
+# create the required role-bindings for the OpenStack provider
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/cloud-provider-openstack/master/manifests/controller-manager/cloud-controller-manager-role-bindings.yaml
-
+# create the OpenStack controller manager
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/cloud-provider-openstack/master/manifests/controller-manager/openstack-cloud-controller-manager-ds.yaml
 ```
 
-#### 9) Deploy a sample application exposed via  a Load Balancer type service
+#### 9) Deploy a sample application Point-Of-Sales application
 ```sh
-kubectl apply -f https://github.com/GoogleCloudPlatform/anthos-samples/blob/k8s-cloud-provider/anthos-bm-openstack-terraform/resources/point-of-sales.yaml
+kubectl apply -f https://github.com/GoogleCloudPlatform/anthos-samples/blob/main/anthos-bm-openstack-terraform/resources/point-of-sales.yaml
 ```
 
+#### 10) Exposed the application via service of type Load Balancer
+```sh
+kubectl apply -f https://github.com/GoogleCloudPlatform/anthos-samples/blob/main/anthos-bm-openstack-terraform/resources/point-of-sales-service.yaml
+```
 #### 10) Try accessing the service from a browser
 ```sh
 # wait for the external IP to be assigned
