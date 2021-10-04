@@ -14,22 +14,11 @@
  * limitations under the License.
  */
 
-terraform {
-  required_version = ">= 0.13"
-  required_providers {
-    openstack = {
-      source  = "terraform-provider-openstack/openstack"
-      version = "1.42.0"
-    }
-  }
-}
-
-provider "openstack" {
-  user_name     = var.os_user_name
-  tenant_name   = var.os_tenant_name
-  password      = var.os_password
-  auth_url      = var.os_auth_url
-  region        = var.os_region
-  endpoint_type = var.os_endpoint_type
-  use_octavia   = true
+# Output the list of IDs of the OpenStack VMs created by this module
+output "vm_ids" {
+  value = flatten([
+    for vmList in openstack_compute_instance_v2.openstack_instance[*] : [
+      for vm in vmList : vm.id
+    ]
+  ])
 }

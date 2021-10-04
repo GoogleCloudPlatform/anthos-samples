@@ -35,4 +35,7 @@ override.tf.json
 .terraformrc
 terraform.rc
 
+tmp/
 openrc
+id_rsa*
+*.pub
