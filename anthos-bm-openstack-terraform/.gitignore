@@ -39,3 +39,5 @@ tmp/
 openrc
 id_rsa*
 *.pub
+abmNodeKey
+abm_logs_dir/**

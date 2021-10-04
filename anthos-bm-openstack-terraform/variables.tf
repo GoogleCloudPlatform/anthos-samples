@@ -73,7 +73,7 @@ variable "machine_type" {
     Use 'openstack flavor list' to find a list of all available flavors
   EOF
   type        = string
-  default     = "m1.xlarge"
+  default     = "m1.jumbo"
 }
 
 variable "image" {
@@ -85,9 +85,9 @@ variable "image" {
   default     = "ubuntu-2004"
 }
 
-variable "ssh_key" {
+variable "ssh_key_name" {
   description = <<EOF
-    The SSH key pair to associate with the provisioned OpenStack VMs.
+    The name of the SSH key pair to associate with the provisioned OpenStack VMs.
     Use 'openstack key list' to find a list of all available keys
   EOF
   type        = string
