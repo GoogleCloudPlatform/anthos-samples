@@ -35,4 +35,9 @@ override.tf.json
 .terraformrc
 terraform.rc
 
+tmp/
 openrc
+id_rsa*
+*.pub
+abmNodeKey
+abm_logs_dir/**

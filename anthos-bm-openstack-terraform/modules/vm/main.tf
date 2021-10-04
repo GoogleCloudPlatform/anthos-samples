@@ -14,22 +14,16 @@
  * limitations under the License.
  */
 
-terraform {
-  required_version = ">= 0.13"
-  required_providers {
-    openstack = {
-      source  = "terraform-provider-openstack/openstack"
-      version = "1.42.0"
-    }
+resource "openstack_compute_instance_v2" "openstack_instance" {
+  for_each        = { for index, vm in var.vm_info : index => vm }
+  name            = each.value.name
+  image_name      = var.image
+  flavor_name     = var.flavor
+  key_pair        = var.key
+  security_groups = var.security_groups
+  user_data       = var.user_data
+  network {
+    uuid        = var.network
+    fixed_ip_v4 = each.value.ip
   }
-}
-
-provider "openstack" {
-  user_name     = var.os_user_name
-  tenant_name   = var.os_tenant_name
-  password      = var.os_password
-  auth_url      = var.os_auth_url
-  region        = var.os_region
-  endpoint_type = var.os_endpoint_type
-  use_octavia   = true
 }
