@@ -10,8 +10,7 @@ The guide is split into 4 sections:
 - [Section 4](#4-access-and-validate-the-deployed-environment) Access and validate the deployed environment
 
 Nested virtualization refers to the ability of running a virtual machine within
-another, enabling this general concept extendable to an arbitrary depth.
-Using nested KVM allows us to have minimal performance degradation when
+another. Using nested KVM allows us to have minimal performance degradation when
 OpenStack spins up user VMs in the GCE VM.
 
 > **Note:** This is only for experimental purposes for trying OpenStack, **not**
@@ -504,7 +503,8 @@ is only reachable from within the Google Cloud VPC. Thus, we will use [sshuttle]
 to set up a VPN tunnel to route **OpenStack** traffic via the *External IP* of
 the GCE VM.
 
-In a ***seperate new terminal window*** execute the following command:
+In a ***seperate new terminal window*** in **your local workstation** execute the
+following command:
 - Replace `<YOUR_GCP_USERNAME>` with the username associated to your Google Cloud Account
 - Replace `<EXTERNAL_IP>` with the External IP of the GCE VM from [**1.5**](#15-get-the-internal-and-external-ips-assigned-to-the-created-gce-vm)
 
