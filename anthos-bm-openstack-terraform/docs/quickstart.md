@@ -1,12 +1,22 @@
 ## Quick start
 
-This guide sets up the following VMs in your OpenStack environment.
+This guide has **two parts**.
+1. Prepare the infrastructure required to install Anthos on bare metal in your
+   OpenStack environment ***(Steps 1 to 3)***
+2. Install Anthos on bare metal in the prepared OpenStack infrastructure [***(Step 4 onwards)***](#4-configure-the-admin-workstation-vm-on-openstack)
+
+If you already have the necessary infrastructure set up in your OpenStack
+environment, then you can directly move to the Anthos on bare metal [installation
+section]((#4-configure-the-admin-workstation-vm-on-openstack)). If not, the
+Terraform scripts from the first part creates the following VMs in your
+OpenStack environment and sets up the expected networking between them.
 
   | VM Name  | IP Address    | Usage         |
   | ---------| ------------- | ------------- |
   | abm-ws   | 10.200.0.10 ***(private)***<br/>floating IP ***(public)*** | Acts as the **admin workstation** It is used to deploy Anthos on bare metal to the other machines.
   | abm-cp1  | 10.200.0.11   | **Anthos cluster control plane:**. This host runs the Kubernetes control plane and load balancer.
   | abm-w1   | 10.200.0.12   | **Anthos cluster worker node:** This host runs the Kubernetes workloads.
+
 
 ---
 
