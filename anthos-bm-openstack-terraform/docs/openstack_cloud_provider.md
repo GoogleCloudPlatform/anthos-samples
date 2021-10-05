@@ -252,7 +252,7 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes/cloud-provider-ope
 
 #### 9) Deploy a sample Point-Of-Sales application
 ```sh
-kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/anthos-samples/main/anthos-bm-openstack-terraform/resources/point-of-sales.yaml
+kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/anthos-samples/master/anthos-bm-openstack-terraform/resources/point-of-sales.yaml
 ```
 
 Verify if the application pods are running
