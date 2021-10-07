@@ -17,9 +17,9 @@ the following VMs and the required networking between them.
 
 ---
 ### Pre-requisites
-- OpenStack CLI tool has access to the OpenStack environment.
-  - _see [step-1.2](configure_openstack.md#12-download-the-openrc-file) of the
-    configure OpenStack guide to see how to download the `openrc` file_
+- OpenStack CLI tool has access to the OpenStack environment
+- OpenStack environment has the resources configured as defined in the Terraform
+  scripts from the [configuring OpenStack guide](configure_openstack.md)
 
 ---
 ### 1. Configure the admin workstation VM on OpenStack
