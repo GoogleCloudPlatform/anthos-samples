@@ -40,21 +40,17 @@ echo $FLOATING_IP
 
 #### 1.2) Copy into and configure the initilization scripts in the admin workstation
 
-Make sure you are inside the directory for this sample in the repository. If not
-move into the `anthos-bm-openstack-terraform` directory.
-```sh
-pwd
-```
-```sh
-# -----------------------------------------------------
-#                   Expected Output
-# -----------------------------------------------------
-<LOCAL_PATH_TO_REPO>/anthos-samples/anthos-bm-openstack-terraform
-```
-
 The **SSH key** information in the following steps assumes that you congifured your
 VM using the [_configuring OpenStack guide_](configure_openstack.md). Change
 them appropriately if it's different in your environment.
+
+First, make sure you are inside the directory for this sample in the repository.
+If not move into the `anthos-bm-openstack-terraform` directory.
+```sh
+# path should be: <LOCAL_PATH_TO_REPO>/anthos-samples/anthos-bm-openstack-terraform
+pwd
+```
+
 ```sh
 # use the same SSH key used when creating the OpenStack VMs
 export SSH_KEY_NAME="abmNodeKey"
