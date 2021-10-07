@@ -2,10 +2,9 @@
 
 This is the first part to the guide for installing Anthos on bare metal in
 OpenStack. In this guide, we configure the OpenStack environment
-with the minimum requirements for installing Anthos on bare metal.
-
-The Terraform scripts used in this guide create the following VMs in your
-OpenStack environment and sets up the expected networking between them.
+with the minimum requirements for installing Anthos on bare metal. The Terraform
+scripts used in this guide create the following VMs in your OpenStack
+environment and sets up the expected networking between them.
 
   | VM Name  | IP Address    | Usage         |
   | ---------| ------------- | ------------- |
