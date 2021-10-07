@@ -52,6 +52,6 @@ guide.
 
 - [Deploy OpenStack Ussuri on GCE VM](/anthos-bm-openstack-terraform/docs/install_openstack_on_gce.md)
   - _(required only if you already don't have an **OpenStack Ussuri** or similar with **LBaaS v2** enabled)_
-- [Provision the OpenStack VMs and network setup using Terraform](/docs/configure_openstack.md)
+- [Provision the OpenStack VMs and network setup using Terraform](docs/configure_openstack.md)
 - [Install Anthos bare metal on OpenStack](docs/install_abm.md)
 - [Configure the OpenStack Cloud Provider on the Anthos on bare metal cluster](docs/openstack_cloud_provider.md)
