@@ -40,9 +40,9 @@ echo $FLOATING_IP
 
 #### 1.2) Copy into and configure the initilization scripts in the admin workstation
 
-The **SSH key** information in the following steps assumes that you congifured your
-VM using the [_configuring OpenStack guide_](configure_openstack.md). Change
-them appropriately if it's different in your environment.
+The **SSH key** information in the following steps assumes that you configured
+your VM using the [_configuring OpenStack guide_](configure_openstack.md).
+Change them appropriately if it's different in your environment.
 
 First, make sure you are inside the directory for this sample in the repository.
 If not move into the `anthos-bm-openstack-terraform` directory.
