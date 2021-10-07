@@ -2,7 +2,7 @@
 
 This guide shows how to install Anthos on bare metal in your OpenStack
 environment. It assumes that you already have an **OpenStack Ussuri** or similar
-environment with the necessary VMs and network setup.
+environment with the necessary VMs and network set up.
 
 If you already have the necessary infrastructure set up in your OpenStack
 environment, then you can continue with this guide. If not, the Terraform
@@ -26,8 +26,6 @@ that will serve as our ***admin workstation***. We will confgure and use it to
 install **Anthos on bare metal**.
 
 #### 1.1) Fetch the Floating IP of the admin workstation
-> **Note:** Use one of the two commands below to setup the environment variable
-
 ```sh
 # fetch the ip address using the OpenStack API
 export FLOATING_IP=$(openstack floating ip list --tags=abm_ws_floatingip -f json | jq -c '.[]."Floating IP Address"' | tr -d '"')
