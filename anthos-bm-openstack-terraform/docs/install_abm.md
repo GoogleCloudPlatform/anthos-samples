@@ -47,8 +47,7 @@ Change them appropriately if it's different in your environment.
 First, make sure you are inside the directory for this sample in the repository.
 If not move into the `anthos-bm-openstack-terraform` directory.
 ```sh
-# path should be: <LOCAL_PATH_TO_REPO>/anthos-samples/anthos-bm-openstack-terraform
-pwd
+cd <LOCAL_PATH_TO_REPO>/anthos-samples/anthos-bm-openstack-terraform
 ```
 
 ```sh
