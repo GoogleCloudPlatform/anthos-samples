@@ -15,7 +15,11 @@ the following VMs and the required networking between them.
   | abm-cp1  | 10.200.0.11   | **Anthos cluster control plane:**. This host runs the Kubernetes control plane and load balancer.
   | abm-w1   | 10.200.0.12   | **Anthos cluster worker node:** This host runs the Kubernetes workloads.
 
-</br>
+---
+### Pre-requisites
+- OpenStack CLI tool has access to the OpenStack environment.
+  - _see [step-1.2](configure_openstack.md#12-download-the-openrc-file) of the
+    configure OpenStack guide to see how to download the `openrc` file_
 
 ---
 ### 1. Configure the admin workstation VM on OpenStack
@@ -35,6 +39,22 @@ echo $FLOATING_IP
 ```
 
 #### 1.2) Copy into and configure the initilization scripts in the admin workstation
+
+Make sure you are inside the directory for this sample in the repository. If not
+move into the `anthos-bm-openstack-terraform` directory.
+```sh
+pwd
+```
+```sh
+# -----------------------------------------------------
+#                   Expected Output
+# -----------------------------------------------------
+<LOCAL_PATH_TO_REPO>/anthos-samples/anthos-bm-openstack-terraform
+```
+
+The **SSH key** information in the following steps assumes that you congifured your
+VM using the [_configuring OpenStack guide_](configure_openstack.md). Change
+them appropriately if it's different in your environment.
 ```sh
 # use the same SSH key used when creating the OpenStack VMs
 export SSH_KEY_NAME="abmNodeKey"
