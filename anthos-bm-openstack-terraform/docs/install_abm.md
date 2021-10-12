@@ -1,15 +1,13 @@
-## Quick start
+## Install Anthos on bare metal on OpenStack
 
-This guide has **two parts**.
-1. Prepare the infrastructure required to install Anthos on bare metal in your
-   OpenStack environment ***(Steps 1 to 3)***
-2. Install Anthos on bare metal in the prepared OpenStack infrastructure [***(Step 4 onwards)***](#4-configure-the-admin-workstation-vm-on-openstack)
+This guide shows how to install Anthos on bare metal in your OpenStack
+environment. It assumes that you already have an **OpenStack Ussuri** or similar
+environment with the necessary VMs and network set up.
 
 If you already have the necessary infrastructure set up in your OpenStack
-environment, then you can directly move to the Anthos on bare metal [installation
-section]((#4-configure-the-admin-workstation-vm-on-openstack)). If not, the
-Terraform scripts from the first part creates the following VMs in your
-OpenStack environment and sets up the expected networking between them.
+environment, then you can continue with this guide. If not, the Terraform
+scripts from the [previous guide](configure_openstack.md) shows how to create
+the following VMs and the required networking between them.
 
   | VM Name  | IP Address    | Usage         |
   | ---------| ------------- | ------------- |
@@ -17,228 +15,22 @@ OpenStack environment and sets up the expected networking between them.
   | abm-cp1  | 10.200.0.11   | **Anthos cluster control plane:**. This host runs the Kubernetes control plane and load balancer.
   | abm-w1   | 10.200.0.12   | **Anthos cluster worker node:** This host runs the Kubernetes workloads.
 
+---
+### Pre-requisites
+- OpenStack CLI tool has access to the OpenStack environment
+- OpenStack environment has the resources configured as defined in the Terraform
+  scripts from the [configuring OpenStack guide](configure_openstack.md)
 
 ---
+### 1. Configure the admin workstation VM on OpenStack
 
-### 1. Setup local environment
+[Section 3.5](configure_openstack.md#35-apply-the-changes-described-in-the-terraform-script)
+from the _configuring OpenStack guide_ would have created a VM in **OpenStack**
+that will serve as our ***admin workstation***. We will confgure and use it to
+install **Anthos on bare metal**.
 
-#### 1.1) Clone this repository
-
+#### 1.1) Fetch the Floating IP of the admin workstation
 ```sh
-git clone https://github.com/GoogleCloudPlatform/anthos-samples.git
-cd anthos-samples/anthos-bm-openstack-terraform
-```
-
-#### 1.2) Download the `openrc` file
-You should be able to download it from **OpenStack Web UI**
-
-<p align="center">
-  <img src="images/openstack-download-config.png">
-</p>
-
-> **Note:** See the official **OpenStack** [docs on how to retrieve an `openrc` file](https://docs.openstack.org/ocata/user-guide/common/cli-set-environment-variables-using-openstack-rc.html)
-
-#### 1.3) Verify access to your OpenStack environment
-
-After you’ve downloaded the `openrc` file source it and verify access the **OpenStack**
-APIs and that **load-balancer API** is enabled:
-
-```sh
-source <PATH_TO_OPENRC_FILE>/openrc.sh
-
-openstack endpoint list --service=load-balancer
-```
-```sh
-# -----------------------------------------------------
-#                   Expected Output
-# -----------------------------------------------------
-+----------------------------------+-----------+--------------+---------------+---------+-----------+----------------------------+
-| ID                               | Region    | Service Name | Service Type  | Enabled | Interface | URL                        |
-+----------------------------------+-----------+--------------+---------------+---------+-----------+----------------------------+
-| 0ffcbddd6d6147c5b70cc70db6c22fad | RegionOne | octavia      | load-balancer | True    | admin     | http://172.29.236.100:9876 |
-| 39ec24b9b0e143eeb6ffae19aea06b2f | RegionOne | octavia      | load-balancer | True    | public    | https://10.128.0.2:9876    |
-| f3b4da3c47ed454baac2d7988c255cce | RegionOne | octavia      | load-balancer | True    | internal  | http://172.29.236.100:9876 |
-+----------------------------------+-----------+--------------+---------------+---------+-----------+----------------------------+
-```
-
----
-### 2. Setup OpenStack environment
-
-#### 2.1) Upload Ubuntu 20.04 (Focal Fossa) image to OpenStack
-```sh
-# download the image from the public Ubuntu image repository
-curl -O https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
-
-# upload it to OpenStack
-openstack image create ubuntu-2004 \
-	--disk-format qcow2 \
-   	--container-format bare --public \
-   	--file focal-server-cloudimg-amd64.img
-```
-> **Note:** _This step can take upto ***10 minutes*** to complete. **1 minute** for downloading the image and **9 minutes** to upload it to **OpenStack**_
-
-#### 2.2) Create and upload SSH keys to be used by the OpenStack VMs
-```sh
-export SSH_KEY_NAME="abmNodeKey"
-# generate the key pair
-ssh-keygen -t rsa -f ~/.ssh/${SSH_KEY_NAME}
-
-# upload it to OpenStack
-openstack keypair create $SSH_KEY_NAME --public-key ~/.ssh/${SSH_KEY_NAME}.pub
-```
-
-#### 2.3) Create OpenStack flavors that can be used to create VMs
-```sh
-openstack flavor create --id 0 --ram 512   --vcpus 1 --disk 10  m1.tiny
-openstack flavor create --id 1 --ram 1024  --vcpus 1 --disk 20  m1.small
-openstack flavor create --id 2 --ram 2048  --vcpus 2 --disk 40  m1.medium
-openstack flavor create --id 3 --ram 4096  --vcpus 2 --disk 80  m1.large
-openstack flavor create --id 4 --ram 8192  --vcpus 4 --disk 160 m1.xlarge
-openstack flavor create --id 5 --ram 16384 --vcpus 6 --disk 320 m1.jumbo
-```
-
-#### 2.4) Verify that resources were created in OpenStack
-```sh
-openstack image list
-```
-```sh
-# -----------------------------------------------------
-#                   Expected Output
-# -----------------------------------------------------
-+--------------------------------------+---------------------+--------+
-| ID                                   | Name                | Status |
-+--------------------------------------+---------------------+--------+
-| 9afa8795-223d-4a77-80d3-12c153f0fb3e | amphora-x64-haproxy | active |
-| 7536b9f1-44ef-40e3-bdd5-82badba4c77f | cirros              | active |
-| 4188935a-9025-4f80-b1f5-8012bc553b20 | ubuntu-2004         | active |
-+--------------------------------------+---------------------+--------+
-```
-
-```sh
-openstack keypair list
-```
-```sh
-# -----------------------------------------------------
-#                   Expected Output
-# -----------------------------------------------------
-+------------+-------------------------------------------------+------+
-| Name       | Fingerprint                                     | Type |
-+------------+-------------------------------------------------+------+
-| abmNodeKey | 25:fb:10:3c:ab:63:b1:3c:7d:df:35:78:46:f2:d7:f4 | ssh  |
-+------------+-------------------------------------------------+------+
-```
-
-```sh
-openstack flavor list
-```
-```sh
-# -----------------------------------------------------
-#                   Expected Output
-# -----------------------------------------------------
-+-----+-----------+-------+------+-----------+-------+-----------+
-| ID  | Name      |   RAM | Disk | Ephemeral | VCPUs | Is Public |
-+-----+-----------+-------+------+-----------+-------+-----------+
-| 0   | m1.tiny   |   512 |   10 |         0 |     1 | True      |
-| 1   | m1.small  |  1024 |   20 |         0 |     1 | True      |
-| 2   | m1.medium |  2048 |   40 |         0 |     2 | True      |
-| 3   | m1.large  |  4096 |   80 |         0 |     2 | True      |
-| 4   | m1.xlarge |  8192 |  160 |         0 |     4 | True      |
-| 5   | m1.jumbo  | 16384 |  320 |         0 |     6 | True      |
-+-----+-----------+-------+------+-----------+-------+-----------+
-```
-
-> **Note:** If you already have other resources in your **OpenStack**
-> environment, those will also show up in the output above
----
-
-### 3. Configure and execute Terraform
-
-#### 3.1) Find the public `network id` in your OpenStack environment
-```sh
-# you can use this one line command if you have `jq` CLI tool installed
-# if not use the "openstack network list --name=public" command to get the ID
-export PUBLIC_NETWORK_ID=$(openstack network list --name=public -f json | jq -c '.[]."ID"' | tr -d '"')
-
-# make sure you have the PUBLIC_NETWORK_ID environment variable is set
-echo $PUBLIC_NETWORK_ID
-```
-
-#### 3.2) Generate the Terraform variables file
-```sh
-cat > terraform.tfvars << EOF
-external_network_id = "$PUBLIC_NETWORK_ID"
-os_user_name        = "$OS_USERNAME"
-os_tenant_name      = "$OS_TENANT_NAME"
-os_password         = "$OS_PASSWORD"
-os_auth_url         = "$OS_AUTH_URL"
-os_endpoint_type    = "$OS_ENDPOINT_TYPE"
-ssh_key_name        = "$SSH_KEY_NAME"
-EOF
-
-# see it's contents
-cat terraform.tfvars
-```
-```sh
-# -----------------------------------------------------
-#                   Expected Output
-# -----------------------------------------------------
-external_network_id = "abce7af2-db6a-47db-b4dc-04598a73ec2d"
-os_user_name        = "admin"
-os_tenant_name      = ""
-os_password         = "54e53c4ecc76fa84bec1374894583b8651332e0abe45c1de421ba797f669f35"
-os_auth_url         = "https://10.128.0.2:5000"
-os_endpoint_type    = ""
-ssh_key_name        = "abmNodeKey"
-```
-
-#### 3.3) Initialize Terraform
-```sh
-# this sets up the required Terraform state management configurations, similar to 'git init'
-terraform init
-```
-
-#### 3.4) Create a _Terraform execution_ plan
-```sh
-# compares the state of the resources, verifies the scripts and creates an execution plan
-terraform plan
-```
-
-#### 3.5) Apply the changes described in the Terraform script
-Review the **Terraform** script _([main.tf](/main.tf))_ to see details of the
-configuration. Running this script will create the required VMs and setup the
-networking inside **OpenStack** to install **Anthos on bare metal**.
-
-```sh
-# executes the plan on the given provider (i.e: GCP) to reach the desired state of resources
-terraform apply
-```
-```sh
-# -----------------------------------------------------
-#                   Expected Output
-# -----------------------------------------------------
-Apply complete! Resources: 18 added, 0 changed, 0 destroyed.
-
-Outputs:
-
-admin_ws_public_ip = "172.29.249.165"
-```
-> **Note 1:** When prompted to confirm the Terraform plan, type 'Yes' and enter
->
-> **Note 2:** This step can take upto **90 seconds** to complete
-
----
-### 4. Configure the admin workstation VM on OpenStack
-Running the **Terraform** scripts from section [3.5](#35-apply-the-changes-described-in-the-terraform-script)
-would have created a VM in **OpenStack** that will serve as our ***admin workstation***.
-We will confgure and use it to install **Anthos on bare metal**.
-
-#### 4.1) Fetch the Floating IP of the admin workstation
-> **Note:** Use one of the two commands below to setup the environment variable
-
-```sh
-# fetch the ip address using the Terraform output
-export FLOATING_IP=$(terraform output admin_ws_public_ip | tr -d '"')
-
 # fetch the ip address using the OpenStack API
 export FLOATING_IP=$(openstack floating ip list --tags=abm_ws_floatingip -f json | jq -c '.[]."Floating IP Address"' | tr -d '"')
 
@@ -246,8 +38,22 @@ export FLOATING_IP=$(openstack floating ip list --tags=abm_ws_floatingip -f json
 echo $FLOATING_IP
 ```
 
-#### 4.2) Copy into and configure the initilization scripts in the admin workstation
+#### 1.2) Copy into and configure the initilization scripts in the admin workstation
+
+The **SSH key** information in the following steps assumes that you configured
+your VM using the [_configuring OpenStack guide_](configure_openstack.md).
+Change them appropriately if it's different in your environment.
+
+First, make sure you are inside the directory for this sample in the repository.
+If not move into the `anthos-bm-openstack-terraform` directory.
 ```sh
+cd <LOCAL_PATH_TO_REPO>/anthos-samples/anthos-bm-openstack-terraform
+```
+
+```sh
+# use the same SSH key used when creating the OpenStack VMs
+export SSH_KEY_NAME="abmNodeKey"
+
 scp -o IdentitiesOnly=yes -i ~/.ssh/${SSH_KEY_NAME} resources/abm* ubuntu@$FLOATING_IP:~
 
 # SSH into the admin workstation
@@ -278,7 +84,7 @@ abm_setup_gcp.sh
 > **Important:** *All the steps from here on forth are to be run inside the admin
 > workstation, unless an explicit `exit` statement is provided*
 
-#### 4.3) Verify SSH access to other nodes from the admin workstation
+#### 1.3) Verify SSH access to other nodes from the admin workstation
 ```sh
 # ssh access into the control plane node
 ssh abm@10.200.0.11 'echo SSH to $HOSTNAME succeeded'
@@ -301,7 +107,7 @@ ssh abm@10.200.0.12 'echo SSH to $HOSTNAME succeeded'
 SSH to abm-w1 succeeded
 ```
 
-#### 4.4) Configure the shell environment in the admin workstation
+#### 1.4) Configure the shell environment in the admin workstation
 ```sh
 # set the GCP Project where the Anthos Hub and Service Accounts will be setup
 export PROJECT_ID="<YOUR_GCP_PROJECT_ID>"
@@ -330,7 +136,7 @@ gcloud auth application-default login
 > for known issues. You can then look for workarounds for those issues in the
 > [troubleshooting guide](https://cloud.google.com/anthos/clusters/docs/bare-metal/1.8/troubleshooting/known-issues).
 
-#### 4.5) Install the necessary tools in the admin workstation
+#### 1.5) Install the necessary tools in the admin workstation
 ```sh
 # this script will install the following tools:
 #   - kubectl
@@ -341,7 +147,7 @@ gcloud auth application-default login
 ```
 > **Note:** This step can take upto **60 seconds** to complete
 
-#### 4.6) Initialize the Google Cloud Project as required for the Anthos on bare metal installation
+#### 1.6) Initialize the Google Cloud Project as required for the Anthos on bare metal installation
 ```sh
 # this script will do the following:
 #   - enable GCP services
@@ -352,19 +158,19 @@ gcloud auth application-default login
 > **Note:** This step can take upto **60 seconds** to complete
 
 ---
-### 5. Install Anthos on bare metal
+### 2. Install Anthos on bare metal
 
-#### 5.1) Create a workspace for the new Anthos on bare metal cluster
+#### 2.1) Create a workspace for the new Anthos on bare metal cluster
 ```sh
 bmctl create config -c ${ABM_CLUSTER_NAME}
 ```
 
-#### 5.2) Create a cluster configuration from the provided template file
+#### 2.2) Create a cluster configuration from the provided template file
 ```sh
 envsubst < abm_cluster.yaml.tpl > bmctl-workspace/${ABM_CLUSTER_NAME}/${ABM_CLUSTER_NAME}.yaml
 ```
 
-#### 5.3) Create the Anthos on bare metal cluster
+#### 2.3) Create the Anthos on bare metal cluster
 ```sh
 bmctl create cluster -c ${ABM_CLUSTER_NAME}
 ```
@@ -403,13 +209,13 @@ Please check the logs at bmctl-workspace/abm-on-openstack/log/create-cluster-202
 > for tips on how to monitor the above installation process
 
 ---
-### 6. Verifying installation and interacting with the Anthos on bare metal cluster
+### 3. Verifying installation and interacting with the Anthos on bare metal cluster
 
 You can find your cluster's `kubeconfig` file on the admin machine in the
 `bmctl-workspace` directory. To verify your deployment, complete the following
 steps.
 
-#### 6.1) Try fetching the cluster node details using kubectl
+#### 3.1) Try fetching the cluster node details using kubectl
 ```sh
 export KUBECONFIG=bmctl-workspace/${ABM_CLUSTER_NAME}/${ABM_CLUSTER_NAME}-kubeconfig
 kubectl get nodes
@@ -423,7 +229,7 @@ abm-cp1   Ready    control-plane,master   5m24s   v1.20.5-gke.1301
 abm-w1    Ready    <none>                 2m17s   v1.20.5-gke.1301
 ```
 
-#### 6.2) Login to the Anthos on bare metal cluster in the Google Cloud console
+#### 3.2) Login to the Anthos on bare metal cluster in the Google Cloud console
 
 During the setup process, your cluster will be auto-registered in Google Cloud
 using [Connect](https://cloud.google.com/anthos/multicluster-management/connect/overview).
@@ -481,7 +287,7 @@ service.
 ---
 ### Troubleshooting Anthos on bare metal cluster creation
 This section provides some guidance as to how to troubleshoot the bare metal
-cluster installtion process _(step [**5.3**](#53-create-the-anthos-on-bare-metal-cluster))_.
+cluster installtion process _(step [**2.3**](#23-create-the-anthos-on-bare-metal-cluster))_.
 The **bmctl** tool creates a [**Kind cluster**](https://kind.sigs.k8s.io/) to
 bootstrap the Anthos on bare metal cluster installation process. So we can look
 for logs from this **kind cluster** to see what's happening.
@@ -505,7 +311,7 @@ sudo -u abm -i
 ```
 
 Once, `ssh`'ed into the **admin workstation**, wait until you see the following
-output in the terminal window where the bare metal cluster installation is ongoing _(where step [**5.3**](#53-create-the-anthos-on-bare-metal-cluster) was run)_.
+output in the terminal window where the bare metal cluster installation is ongoing _(where step [**2.3**](#23-create-the-anthos-on-bare-metal-cluster) was run)_.
 ```sh
 # this means that the bootstrap kind cluster has been created
 "Installing dependency components..."
@@ -523,4 +329,4 @@ kubectl get pods --all-namespaces
 
 > **Note:** The **bootstrap kind cluster** will be deleted once the installation
 > process ends. To prevent it from being deleted, use the `--reuse-bootstrap-cluster`
-> flag when executing `bmctl create` in step [**5.3**](#53-create-the-anthos-on-bare-metal-cluster).
+> flag when executing `bmctl create` in step [**2.3**](#23-create-the-anthos-on-bare-metal-cluster).
