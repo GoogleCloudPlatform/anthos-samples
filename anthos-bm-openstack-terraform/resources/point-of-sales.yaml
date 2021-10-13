@@ -71,7 +71,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: api-server
-        image: us-docker.pkg.dev/anthos-dpe-abm-edge-pos/abm-edge-pos-images/api-server
+        image: us-docker.pkg.dev/anthos-dpe-abm-edge-pos/abm-edge-pos-images/api-server:v1
         env:
         - name: INVENTORY_EP
           valueFrom:
@@ -125,7 +125,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: payments
-        image: us-docker.pkg.dev/anthos-dpe-abm-edge-pos/abm-edge-pos-images/payments
+        image: us-docker.pkg.dev/anthos-dpe-abm-edge-pos/abm-edge-pos-images/payments:v1
         resources:
           requests:
             cpu: 100m
@@ -168,7 +168,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: inventory
-        image: us-docker.pkg.dev/anthos-dpe-abm-edge-pos/abm-edge-pos-images/inventory
+        image: us-docker.pkg.dev/anthos-dpe-abm-edge-pos/abm-edge-pos-images/inventory:v1
         env:
         - name: CONNECTOR
           valueFrom:
