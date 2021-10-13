@@ -11,10 +11,10 @@ already have a similar OpenStack environment running.
 ---
 ### Infrastructure on OpenStack
 
-The [Quick start](docs/quickstart.md) guide sets up the following
-infrastructure on your OpenStack environment. The diagram below assumes that
-none of the default values for the [variables](variables.tf) were changed other
-than the ones mentioned in the guide.
+This guide sets up the following infrastructure on your OpenStack environment.
+The diagram below assumes that none of the default values for the
+[variables](variables.tf) were changed other than the ones mentioned in the
+guide.
 <p align="center">
   <img src="docs/images/openstack-setup.png" width="700">
 </p>
@@ -52,5 +52,6 @@ than the ones mentioned in the guide.
 
 - [Deploy OpenStack Ussuri on GCE VM](/anthos-bm-openstack-terraform/docs/install_openstack_on_gce.md)
   - _(required only if you already don't have an **OpenStack Ussuri** or similar with **LBaaS v2** enabled)_
-- [Quick start: Install Anthos bare metal on OpenStack](docs/quickstart.md)
+- [Provision the OpenStack VMs and network setup using Terraform](docs/configure_openstack.md)
+- [Install Anthos bare metal on OpenStack](docs/install_abm.md)
 - [Configure the OpenStack Cloud Provider on the Anthos on bare metal cluster](docs/openstack_cloud_provider.md)

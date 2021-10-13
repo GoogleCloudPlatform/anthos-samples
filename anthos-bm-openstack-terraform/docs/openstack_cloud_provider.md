@@ -15,19 +15,19 @@ functional.
       terminal window using `sshuttle` as shown in [**Step-4.5**](install_openstack_on_gce.md#45-create-a-vpn-tunnel-to-route-traffic-to-the-openstack-apis)_
       </br>
 1. You have configured and installed Anthos on bare metal in your OpenStack environment.
-    - _either installed manually or by completing the [Install Anthos bare metal on OpenStack with Terraform](/anthos-bm-openstack-terraform/docs/quickstart.md) quick start guide_
+    - _either installed manually or by completing the [Install Anthos on bare metal on OpenStack](/anthos-bm-openstack-terraform/docs/install_abm.md) guide_
 ---
 
-If you completed the [quick start guide](/anthos-bm-openstack-terraform/docs/quickstart.md)
+If you completed the [**Install Anthos on bare metal on OpenStack guide**](/anthos-bm-openstack-terraform/docs/install_abm.md)
 you should already have the expected setup in your OpenStack environment to
 complete this section. However, if you **manually** configured OpenStack and
 installed Anthos on bare metal, then ensure your environment meets the following
 expectation before continuing. Your OpenStack deployment:
 - Should have an infrastructure set up similar to what is shown below.
-- Should have three OpenStack VMs that match the [VM description table](quickstart.md)
-  on the quick start guide.
+- Should have three OpenStack VMs that match the [VM description table](install_abm.md)
+  on the install Anthos on bare metal guide.
 - Those OpenStack VMs should be hosting an Anthos on bare metal cluster.
-- That cluster should be **registered** and **logged-in** to GCP as shown below _(see [quick start step-6](quickstart.md#6-verifying-installation-and-interacting-with-the-anthos-on-bare-metal-cluster) for how-to)_.
+- That cluster should be **registered** and **logged-in** to GCP as shown below _(see install [step-3](install_abm.md#3-verifying-installation-and-interacting-with-the-anthos-on-bare-metal-cluster) for how-to)_.
 <p align="center">
   <img src="images/openstack-setup.png" width="700">
   <img src="images/logged-in-k8s.png">
@@ -44,7 +44,7 @@ source <PATH_TO_OPENRC_FILE>/openrc.sh
 ```
 
 > **Note:** _If you followed the [OpenStack on GCE guide](install_openstack_on_gce.md#43-access-the-openstack-api-server-via-the-external-ip-of-the-gce-instance)
-> & the [quick start guide](quickstart.md#12-download-the-openrc-file) then your
+> & the [Terraform guide](configure_openstack.md#12-download-the-openrc-file) then your
 > `openrc` file might be named `admin-openrc.sh`_
 
 #### 2) Setup CA certificate configuration for the OpenStack CLI.
@@ -105,7 +105,7 @@ which `IP`s are allocated for the VMs running Anthos on bare metal.
 
 > **Note:** _The following command assumes that the network for the  Anthos on
 > bare metal cluster VMs were created using the Terraform scripts from the
-> [Install Anthos bare metal on OpenStack with Terraform](quickstart.md#3-configure-and-execute-terraform)
+> [Install Anthos bare metal on OpenStack with Terraform](configure_openstack.md#3-configure-and-execute-terraform)
 > guide. If your environment was set up differently select an appropriate
 > `subnetwork`._
 ```sh
@@ -128,7 +128,7 @@ We fetch the IP address of the **admin workstation** to SSH into this VM and
 configure the **OpenStack Cloud Provider**.
 
 > **Note:** _The following command assumes that the admin workstation was
-> created using the Terraform scripts from the [Install Anthos bare metal on OpenStack with Terraform](quickstart.md#3-configure-and-execute-terraform)
+> created using the Terraform scripts from the [Install Anthos bare metal on OpenStack with Terraform](configure_openstack.md#3-configure-and-execute-terraform)
 > guide. If your environment was set up differently select the IP address of the
 > admin host appropriately._
 
@@ -153,7 +153,7 @@ echo $FLOATING_IP
 > **Note:** _The default values for some attributes in the config file (e.g:
 > `region`, `tenant-name`, `domain-id`, etc) are all based on the assumption
 > that your OpenStack deployment is similar to the one created after following
-> the [OpenStack on GCE](install_openstack_on_gce.md) and [Anthos on bare metal on OpenStack with Terraform](quickstart.md)
+> the [OpenStack on GCE](install_openstack_on_gce.md) and [Configuring OpenStack with Terraform](configure_openstack.md)
 > guides._
 >
 > _If your environment was set up differently, you have to set the appropriate
@@ -213,7 +213,7 @@ bs-version=v2
 #### 7) Copy the provider configuration into the admin workstation in OpenStack
 
 > **Note:** _The SSH key information used here assumes that you followed the
-> steps from the [Anthos on bare metal on OpenStack with Terraform](quickstart.md)
+> steps from the [Configuring OpenStack](configure_openstack.md)
 > guide to create your OpenStack VMs. You may remove/change it if your VMs were
 > created differently._
 
