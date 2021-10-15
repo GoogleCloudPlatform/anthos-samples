@@ -298,7 +298,7 @@ EXIT NOTICE [Playbook execution success] **************************************
 #### 3.1) Download the [utility script](/anthos-bm-openstack-terraform/resources/create-certs.sh) to create a self-signed certificate with IP SAN.
 
 ```sh
-wget https://raw.githubusercontent.com/GoogleCloudPlatform/anthos-samples/main/anthos-bm-openstack-terraform/resources/create-certs.sh
+wget https://raw.githubusercontent.com/GoogleCloudPlatform/anthos-samples/master/anthos-bm-openstack-terraform/resources/create-certs.sh
 ```
 
 #### 3.2) Edit the script to match your IP addresses and hostnames.
