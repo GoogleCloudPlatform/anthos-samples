@@ -16,12 +16,12 @@
 
 locals {
   init_script_logfile_name            = "init.log"
-  vm_name_template                    = "abm-%s%d"
+  vm_name_template                    = "%s-abm-%s%d"
   gpu_enabled                         = var.gpu.type != ""
-  admin_vm_name                       = [format(local.vm_name_template, "ws", 0)]
+  admin_vm_name                       = [format(local.vm_name_template, var.abm_cluster_id, "ws", 0)]
   vm_names                            = concat(local.admin_vm_name, local.controlplane_vm_names, local.worker_vm_names)
-  controlplane_vm_names               = [for i in range(var.instance_count.controlplane) : format(local.vm_name_template, "cp", i + 1)]
-  worker_vm_names                     = [for i in range(var.instance_count.worker) : format(local.vm_name_template, "w", i + 1)]
+  controlplane_vm_names               = [for i in range(var.instance_count.controlplane) : format(local.vm_name_template, var.abm_cluster_id, "cp", i + 1)]
+  worker_vm_names                     = [for i in range(var.instance_count.worker) : format(local.vm_name_template, var.abm_cluster_id, "w", i + 1)]
   controlplane_vxlan_ips              = [for name in local.controlplane_vm_names : local.vm_vxlan_ip[name]]
   worker_vxlan_ips                    = [for name in local.worker_vm_names : local.vm_vxlan_ip[name]]
   admin_vm_hostnames                  = [for vm in module.admin_vm_hosts.vm_info : vm.hostname]
