@@ -61,7 +61,7 @@ func TestUnit_MainScript(goTester *testing.T) {
 	imageProject := "test_image_project"
 	imageFamily := "test_image_family"
 	bootDiskType := "test_boot_disk_type"
-	abmClusterID := "test_abm_cluster_id"
+	abmClusterID := "test-abm-cluster-id"
 	network := "test_network"
 	bootDiskSize := 175
 	anthosServiceAccountName := gcp.RandomValidGcpName()
