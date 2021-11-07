@@ -46,7 +46,7 @@ After the Terraform execution completes you are ready to deploy an Anthos cluste
 
 1. SSH into the admin host
 ```sh
-gcloud compute ssh tfadmin@abm-ws0-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
+gcloud compute ssh tfadmin@anthos-gce-cluster-abm-ws0-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
 ```
 
 2. Install the Anthos cluster on the provisioned Compute Engine VM based bare metal infrastructure
@@ -97,7 +97,7 @@ You can find your cluster's `kubeconfig` file on the admin machine in the `bmctl
 1. SSH into the admin host _(if you are not already inside it)_:
 ```sh
 # You can copy the command from the output of Terraform run from the previous step
-gcloud compute ssh tfadmin@abm-ws0-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
+gcloud compute ssh tfadmin@anthos-gce-cluster-abm-ws0-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
 ```
 
 2. Set the `KUBECONFIG` environment variable with the path to the cluster's configuration file to run `kubectl` commands on the cluster.
@@ -110,11 +110,11 @@ kubectl get nodes
 You should see the nodes of the cluster printed, _similar_ to the output below:
 ```sh
 NAME          STATUS   ROLES    AGE   VERSION
-abm-cp1-001   Ready    master   17m   v1.18.6-gke.6600
-abm-cp2-001   Ready    master   16m   v1.18.6-gke.6600
-abm-cp3-001   Ready    master   16m   v1.18.6-gke.6600
-abm-w1-001    Ready    <none>   14m   v1.18.6-gke.6600
-abm-w2-001    Ready    <none>   14m   v1.18.6-gke.6600
+anthos-gce-cluster-abm-cp1-001   Ready    master   17m   v1.18.6-gke.6600
+anthos-gce-cluster-abm-cp2-001   Ready    master   16m   v1.18.6-gke.6600
+anthos-gce-cluster-abm-cp3-001   Ready    master   16m   v1.18.6-gke.6600
+anthos-gce-cluster-abm-w1-001    Ready    <none>   14m   v1.18.6-gke.6600
+anthos-gce-cluster-abm-w2-001    Ready    <none>   14m   v1.18.6-gke.6600
 ```
 
 #### Interacting with the cluster via the GCP console
@@ -133,7 +133,7 @@ You can cleanup the cluster setup in two ways:
 - First deregister the cluster before deleting all the resources created by Terraform
   ```sh
   # SSH into the admin host
-  gcloud compute ssh tfadmin@abm-ws0-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
+  gcloud compute ssh tfadmin@anthos-gce-cluster-abm-ws0-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
 
   # Reset the cluster
   export CLUSTER_ID=anthos-gce-cluster

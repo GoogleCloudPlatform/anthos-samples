@@ -15,12 +15,12 @@
  */
 
 locals {
-  bmctl_version_cmd  = "gcloud compute ssh root@abm-ws0-001 --project=${var.owner_project_id} --zone=us-central1-a --ssh-flag=\"-T\" -q -- bmctl version"
-  docker_version_cmd = "gcloud compute ssh root@abm-ws0-001 --project=${var.owner_project_id} --zone=us-central1-a --ssh-flag=\"-T\" -q -- docker version"
-  ip_addr_cmd        = "gcloud compute ssh root@abm-ws0-001 --project=${var.owner_project_id} --zone=us-central1-a --ssh-flag=\"-T\" -q -- ip addr s vxlan0"
-  ssh_as_tfadmin_cmd = "gcloud compute ssh tfadmin@abm-ws0-001 --project=${var.owner_project_id} --zone=us-central1-a --ssh-flag=\"-T\" -q -- ls"
+  bmctl_version_cmd  = "gcloud compute ssh root@anthos-gce-cluster-abm-ws0-001 --project=${var.owner_project_id} --zone=us-central1-a --ssh-flag=\"-T\" -q -- bmctl version"
+  docker_version_cmd = "gcloud compute ssh root@anthos-gce-cluster-abm-ws0-001 --project=${var.owner_project_id} --zone=us-central1-a --ssh-flag=\"-T\" -q -- docker version"
+  ip_addr_cmd        = "gcloud compute ssh root@anthos-gce-cluster-abm-ws0-001 --project=${var.owner_project_id} --zone=us-central1-a --ssh-flag=\"-T\" -q -- ip addr s vxlan0"
+  ssh_as_tfadmin_cmd = "gcloud compute ssh tfadmin@anthos-gce-cluster-abm-ws0-001 --project=${var.owner_project_id} --zone=us-central1-a --ssh-flag=\"-T\" -q -- ls"
   install_abm_cmd    = <<EOF
-  gcloud compute ssh tfadmin@abm-ws0-001 --project=${var.owner_project_id} --zone=us-central1-a \
+  gcloud compute ssh tfadmin@anthos-gce-cluster-abm-ws0-001 --project=${var.owner_project_id} --zone=us-central1-a \
     --ssh-flag=-T -q -- sudo ./run_initialization_checks.sh
   EOF
 }
