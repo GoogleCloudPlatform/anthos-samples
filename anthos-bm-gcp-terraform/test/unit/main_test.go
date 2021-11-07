@@ -368,7 +368,7 @@ func TestUnit_MainScript_ValidateDefaults(goTester *testing.T) {
 	// verify input variable abm_cluster_id in plan matches the default value
 	assert.Equal(
 		goTester,
-		"anthos-gce-cluster",
+		"cluster1",
 		terraformPlan.Variables.ABMClusterID.Value,
 		"Variable does not match expected default value: abm_cluster_id.",
 	)

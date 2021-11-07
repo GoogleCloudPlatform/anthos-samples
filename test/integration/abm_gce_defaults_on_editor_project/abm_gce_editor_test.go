@@ -31,18 +31,18 @@ func TestABMEditor(t *testing.T) {
 		projectID := abm.GetStringOutput("project_id")
 
 		// pre run ssh command so that ssh-keygen can run
-		runSSHCmd(t, projectID, "tfadmin@anthos-gce-cluster-abm-ws0-001", "ls")
-		runSSHCmd(t, projectID, "root@anthos-gce-cluster-abm-ws0-001", "ls")
+		runSSHCmd(t, projectID, "tfadmin@cluster1abm-ws0-001", "ls")
+		runSSHCmd(t, projectID, "root@cluster1-abm-ws0-001", "ls")
 
 		vms := gcloud.Run(t, fmt.Sprintf("compute instances list --project %s", projectID)).Array()
 		assert.Equal(6, len(vms), "should be 6 (1 admin-ws, 3 control plane and 2 worker nodes)")
 		expectedVMs := []string{
-			"anthos-gce-cluster-abm-cp1-001",
-			"anthos-gce-cluster-abm-cp2-001",
-			"anthos-gce-cluster-abm-cp3-001",
-			"anthos-gce-cluster-abm-w1-001",
-			"anthos-gce-cluster-abm-w2-001",
-			"anthos-gce-cluster-abm-ws0-001",
+			"cluster1-abm-cp1-001",
+			"cluster1-abm-cp2-001",
+			"cluster1-abm-cp3-001",
+			"cluster1-abm-w1-001",
+			"cluster1-abm-w2-001",
+			"cluster1-abm-ws0-001",
 		}
 		for _, vm := range vms {
 			assert.Equal("RUNNING", vm.Get("status").String(), "vm is running")
@@ -51,19 +51,19 @@ func TestABMEditor(t *testing.T) {
 			assert.False(vm.Get("guestAccelerators").Exists(), "guestAccelerators are disabled")
 		}
 
-		abmInstall := runSSHCmd(t, projectID, "tfadmin@anthos-gce-cluster-abm-ws0-001", "sudo ./run_initialization_checks.sh")
+		abmInstall := runSSHCmd(t, projectID, "tfadmin@cluster1-abm-ws0-001", "sudo ./run_initialization_checks.sh")
 		assert.NotContains(abmInstall, "[-]", "abm installation should not have any failed setup stages")
 
-		bmctl := runSSHCmd(t, projectID, "root@anthos-gce-cluster-abm-ws0-001", "bmctl version")
+		bmctl := runSSHCmd(t, projectID, "root@cluster1-abm-ws0-001", "bmctl version")
 		assert.Contains(bmctl, "bmctl version: 1.8", "bmctl version should be 1.8.x")
 
-		docker := runSSHCmd(t, projectID, "root@anthos-gce-cluster-abm-ws0-001", "docker version")
+		docker := runSSHCmd(t, projectID, "root@cluster1-abm-ws0-001", "docker version")
 		dockerExpectedOP := []string{"Client: Docker Engine", "Server: Docker Engine", "API version", "Version", "linux/amd64"}
 		for _, d := range dockerExpectedOP {
 			assert.Contains(docker, d, fmt.Sprintf("docker version should have %s", d))
 		}
 
-		vxlan := runSSHCmd(t, projectID, "root@anthos-gce-cluster-abm-ws0-001", "ip addr s vxlan0")
+		vxlan := runSSHCmd(t, projectID, "root@cluster1-abm-ws0-001", "ip addr s vxlan0")
 		assert.Contains(vxlan, "vxlan0: <BROADCAST,MULTICAST,UP,LOWER_UP>", "vxlan setup should have a new network device for vxlan")
 
 	})

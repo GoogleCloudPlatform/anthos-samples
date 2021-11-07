@@ -57,12 +57,12 @@ control "gcloud" do
           )
 
           expect([
-            "anthos-gce-cluster-abm-cp1-001",
-            "anthos-gce-cluster-abm-cp2-001",
-            "anthos-gce-cluster-abm-cp3-001",
-            "anthos-gce-cluster-abm-w1-001",
-            "anthos-gce-cluster-abm-w2-001",
-            "anthos-gce-cluster-abm-ws0-001"])
+            "cluster1-abm-cp1-001",
+            "cluster1-abm-cp2-001",
+            "cluster1-abm-cp3-001",
+            "cluster1-abm-w1-001",
+            "cluster1-abm-w2-001",
+            "cluster1-abm-ws0-001"])
           .to include(
             data[x]["name"]
           )
