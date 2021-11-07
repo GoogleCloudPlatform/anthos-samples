@@ -31,7 +31,7 @@ func TestABMEditor(t *testing.T) {
 		projectID := abm.GetStringOutput("project_id")
 
 		// pre run ssh command so that ssh-keygen can run
-		runSSHCmd(t, projectID, "tfadmin@cluster1abm-ws0-001", "ls")
+		runSSHCmd(t, projectID, "tfadmin@cluster1-abm-ws0-001", "ls")
 		runSSHCmd(t, projectID, "root@cluster1-abm-ws0-001", "ls")
 
 		vms := gcloud.Run(t, fmt.Sprintf("compute instances list --project %s", projectID)).Array()
