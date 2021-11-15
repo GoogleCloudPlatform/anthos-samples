@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.4.1](https://www.github.com/GoogleCloudPlatform/anthos-samples/compare/v0.4.0...v0.4.1) (2021-11-15)
+
+
+### Bug Fixes
+
+* support re-running the GCE-TF scripts to create two ABM clusters in same project ([#108](https://www.github.com/GoogleCloudPlatform/anthos-samples/issues/108)) ([eb12951](https://www.github.com/GoogleCloudPlatform/anthos-samples/commit/eb12951d81fc48afcde6d9957225c2396db7df64))
+
 ## [0.4.0](https://www.github.com/GoogleCloudPlatform/anthos-samples/compare/v0.3.0...v0.4.0) (2021-08-30)
 
 
