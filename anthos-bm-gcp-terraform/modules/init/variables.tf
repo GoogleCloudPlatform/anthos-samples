@@ -80,7 +80,7 @@ variable "init_vars_file" {
 variable "cluster_yaml_path" {
   description = "Path to the YAML configuration file describing the Anthos cluster"
   type        = string
-  default     = "../../resources/.anthos-gce-cluster.yaml"
+  default     = "../../resources/.cluster1.yaml"
 }
 
 variable "pub_key_path_template" {

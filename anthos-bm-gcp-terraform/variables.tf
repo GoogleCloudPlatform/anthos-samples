@@ -160,7 +160,7 @@ variable "secondary_apis" {
 variable "abm_cluster_id" {
   description = "Unique id to represent the Anthos Cluster to be created"
   type        = string
-  default     = "anthos-gce-cluster"
+  default     = "cluster1"
 }
 
 # [START anthos_bm_node_prefix]
