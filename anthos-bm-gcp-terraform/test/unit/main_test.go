@@ -61,7 +61,7 @@ func TestUnit_MainScript(goTester *testing.T) {
 	imageProject := "test_image_project"
 	imageFamily := "test_image_family"
 	bootDiskType := "test_boot_disk_type"
-	abmClusterID := "test_abm_cluster_id"
+	abmClusterID := "test-abm-cluster-id"
 	network := "test_network"
 	bootDiskSize := 175
 	anthosServiceAccountName := gcp.RandomValidGcpName()
@@ -368,7 +368,7 @@ func TestUnit_MainScript_ValidateDefaults(goTester *testing.T) {
 	// verify input variable abm_cluster_id in plan matches the default value
 	assert.Equal(
 		goTester,
-		"anthos-gce-cluster",
+		"cluster1",
 		terraformPlan.Variables.ABMClusterID.Value,
 		"Variable does not match expected default value: abm_cluster_id.",
 	)

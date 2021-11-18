@@ -57,10 +57,15 @@ control "gcloud" do
           )
 
           expect([
-            "abm-cp1-001", "abm-cp2-001", "abm-cp3-001",
-            "abm-w1-001", "abm-w2-001", "abm-ws0-001"]).to include(
-              data[x]["name"]
-            )
+            "cluster1-abm-cp1-001",
+            "cluster1-abm-cp2-001",
+            "cluster1-abm-cp3-001",
+            "cluster1-abm-w1-001",
+            "cluster1-abm-w2-001",
+            "cluster1-abm-ws0-001"])
+          .to include(
+            data[x]["name"]
+          )
 
           expect(data[x]).not_to include("guestAccelerators")
           x = x + 1

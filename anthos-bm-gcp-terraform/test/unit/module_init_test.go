@@ -257,7 +257,7 @@ func TestUnit_InitModule_DefaultValues(goTester *testing.T) {
 	// verify input variable cluster_yaml_path in plan matches default value
 	assert.Equal(
 		goTester,
-		"../../resources/.anthos-gce-cluster.yaml",
+		"../../resources/.cluster1.yaml",
 		initModulePlan.Variables.ClusterYamlPath.Value,
 		"Variable does not match in plan: cluster_yaml_path.",
 	)

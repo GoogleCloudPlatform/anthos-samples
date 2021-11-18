@@ -46,15 +46,15 @@ After the Terraform execution completes you are ready to deploy an Anthos cluste
 
 1. SSH into the admin host
 ```sh
-gcloud compute ssh tfadmin@abm-ws0-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
+gcloud compute ssh tfadmin@cluster1-abm-ws0-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
 ```
 
 2. Install the Anthos cluster on the provisioned Compute Engine VM based bare metal infrastructure
 ```sh
 sudo ./run_initialization_checks.sh && \
-sudo bmctl create config -c anthos-gce-cluster && \
-sudo cp ~/anthos-gce-cluster.yaml bmctl-workspace/anthos-gce-cluster && \
-sudo bmctl create cluster -c anthos-gce-cluster
+sudo bmctl create config -c cluster1 && \
+sudo cp ~/cluster1.yaml bmctl-workspace/cluster1 && \
+sudo bmctl create cluster -c cluster1
 ```
 ---
 
@@ -63,7 +63,7 @@ Running the commands from the Terraform output starts setting up a new Anthos cl
 > **Note:** The logs for checks on node initialization has been left out. They appear before the following logs from Anthos setup
 
 ```sh
-Created config: bmctl-workspace/anthos-gce-cluster/anthos-gce-cluster.yaml
+Created config: bmctl-workspace/cluster1/cluster1.yaml
 Creating bootstrap cluster... OK
 Installing dependency components... OK
 Waiting for preflight check job to finish... OK
@@ -79,8 +79,8 @@ Flushing logs... OK
 Applying resources for new cluster
 Waiting for cluster to become ready OK
 Writing kubeconfig file
-kubeconfig of created cluster is at bmctl-workspace/anthos-gce-cluster/anthos-gce-cluster-kubeconfig, please run
-kubectl --kubeconfig bmctl-workspace/anthos-gce-cluster/anthos-gce-cluster-kubeconfig get nodes
+kubeconfig of created cluster is at bmctl-workspace/cluster1/cluster1-kubeconfig, please run
+kubectl --kubeconfig bmctl-workspace/cluster1/cluster1-kubeconfig get nodes
 to get cluster node status.
 Please restrict access to this file as it contains authentication credentials of your cluster.
 Waiting for node pools to become ready OK
@@ -97,12 +97,12 @@ You can find your cluster's `kubeconfig` file on the admin machine in the `bmctl
 1. SSH into the admin host _(if you are not already inside it)_:
 ```sh
 # You can copy the command from the output of Terraform run from the previous step
-gcloud compute ssh tfadmin@abm-ws0-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
+gcloud compute ssh tfadmin@cluster1-abm-ws0-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
 ```
 
 2. Set the `KUBECONFIG` environment variable with the path to the cluster's configuration file to run `kubectl` commands on the cluster.
 ```sh
-export CLUSTER_ID=anthos-gce-cluster
+export CLUSTER_ID=cluster1
 export KUBECONFIG=$HOME/bmctl-workspace/$CLUSTER_ID/$CLUSTER_ID-kubeconfig
 kubectl get nodes
 ```
@@ -110,11 +110,11 @@ kubectl get nodes
 You should see the nodes of the cluster printed, _similar_ to the output below:
 ```sh
 NAME          STATUS   ROLES    AGE   VERSION
-abm-cp1-001   Ready    master   17m   v1.18.6-gke.6600
-abm-cp2-001   Ready    master   16m   v1.18.6-gke.6600
-abm-cp3-001   Ready    master   16m   v1.18.6-gke.6600
-abm-w1-001    Ready    <none>   14m   v1.18.6-gke.6600
-abm-w2-001    Ready    <none>   14m   v1.18.6-gke.6600
+cluster1-abm-cp1-001   Ready    master   17m   v1.18.6-gke.6600
+cluster1-abm-cp2-001   Ready    master   16m   v1.18.6-gke.6600
+cluster1-abm-cp3-001   Ready    master   16m   v1.18.6-gke.6600
+cluster1-abm-w1-001    Ready    <none>   14m   v1.18.6-gke.6600
+cluster1-abm-w2-001    Ready    <none>   14m   v1.18.6-gke.6600
 ```
 
 #### Interacting with the cluster via the GCP console
@@ -133,10 +133,10 @@ You can cleanup the cluster setup in two ways:
 - First deregister the cluster before deleting all the resources created by Terraform
   ```sh
   # SSH into the admin host
-  gcloud compute ssh tfadmin@abm-ws0-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
+  gcloud compute ssh tfadmin@cluster1-abm-ws0-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
 
   # Reset the cluster
-  export CLUSTER_ID=anthos-gce-cluster
+  export CLUSTER_ID=cluster1
   export KUBECONFIG=$HOME/bmctl-workspace/$CLUSTER_ID/$CLUSTER_ID-kubeconfig
   sudo bmctl reset --cluster $CLUSTER_ID
 
