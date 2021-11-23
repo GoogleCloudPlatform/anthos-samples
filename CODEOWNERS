@@ -3,4 +3,9 @@
 
 # These owners will be the default owners for everything in
 # the repo. Unless a later match takes precedence.
-*                   @GoogleCloudPlatform/anthos-dpe
+*                                 @GoogleCloudPlatform/anthos-dpe
+
+# The samples specific to observability and monitoring should be reviewed by
+# the Onyx GKE Observability team (go/onyx-observability)
+/aws-logging-monitoring/          @GoogleCloudPlatform/onyx-gke-observability
+/attached-logging-monitoring/     @GoogleCloudPlatform/onyx-gke-observability
