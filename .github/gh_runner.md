@@ -18,7 +18,7 @@ The actions runners for this repository are hosted in the `anthos-gke-samples-ci
   ```
   - Install repository-specific dependencies using the [gh_runner_dependencies.sh](./gh_runner_dependencies.sh) file:
   ```
-  wget -O - https://raw.githubusercontent.com/GoogleCloudPlatform/anthos-samples/master/.github/workflows/gh_runner_dependencies.sh | bash
+  wget -O - https://raw.githubusercontent.com/GoogleCloudPlatform/anthos-samples/main/.github/workflows/gh_runner_dependencies.sh | bash
   ```
   > **Note:** Once the script is complete you should see some extra steps printed out. Those steps must also be executed to complete the runner setup
 
