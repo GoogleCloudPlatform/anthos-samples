@@ -252,7 +252,7 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes/cloud-provider-ope
 
 #### 9) Deploy a sample Point-Of-Sales application
 ```sh
-kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/anthos-samples/master/anthos-bm-openstack-terraform/resources/point-of-sales.yaml
+kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/anthos-samples/main/anthos-bm-openstack-terraform/resources/point-of-sales.yaml
 ```
 
 Verify if the application pods are running
@@ -266,7 +266,7 @@ payments-68d5d65d5c-5mjl6     1/1     Running   0          74s
 ```
 #### 10) Exposed the application via a service of type Load Balancer
 ```sh
-kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/anthos-samples/master/anthos-bm-openstack-terraform/resources/point-of-sales-service.yaml
+kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/anthos-samples/main/anthos-bm-openstack-terraform/resources/point-of-sales-service.yaml
 ```
 #### 10) Try accessing the service from a browser
 ```sh
