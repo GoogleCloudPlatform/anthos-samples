@@ -13,12 +13,12 @@
 # limitations under the License.
 
 ## TODO:: Post comment on correct ways to resolve the build errors
-name: "Continuous Integration - Master/Release"
+name: "Continuous Integration - Main/Release"
 on:
   push:
-    # run on pushes to master or release/*
+    # run on pushes to main or release/*
     branches:
-      - master
+      - main
       - release/*
 jobs:
   static-code-tests:
