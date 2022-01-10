@@ -163,6 +163,12 @@ variable "abm_cluster_id" {
   default     = "cluster1"
 }
 
+variable "service_account" {
+  description = "Service Account to use for GCE instances"
+  type = string
+  default = ""
+}
+
 # [START anthos_bm_node_prefix]
 ###################################################################################
 # The recommended instance count for High Availability (HA) is 3 for Control plane
