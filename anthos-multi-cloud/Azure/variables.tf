@@ -5,7 +5,7 @@ variable "gcp_project_id" {
 variable "azure_region" {
   description = "Azure region to deploy to"
   type        = string
- 
+
 }
 
 variable "gcp_location" {
