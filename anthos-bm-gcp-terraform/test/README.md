@@ -12,7 +12,7 @@ cd anthos-bm-gcp-terraform/test
 go test -v -timeout 30m ./...
 ```
 
-### FAQ for diagnosing failed tests in the CI 
+### FAQ for diagnosing failed tests in the CI
 
 These tests run on the [Github actions runners](https://console.cloud.google.com/compute/instances?project=anthos-gke-samples-ci) setup in the `anthos-gke-samples-ci` project. These runners are configured following [these steps](/.github/README.md) with the environment setup done using the [`gh_runner_dependencies.sh` script](/.github/gh_runner_dependencies.sh).
 
@@ -24,7 +24,7 @@ Example:
 Returning due to fatal error: FatalError{Underlying: error while running command: exit status 1; ╷
 │ Error: Get "https://compute.googleapis.com/compute/v1/projects/anthos-gke-samples-ci/zones?alt=json&filter=&prettyPrint=false": oauth2: cannot fetch token: 400 Bad Request
 │ Response: {"error":"invalid_grant","error_description":"Invalid JWT Signature."}
-│ 
+│
 │   with module.compute_instance["terratest-kcyudp"].data.google_compute_zones.available,
 │   on .terraform/modules/compute_instance/modules/compute_instance/main.tf line 32, in data "google_compute_zones" "available":
 │   32: data "google_compute_zones" "available" {
