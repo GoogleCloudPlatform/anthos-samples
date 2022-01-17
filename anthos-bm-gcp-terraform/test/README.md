@@ -30,7 +30,7 @@ Returning due to fatal error: FatalError{Underlying: error while running command
 │   32: data "google_compute_zones" "available" {
 ```
 
-This is probably due to the **service account key** used by the runner VMs are expired. You can validate this by visiting the [IAM -> Service Accounts page](https://console.cloud.google.com/iam-admin/serviceaccounts/details/110270208213450704617?project=anthos-gke-samples-ci). If you see that the keys are expired then you must SSH into [both the runners](https://console.cloud.google.com/compute/instances?project=anthos-gke-samples-ci) used by this repository execute the following steps as seen in the [`gh_runner_dependencies.sh` script](/.github/gh_runner_dependencies.sh#L48-L53).
+This is probably due to the **service account key** used by the runner VMs are expired. You can validate this by visiting the [IAM -> Service Accounts page](https://console.cloud.google.com/iam-admin/serviceaccounts/details/110270208213450704617/keys?project=anthos-gke-samples-ci). If you see that the keys are expired then you must SSH into [both the runners](https://console.cloud.google.com/compute/instances?project=anthos-gke-samples-ci) used by this repository execute the following steps as seen in the [`gh_runner_dependencies.sh` script](/.github/gh_runner_dependencies.sh#L48-L53).
 
 ```sh
 cd /tmp
