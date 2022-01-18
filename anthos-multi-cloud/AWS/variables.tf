@@ -8,7 +8,7 @@ variable "name_prefix" {
   type        = string
 }
 
-# This step sets up the default RBAC policy in your cluster for a Google 
+# This step sets up the default RBAC policy in your cluster for a Google
 # user so you can login after cluster creation
 variable "admin_user" {
   description = "User to get default Admin RBAC"

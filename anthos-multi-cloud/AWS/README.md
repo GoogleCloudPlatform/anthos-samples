@@ -8,7 +8,7 @@ This terraform script will install all relevant [IaaS prerequisites](https://clo
 ```bash
 gcloud container aws get-server-config --location [gcp-region]
 ```
- Supported instance types in AWS can be found [here](https://cloud.google.com/anthos/clusters/docs/multi-cloud/aws/reference/supported-instance-types).  After the cluster has been installed it will show up in your GKE page of the GCP console in your relevant GCP project. 
+ Supported instance types in AWS can be found [here](https://cloud.google.com/anthos/clusters/docs/multi-cloud/aws/reference/supported-instance-types). After the cluster has been installed it will show up in your GKE page of the GCP console in your relevant GCP project.
 
  This script is meant to be a quick start to working with Anthos on AWS. For more information on Anthos Multi-Cloud please [click here](https://cloud.google.com/anthos/clusters/docs/multi-cloud/).
 
@@ -83,13 +83,13 @@ gcloud components update
 1. Apply terraform.
 
    ```bash
-   terraform apply 
+   terraform apply
    ```
      Once started the installation process will take about 12 minutes. **After the script completes you will see a var.sh file in the root directory that has varialbles for the anthos install** if you need to create more node pools manually in the future. Note manually created node pools will need to be deleted manually before you run terraform destroy
 
 1. Authorize Cloud Logging / Cloud Monitoring
 
-   Enable system container logging and container metrics. You can only do this after the first Anthos cluster has been created. 
+   Enable system container logging and container metrics. You can only do this after the first Anthos cluster has been created.
    ([read more](https://cloud.google.com/anthos/clusters/docs/multi-cloud/aws/how-to/create-cluster#telemetry-agent-auth))
 
    ``` bash
@@ -112,5 +112,5 @@ If you would like to test out the Anthos Configuration and Policy Management fea
 1. Run the following command to delete Anthos on AWS cluster.
 
    ```bash
-   terraform destroy 
+   terraform destroy
    ```

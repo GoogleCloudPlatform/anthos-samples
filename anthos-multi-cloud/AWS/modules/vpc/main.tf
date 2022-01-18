@@ -27,7 +27,7 @@ resource "aws_vpc" "this" {
 
 # Create sample VPC
 # https://cloud.google.com/anthos/clusters/docs/multi-cloud/aws/how-to/create-aws-vpc
-# Create 4 private subnets and 1 public subnet. 
+# Create 4 private subnets and 1 public subnet.
 # Three private subnets are used by the Anthos on AWS control planes (running in three zones)
 # and one or more private subnets is used by node pools.
 # The public subnets is used by the load balancers for associated services.
@@ -64,7 +64,7 @@ resource "aws_subnet" "public" {
 
 
 # Step 4
-# Create an internet gateway 
+# Create an internet gateway
 resource "aws_internet_gateway" "this" {
   vpc_id = aws_vpc.this.id
   tags = {
