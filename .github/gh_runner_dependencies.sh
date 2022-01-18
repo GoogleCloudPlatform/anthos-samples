@@ -36,7 +36,8 @@ tfenv install 0.15.5
 tfenv install 1.0.0
 tfenv install 1.0.1
 tfenv install 1.0.6
-tfenv use 0.14.9
+tfenv install 1.1.3
+tfenv use 1.1.3
 
 go get -u golang.org/x/lint/golint
 sudo ln -s "$HOME"/go/bin/golint /bin/
