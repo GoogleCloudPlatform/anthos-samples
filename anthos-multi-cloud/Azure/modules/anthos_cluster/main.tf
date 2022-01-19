@@ -23,7 +23,7 @@ resource "google_container_azure_cluster" "this" {
   azure_region      = var.azure_region
   description       = "Test Azure GKE cluster created with Terraform"
   location          = var.location
-  name              = "${var.anthos_prefix}"
+  name              = var.anthos_prefix
   resource_group_id = var.resource_group_id
   authorization {
     admin_users {

@@ -4,7 +4,7 @@ data "azurerm_subscription" "current" {
 
 resource "azurerm_resource_group" "vnet" {
   location = var.region
-  name     = "${var.name}"
+  name     = var.name
 }
 
 #Create VNet
