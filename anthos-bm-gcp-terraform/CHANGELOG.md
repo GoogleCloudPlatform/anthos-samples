@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/GoogleCloudPlatform/anthos-samples/compare/v0.4.1...v0.5.0) (2022-01-19)
+
+
+### Features
+
+* update the ABM version to 1.9.0 on the resources file ([#126](https://github.com/GoogleCloudPlatform/anthos-samples/issues/126)) ([63fa324](https://github.com/GoogleCloudPlatform/anthos-samples/commit/63fa324358195271a4dac9725e210fcc6bf54bf9))
+
 ### [0.4.1](https://www.github.com/GoogleCloudPlatform/anthos-samples/compare/v0.4.0...v0.4.1) (2021-11-15)
 
 
