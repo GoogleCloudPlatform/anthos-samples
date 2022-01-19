@@ -20,7 +20,7 @@ terraform {
     # See
     # - https://github.com/GoogleCloudPlatform/anthos-samples/blob/main/anthos-bm-gcp-terraform/resources/anthos_gce_cluster.tpl#L20
     # - https://github.com/GoogleCloudPlatform/anthos-samples/blob/main/anthos-bm-gcp-terraform/resources/init.sh#L180
-    module_name = "anthos-samples/terraform/anthos-bm-terraform:gce/v0.1.0"
+    module_name = "anthos-samples/terraform/anthos-bm-terraform:gce/v0.5.0"
   }
   required_version = "< 1.2"
   required_providers {
