@@ -18,7 +18,7 @@ data "azurerm_subscription" "current" {
 }
 data "azuread_client_config" "current" {}
 
-#Create an Azure Active Directory application 
+#Create an Azure Active Directory application
 #https://cloud.google.com/anthos/clusters/docs/multi-cloud/azure/how-to/create-azure-ad-application
 resource "azuread_application" "aad_app" {
   display_name = var.application_name
