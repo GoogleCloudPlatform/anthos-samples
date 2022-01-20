@@ -19,8 +19,7 @@ set -e
 
   cat <<EOF > vars.sh
 export CLUSTER_NAME=${1}
-export PROJECT_ID=$(gcloud info --format='value(config.project)')
-export PROJECT_NUMBER=$(gcloud projects describe `gcloud info --format='value(config.project)'` --format='value(projectNumber)')
+export PROJECT_ID=$(gcloud info --format="value(config.project)")
 export GCP_LOCATION=${2}
 export AWS_REGION=${3}
 export VPC_ID=${9}
