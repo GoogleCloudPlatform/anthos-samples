@@ -57,7 +57,7 @@ resource "aws_subnet" "private_cp" {
   cidr_block        = var.cp_private_subnet_cidr_blocks[count.index]
   availability_zone = var.subnet_availability_zones[count.index]
   tags = {
-    Name            = "${local.vpc_name}-private-cp-${var.subnet_availability_zones[count.index]}",
+    Name                              = "${local.vpc_name}-private-cp-${var.subnet_availability_zones[count.index]}",
     "kubernetes.io/role/internal-elb" = "1"
   }
 }

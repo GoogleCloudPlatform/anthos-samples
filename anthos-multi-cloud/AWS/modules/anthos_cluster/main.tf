@@ -25,7 +25,7 @@ resource "google_container_aws_cluster" "this" {
   aws_region  = var.aws_region
   description = "Test AWS cluster created with Terraform"
   location    = var.location
-  name        = "${var.anthos_prefix}"
+  name        = var.anthos_prefix
   authorization {
     admin_users {
       username = var.admin_user
