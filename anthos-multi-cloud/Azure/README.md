@@ -80,8 +80,8 @@ After the cluster has been installed it will show up in the [Kubernetes Engine p
 1. Clone this repo and go into the Azure folder.
 
    ```bash
-   git clone https://github.com/bkauf/anthos-terraform.git
-   cd anthos-terraform/Azure/
+   git clone https://github.com/GoogleCloudPlatform/anthos-samples.git
+   cd anthos-multi-cloud/Azure/
    ```
 
 ## Deploy Anthos Clusters(GKE) on Azure cluster
