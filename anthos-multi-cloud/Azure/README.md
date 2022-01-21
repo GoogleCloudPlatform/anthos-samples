@@ -15,7 +15,7 @@ This script is meant to be a quick start to working with Anthos on Azure. For mo
 ```bash
 gcloud alpha container azure get-server-config --location [gcp-region]
 ```
-For best results please run this script in [GCP Cloud Shell](https://cloud.google.com/shell/docs/using-cloud-shelll). After the cluster has been installed it will show up in the [Kubernetes Engine page](https://console.cloud.google.com/kubernetes/list/overview) of the GCP console in your relevant GCP project.
+After the cluster has been installed it will show up in the [Kubernetes Engine page](https://console.cloud.google.com/kubernetes/list/overview) of the GCP console in your relevant GCP project.
 
 ## Prerequisites
 

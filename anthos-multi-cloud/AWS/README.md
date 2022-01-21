@@ -1,6 +1,6 @@
 # Install GKE on AWS using Terraform
 
-This script is meant to be a quick start to working with Anthos on AWS. For more information on Anthos Multi-Cloud please [click here](https://cloud.google.com/anthos/clusters/docs/multi-cloud/). This terraform script will install all relevant [IaaS prerequisites](https://cloud.google.com/anthos/clusters/docs/multi-cloud/aws/how-to/prerequisites) in AWS _(VPC, , Subnets, Internet gateway, NAT gateway, IAM Roles, Route tables, and KMS)_.
+This script is meant to be a quick start to working with Anthos on AWS. For more information on Anthos Multi-Cloud please [click here](https://cloud.google.com/anthos/clusters/docs/multi-cloud/). This terraform script will install all relevant [IaaS prerequisites](https://cloud.google.com/anthos/clusters/docs/multi-cloud/aws/how-to/prerequisites) in AWS _(VPC, Subnets, Internet gateway, NAT gateway, IAM Roles, Route tables, and KMS)_.
 
 ![Anthos Multi-Cloud](Anthos-Multi-AWS.png)
 
