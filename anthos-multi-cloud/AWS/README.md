@@ -9,7 +9,7 @@ This script is meant to be a quick start to working with Anthos on AWS. For more
 - A single node pool of type [t3.medium](https://aws.amazon.com/ec2/instance-types/t3/) with 2 nodes in an autoscaling group to max 5 nodes to the AWS `us-east-1` region. 
 
 **Other information:**
-- The node pool will be deployed to the `us-east-1a` zone. 
+- The node pool will be deployed to the `us-east-1a` zone.
 - Supported instance types in AWS can be found [here](https://cloud.google.com/anthos/clusters/docs/multi-cloud/aws/reference/supported-instance-types).
 - The network topology setup is documented [here](https://cloud.google.com/anthos/clusters/docs/multi-cloud/aws/how-to/create-aws-vpc#create-sample-vpc).
 - You can adjust the region and AZs in the [variables.tf](/anthos-multi-cloud/AWS/variables.tf) file.
