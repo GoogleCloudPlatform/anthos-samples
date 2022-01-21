@@ -66,8 +66,8 @@ gcloud components update
 1. Clone this repo and go into the AWS folder.
 
    ```bash
-   git clone https://github.com/bkauf/anthos-terraform.git
-   cd anthos-terraform/AWS
+     git clone https://github.com/GoogleCloudPlatform/anthos-samples.git
+   cd anthos-multi-cloud/AWS
    ```
 
 
