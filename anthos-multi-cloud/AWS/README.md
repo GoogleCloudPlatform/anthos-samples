@@ -6,7 +6,7 @@ This script is meant to be a quick start to working with Anthos on AWS. For more
 
  **The Terraform script deploys Anthos GKE with:**
 - 3 control plane nodes _(1 in each AZ)_ of type [t3.medium](https://aws.amazon.com/ec2/instance-types/t3/).
-- A single node pool of type [t3.medium](https://aws.amazon.com/ec2/instance-types/t3/) with 2 nodes in an autoscaling group to max 5 nodes to the AWS `us-east-1` region. 
+- A single node pool of type [t3.medium](https://aws.amazon.com/ec2/instance-types/t3/) with 2 nodes in an autoscaling group to max 5 nodes to the AWS `us-east-1` region.
 
 **Other information:**
 - The node pool will be deployed to the `us-east-1a` zone.
