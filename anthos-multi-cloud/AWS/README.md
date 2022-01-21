@@ -67,7 +67,7 @@ gcloud components update
 
    ```bash
    git clone https://github.com/GoogleCloudPlatform/anthos-samples.git
-   cd anthos-multi-cloud/AWS
+   cd anthos-samples/anthos-multi-cloud/AWS
    ```
 
 
