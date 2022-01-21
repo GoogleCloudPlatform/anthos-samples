@@ -81,7 +81,7 @@ After the cluster has been installed it will show up in the [Kubernetes Engine p
 
    ```bash
    git clone https://github.com/GoogleCloudPlatform/anthos-samples.git
-   cd anthos-multi-cloud/Azure/
+   cd anthos-samples/anthos-multi-cloud/Azure
    ```
 
 ## Deploy Anthos Clusters(GKE) on Azure cluster
