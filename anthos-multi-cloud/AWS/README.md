@@ -17,9 +17,7 @@ This script is meant to be a quick start to working with Anthos on AWS. For more
 ```bash
 gcloud container aws get-server-config --location [gcp-region]
 ```
- Supported instance types in AWS can be found [here](https://cloud.google.com/anthos/clusters/docs/multi-cloud/aws/reference/supported-instance-types). After the cluster has been installed it will show up in your GKE page of the GCP console in your relevant GCP project.
-
- This script is meant to be a quick start to working with Anthos on AWS. For more information on Anthos Multi-Cloud please [click here](https://cloud.google.com/anthos/clusters/docs/multi-cloud/).
+After the cluster has been installed it will show up in the [Kubernetes Engine page](https://console.cloud.google.com/kubernetes/list/overview) of the GCP console in your relevant GCP project.
 
 ## Prerequisites
 
