@@ -31,12 +31,10 @@ terraform {
 }
 
 provider "azurerm" {
-  #version = "=2.44.0"
   features {}
 }
 
 provider "azuread" {
-  #  version = "=1.6.0"
 }
 provider "google" {
   project = var.gcp_project_id

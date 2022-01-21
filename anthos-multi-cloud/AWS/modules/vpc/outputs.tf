@@ -31,14 +31,3 @@ output "aws_cp_subnet_id_3" {
   description = "private subnet ID of control plane 3"
   value       = aws_subnet.private_cp[2].id
 }
-
-#output "aws_np_subnet_id_1" {
-#  description = "private subnet ID of node pools"
-#  value       = aws_subnet.private_np.id
-#}
-
-#output "aws_subnet_public" {
-#  description = "public subnet ID of routable"
-#  value       = aws_subnet.public.id
-#}
-

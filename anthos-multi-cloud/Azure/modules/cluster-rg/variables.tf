@@ -28,9 +28,3 @@ variable "sp_obj_id" {
   description = "app service principal object id"
   type        = string
 }
-
-
-#variable "tags" {
-#  description = "The list of tags to apply to resources"
-#  type        = map(string)
-#}
