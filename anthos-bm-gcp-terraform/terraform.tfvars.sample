@@ -11,6 +11,7 @@ instance_count                = {
                                   "controlplane" : 3
                                   "worker" : 2
                                 }
+#gce_vm_service_account       = "<GOOGLE_CLOUD_GCE_VM_SERVICE_ACCOUNT>"
 #gpu                          = {
 #                                 count = 1,
 #                                 type = "nvidia-tesla-k80"

@@ -164,9 +164,9 @@ variable "abm_cluster_id" {
 }
 
 variable "gce_vm_service_account" {
-  description = "Service Account that will be configured for use by the GCE instances"
-  type = string
-  default = ""
+  description = "Service Account to use for GCE instances"
+  type        = string
+  default     = ""
 }
 
 # [START anthos_bm_node_prefix]
