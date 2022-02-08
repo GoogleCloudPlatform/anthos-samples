@@ -164,7 +164,7 @@ variable "abm_cluster_id" {
 }
 
 variable "service_account" {
-  description = "Service Account to use for GCE instances"
+  description = "Service Account that will be configured for use by the GCE instances"
   type = string
   default = ""
 }
