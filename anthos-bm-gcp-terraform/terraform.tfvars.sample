@@ -6,7 +6,7 @@ abm_cluster_id                = "cluster1"
 anthos_service_account_name   = "baremetal-gcr"
 resources_path                = "./resources"
 machine_type                  = "n1-standard-8"
-# service_account               = "<GCE service account with iam.serviceAccountKeyAdmin permission>"
+# gce_vm_service_account               = "<GCE service account with iam.serviceAccountKeyAdmin permission>"
 instance_count                = {
                                   "controlplane" : 3
                                   "worker" : 2
