@@ -163,7 +163,7 @@ variable "abm_cluster_id" {
   default     = "cluster1"
 }
 
-variable "service_account" {
+variable "gce_vm_service_account" {
   description = "Service Account that will be configured for use by the GCE instances"
   type = string
   default = ""
