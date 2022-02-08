@@ -30,7 +30,7 @@ resource "azuread_application_certificate" "aad_app_azure_client_cert" {
 }
 
 resource "time_sleep" "wait_for_aad_app_azure_client_cert" {
-  create_duration = "20s"
+  create_duration = "60s"
   depends_on      = [azuread_application_certificate.aad_app_azure_client_cert]
 }
 
