@@ -89,6 +89,7 @@ module "create_service_accounts" {
     "${var.project_id}=>roles/monitoring.metricWriter",
     "${var.project_id}=>roles/monitoring.dashboardEditor",
     "${var.project_id}=>roles/stackdriver.resourceMetadata.writer",
+    "${var.project_id}=>roles/opsconfigmonitoring.resourceMetadata.writer",
   ]
 }
 
