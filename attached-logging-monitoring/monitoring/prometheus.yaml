@@ -12,12 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# [START anthos_monitoring_prometheus_serviceaccount_stackdriver_prometheus]
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: stackdriver-prometheus
   namespace: kube-system
+# [END anthos_monitoring_prometheus_serviceaccount_stackdriver_prometheus]
 ---
+# [START anthos_monitoring_prometheus_clusterrole_stackdriver_user:prometheus]
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -35,7 +38,9 @@ rules:
   - get
   - list
   - watch
+# [END anthos_monitoring_prometheus_clusterrole_stackdriver_user:prometheus]
 ---
+# [START anthos_monitoring_prometheus_clusterrolebinding_stackdriver_user:prometheus]
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
@@ -49,13 +54,17 @@ subjects:
 - kind: ServiceAccount
   name: stackdriver-prometheus
   namespace: kube-system
+# [END anthos_monitoring_prometheus_clusterrolebinding_stackdriver_user:prometheus]
 ---
+# [START anthos_monitoring_prometheus_serviceaccount_stackdriver_prometheus_scrape]
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: stackdriver-prometheus-scrape
   namespace: kube-system
+# [END anthos_monitoring_prometheus_serviceaccount_stackdriver_prometheus_scrape]
 ---
+# [START anthos_monitoring_prometheus_clusterrole_stackdriver_prometheus_scrape]
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -74,7 +83,9 @@ rules:
   - /api/v1/metrics/prometheus
   verbs:
   - get
+# [END anthos_monitoring_prometheus_clusterrole_stackdriver_prometheus_scrape]
 ---
+# [START anthos_monitoring_prometheus_clusterrolebinding_stackdriver_prometheus_scrape]
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
@@ -88,7 +99,9 @@ subjects:
 - kind: ServiceAccount
   name: stackdriver-prometheus-scrape
   namespace: kube-system
+# [END anthos_monitoring_prometheus_clusterrolebinding_stackdriver_prometheus_scrape]
 ---
+# [START anthos_monitoring_prometheus_secret_stackdriver_prometheus_scrape]
 apiVersion: v1
 kind: Secret
 metadata:
@@ -97,7 +110,9 @@ metadata:
   annotations:
     kubernetes.io/service-account.name: stackdriver-prometheus-scrape
 type: kubernetes.io/service-account-token
+# [END anthos_monitoring_prometheus_secret_stackdriver_prometheus_scrape]
 ---
+# [START anthos_monitoring_prometheus_service_stackdriver_prometheus_k8s]
 # Headless service is required for network identity of the pods inside StatefulSet.
 # See details at https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#limitations
 apiVersion: v1
@@ -116,7 +131,9 @@ spec:
   sessionAffinity: ClientIP
   selector:
     app: stackdriver-prometheus-k8s
+# [END anthos_monitoring_prometheus_service_stackdriver_prometheus_k8s]
 ---
+# [START anthos_monitoring_prometheus_statefulset_stackdriver_prometheus_k8s]
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -237,7 +254,6 @@ spec:
         secret:
           defaultMode: 420
           secretName: google-cloud-credentials
-
       tolerations:
       - key: "CriticalAddonsOnly"
         operator: "Exists"
@@ -256,3 +272,4 @@ spec:
         resources:
           requests:
             storage: "40Gi"
+# [END anthos_monitoring_prometheus_statefulset_stackdriver_prometheus_k8s]
