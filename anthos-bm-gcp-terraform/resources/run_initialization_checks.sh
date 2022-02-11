@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# [START anthosbaremetal_resources_run_initialization_checks]
 
 LOG_FILE=$(cut -d "=" -f2- <<< "$(grep < init.vars LOG_FILE)")
 HOSTNAMES=$(cut -d "=" -f2- <<< "$(grep < init.vars HOSTNAMES)")
@@ -109,3 +110,5 @@ function __print_loading__ () {
 
 # Run the script from main()
 __main__ "$@"
+
+# [END anthosbaremetal_resources_run_initialization_checks]
