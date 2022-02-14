@@ -118,7 +118,7 @@ module "instance_template" {
     enable-oslogin = "false"
   }
   service_account = {
-    email  = ""
+    email  = var.gce_vm_service_account
     scopes = var.access_scopes # --scopes cloud-platform
   }
   gpu = !local.gpu_enabled ? null : {
