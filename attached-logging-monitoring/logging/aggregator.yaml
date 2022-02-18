@@ -267,7 +267,7 @@ spec:
         name: google-cloud-credentials
 # [END anthos_logging_aggregator_statefulset_stackdriver_log_aggregator]
 ---
-# [START anthos_logging_aggregator_configmap_stackdriver_log_aggregator_input_config]
+# [START anthosconfig_logging_aggregator_configmap_stackdriver_log_aggregator_input_config]
 # Config map for Log Aggregator (Fluentd) input and corresponding filter
 # plugins.
 apiVersion: v1
@@ -328,7 +328,7 @@ data:
       tag ${if record['stream'] == 'stderr' then 'stderr' else 'stdout' end}
       remove_keys kubernetes,log,stream,_dummy_labels_,_dummy_source_location_
     </match>
-# [END anthosc_logging_aggregator_configmap_stackdriver_log_aggregator_input_config]
+# [END anthosconfig_logging_aggregator_configmap_stackdriver_log_aggregator_input_config]
 ---
 # [START anthosconfig_logging_aggregator_configmap_stackdriver_log_aggregator_output_config]
 # Config map for Log Aggregator (Fluentd) multi worker settings and output
