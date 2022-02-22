@@ -20,7 +20,7 @@ metadata:
   namespace: kube-system
 # [END anthos_monitoring_prometheus_serviceaccount_stackdriver_prometheus]
 ---
-# [START anthos_monitoring_prometheus_clusterrole_stackdriver_user:prometheus]
+# [START anthos_monitoring_prometheus_clusterrole_stackdriver_user_prometheus]
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -38,9 +38,9 @@ rules:
   - get
   - list
   - watch
-# [END anthos_monitoring_prometheus_clusterrole_stackdriver_user:prometheus]
+# [END anthos_monitoring_prometheus_clusterrole_stackdriver_user_prometheus]
 ---
-# [START anthos_monitoring_prometheus_clusterrolebinding_stackdriver_user:prometheus]
+# [START anthos_monitoring_prometheus_clusterrolebinding_stackdriver_user_prometheus]
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
@@ -54,7 +54,7 @@ subjects:
 - kind: ServiceAccount
   name: stackdriver-prometheus
   namespace: kube-system
-# [END anthos_monitoring_prometheus_clusterrolebinding_stackdriver_user:prometheus]
+# [END anthos_monitoring_prometheus_clusterrolebinding_stackdriver_user_prometheus]
 ---
 # [START anthos_monitoring_prometheus_serviceaccount_stackdriver_prometheus_scrape]
 apiVersion: v1
