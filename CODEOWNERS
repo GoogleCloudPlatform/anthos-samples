@@ -9,4 +9,5 @@
 # the Onyx GKE Observability team (go/onyx-observability)
 /aws-logging-monitoring/          @GoogleCloudPlatform/onyx-gke-observability
 /attached-logging-monitoring/     @GoogleCloudPlatform/onyx-gke-observability
-/anthos-multi-cloud/		  @GoogleCloudPlatform/anthos-multicloud
+/anthos-multi-cloud/		      @GoogleCloudPlatform/anthos-multicloud
+/.github/                         @googleapis/cdpe-devplat
