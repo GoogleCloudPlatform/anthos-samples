@@ -37,7 +37,7 @@ resource "random_id" "random_project_id_suffix" {
 # Project Owner permissions
 module "abm_infra_owner_project" {
   source              = "terraform-google-modules/project-factory/google"
-  version             = "~> 10.1"
+  version             = "~> 12.0"
   name                = "ci-abm-${random_id.random_project_id_suffix.hex}"
   random_project_id   = true
   auto_create_network = true
@@ -73,7 +73,7 @@ resource "local_file" "int_test_owner_sa_key_file" {
 # Project Editor and Project IAM Admin permissions
 module "abm_infra_editor_project" {
   source              = "terraform-google-modules/project-factory/google"
-  version             = "~> 10.1"
+  version             = "~> 12.0"
   name                = "ci-abm-${random_id.random_project_id_suffix.hex}"
   random_project_id   = true
   auto_create_network = true
