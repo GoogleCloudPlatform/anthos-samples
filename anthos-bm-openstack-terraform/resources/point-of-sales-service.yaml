@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# [START anthos_resources_point_of_sales_service_service_api_server_lb]
 ####################################################
 #            Services - Type LoadBalancer
 ####################################################
@@ -27,3 +28,4 @@ spec:
   - name: http
     port: 80
     targetPort: 8080
+# [END anthos_resources_point_of_sales_service_service_api_server_lb]

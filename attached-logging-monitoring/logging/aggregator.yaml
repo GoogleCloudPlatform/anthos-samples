@@ -12,13 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# [START anthos_logging_aggregator_serviceaccount_stackdriver_log_aggregator]
 # Service account for Log Aggregator (Fluentd).
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: stackdriver-log-aggregator
   namespace: kube-system
+# [END anthos_logging_aggregator_serviceaccount_stackdriver_log_aggregator]
 ---
+# [START anthos_logging_aggregator_service_stackdriver_log_aggregator_in_forward]
 # Service to expose in_forward plugin port on the Log Aggregator (Fluentd) side.
 kind: Service
 apiVersion: v1
@@ -38,7 +41,9 @@ spec:
   sessionAffinity: None
   selector:
     app: stackdriver-log-aggregator
+# [END anthos_logging_aggregator_service_stackdriver_log_aggregator_in_forward]
 ---
+# [START anthos_logging_aggregator_networkpolicy_stackdriver_log_aggregator_in_forward]
 # Network policy to only allow Log Forwarder (Fluent Bit) talking to Log Aggregator (Fluentd).
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
@@ -62,7 +67,9 @@ spec:
     ports:
     - protocol: TCP
       port: 8989
+# [END anthos_logging_aggregator_networkpolicy_stackdriver_log_aggregator_in_forward]
 ---
+# [START anthos_logging_aggregator_networkpolicy_stackdriver_log_aggregator_prometheus_scrape]
 # Network policy to allow traffic from Prometheus Scraper into Log Aggregator (Fluentd).
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
@@ -104,7 +111,9 @@ spec:
       port: 24239
     - protocol: TCP
       port: 24240
+# [END anthos_logging_aggregator_networkpolicy_stackdriver_log_aggregator_prometheus_scrape]
 ---
+# [START anthos_logging_aggregator_statefulset_stackdriver_log_aggregator]
 # Log Aggregator (Fluentd) Deployment to send log entries to Stackdriver.
 apiVersion: apps/v1
 kind: StatefulSet
@@ -256,7 +265,9 @@ spec:
           defaultMode: 420
           secretName: google-cloud-credentials
         name: google-cloud-credentials
+# [END anthos_logging_aggregator_statefulset_stackdriver_log_aggregator]
 ---
+# [START anthosconfig_logging_aggregator_configmap_stackdriver_log_aggregator_input_config]
 # Config map for Log Aggregator (Fluentd) input and corresponding filter
 # plugins.
 apiVersion: v1
@@ -317,7 +328,9 @@ data:
       tag ${if record['stream'] == 'stderr' then 'stderr' else 'stdout' end}
       remove_keys kubernetes,log,stream,_dummy_labels_,_dummy_source_location_
     </match>
+# [END anthosconfig_logging_aggregator_configmap_stackdriver_log_aggregator_input_config]
 ---
+# [START anthosconfig_logging_aggregator_configmap_stackdriver_log_aggregator_output_config]
 # Config map for Log Aggregator (Fluentd) multi worker settings and output
 # plugins.
 apiVersion: v1
@@ -420,3 +433,4 @@ data:
       # avoid misleading errors in the log.
       use_metadata_service false
     </match>
+# [END anthosconfig_logging_aggregator_configmap_stackdriver_log_aggregator_output_config]

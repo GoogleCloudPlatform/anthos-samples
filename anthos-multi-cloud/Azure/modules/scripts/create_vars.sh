@@ -1,4 +1,5 @@
 #!/bin/bash
+
 # Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# [START anthos_scripts_create_vars]
 
 # create vars.sh file
 set -e
@@ -27,3 +29,5 @@ export SSH_PUBLIC_KEY=${5}
 export SUBNET_ID=${6}
 
 EOF
+
+# [END anthos_scripts_create_vars]

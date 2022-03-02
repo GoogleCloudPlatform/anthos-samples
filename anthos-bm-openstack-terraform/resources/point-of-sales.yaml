@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# [START anthosbaremetal_resources_point_of_sales_configmap_service_configs]
 ####################################################
 #                     ConfigMap
 ####################################################
@@ -50,7 +51,9 @@ data:
         imageUrl: "usr/lib/images/short.png"
         quantity: 20
         labels: [ "retail", "textile", "clothing" ]
+# [END anthosbaremetal_resources_point_of_sales_configmap_service_configs]
 ---
+# [START anthosbaremetal_resources_point_of_sales_deployment_api_server]
 ####################################################
 #            Deployments - API Server
 ####################################################
@@ -104,7 +107,9 @@ spec:
           initialDelaySeconds: 120
           periodSeconds: 5
           timeoutSeconds: 10
+# [END anthosbaremetal_resources_point_of_sales_deployment_api_server]
 ---
+# [START anthosbaremetal_resources_point_of_sales_deployment_payments]
 ####################################################
 #          Deployments - Payments Service
 ####################################################
@@ -147,7 +152,9 @@ spec:
           initialDelaySeconds: 120
           periodSeconds: 5
           timeoutSeconds: 10
+# [END anthosbaremetal_resources_point_of_sales_deployment_payments]
 ---
+# [START anthosbaremetal_resources_point_of_sales_deployment_inventory]
 ####################################################
 #         Deployments - Inventory Servies
 ####################################################
@@ -206,7 +213,9 @@ spec:
           initialDelaySeconds: 120
           periodSeconds: 5
           timeoutSeconds: 10
+# [END anthosbaremetal_resources_point_of_sales_deployment_inventory]
 ---
+# [START anthosbaremetal_resources_point_of_sales_service_api_server_svc]
 ####################################################
 #            Services - Type ClusterIP
 ####################################################
@@ -222,7 +231,9 @@ spec:
   - name: http
     port: 8080
     targetPort: 8080
+# [END anthosbaremetal_resources_point_of_sales_service_api_server_svc]
 ---
+# [START anthosbaremetal_resources_point_of_sales_service_payments_svc]
 apiVersion: v1
 kind: Service
 metadata:
@@ -235,7 +246,9 @@ spec:
   - name: http
     port: 8080
     targetPort: 8080
+# [END anthosbaremetal_resources_point_of_sales_service_payments_svc]
 ---
+# [START anthosbaremetal_resources_point_of_sales_service_inventory_svc]
 apiVersion: v1
 kind: Service
 metadata:
@@ -248,3 +261,4 @@ spec:
   - name: http
     port: 8080
     targetPort: 8080
+# [END anthosbaremetal_resources_point_of_sales_service_inventory_svc]

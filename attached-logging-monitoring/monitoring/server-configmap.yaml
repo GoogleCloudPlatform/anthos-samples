@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# [START anthos_monitoring_server_configmap_configmap_stackdriver_prometheus_k8s]
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -657,3 +658,4 @@ data:
 
   rules.yaml: |+
     groups: []
+# [END anthos_monitoring_server_configmap_configmap_stackdriver_prometheus_k8s]
