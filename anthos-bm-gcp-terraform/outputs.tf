@@ -15,7 +15,7 @@
  */
 
 output "vm_zone" {
-  description = "The GCE VMs were created in this zone of the ${var.region} region"
+  description = "The GCE VMs were created in this zone."
   value = "GCE VMs were created in Zone: ${local.vm_zone}"
 }
 
