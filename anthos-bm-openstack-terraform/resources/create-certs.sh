@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# [START anthosbaremetal_resources_create_certs]
+
 # Define where to store the generated certs and metadata.
 DIR="$(pwd)/tls"
 
@@ -136,3 +138,5 @@ openssl x509 -in "${DIR}/my-service.crt" -noout -text
 #             X509v3 Subject Alternative Name:
 #                 IP Address:1.2.3.4, DNS:my.dns.name
 #
+
+# [END anthosbaremetal_resources_create_certs]

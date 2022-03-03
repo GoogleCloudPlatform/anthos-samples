@@ -12,13 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
+# [START gkeonaws_logging_forwarder_serviceaccount_stackdriver_log_forwarder]
 # Service account for Log Forwarder (Fluent Bit).
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: stackdriver-log-forwarder
   namespace: kube-system
+# [END gkeonaws_logging_forwarder_serviceaccount_stackdriver_log_forwarder]
 ---
+# [START gkeonaws_logging_forwarder_clusterrole_stackdriver_user:stackdriver_log_forwarder]
 # ClusterRole with permissions required by Log Forwarder (Fluent Bit) and its sidecar.
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -41,7 +45,9 @@ rules:
   - 'serviceaccounts/token'
   verbs:
   - 'create'
+# [END gkeonaws_logging_forwarder_clusterrole_stackdriver_user:stackdriver_log_forwarder]
 ---
+# [START gkeonaws_logging_forwarder_clusterrolebinding_stackdriver_user:stackdriver_log_forwarder]
 # ClusterRoleBinding for Log Forwarder (Fluent Bit).
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -56,7 +62,9 @@ subjects:
 - kind: ServiceAccount
   name: stackdriver-log-forwarder
   namespace: kube-system
+# [END gkeonaws_logging_forwarder_clusterrolebinding_stackdriver_user:stackdriver_log_forwarder]
 ---
+# [START gkeonaws_logging_forwarder_daemonset_stackdriver_log_forwarder]
 # Log Forwarder (Fluent Bit) DaemonSet to tail log files.
 apiVersion: apps/v1
 kind: DaemonSet
@@ -135,7 +143,9 @@ spec:
     rollingUpdate:
       maxUnavailable: 1
     type: RollingUpdate
+# [END gkeonaws_logging_forwarder_daemonset_stackdriver_log_forwarder]
 ---
+# [START gkeonaws_logging_forwarder_configmap_stackdriver_log_forwarder_config]
 # Log Forwarder (Fluent Bit) configuration map.
 apiVersion: v1
 kind: ConfigMap
@@ -472,3 +482,4 @@ data:
         Regex       ^(?<time>[^ ]+) (?<stream>stdout|stderr) (?<logtag>[^ ]*) (?<log>.*)$
         Time_Key    time
         Time_Format %Y-%m-%dT%H:%M:%S.%L%z
+# [END gkeonaws_logging_forwarder_configmap_stackdriver_log_forwarder_config]
