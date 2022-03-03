@@ -44,11 +44,13 @@ terraform apply
 After the Terraform execution completes you are ready to deploy an Anthos cluster.
 
 1. SSH into the admin host
+
+> **Note:** The output of the terraform execution will printout the GCP Zone used for the GCE VMs. Use that as the `ADMIN_VM_ZONE` in following commands.
 ```sh
 gcloud compute ssh tfadmin@cluster1-abm-ws0-001 --project=<YOUR_PROJECT> --zone=<ADMIN_VM_ZONE>
 ```
 
-2. Install the Anthos cluster on the provisioned Compute Engine VM based bare metal infrastructure
+1. Install the Anthos cluster on the provisioned Compute Engine VM based bare metal infrastructure
 ```sh
 sudo ./run_initialization_checks.sh && \
 sudo bmctl create config -c cluster1 && \
