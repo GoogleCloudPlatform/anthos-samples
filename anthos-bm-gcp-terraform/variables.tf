@@ -170,7 +170,7 @@ variable "gce_vm_service_account" {
   type        = string
   default     = ""
 }
-
+# [START anthosbaremetal_node_prefix]
 # [START anthos_bm_node_prefix]
 ###################################################################################
 # The recommended instance count for High Availability (HA) is 3 for Control plane
@@ -185,3 +185,4 @@ variable "instance_count" {
   }
 }
 # [END anthos_bm_node_prefix]
+# [END anthosbaremetal_node_prefix]
