@@ -148,6 +148,8 @@ variable "secondary_apis" {
     "logging.googleapis.com",
     "iam.googleapis.com",
     "compute.googleapis.com",
+    "anthosaudit.googleapis.com",
+    "opsconfigmonitoring.googleapis.com"
   ]
 }
 
