@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# [START anthos_monitoring_sidecar_configmap_configmap_stackdriver_prometheus_sidecar_config]
 # Prometheus Sidecar config.
 apiVersion: v1
 kind: ConfigMap
@@ -50,3 +51,4 @@ data:
     - metric: fluentbit_output_retries_failed_total
       type: counter
       help: "Total count of failed retries encountered by Fluent Bit output plugin."
+# [END anthos_monitoring_sidecar_configmap_configmap_stackdriver_prometheus_sidecar_config]
