@@ -23,7 +23,7 @@ output "admin_vm_ssh" {
     "##   (Note that the 1st command should have you SSH'ed into the admin host)   ##",
     "################################################################################",
     "",
-    "> gcloud compute ssh ${var.username}@${local.admin_vm_hostnames[0]} --project=${var.project_id} --zone=${var.zone}",
+    "> gcloud compute ssh ${var.username}@${local.admin_vm_hostnames[0]} --project=${var.project_id} --zone=${local.vm_zone}",
     "",
     "# ------------------------------------------------------------------------------",
     "# You must be SSH'ed into the admin host ${local.admin_vm_hostnames[0]} as ${var.username} user now",

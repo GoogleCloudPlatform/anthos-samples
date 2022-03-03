@@ -8,7 +8,6 @@
 ```
 project_id       = "<GOOGLE_CLOUD_PROJECT_ID>"
 region           = "<GOOGLE_CLOUD_REGION_TO_USE>"
-zone             = "<GOOGLE_CLOUD_ZONE_TO_USE>"
 credentials_file = "<PATH_TO_GOOGLE_CLOUD_SERVICE_ACCOUNT_FILE>"
 ```
 
@@ -46,7 +45,7 @@ After the Terraform execution completes you are ready to deploy an Anthos cluste
 
 1. SSH into the admin host
 ```sh
-gcloud compute ssh tfadmin@cluster1-abm-ws0-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
+gcloud compute ssh tfadmin@cluster1-abm-ws0-001 --project=<YOUR_PROJECT> --zone=<ADMIN_VM_ZONE>
 ```
 
 2. Install the Anthos cluster on the provisioned Compute Engine VM based bare metal infrastructure
@@ -97,7 +96,7 @@ You can find your cluster's `kubeconfig` file on the admin machine in the `bmctl
 1. SSH into the admin host _(if you are not already inside it)_:
 ```sh
 # You can copy the command from the output of Terraform run from the previous step
-gcloud compute ssh tfadmin@cluster1-abm-ws0-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
+gcloud compute ssh tfadmin@cluster1-abm-ws0-001 --project=<YOUR_PROJECT> --zone=<ADMIN_VM_ZONE>
 ```
 
 2. Set the `KUBECONFIG` environment variable with the path to the cluster's configuration file to run `kubectl` commands on the cluster.
@@ -133,7 +132,7 @@ You can cleanup the cluster setup in two ways:
 - First deregister the cluster before deleting all the resources created by Terraform
   ```sh
   # SSH into the admin host
-  gcloud compute ssh tfadmin@cluster1-abm-ws0-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
+  gcloud compute ssh tfadmin@cluster1-abm-ws0-001 --project=<YOUR_PROJECT> --zone=<ADMIN_VM_ZONE>
 
   # Reset the cluster
   export CLUSTER_ID=cluster1

@@ -36,6 +36,7 @@ locals {
   init_script                         = "${var.resources_path}/init.sh"
   init_check_script                   = "${var.resources_path}/run_initialization_checks.sh"
   vm_hostnames_str                    = join("|", local.vm_hostnames)
+  vm_zone                             = module.admin_vm_hosts.vm_info[0].zone
   vm_hostnames = concat(
     local.admin_vm_hostnames,
     [for vm in module.controlplane_vm_hosts.vm_info : vm.hostname],
@@ -184,7 +185,7 @@ resource "local_file" "init_args_file" {
   for_each = toset(local.vm_hostnames)
   filename = format(local.init_script_vars_file_path_template, each.value)
   content = templatefile(local.init_script_vars_file, {
-    zone           = var.zone,
+    zone           = local.vm_zone,
     isAdminVm      = contains(local.admin_vm_hostnames, each.value),
     vxLanIp        = local.vm_vxlan_ip[local.vmHostnameToVmName[each.value]],
     serviceAccount = var.anthos_service_account_name,
@@ -198,7 +199,7 @@ module "init_hosts" {
   source                 = "./modules/init"
   for_each               = toset(local.vm_hostnames)
   project_id             = var.project_id
-  zone                   = var.zone
+  zone                   = local.vm_zone
   hostname               = each.value
   username               = var.username
   credentials_file       = var.credentials_file

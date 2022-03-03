@@ -20,6 +20,7 @@ output "vm_info" {
       for vm_details in group : [
         for detail in vm_details.instances_details : {
           hostname   = detail.name
+          zone       = detail.zone
           internalIp = detail.network_interface.0.network_ip
           externalIp = detail.network_interface.0.access_config.0.nat_ip
         }

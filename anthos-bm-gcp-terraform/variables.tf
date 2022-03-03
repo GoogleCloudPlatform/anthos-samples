@@ -38,12 +38,6 @@ variable "region" {
   default     = "us-central1"
 }
 
-variable "zone" {
-  description = "Zone within the selected Google Cloud Region that is to be used"
-  type        = string
-  default     = "us-central1-a"
-}
-
 variable "username" {
   description = "The name of the user to be created on each Compute Engine VM to execute the init script"
   type        = string
