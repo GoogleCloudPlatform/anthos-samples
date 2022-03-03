@@ -42,7 +42,6 @@ func TestUnit_MainScript(goTester *testing.T) {
 	moduleDir := testStructure.CopyTerraformFolderToTemp(goTester, "../../", ".")
 	projectID := gcp.GetGoogleProjectIDFromEnvVar(goTester) // from GOOGLE_CLOUD_PROJECT
 	region := gcp.GetRandomRegion(goTester, projectID, nil, nil)
-	zone := gcp.GetRandomZoneForRegion(goTester, projectID, region)
 
 	workingDir, err := os.Getwd()
 	util.LogError(err, "Failed to read current working directory")
@@ -98,7 +97,6 @@ func TestUnit_MainScript(goTester *testing.T) {
 		"credentials_file":            credentialsFile,
 		"resources_path":              resourcesPath,
 		"region":                      region,
-		"zone":                        zone,
 		"username":                    username,
 		"min_cpu_platform":            minCPUPlatform,
 		"machine_type":                machineType,
@@ -291,14 +289,6 @@ func TestUnit_MainScript_ValidateDefaults(goTester *testing.T) {
 		"us-central1",
 		terraformPlan.Variables.Region.Value,
 		"Variable does not match expected default value: region.",
-	)
-
-	// verify input variable zone in plan matches the default value
-	assert.Equal(
-		goTester,
-		"us-central1-a",
-		terraformPlan.Variables.Zone.Value,
-		"Variable does not match expected default value: zone.",
 	)
 
 	// verify input variable username in plan matches the default value
@@ -690,13 +680,6 @@ func validateVariablesInMain(goTester *testing.T, tfPlan *util.MainModulePlan) {
 		"Variable not found in plan: resources_path",
 	)
 
-	// verify plan has zone input variable
-	assert.NotNil(
-		goTester,
-		tfPlan.Variables.Zone,
-		"Variable not found in plan: zone",
-	)
-
 	// verify plan has network input variable
 	assert.NotNil(
 		goTester,
@@ -854,14 +837,6 @@ func validateVariableValuesInMain(goTester *testing.T, tfPlan *util.MainModulePl
 		(*vars)["resources_path"],
 		tfPlan.Variables.ResourcesPath.Value,
 		"Variable does not match in plan: resources_path.",
-	)
-
-	// verify input variable zone in plan matches
-	assert.Equal(
-		goTester,
-		(*vars)["zone"],
-		tfPlan.Variables.Zone.Value,
-		"Variable does not match in plan: zone.",
 	)
 
 	// verify input variable network in plan matches
@@ -1269,11 +1244,6 @@ func validateMainOutputs(goTester *testing.T, planOutputs *util.Outputs, vars *m
 		goTester,
 		strings.Contains(outputValue, (*vars)["username"].(string)),
 		"Output is expected to have the username",
-	)
-	assert.True(
-		goTester,
-		strings.Contains(outputValue, (*vars)["zone"].(string)),
-		"Output is expected to have the zone",
 	)
 	assert.True(
 		goTester,
