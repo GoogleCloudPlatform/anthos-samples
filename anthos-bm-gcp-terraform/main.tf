@@ -134,6 +134,7 @@ module "admin_vm_hosts" {
     module.enable_google_apis_secondary
   ]
   region            = var.region
+  zone              = var.zone
   network           = var.network
   vm_names          = local.admin_vm_name
   instance_template = module.instance_template.self_link
@@ -146,6 +147,7 @@ module "controlplane_vm_hosts" {
     module.enable_google_apis_secondary
   ]
   region            = var.region
+  zone              = var.zone
   network           = var.network
   vm_names          = local.controlplane_vm_names
   instance_template = module.instance_template.self_link
@@ -158,6 +160,7 @@ module "worker_vm_hosts" {
     module.enable_google_apis_secondary
   ]
   region            = var.region
+  zone              = var.zone
   network           = var.network
   vm_names          = local.worker_vm_names
   instance_template = module.instance_template.self_link

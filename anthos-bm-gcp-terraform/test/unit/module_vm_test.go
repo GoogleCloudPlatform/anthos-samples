@@ -1,20 +1,16 @@
-//nolint:golint
-//TODO:https://github.com/GoogleCloudPlatform/cloud-foundation-toolkit/issues/926
-/*
-Copyright 2021 Google LLC
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    https://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
+// Copyright 2021 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 package unit
 
@@ -37,6 +33,7 @@ func TestUnit_VmModule(goTester *testing.T) {
 	moduleDir := testStructure.CopyTerraformFolderToTemp(goTester, "../../", "modules/vm")
 	projectID := gcp.GetGoogleProjectIDFromEnvVar(goTester) // from GOOGLE_CLOUD_PROJECT
 	region := gcp.GetRandomRegion(goTester, projectID, nil, nil)
+	zone := gcp.GetRandomZoneForRegion(goTester, projectID, region)
 	network := "default"
 	instanceTemplate := fmt.Sprintf("/projects/%s/test_instance_template", projectID)
 	randomVMHostNameOne := gcp.RandomValidGcpName()
@@ -52,6 +49,7 @@ func TestUnit_VmModule(goTester *testing.T) {
 		// Variables to pass to our Terraform code using -var options
 		Vars: map[string]interface{}{
 			"region":            region,
+			"zone":              zone,
 			"network":           network,
 			"vm_names":          expectedVMNames,
 			"instance_template": instanceTemplate,
@@ -86,6 +84,14 @@ func TestUnit_VmModule(goTester *testing.T) {
 	)
 	util.ExitIf(hasVar, false)
 
+	// verify plan has zone input variable
+	hasVar = assert.NotNil(
+		goTester,
+		vmInstancePlan.Variables.Zone,
+		"Variable not found in plan: zone",
+	)
+	util.ExitIf(hasVar, false)
+
 	// verify plan has network input variable
 	hasVar = assert.NotNil(
 		goTester,
@@ -116,6 +122,14 @@ func TestUnit_VmModule(goTester *testing.T) {
 		region,
 		vmInstancePlan.Variables.Region.Value,
 		"Variable does not match in plan: region.",
+	)
+
+	// verify input variable zone in plan matches
+	assert.Equal(
+		goTester,
+		zone,
+		vmInstancePlan.Variables.Zone.Value,
+		"Variable does not match in plan: zone.",
 	)
 
 	// verify input variable network in plan matches
@@ -254,6 +268,14 @@ func TestUnit_VmModule_ValidateDefaults(goTester *testing.T) {
 		"us-central1",
 		vmInstancePlan.Variables.Region.Value,
 		"Variable does not match default value in plan: region.",
+	)
+
+	// verify input variable zone in plan matches the default value
+	assert.Equal(
+		goTester,
+		"us-central1-a",
+		vmInstancePlan.Variables.Zone.Value,
+		"Variable does not match default value in plan: zone.",
 	)
 
 	// verify input variable network in plan matches the default value
