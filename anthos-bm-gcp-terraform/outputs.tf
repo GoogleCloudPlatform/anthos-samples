@@ -16,7 +16,7 @@
 
 output "vm_zone" {
   description = "The GCE VMs were created in this zone."
-  value = "GCE VMs were created in Zone: ${local.vm_zone}"
+  value       = "GCE VMs were created in Zone: ${local.vm_zone}"
 }
 
 output "admin_vm_ssh" {
