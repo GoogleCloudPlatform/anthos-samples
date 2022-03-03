@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+output "vm_zone" {
+  description = "The GCE VMs were created in this zone of the ${var.region} region"
+  value = "GCE VMs were created in Zone: ${local.vm_zone}"
+}
+
 output "admin_vm_ssh" {
   description = "Run the following command to provision the anthos cluster."
   value = join("\n", [
