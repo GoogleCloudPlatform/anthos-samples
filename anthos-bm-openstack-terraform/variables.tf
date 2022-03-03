@@ -92,7 +92,7 @@ variable "ssh_key_name" {
   EOF
   type        = string
 }
-
+# [START anthosbaremetal_openstack_node_count]
 # [START anthos_bm_openstack_node_count]
 ###################################################################################
 # The recommended instance count for High Availability (HA) is 3 for Control plane
@@ -107,3 +107,4 @@ variable "instance_count" {
   }
 }
 # [END anthos_bm_openstack_node_count]
+# [END anthosbaremetal_openstack_node_count]

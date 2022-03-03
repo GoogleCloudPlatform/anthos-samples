@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# [START anthosbaremetal_integration_abm_gce_defaults_on_owner_project_inspec_yaml]
 name: defaults_on_owner_project
 attributes:
   - name: project_id
@@ -32,3 +33,5 @@ attributes:
   - name: abm_install_check
     required: true
     type: string
+
+# [END anthosbaremetal_integration_abm_gce_defaults_on_owner_project_inspec_yaml]

@@ -1,4 +1,5 @@
 #!/bin/bash
+
 # Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,6 +13,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+# [START anthosbaremetal_resources_abm_init_host]
 
 ##############################################################################
 # Commands starting with leading double underscores (__) nand ending with
@@ -118,3 +121,5 @@ function __print_separator__ () {
 
 # Run the script from main()
 __main__ "$@"
+
+# [END anthosbaremetal_resources_abm_init_host]
