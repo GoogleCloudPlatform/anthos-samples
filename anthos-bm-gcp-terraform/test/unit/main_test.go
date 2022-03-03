@@ -390,6 +390,8 @@ func TestUnit_MainScript_ValidateDefaults(goTester *testing.T) {
 		"logging.googleapis.com",
 		"iam.googleapis.com",
 		"compute.googleapis.com",
+		"anthosaudit.googleapis.com",
+		"opsconfigmonitoring.googleapis.com",
 	}
 
 	assert.Len(
