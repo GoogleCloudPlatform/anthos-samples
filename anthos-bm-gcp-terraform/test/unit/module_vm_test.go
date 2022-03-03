@@ -37,6 +37,7 @@ func TestUnit_VmModule(goTester *testing.T) {
 	moduleDir := testStructure.CopyTerraformFolderToTemp(goTester, "../../", "modules/vm")
 	projectID := gcp.GetGoogleProjectIDFromEnvVar(goTester) // from GOOGLE_CLOUD_PROJECT
 	region := gcp.GetRandomRegion(goTester, projectID, nil, nil)
+	zone := gcp.GetRandomZoneForRegion(goTester, projectID, region)
 	network := "default"
 	instanceTemplate := fmt.Sprintf("/projects/%s/test_instance_template", projectID)
 	randomVMHostNameOne := gcp.RandomValidGcpName()
@@ -52,6 +53,7 @@ func TestUnit_VmModule(goTester *testing.T) {
 		// Variables to pass to our Terraform code using -var options
 		Vars: map[string]interface{}{
 			"region":            region,
+			"zone":              zone,
 			"network":           network,
 			"vm_names":          expectedVMNames,
 			"instance_template": instanceTemplate,
@@ -86,6 +88,14 @@ func TestUnit_VmModule(goTester *testing.T) {
 	)
 	util.ExitIf(hasVar, false)
 
+	// verify plan has zone input variable
+	hasVar = assert.NotNil(
+		goTester,
+		vmInstancePlan.Variables.Zone,
+		"Variable not found in plan: zone",
+	)
+	util.ExitIf(hasVar, false)
+
 	// verify plan has network input variable
 	hasVar = assert.NotNil(
 		goTester,
@@ -116,6 +126,14 @@ func TestUnit_VmModule(goTester *testing.T) {
 		region,
 		vmInstancePlan.Variables.Region.Value,
 		"Variable does not match in plan: region.",
+	)
+
+	// verify input variable zone in plan matches
+	assert.Equal(
+		goTester,
+		zone,
+		vmInstancePlan.Variables.Zone.Value,
+		"Variable does not match in plan: zone.",
 	)
 
 	// verify input variable network in plan matches
@@ -254,6 +272,14 @@ func TestUnit_VmModule_ValidateDefaults(goTester *testing.T) {
 		"us-central1",
 		vmInstancePlan.Variables.Region.Value,
 		"Variable does not match default value in plan: region.",
+	)
+
+	// verify input variable zone in plan matches the default value
+	assert.Equal(
+		goTester,
+		"us-central1-a",
+		vmInstancePlan.Variables.Zone.Value,
+		"Variable does not match default value in plan: zone.",
 	)
 
 	// verify input variable network in plan matches the default value

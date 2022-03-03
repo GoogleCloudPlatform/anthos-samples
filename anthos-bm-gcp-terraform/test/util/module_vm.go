@@ -30,6 +30,7 @@ type VMInstancePlan struct {
 // to be modified
 type VMVariables struct {
 	Region           *Variable       `json:"region"`
+	Zone             *Variable       `json:"zone"`
 	Network          *Variable       `json:"network"`
 	Names            *VMVarValueList `json:"vm_names"`
 	InstanceTemplate *Variable       `json:"instance_template"`
