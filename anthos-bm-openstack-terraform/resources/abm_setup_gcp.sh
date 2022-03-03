@@ -1,4 +1,5 @@
 #!/bin/bash
+
 # Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,6 +13,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+# [START anthosbaremetal_resources_abm_setup_gcp]
 
 ##############################################################################
 # Download the service account key in order to configure the Anthos cluster
@@ -104,3 +107,5 @@ gcloud projects add-iam-policy-binding $PROJECT_ID \
 gcloud projects add-iam-policy-binding $PROJECT_ID \
   --member="serviceAccount:${SERVICE_ACCOUNT}@$PROJECT_ID.iam.gserviceaccount.com" \
   --role="roles/opsconfigmonitoring.resourceMetadata.writer"
+
+# [END anthosbaremetal_resources_abm_setup_gcp]
