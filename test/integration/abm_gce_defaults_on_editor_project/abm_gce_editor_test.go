@@ -79,7 +79,7 @@ func TestABMEditor(t *testing.T) {
 
 		runSSHCmd(t, projectID, "tfadmin@cluster1-abm-ws0-001", "sudo cp ~/cluster1.yaml bmctl-workspace/cluster1")
 		listClusterConfigFile := runSSHCmd(t, projectID, "tfadmin@cluster1-abm-ws0-001", "sudo ls bmctl-workspace/cluster1")
-		assert.NotContains(listClusterConfigFile, "cluster1.yaml", "cluster configuration file should be in the correct workspace directory")
+		assert.Contains(listClusterConfigFile, "cluster1.yaml", "cluster configuration file should be in the correct workspace directory")
 
 		installABM := runSSHCmd(t, projectID, "tfadmin@cluster1-abm-ws0-001", "sudo bmctl create cluster -c cluster1")
 		assert.Contains(installABM, bootstrapClusterOKMsg, "abm installation should create a bootstrap cluster")
