@@ -1,5 +1,14 @@
 # Changelog
 
+### [0.6.2](https://github.com/GoogleCloudPlatform/anthos-samples/compare/v0.6.1...v0.6.2) (2022-03-03)
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/gruntwork-io/terratest to v0.40.5 ([#180](https://github.com/GoogleCloudPlatform/anthos-samples/issues/180)) ([b48a622](https://github.com/GoogleCloudPlatform/anthos-samples/commit/b48a6222b4450089c222c6547836c9a31cc15b7a))
+* missing services needed for setup ([#159](https://github.com/GoogleCloudPlatform/anthos-samples/issues/159)) ([7977e91](https://github.com/GoogleCloudPlatform/anthos-samples/commit/7977e9134cfcafaae16af57c521a3035e9accf81))
+* zone mismatch for vm ([#190](https://github.com/GoogleCloudPlatform/anthos-samples/issues/190)) ([b85a559](https://github.com/GoogleCloudPlatform/anthos-samples/commit/b85a559da40f1419ee94639084b18e276278f78a))
+
 ### [0.6.1](https://github.com/GoogleCloudPlatform/anthos-samples/compare/v0.6.0...v0.6.1) (2022-02-25)
 
 
