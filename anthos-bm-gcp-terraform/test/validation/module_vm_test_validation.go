@@ -83,8 +83,8 @@ func ValidateComputeInstanceSubModule(
 	)
 }
 
-// ValidateComputeInstanceSubModule validates correctness of the
-// `external-ip` module referenced from the vm module.
+// ValidateExternalIPInSubModule validates correctness of the `external-ip`
+// module referenced from the vm module.
 func ValidateExternalIPInSubModule(
 	goTester *testing.T, externalIPResource *util.TFResource,
 	idx int, ipIdx int, expectedIPNames *[]string, region string) {
