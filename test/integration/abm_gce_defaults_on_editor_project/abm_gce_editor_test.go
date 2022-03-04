@@ -52,7 +52,7 @@ func TestABMEditor(t *testing.T) {
 		}
 
 		abmInstall := runSSHCmd(t, projectID, "tfadmin@cluster1-abm-ws0-001", "sudo ./run_initialization_checks.sh")
-		assert.NotContains(abmInstall, "[-]", "abm installation should not have any failed setup stages")
+		assert.NotContains(abmInstall, "[-]", "gce setup for abm installation should not have any failed stages")
 
 		bmctl := runSSHCmd(t, projectID, "root@cluster1-abm-ws0-001", "bmctl version")
 		assert.Contains(bmctl, "bmctl version: 1.10", "bmctl version should be 1.10.x")
@@ -66,6 +66,28 @@ func TestABMEditor(t *testing.T) {
 		vxlan := runSSHCmd(t, projectID, "root@cluster1-abm-ws0-001", "ip addr s vxlan0")
 		assert.Contains(vxlan, "vxlan0: <BROADCAST,MULTICAST,UP,LOWER_UP>", "vxlan setup should have a new network device for vxlan")
 
+		clusterConfigCreatedMsg := "Created config: bmctl-workspace/cluster1/cluster1.yaml"
+		bootstrapClusterOKMsg := "Creating bootstrap cluster... OK"
+		depInstallOKMsg := "Installing dependency components... OK"
+		kubeConfigCreatedMsg := "kubeconfig of created cluster is at bmctl-workspace/cluster1/cluster1-kubeconfig"
+		clusterReadyOKMsg := "Waiting for cluster to become ready OK"
+		nodePoolOKMsg := "Waiting for node pools to become ready OK"
+		deleteBootstrapClusterOKMsg := "Deleting bootstrap cluster... OK"
+
+		createClusterConfig := runSSHCmd(t, projectID, "tfadmin@cluster1-abm-ws0-001", "sudo bmctl create config -c cluster1")
+		assert.Contains(createClusterConfig, clusterConfigCreatedMsg, "bmctl create should successfully create the config file")
+
+		runSSHCmd(t, projectID, "tfadmin@cluster1-abm-ws0-001", "sudo cp ~/cluster1.yaml bmctl-workspace/cluster1")
+		listClusterConfigFile := runSSHCmd(t, projectID, "tfadmin@cluster1-abm-ws0-001", "sudo ls bmctl-workspace/cluster1")
+		assert.NotContains(listClusterConfigFile, "cluster1.yaml", "cluster configuration file should be in the correct workspace directory")
+
+		installABM := runSSHCmd(t, projectID, "tfadmin@cluster1-abm-ws0-001", "sudo bmctl create cluster -c cluster1")
+		assert.Contains(installABM, bootstrapClusterOKMsg, "abm installation should create a bootstrap cluster")
+		assert.Contains(installABM, depInstallOKMsg, "abm installation should install necessary dependencies")
+		assert.Contains(installABM, kubeConfigCreatedMsg, "abm installation should create the cluster configuration file")
+		assert.Contains(installABM, clusterReadyOKMsg, "abm installation should ensure that the cluster is ready")
+		assert.Contains(installABM, nodePoolOKMsg, "abm installation should setup the nodepools")
+		assert.Contains(installABM, deleteBootstrapClusterOKMsg, "abm installation should delete the bootstrap cluster in the end")
 	})
 
 	abm.Test()
