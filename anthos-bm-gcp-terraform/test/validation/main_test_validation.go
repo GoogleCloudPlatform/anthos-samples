@@ -29,6 +29,8 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+// ValidateRootResources validates the terraform resources in the root module of
+// the terraform plan.
 func ValidateRootResources(
 	goTester *testing.T, terraformPlan *util.MainModulePlan,
 	instanceCountMapInTest map[string]int, projectID, abmClusterID string) (map[string]interface{}, map[string]interface{}) {
@@ -58,6 +60,8 @@ func ValidateRootResources(
 	return vmHostnames, envVarFilenames
 }
 
+// ValidateYaml validates if the generated Anthos bare metal cluster yaml file
+// has the expected values.
 func ValidateYaml(
 	goTester *testing.T, instanceCountMapInTest map[string]int,
 	rootResource util.TFResource, projectID, abmClusterID string) {
@@ -206,6 +210,8 @@ func ValidateYaml(
 	)
 }
 
+// ValidateVariablesInMain checks if the parsed terraform plan has the expected
+// variables in the `main.tf` of the root module.
 func ValidateVariablesInMain(goTester *testing.T, tfPlan *util.MainModulePlan) {
 	// verify plan has project_id input variable
 	assert.NotNil(
@@ -369,6 +375,8 @@ func ValidateVariablesInMain(goTester *testing.T, tfPlan *util.MainModulePlan) {
 	)
 }
 
+// ValidateVariableValuesInMain checks if the values assigned to variables in
+// the parsed terraform plan matches the  ones defined in the test case.
 func ValidateVariableValuesInMain(goTester *testing.T, tfPlan *util.MainModulePlan, vars *map[string]interface{}) {
 	// verify input variable project_id in plan matches
 	assert.Equal(
@@ -577,6 +585,9 @@ func ValidateVariableValuesInMain(goTester *testing.T, tfPlan *util.MainModulePl
 	)
 }
 
+// ValidateInstanceTemplateModule validates if the variables set in the
+// `terraform-google-modules/vm/google//modules/instance_template` module
+// matches the ones defined in the test function.
 func ValidateInstanceTemplateModule(goTester *testing.T, module *util.TFModule, vars *map[string]interface{}) {
 	for idx, resource := range module.Resources {
 		if resource.Type == "google_compute_image" {
@@ -702,6 +713,8 @@ func ValidateInstanceTemplateModule(goTester *testing.T, module *util.TFModule, 
 	}
 }
 
+// ValidateVirtualMachineModules validates if the variables set in the `vm`
+// module matches the ones defined in the test function.
 func ValidateVirtualMachineModules(goTester *testing.T, modules *[]util.TFModule, vars *map[string]interface{}) {
 	instanceCountMapInTest := (*vars)["instance_count"].(map[string]int)
 	instanceCountMapInTest["admin"] = 1 // add entry for admin VMs too to making life easier
@@ -740,6 +753,9 @@ func ValidateVirtualMachineModules(goTester *testing.T, modules *[]util.TFModule
 	}
 }
 
+// ValidateServiceAccModule validates if the variables set in the
+// `terraform-google-modules/service-accounts/google` module matches the ones
+// defined in the test function.
 func ValidateServiceAccModule(goTester *testing.T, module *util.TFModule, vars *map[string]interface{}) {
 	for _, accResource := range module.Resources {
 		if accResource.Type == "google_service_account" {
@@ -753,6 +769,9 @@ func ValidateServiceAccModule(goTester *testing.T, module *util.TFModule, vars *
 	}
 }
 
+// ValidateAPIsMoodule validates if the variables set in the
+// `terraform-google-modules/project-factory/google//modules/project_services`
+// module matches the ones defined in the test function.
 func ValidateAPIsMoodule(goTester *testing.T, modules *[]util.TFModule, vars *map[string]interface{}) {
 	primaryApis := (*vars)["primary_apis"].([]string)
 	secondaryApis := (*vars)["secondary_apis"].([]string)
@@ -782,6 +801,8 @@ func ValidateAPIsMoodule(goTester *testing.T, modules *[]util.TFModule, vars *ma
 	}
 }
 
+// ValidateMainOutputs validates if the outputs in the terraform plan matches
+// the outputs defined in the `output.tf` of the main module.
 func ValidateMainOutputs(goTester *testing.T, planOutputs *util.Outputs, vars *map[string]interface{}) {
 	// verify module produces output in plan
 	assert.NotNil(

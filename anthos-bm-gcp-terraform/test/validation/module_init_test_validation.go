@@ -22,6 +22,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// ValidateVariables validates for correctness of the variables set for the
+// `init` module.
 func ValidateVariables(goTester *testing.T, tfPlan *util.InitModulePlan) {
 	// verify plan has project_id input variable
 	hasVar := assert.NotNil(
@@ -136,6 +138,8 @@ func ValidateVariables(goTester *testing.T, tfPlan *util.InitModulePlan) {
 	util.ExitIf(hasVar, false)
 }
 
+// ValidateVariableValues validates whether the values of the variables set for
+// the `init` module matches the ones defined in the test function.
 func ValidateVariableValues(goTester *testing.T, initModulePlan *util.InitModulePlan, vars *map[string]interface{}) {
 	// verify input variable project_id in plan matches
 	assert.Equal(
@@ -250,6 +254,8 @@ func ValidateVariableValues(goTester *testing.T, initModulePlan *util.InitModule
 	)
 }
 
+// ValidatePlanConfigurations validates for correctness of the terraform actions
+// in the terraform plan for the `init` module.
 func ValidatePlanConfigurations(goTester *testing.T, initModulePlan *util.InitModulePlan) {
 	for rIdx, configResource := range initModulePlan.Configuration.RootModule.Resources {
 		if configResource.Type != "null_resource" {

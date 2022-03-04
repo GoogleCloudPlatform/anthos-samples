@@ -23,6 +23,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// ValidateComputeInstanceSubModule validates correctness of the
+// `terraform-google-modules/vm/google//modules/compute_instance`
+// module referenced from the vm module.
 func ValidateComputeInstanceSubModule(
 	goTester *testing.T, childModule *util.TFModule,
 	idx int, expectedVMNames *[]string,
@@ -80,6 +83,8 @@ func ValidateComputeInstanceSubModule(
 	)
 }
 
+// ValidateComputeInstanceSubModule validates correctness of the
+// `external-ip` module referenced from the vm module.
 func ValidateExternalIPInSubModule(
 	goTester *testing.T, externalIPResource *util.TFResource,
 	idx int, ipIdx int, expectedIPNames *[]string, region string) {
@@ -116,6 +121,8 @@ func ValidateExternalIPInSubModule(
 	)
 }
 
+// ValidateOutputs validates if the outputs in the terraform plan matches
+// the outputs defined in the `output.tf` of the vm module.
 func ValidateOutputs(goTester *testing.T, vmPlanOutputs *util.VMOutputs) {
 	// verify module produces output in plan
 	assert.NotNil(
