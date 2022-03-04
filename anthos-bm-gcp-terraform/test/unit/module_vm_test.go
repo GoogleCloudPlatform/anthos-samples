@@ -1,20 +1,16 @@
-//nolint:golint
-//TODO:https://github.com/GoogleCloudPlatform/cloud-foundation-toolkit/issues/926
-/*
-Copyright 2021 Google LLC
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    https://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
+// Copyright 2021 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 package unit
 
@@ -25,6 +21,7 @@ import (
 	"testing"
 
 	"github.com/GoogleCloudPlatform/anthos-samples/anthos-bm-gcp-terraform/util"
+	"github.com/GoogleCloudPlatform/anthos-samples/anthos-bm-gcp-terraform/validation"
 	"github.com/gruntwork-io/terratest/modules/gcp"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	testStructure "github.com/gruntwork-io/terratest/modules/test-structure"
@@ -37,6 +34,7 @@ func TestUnit_VmModule(goTester *testing.T) {
 	moduleDir := testStructure.CopyTerraformFolderToTemp(goTester, "../../", "modules/vm")
 	projectID := gcp.GetGoogleProjectIDFromEnvVar(goTester) // from GOOGLE_CLOUD_PROJECT
 	region := gcp.GetRandomRegion(goTester, projectID, nil, nil)
+	zone := gcp.GetRandomZoneForRegion(goTester, projectID, region)
 	network := "default"
 	instanceTemplate := fmt.Sprintf("/projects/%s/test_instance_template", projectID)
 	randomVMHostNameOne := gcp.RandomValidGcpName()
@@ -52,6 +50,7 @@ func TestUnit_VmModule(goTester *testing.T) {
 		// Variables to pass to our Terraform code using -var options
 		Vars: map[string]interface{}{
 			"region":            region,
+			"zone":              zone,
 			"network":           network,
 			"vm_names":          expectedVMNames,
 			"instance_template": instanceTemplate,
@@ -86,6 +85,14 @@ func TestUnit_VmModule(goTester *testing.T) {
 	)
 	util.ExitIf(hasVar, false)
 
+	// verify plan has zone input variable
+	hasVar = assert.NotNil(
+		goTester,
+		vmInstancePlan.Variables.Zone,
+		"Variable not found in plan: zone",
+	)
+	util.ExitIf(hasVar, false)
+
 	// verify plan has network input variable
 	hasVar = assert.NotNil(
 		goTester,
@@ -116,6 +123,14 @@ func TestUnit_VmModule(goTester *testing.T) {
 		region,
 		vmInstancePlan.Variables.Region.Value,
 		"Variable does not match in plan: region.",
+	)
+
+	// verify input variable zone in plan matches
+	assert.Equal(
+		goTester,
+		zone,
+		vmInstancePlan.Variables.Zone.Value,
+		"Variable does not match in plan: zone.",
 	)
 
 	// verify input variable network in plan matches
@@ -165,7 +180,7 @@ func TestUnit_VmModule(goTester *testing.T) {
 		moduleAddress := childModule.ModuleAddress
 		if strings.HasPrefix(moduleAddress, "module.compute_instance") {
 			numberOfComputeInstanceModules++
-			validateComputeInstanceSubModule(
+			validation.ValidateComputeInstanceSubModule(
 				goTester, &childModule, idx,
 				&expectedVMNames, instanceTemplate, network, region)
 
@@ -178,7 +193,7 @@ func TestUnit_VmModule(goTester *testing.T) {
 			)
 
 			for ipIdx, externalIPResource := range childModule.Resources {
-				validateExternalIPInSubModule(
+				validation.ValidateExternalIPInSubModule(
 					goTester, &externalIPResource, idx, ipIdx, &expectedVMNames, region)
 			}
 		} else {
@@ -202,7 +217,7 @@ func TestUnit_VmModule(goTester *testing.T) {
 		"Resource count for module type google_compute_instance_from_template does not match in plan",
 	)
 
-	validateOutputs(goTester, vmInstancePlan.PlannedValues.Outputs)
+	validation.ValidateOutputs(goTester, vmInstancePlan.PlannedValues.Outputs)
 }
 
 func TestUnit_VmModule_ValidateDefaults(goTester *testing.T) {
@@ -256,121 +271,19 @@ func TestUnit_VmModule_ValidateDefaults(goTester *testing.T) {
 		"Variable does not match default value in plan: region.",
 	)
 
+	// verify input variable zone in plan matches the default value
+	assert.Equal(
+		goTester,
+		"us-central1-a",
+		vmInstancePlan.Variables.Zone.Value,
+		"Variable does not match default value in plan: zone.",
+	)
+
 	// verify input variable network in plan matches the default value
 	assert.Equal(
 		goTester,
 		"default",
 		vmInstancePlan.Variables.Network.Value,
 		"Variable does not match default value in plan: network.",
-	)
-
-}
-
-func validateComputeInstanceSubModule(
-	goTester *testing.T, childModule *util.TFModule,
-	idx int, expectedVMNames *[]string,
-	instanceTemplate string, network string, region string) {
-	lenMatch := assert.Len(
-		goTester,
-		childModule.Resources,
-		1, // each compute instance child module has just 1 resource definition,
-		fmt.Sprintf("Invalid count for planned_values.root_module.child_modules[%d].resources", idx),
-	)
-	util.ExitIf(lenMatch, false)
-
-	childResource := childModule.Resources[0]
-	assert.Equal(
-		goTester,
-		"google_compute_instance_from_template",
-		childResource.Type,
-		fmt.Sprintf("Invalid type for planned_values.root_module.child_modules[%d].resources[0].type", idx),
-	)
-	assert.Equal(
-		goTester,
-		"compute_instance",
-		childResource.Name,
-		fmt.Sprintf("Invalid resource name for planned_values.root_module.child_modules[%d].resources[0].name", idx),
-	)
-	assert.Equal(
-		goTester,
-		"registry.terraform.io/hashicorp/google",
-		childResource.Provider,
-		fmt.Sprintf("Invalid provider for planned_values.root_module.child_modules[%d].resources[0].provider", idx),
-	)
-	assert.Contains(
-		goTester,
-		*expectedVMNames,
-		// vm names have -001 appended to them by module google_compute_instance_from_template
-		strings.Replace(childResource.Values.Name, "-001", "", 1),
-		fmt.Sprintf("Invalid resource instance name for planned_values.root_module.child_modules[%d].resources[0].values.name", idx),
-	)
-	assert.True(
-		goTester,
-		strings.HasPrefix(childResource.Values.Zone, region),
-		fmt.Sprintf("Invalid resource instance name for planned_values.root_module.child_modules[%d].resources[0].values.name", idx),
-	)
-	assert.Equal(
-		goTester,
-		network,
-		childResource.Values.NetworkInterfaces[0].Network,
-		fmt.Sprintf("Invalid network for planned_values.root_module.child_modules[%d].resources[0].values.source_instance_template", idx),
-	)
-	assert.Equal(
-		goTester,
-		instanceTemplate,
-		childResource.Values.InstanceTemplate,
-		fmt.Sprintf("Invalid instance template for planned_values.root_module.child_modules[%d].resources[0].values.source_instance_template", idx),
-	)
-}
-
-func validateExternalIPInSubModule(
-	goTester *testing.T, externalIPResource *util.TFResource,
-	idx int, ipIdx int, expectedIPNames *[]string, region string) {
-
-	assert.Equal(
-		goTester,
-		"google_compute_address",
-		externalIPResource.Type,
-		fmt.Sprintf("Invalid type for planned_values.root_module.child_modules[%d].resources[%d].type", idx, ipIdx),
-	)
-	assert.Equal(
-		goTester,
-		"external_ip_address",
-		externalIPResource.Name,
-		fmt.Sprintf("Invalid resource name for planned_values.root_module.child_modules[%d].resources[%d].name", idx, ipIdx),
-	)
-	assert.Equal(
-		goTester,
-		"registry.terraform.io/hashicorp/google",
-		externalIPResource.Provider,
-		fmt.Sprintf("Invalid provider for planned_values.root_module.child_modules[%d].resources[%d].provider", idx, ipIdx),
-	)
-	assert.Contains(
-		goTester,
-		*expectedIPNames,
-		externalIPResource.Values.Name,
-		fmt.Sprintf("Invalid resource instance name for planned_values.root_module.child_modules[%d].resources[%d].values.name", idx, ipIdx),
-	)
-	assert.Equal(
-		goTester,
-		region,
-		externalIPResource.Values.Region,
-		fmt.Sprintf("Invalid resource region planned_values.root_module.child_modules[%d].resources[%d].values.region", idx, ipIdx),
-	)
-}
-
-func validateOutputs(goTester *testing.T, vmPlanOutputs *util.VMOutputs) {
-	// verify module produces output in plan
-	assert.NotNil(
-		goTester,
-		vmPlanOutputs,
-		"Module is expected to produce outputs; but none found",
-	)
-
-	// verify module produces an output for vm_info in plan
-	assert.NotNil(
-		goTester,
-		vmPlanOutputs.VMInfo,
-		"Module is expected to have an output for vm_info; but not found",
 	)
 }

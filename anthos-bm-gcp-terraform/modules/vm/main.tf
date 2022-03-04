@@ -22,9 +22,9 @@ module "external_ip_addresses" {
 
 module "compute_instance" {
   source            = "terraform-google-modules/vm/google//modules/compute_instance"
-  version           = "~> 7.5.0"
+  version           = "~> 7.6.0"
   instance_template = var.instance_template
-  region            = var.region
+  zone              = var.zone
   for_each          = toset(var.vm_names)
   hostname          = each.value
   network           = var.network # --network default
