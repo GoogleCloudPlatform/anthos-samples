@@ -15,9 +15,15 @@
  */
 
 variable "region" {
-  description = "Google Cloud Region in which the VMs should be provisioned"
+  description = "Google Cloud Region in which the External IP addresses should be provisioned"
   type        = string
   default     = "us-central1"
+}
+
+variable "zone" {
+  description = "Google Cloud Zone in which the VMs should be provisioned"
+  type        = string
+  default     = "us-central1-a"
 }
 
 variable "network" {

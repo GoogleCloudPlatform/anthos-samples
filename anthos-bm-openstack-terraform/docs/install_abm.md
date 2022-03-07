@@ -26,7 +26,7 @@ the following VMs and the required networking between them.
 
 [Section 3.5](configure_openstack.md#35-apply-the-changes-described-in-the-terraform-script)
 from the _configuring OpenStack guide_ would have created a VM in **OpenStack**
-that will serve as our ***admin workstation***. We will confgure and use it to
+that will serve as our ***admin workstation***. We will configure and use it to
 install **Anthos on bare metal**.
 
 #### 1.1) Fetch the Floating IP of the admin workstation
@@ -38,7 +38,7 @@ export FLOATING_IP=$(openstack floating ip list --tags=abm_ws_floatingip -f json
 echo $FLOATING_IP
 ```
 
-#### 1.2) Copy into and configure the initilization scripts in the admin workstation
+#### 1.2) Copy into and configure the initialization scripts in the admin workstation
 
 The **SSH key** information in the following steps assumes that you configured
 your VM using the [_configuring OpenStack guide_](configure_openstack.md).
@@ -244,7 +244,7 @@ to the cluster.
 # -----------------------------------------------------
 #                   Expected Output
 # -----------------------------------------------------
-💡 Retreiving Kubernetes Service Account Token
+💡 Retrieving Kubernetes Service Account Token
 
 🚀 ------------------------------TOKEN-------------------------------- 🚀
 eyJhbGciOiJSUzI1NiIsImtpZCI6Imk2X3duZ3BzckQyWmszb09sZHFMN0FoWU9mV1kzOWNGZzMyb0x2WlMyalkifQ.eyJpc3MiOiJrdW
@@ -287,7 +287,7 @@ service.
 ---
 ### Troubleshooting Anthos on bare metal cluster creation
 This section provides some guidance as to how to troubleshoot the bare metal
-cluster installtion process _(step [**2.3**](#23-create-the-anthos-on-bare-metal-cluster))_.
+cluster installation process _(step [**2.3**](#23-create-the-anthos-on-bare-metal-cluster))_.
 The **bmctl** tool creates a [**Kind cluster**](https://kind.sigs.k8s.io/) to
 bootstrap the Anthos on bare metal cluster installation process. So we can look
 for logs from this **kind cluster** to see what's happening.
@@ -322,7 +322,7 @@ Now, setup the `KUBECONFIG` for the bootstrap `kind` cluster.
 kind get kubeconfig --name bmctl > ~/.kube/config
 ```
 
-Finally, interact with the boostrap cluster's pods to see their logs and debug.
+Finally, interact with the bootstrap cluster's pods to see their logs and debug.
 ```sh
 kubectl get pods --all-namespaces
 ```
