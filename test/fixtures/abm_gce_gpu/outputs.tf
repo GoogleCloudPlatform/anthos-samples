@@ -16,7 +16,7 @@
 
 
 output "project_id" {
-  value = var.owner_project_id
+  value = var.editor_project_id
 }
 
 output "ssh_as_tfadmin" {
