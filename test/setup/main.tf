@@ -17,11 +17,8 @@
 locals {
   module_path = abspath(path.module)
   # required roles for the service account on the project that will be used for
-  # the setting up the GCE infrastructure. The service account shall have either
-  # Owner role or both Editor & Project IAM Admin roles
-  owner_project_roles = [
-    "roles/owner"
-  ]
+  # the setting up the GCE infrastructure. The service account shall have
+  # atleast [Editor & Project IAM Admin] roles
   editor_project_roles = [
     "roles/editor",
     "roles/resourcemanager.projectIamAdmin"
@@ -31,42 +28,6 @@ locals {
 
 resource "random_id" "random_project_id_suffix" {
   byte_length = 4
-}
-
-# Create a project and service account to test the script upon a project with
-# Project Owner permissions
-module "abm_infra_owner_project" {
-  source              = "terraform-google-modules/project-factory/google"
-  version             = "~> 12.0"
-  name                = "ci-abm-${random_id.random_project_id_suffix.hex}"
-  random_project_id   = true
-  auto_create_network = true
-  org_id              = var.org_id
-  folder_id           = var.folder_id
-  billing_account     = var.billing_account
-  activate_apis       = local.apis_to_be_activated
-}
-
-resource "google_service_account" "int_test_owner_sa" {
-  project      = module.abm_infra_owner_project.project_id
-  account_id   = "int-test-sa${random_id.random_project_id_suffix.hex}"
-  display_name = "int-test-sa"
-}
-
-resource "google_project_iam_member" "project_iam_owner_binding" {
-  for_each = toset(local.owner_project_roles)
-  project  = module.abm_infra_owner_project.project_id
-  role     = each.value
-  member   = "serviceAccount:${google_service_account.int_test_owner_sa.email}"
-}
-
-resource "google_service_account_key" "int_test_owner_sa_key" {
-  service_account_id = google_service_account.int_test_owner_sa.id
-}
-
-resource "local_file" "int_test_owner_sa_key_file" {
-  content  = base64decode(google_service_account_key.int_test_owner_sa_key.private_key)
-  filename = "${local.module_path}/${module.abm_infra_owner_project.project_id}.json"
 }
 
 # Create a project and service account to test the script upon a project with
