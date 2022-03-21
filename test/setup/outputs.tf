@@ -14,24 +14,6 @@
  * limitations under the License.
  */
 
-# Outputs to be used by tests on the project with Owner permissions
-output "owner_project_id" {
-  value = module.abm_infra_owner_project.project_id
-}
-
-output "owner_sa_email" {
-  value = google_service_account.int_test_owner_sa.email
-}
-
-output "owner_sa_key" {
-  value     = google_service_account_key.int_test_owner_sa_key.private_key
-  sensitive = true
-}
-
-output "owner_sa_key_file_path" {
-  value = "${abspath(path.module)}/${module.abm_infra_owner_project.project_id}.json"
-}
-
 # Outputs to be used by tests on the project with Editor & Project IAM Admin
 # permissions
 output "editor_project_id" {
