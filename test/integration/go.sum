@@ -57,9 +57,16 @@ github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test v0.
 github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test v0.0.0-20220222183328-db52889d3656/go.mod h1:tWoaVHXM9sZyzxgX2+UHtzdJkav+uTnTJiz42N8FONc=
 github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test v0.0.0-20220224043346-4b2a2573b11f h1:FrR7UNpneM25KSuxb5YKREduYuo7utQa/9X3dJt+FLo=
 github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test v0.0.0-20220224043346-4b2a2573b11f/go.mod h1:tWoaVHXM9sZyzxgX2+UHtzdJkav+uTnTJiz42N8FONc=
+github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test v0.0.0-20220307174651-21d0dee0c8ea h1:Pbtaoh7g+3FNtyUoEeLEhFuw/Nfa35zFU4Bc+WgnC3Q=
+github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test v0.0.0-20220307174651-21d0dee0c8ea/go.mod h1:cdqqfBObgqdv4oyKGBS8Lwan5XVisYV9RvZ7JuXTx44=
+github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test v0.0.0-20220309063210-06bd12e1d576 h1:r6guFJPZLw/lHntBA4uhWVLwEY7xMCmdZm87rbtj2KM=
+github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test v0.0.0-20220309063210-06bd12e1d576/go.mod h1:cdqqfBObgqdv4oyKGBS8Lwan5XVisYV9RvZ7JuXTx44=
+github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test v0.0.0-20220315183512-768ecce22bc3 h1:c8lHOEIPnbIjCQT7CKCc09rGAXofLBlA4U+MdqTKKBM=
+github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test v0.0.0-20220315183512-768ecce22bc3/go.mod h1:cdqqfBObgqdv4oyKGBS8Lwan5XVisYV9RvZ7JuXTx44=
 github.com/GoogleCloudPlatform/k8s-cloud-provider v0.0.0-20190822182118-27a4ced34534/go.mod h1:iroGtC8B3tQiqtds1l+mgk/BBOrxbqjH+eUfFQYRc14=
 github.com/GoogleContainerTools/kpt-functions-catalog/functions/go/list-setters v0.1.0/go.mod h1:ju1d4EAij/igLgN+0er7tPc1nTKn/PTjY00buPEsx0Q=
 github.com/GoogleContainerTools/kpt-functions-sdk/go v0.0.0-20210810181223-632b30549de6/go.mod h1:k86q33ABlA9TnUqRmHH9dnKY2Edh8YbxjRyPfjlM8jE=
+github.com/GoogleContainerTools/kpt-functions-sdk/go v0.0.0-20220301220754-6964a09d6cd2/go.mod h1:lJYiqfBOl6AOiefK9kmkhinbffIysu+nnclOBwKEPlQ=
 github.com/Microsoft/go-winio v0.4.14/go.mod h1:qXqCSQ3Xa7+6tgxaGTIe4Kpcdsi+P8jBhyzoq1bpyYA=
 github.com/NYTimes/gziphandler v0.0.0-20170623195520-56545f4a5d46/go.mod h1:3wb06e3pkSAbeQ52E9H9iFoQsEEwGN64994WTCIhntQ=
 github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=
@@ -486,6 +493,8 @@ github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81P
 github.com/stretchr/testify v1.5.1/go.mod h1:5W2xD1RspED5o8YsWQXVCued0rvSQ+mT+I5cxcmMvtA=
 github.com/stretchr/testify v1.7.0 h1:nwc3DEeHmmLAfoZucVR881uASk0Mfjw8xYJ99tb5CcY=
 github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
+github.com/stretchr/testify v1.7.1 h1:5TQK59W5E3v0r2duFAb7P95B6hEeOyEnHRa8MjYSMTY=
+github.com/stretchr/testify v1.7.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/tidwall/gjson v1.10.2 h1:APbLGOM0rrEkd8WBw9C24nllro4ajFuJu0Sc9hRz8Bo=
 github.com/tidwall/gjson v1.10.2/go.mod h1:/wbyibRr2FHMks5tjHJ5F8dMZh3AcwJEMf5vlfC0lxk=
 github.com/tidwall/match v1.1.1 h1:+Ho715JplO36QYgwN9PGYNhgZvoUSc9X2c80KVTi+GA=
