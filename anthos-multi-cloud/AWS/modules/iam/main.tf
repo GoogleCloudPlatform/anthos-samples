@@ -71,6 +71,7 @@ data "aws_iam_policy_document" "api_policy_document" {
       "elasticloadbalancing:CreateListener",
       "elasticloadbalancing:AddTags",
       "elasticloadbalancing:ModifyTargetGroupAttributes",
+      "ec2:ModifyNetworkInterfaceAttribute",
       "ec2:DescribeAccountAttributes",
       "ec2:DescribeInternetGateways",
       "ec2:RunInstances",
