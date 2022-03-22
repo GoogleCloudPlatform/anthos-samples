@@ -108,8 +108,8 @@ resource "null_resource" "exec_init_script" {
       "chmod 0600 ${local.home_dir}/init.vars",
       "chmod 0100 ${local.home_dir}/init_vm.sh",
       "chmod 0100 ${local.home_dir}/run_initialization_checks.sh",
-      "chmod 0100 ${local.home_dir}/install_abm.sh",
-      "chmod 0100 ${local.home_dir}/login.sh"
+      "chmod 0550 ${local.home_dir}/install_abm.sh",
+      "chmod 0550 ${local.home_dir}/login.sh"
     ]
   }
 

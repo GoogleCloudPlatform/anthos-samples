@@ -184,7 +184,7 @@ variable "mode" {
 
   validation {
     condition     = contains(["setup", "install"], var.mode)
-    error_message = "Allowed execution modes are: setup, install"
+    error_message = "Allowed execution modes are: setup, install."
   }
 }
 

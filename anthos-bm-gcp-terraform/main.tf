@@ -224,8 +224,9 @@ module "init_hosts" {
 
 module "install_abm" {
   source               = "./modules/install"
+  depends_on           = [module.init_hosts]
   count                = var.mode == "install" ? 1 : 0
   username             = var.username
-  publicIp             = publicIps[admin_vm_hostnames[0]]
-  ssh_private_key_file = format(local.private_key_file_path_template, admin_vm_hostnames[0])
+  publicIp             = local.publicIps[local.admin_vm_hostnames[0]]
+  ssh_private_key_file = format(local.private_key_file_path_template, local.admin_vm_hostnames[0])
 }
