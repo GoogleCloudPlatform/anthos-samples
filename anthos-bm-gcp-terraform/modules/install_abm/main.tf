@@ -13,8 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
- resource "null_resource" "exec_init_script" {
+
+locals {
+  home_dir          = "/home/${var.username}"
+  install_file_name = "install_abm.sh"
+  install_log_file  = "install_abm.log"
+}
+
+resource "null_resource" "exec_init_script" {
   depends_on = [module.gcloud_add_ssh_key_metadata]
   connection {
     type        = "ssh"
@@ -24,31 +30,13 @@
   }
 
   provisioner "file" {
-    source      = var.cluster_yaml_path
-    destination = "${local.home_dir}/${local.cluster_yaml_file_name}"
-  }
-
-  provisioner "file" {
-    source      = var.init_vars_file
-    destination = "${local.home_dir}/init.vars"
-  }
-
-  provisioner "file" {
-    source      = var.init_script
-    destination = "${local.home_dir}/init_vm.sh"
-  }
-
-  provisioner "file" {
-    source      = var.init_check_script
-    destination = "${local.home_dir}/run_initialization_checks.sh"
+    source      = var.install_abm_script
+    destination = "${local.home_dir}/install_abm.sh"
   }
 
   provisioner "remote-exec" {
     inline = [
-      "chmod 0600 ${local.home_dir}/${local.cluster_yaml_file_name}",
-      "chmod 0600 ${local.home_dir}/init.vars",
-      "chmod 0100 ${local.home_dir}/init_vm.sh",
-      "chmod 0100 ${local.home_dir}/run_initialization_checks.sh"
+      "chmod 0100 ${local.home_dir}/install_abm.sh"
     ]
   }
 
@@ -61,7 +49,7 @@
       -F /dev/null                      \
       -i ${local.ssh_private_key_file}  \
       ${var.username}@${var.publicIp}   \
-      'nohup sudo ${local.home_dir}/init_vm.sh > ${local.home_dir}/${var.init_logs} 2>&1 &'
+      'nohup sudo ${local.home_dir}/install_abm.sh > ${local.home_dir}/${local.install_log_file} 2>&1 &'
     EOT
   }
 }

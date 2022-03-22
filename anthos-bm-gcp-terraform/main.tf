@@ -189,6 +189,7 @@ resource "local_file" "init_args_file" {
   filename = format(local.init_script_vars_file_path_template, each.value)
   content = templatefile(local.init_script_vars_file, {
     zone           = var.zone,
+    clusterId      = var.abm_cluster_id,
     isAdminVm      = contains(local.admin_vm_hostnames, each.value),
     vxLanIp        = local.vm_vxlan_ip[local.vmHostnameToVmName[each.value]],
     serviceAccount = var.anthos_service_account_name,
@@ -199,6 +200,25 @@ resource "local_file" "init_args_file" {
 }
 
 module "init_hosts" {
+  source                 = "./modules/init"
+  for_each               = toset(local.vm_hostnames)
+  project_id             = var.project_id
+  zone                   = var.zone
+  hostname               = each.value
+  username               = var.username
+  credentials_file       = var.credentials_file
+  resources_path         = var.resources_path
+  publicIp               = local.publicIps[each.value]
+  init_script            = local.init_script
+  init_check_script      = local.init_check_script
+  init_logs              = local.init_script_logfile_name
+  pub_key_path_template  = local.public_key_file_path_template
+  priv_key_path_template = local.private_key_file_path_template
+  init_vars_file         = format(local.init_script_vars_file_path_template, each.value)
+  cluster_yaml_path      = local.cluster_yaml_file
+}
+
+module "install_abm" {
   source                 = "./modules/init"
   for_each               = toset(local.vm_hostnames)
   project_id             = var.project_id
