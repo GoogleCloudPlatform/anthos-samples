@@ -35,6 +35,8 @@ locals {
   init_script_vars_file               = "${var.resources_path}/init.vars.tpl"
   init_script                         = "${var.resources_path}/init_vm.sh"
   init_check_script                   = "${var.resources_path}/run_initialization_checks.sh"
+  install_abm_script                  = "${var.resources_path}/install_abm.sh"
+  login_script                        = "${var.resources_path}/login.sh"
   vm_hostnames_str                    = join("|", local.vm_hostnames)
   vm_hostnames = concat(
     local.admin_vm_hostnames,
@@ -211,6 +213,8 @@ module "init_hosts" {
   publicIp               = local.publicIps[each.value]
   init_script            = local.init_script
   init_check_script      = local.init_check_script
+  install_abm_script     = local.install_abm_script
+  login_script           = local.login_script
   init_logs              = local.init_script_logfile_name
   pub_key_path_template  = local.public_key_file_path_template
   priv_key_path_template = local.private_key_file_path_template
@@ -219,20 +223,10 @@ module "init_hosts" {
 }
 
 module "install_abm" {
-  source                 = "./modules/init"
-  for_each               = toset(local.vm_hostnames)
-  project_id             = var.project_id
-  zone                   = var.zone
-  hostname               = each.value
-  username               = var.username
-  credentials_file       = var.credentials_file
-  resources_path         = var.resources_path
-  publicIp               = local.publicIps[each.value]
-  init_script            = local.init_script
-  init_check_script      = local.init_check_script
-  init_logs              = local.init_script_logfile_name
-  pub_key_path_template  = local.public_key_file_path_template
-  priv_key_path_template = local.private_key_file_path_template
-  init_vars_file         = format(local.init_script_vars_file_path_template, each.value)
-  cluster_yaml_path      = local.cluster_yaml_file
+  source               = "./modules/install"
+  count                = var.mode == "install" ? 1 : 0
+  username             = var.username
+  publicIp             = publicIps[admin_vm_hostnames[0]]
+  ssh_private_key_file = format(local.private_key_file_path_template, admin_vm_hostnames[0])
+  install_script       = local.install_abm_script
 }

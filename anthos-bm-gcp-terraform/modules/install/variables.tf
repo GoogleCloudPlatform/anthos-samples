@@ -25,7 +25,12 @@ variable "publicIp" {
   type        = string
 }
 
-variable "install_abm_script" {
+variable "ssh_private_key_file" {
+  description = "Path to private key to use when SSH'ing into the admin VM"
+  type        = string
+}
+
+variable "install_script" {
   description = "Path to the script that runs the VM initialization checks and installs Anthos bare metal"
   type        = string
   default     = "../../resources/install_abm.sh"

@@ -66,6 +66,18 @@ variable "init_check_script" {
   default     = "../../resources/run_initialization_checks.sh"
 }
 
+variable "install_abm_script" {
+  description = "Path to the script that installs Anthos on bare metal"
+  type        = string
+  default     = "../../resources/install_abm.sh"
+}
+
+variable "login_script" {
+  description = "Path to the script that generates the token used to login to the Anthos bare metal cluster"
+  type        = string
+  default     = "../../resources/login.sh"
+}
+
 variable "init_logs" {
   description = "Name of the file to write the logs of the initialization script"
   type        = string
