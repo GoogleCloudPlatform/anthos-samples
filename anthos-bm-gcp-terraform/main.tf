@@ -33,7 +33,7 @@ locals {
   cluster_yaml_file                   = "${var.resources_path}/.temp/.${var.abm_cluster_id}.yaml"
   cluster_yaml_template_file          = "${var.resources_path}/anthos_gce_cluster.tpl"
   init_script_vars_file               = "${var.resources_path}/init.vars.tpl"
-  init_script                         = "${var.resources_path}/init.sh"
+  init_script                         = "${var.resources_path}/init_vm.sh"
   init_check_script                   = "${var.resources_path}/run_initialization_checks.sh"
   vm_hostnames_str                    = join("|", local.vm_hostnames)
   vm_hostnames = concat(

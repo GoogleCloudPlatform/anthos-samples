@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,57 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-locals {
-  ssh_pub_key_template_file = "${var.resources_path}/ssh-keys.tpl"
-  ssh_pub_key_file          = format(var.pub_key_path_template, var.hostname)
-  ssh_private_key_file      = format(var.priv_key_path_template, var.hostname)
-  cluster_yaml_file_name    = trimprefix(basename(var.cluster_yaml_path), ".")
-  home_dir                  = "/home/${var.username}"
-}
-
-resource "tls_private_key" "ssh_key_pair" {
-  algorithm = "RSA"
-  rsa_bits  = 4096
-}
-
-resource "local_file" "temp_ssh_pub_key_file" {
-  filename        = local.ssh_pub_key_file
-  file_permission = "0600"
-  content = templatefile(
-    local.ssh_pub_key_template_file, {
-      username = var.username,
-      ssh_key  = chomp(tls_private_key.ssh_key_pair.public_key_openssh)
-    }
-  )
-}
-
-resource "local_file" "temp_ssh_priv_key_file" {
-  filename        = local.ssh_private_key_file
-  file_permission = "0600"
-  content         = chomp(tls_private_key.ssh_key_pair.private_key_pem)
-}
-
-module "gcloud_add_ssh_key_metadata" {
-  source                   = "terraform-google-modules/gcloud/google"
-  version                  = "3.1.0"
-  platform                 = "linux"
-  service_account_key_file = var.credentials_file
-  module_depends_on = [
-    local_file.temp_ssh_pub_key_file,
-    local_file.temp_ssh_priv_key_file
-  ]
-
-  create_cmd_entrypoint = "gcloud"
-  create_cmd_body       = <<EOT
-    compute instances add-metadata ${var.hostname}  \
-    --project ${var.project_id}                                    \
-    --zone ${var.zone}                                             \
-    --metadata-from-file ssh-keys=${local.ssh_pub_key_file}
-  EOT
-}
-
-resource "null_resource" "exec_init_script" {
+ 
+ resource "null_resource" "exec_init_script" {
   depends_on = [module.gcloud_add_ssh_key_metadata]
   connection {
     type        = "ssh"

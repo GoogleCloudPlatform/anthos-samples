@@ -57,7 +57,7 @@ variable "publicIp" {
 variable "init_script" {
   description = "Path to the initilization script that is to be run on the target VM"
   type        = string
-  default     = "../../resources/init.sh"
+  default     = "../../resources/init_vm.sh"
 }
 
 variable "init_check_script" {
