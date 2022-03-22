@@ -17,10 +17,15 @@ DIR=$(pwd)
 CLUSTER_ID=$(cut -d "=" -f2- <<< "$(grep < init.vars CLUSTER_ID)")
 
 # run the initialization checks
-$DIR/run_initialization_checks.sh
+"$DIR"/run_initialization_checks.sh
 # create a new workspace and config file for the Anthos bare metal cluster
-bmctl create config -c $CLUSTER_ID
+bmctl create config -c "$CLUSTER_ID"
 # copy the prefilled configuration file into the new workspace
-cp $DIR/$CLUSTER_ID.yaml bmctl-workspace/$CLUSTER_ID
+cp "$DIR/$CLUSTER_ID".yaml "$DIR/bmctl-workspace/$CLUSTER_ID"
 # create the Anthos bare metal cluster
-bmctl create cluster -c $CLUSTER_ID
+bmctl create cluster -c "$CLUSTER_ID"
+
+export KUBECONFIG="$DIR/bmctl-workspace/$CLUSTER_ID/$CLUSTER_ID-kubeconfig"
+echo ""
+echo "Run [export KUBECONFIG=$DIR/bmctl-workspace/$CLUSTER_ID/$CLUSTER_ID-kubeconfig] to set the kubeconfig"
+echo "Run the [$DIR/login.sh] script to generate a token that you can use to login to the cluster from the Google Cloud Console"
