@@ -35,7 +35,7 @@ resource "null_resource" "run_abm_installation" {
       -F /dev/null                      \
       -i ${var.ssh_private_key_file}  \
       ${var.username}@${var.publicIp}   \
-      'nohup sudo ${local.home_dir}/${var.install_script}.sh > ${local.home_dir}/${var.install_script}.log 2>&1 &'
+      'nohup sudo ${local.home_dir}/install_abm.sh > ${local.home_dir}/install_abm.log 2>&1 &'
     EOT
   }
 }

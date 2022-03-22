@@ -228,5 +228,4 @@ module "install_abm" {
   username             = var.username
   publicIp             = publicIps[admin_vm_hostnames[0]]
   ssh_private_key_file = format(local.private_key_file_path_template, admin_vm_hostnames[0])
-  install_script       = local.install_abm_script
 }
