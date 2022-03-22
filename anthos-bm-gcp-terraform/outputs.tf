@@ -41,15 +41,10 @@ output "installation_check" {
   description = "Run the following command to check the Anthos bare metal installation status."
   value = var.mode != "install" ? null : join("\n", [
     "################################################################################",
-    "#                    SSH into the admin host as ${var.username} user                   #",
+    "#          SSH into the admin host and check the installation progress         #",
     "################################################################################",
     "",
     "> gcloud compute ssh ${var.username}@${local.admin_vm_hostnames[0]} --project=${var.project_id} --zone=${var.zone}",
-    "",
-    "################################################################################",
-    "#           Check the progress of the Anthos bare metal installation           #",
-    "################################################################################",
-    "",
     "> tail -f ~/install_abm.log",
     "",
     "################################################################################",
