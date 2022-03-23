@@ -121,7 +121,7 @@ cluster1-abm-w2-001    Ready    <none>   14m   v1.18.6-gke.6600
 
 During the setup process, your cluster will be auto-registered in Google Cloud using [Connect](https://cloud.google.com/anthos/multicluster-management/connect/overview). In order to interact with the cluster from the GCP console you must first ***login*** to the cluster.
 
-The [Logging in to a cluster from the Cloud Console](https://cloud.google.com/anthos/multicluster-management/console/logging-in/) guide describes how this can be done.
+The [Logging into the Anthos bare metal cluster](login.md) explains how you can do it.
 
 ---
 ### Cleanup
