@@ -28,7 +28,7 @@ The [Quick starter](docs/quickstart.md) guide sets up the following infrastructu
 
 - [Quick starter guide](docs/quickstart.md):
     - The terraform script sets up the GCE VM environment. The output of the script prints out the commands to follow to install **Anthos on bare metal** in the provisioned GCE VMs.
-- [One click install](doc/one_click_install.md):
+- [One click install](docs/one_click_install.md):
     - The terraform script sets up the GCE VM environment and also triggers the **Anthos on bare metal** installation on the provisioned GCE VMs. The output of the script prints out the commands to SSH into the *admin workstation VM* and monitor the Anthos on bare metal installation process.
 - [Variables guide](docs/variables.md)
 
