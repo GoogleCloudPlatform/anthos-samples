@@ -21,7 +21,7 @@ This repository shows you how to use Terraform to try Anthos clusters on bare me
 
 The [Quick starter](docs/quickstart.md) guide sets up the following infrastructure in Google Cloud using Compute Engine VMs. The diagram assumes that the none of the default values for the [variables](variables.tf) were changed other than the ones mentioned in the quick starter.
 
-![Bare metal infrastructure on Google Cloud using Compute Engine VMs](resources/images/abm_gcp_infra.svg)
+![Bare metal infrastructure on Google Cloud using Compute Engine VMs](docs/images/abm_gcp_infra.svg)
 
 ---
 ## Getting started

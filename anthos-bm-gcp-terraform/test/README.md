@@ -11,6 +11,32 @@ export GOOGLE_APPLICATION_CREDENTIALS="<PATH_TO_THE_SERVICE_ACCOUNT_KEY_FILE>"
 cd anthos-bm-gcp-terraform/test
 go test -v -timeout 30m ./...
 ```
+---
+
+### Setup [`vscode`](https://code.visualstudio.com/) to run unit tests
+
+- Open  [anthos-bm-gcp-terraform/test](/anthos-bm-gcp-terraform/test) directory in `vscode`
+
+<p align="center">
+    <img src="/anthos-bm-gcp-terraform/docs/images/vscode.png">
+    <em>
+    <b>The test directory must be the root directory in the vscode workspace</b>
+    </br>
+    (click image to enlarge)
+    </em>
+</p>
+
+- Create a directory called `.vscode` at the root of the workspace
+
+<p align="center">
+    <img src="/anthos-bm-gcp-terraform/docs/images/vscode_configs.png">
+    <em>
+    </br>
+    (click image to enlarge)
+    </em>
+</p>
+
+---
 
 ### FAQ for diagnosing failed tests in the CI
 

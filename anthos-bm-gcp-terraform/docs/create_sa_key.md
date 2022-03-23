@@ -56,4 +56,3 @@ gcloud iam service-accounts keys create ${PATH_TO_KEY} \
     --project ${GOOGLE_CLOUD_PROJECT} \
     --iam-account="${SERVICE_ACCOUNT_NAME}@${GOOGLE_CLOUD_PROJECT}.iam.gserviceaccount.com"
 ```
-
