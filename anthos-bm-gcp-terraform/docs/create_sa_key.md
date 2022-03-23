@@ -26,7 +26,7 @@ export SERVICE_ACCOUNT_NAME=<SERVICE_ACC_NAME>
 export PATH_TO_KEY=<LOCAL_FILE_PATH_TO_STORE_DOWNLOADED_KEY>
 ```
 
-#### Create the Service Account 
+#### Create the Service Account
 ```sh
 gcloud iam service-accounts create ${SERVICE_ACCOUNT_NAME} \
     --project ${GOOGLE_CLOUD_PROJECT} \
