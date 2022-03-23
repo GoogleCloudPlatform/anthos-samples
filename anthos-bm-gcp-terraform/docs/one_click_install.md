@@ -101,39 +101,6 @@ Run [export KUBECONFIG=/home/tfadmin/bmctl-workspace/cluster1/cluster1-kubeconfi
 Run the [/home/tfadmin/login.sh] script to generate a token that you can use to login to the cluster from the Google Cloud Console
 ```
 ---
-
-Running the commands from the Terraform output starts setting up a new Anthos cluster. This includes checking the initialization state of the nodes, creating the admin and user clusters and also registering the cluster with Google Cloud using [Connect](https://cloud.google.com/anthos/multicluster-management/connect/overview). The whole setup can take up to 15 minutes. You see the following output as the cluster is being created:
-
-> **Note:** The logs for checks on node initialization has been left out. They appear before the following logs from Anthos setup
-
-```sh
-Created config: bmctl-workspace/cluster1/cluster1.yaml
-Creating bootstrap cluster... OK
-Installing dependency components... OK
-Waiting for preflight check job to finish... OK
-- Validation Category: machines and network
-        - [PASSED] 10.200.0.3
-        - [PASSED] 10.200.0.4
-        - [PASSED] 10.200.0.5
-        - [PASSED] 10.200.0.6
-        - [PASSED] 10.200.0.7
-        - [PASSED] gcp
-        - [PASSED] node-network
-Flushing logs... OK
-Applying resources for new cluster
-Waiting for cluster to become ready OK
-Writing kubeconfig file
-kubeconfig of created cluster is at bmctl-workspace/cluster1/cluster1-kubeconfig, please run
-kubectl --kubeconfig bmctl-workspace/cluster1/cluster1-kubeconfig get nodes
-to get cluster node status.
-Please restrict access to this file as it contains authentication credentials of your cluster.
-Waiting for node pools to become ready OK
-Moving admin cluster resources to the created admin cluster
-Flushing logs... OK
-Deleting bootstrap cluster... OK
-```
-
----
 ### Interacting with the Baremetal cluster
 
 You can find your cluster's `kubeconfig` file on the admin machine in the `bmctl-workspace` directory. To verify your deployment, complete the following steps from inside the _admin workstation_.
