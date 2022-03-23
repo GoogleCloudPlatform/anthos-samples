@@ -83,7 +83,7 @@ Upon completion the Terraform script will print the following output to the cons
 > tail -f ~/install_abm.log
 
 ################################################################################
-``` 
+```
 
 Use these commands to SSH into the _admin workstation_ and to monitor the installation status.
 Once it is complete the output in the log file will look as follows:
