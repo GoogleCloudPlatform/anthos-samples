@@ -12,7 +12,7 @@ This repository shows you how to use Terraform to try Anthos clusters on bare me
 
 - A [Google Cloud Project](https://console.cloud.google.com/cloud-resource-manager?_ga=2.187862184.1029435410.1614837439-1338907320.1614299892) _(in which the resources for the setup will be provisioned)_
 
-- A [Service Account](https://cloud.devsite.corp.google.com/iam/docs/creating-managing-service-accounts) in the project that satisfies **one** of the following requirements and its **[key file downloaded](https://cloud.devsite.corp.google.com/iam/docs/creating-managing-service-account-keys)** to the workstation:
+- A [Service Account](https://cloud.google.com/iam/docs/creating-managing-service-accounts) in the project that satisfies **one** of the following requirements and its **[key file downloaded](docs/create_sa_key.md)** to the workstation:
   - The Service Account has `Owner` permissions
   - The Service Account has both `Editor` and `Project IAM Admin` permissions
 
