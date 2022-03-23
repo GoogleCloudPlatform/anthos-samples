@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# [START anthosbaremetal_resources_install_abm]
+
 DIR=$(pwd)
 CLUSTER_ID=$(cut -d "=" -f2- <<< "$(grep < init.vars CLUSTER_ID)")
 
@@ -25,7 +27,8 @@ cp "$DIR/$CLUSTER_ID".yaml "$DIR/bmctl-workspace/$CLUSTER_ID"
 # create the Anthos bare metal cluster
 bmctl create cluster -c "$CLUSTER_ID"
 
-export KUBECONFIG="$DIR/bmctl-workspace/$CLUSTER_ID/$CLUSTER_ID-kubeconfig"
-echo ""
+echo "Anthos on bare metal installation complete!"
 echo "Run [export KUBECONFIG=$DIR/bmctl-workspace/$CLUSTER_ID/$CLUSTER_ID-kubeconfig] to set the kubeconfig"
 echo "Run the [$DIR/login.sh] script to generate a token that you can use to login to the cluster from the Google Cloud Console"
+
+# [END anthosbaremetal_resources_install_abm]
