@@ -47,6 +47,7 @@ func TestUnit_MainScript(goTester *testing.T) {
 	resourcesPath := "./resources"
 	username := "test_username"
 	minCPUPlatform := "test_cpu_platform"
+	enableNestedVirtualization := "test_nested_virtualization"
 	machineType := "test_machine_type"
 	image := "test_image"
 	imageProject := "test_image_project"
@@ -85,28 +86,29 @@ func TestUnit_MainScript(goTester *testing.T) {
 	tfPlanOutput := "terraform_test.tfplan"
 	tfPlanOutputArg := fmt.Sprintf("-out=%s", tfPlanOutput)
 	tfVarsMap := map[string]interface{}{
-		"project_id":                  projectID,
-		"credentials_file":            credentialsFile,
-		"resources_path":              resourcesPath,
-		"region":                      region,
-		"zone":                        zone,
-		"username":                    username,
-		"min_cpu_platform":            minCPUPlatform,
-		"machine_type":                machineType,
-		"image":                       image,
-		"image_project":               imageProject,
-		"image_family":                imageFamily,
-		"boot_disk_type":              bootDiskType,
-		"boot_disk_size":              bootDiskSize,
-		"network":                     network,
-		"tags":                        tags,
-		"access_scopes":               accessScopes,
-		"anthos_service_account_name": anthosServiceAccountName,
-		"primary_apis":                primaryApis,
-		"secondary_apis":              secondaryApis,
-		"abm_cluster_id":              abmClusterID,
-		"instance_count":              instanceCount,
-		"gpu":                         gpu,
+		"project_id":                   projectID,
+		"credentials_file":             credentialsFile,
+		"resources_path":               resourcesPath,
+		"region":                       region,
+		"zone":                         zone,
+		"username":                     username,
+		"min_cpu_platform":             minCPUPlatform,
+		"enable_nested_virtualization": enableNestedVirtualization,
+		"machine_type":                 machineType,
+		"image":                        image,
+		"image_project":                imageProject,
+		"image_family":                 imageFamily,
+		"boot_disk_type":               bootDiskType,
+		"boot_disk_size":               bootDiskSize,
+		"network":                      network,
+		"tags":                         tags,
+		"access_scopes":                accessScopes,
+		"anthos_service_account_name":  anthosServiceAccountName,
+		"primary_apis":                 primaryApis,
+		"secondary_apis":               secondaryApis,
+		"abm_cluster_id":               abmClusterID,
+		"instance_count":               instanceCount,
+		"gpu":                          gpu,
 	}
 
 	tfOptions := terraform.WithDefaultRetryableErrors(goTester, &terraform.Options{
@@ -310,6 +312,14 @@ func TestUnit_MainScript_ValidateDefaults(goTester *testing.T) {
 		"Intel Haswell",
 		terraformPlan.Variables.MinCPUPlatform.Value,
 		"Variable does not match expected default value: min_cpu_platform.",
+	)
+
+	// verify input variable enable_nested_virtualization in plan matches the default value
+	assert.Equal(
+		goTester,
+		"true",
+		terraformPlan.Variables.EnableNestedVirtualization.Value,
+		"Variable does not match expected default value: enable_nested_virtualization.",
 	)
 
 	// verify input variable image in plan matches the default value
