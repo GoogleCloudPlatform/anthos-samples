@@ -325,6 +325,13 @@ func ValidateVariablesInMain(goTester *testing.T, tfPlan *util.MainModulePlan) {
 		"Variable not found in plan: min_cpu_platform",
 	)
 
+	// verify plan has enable_nested_virtualization input variable
+	assert.NotNil(
+		goTester,
+		tfPlan.Variables.EnableNestedVirtualization.Value,
+		"Variable not found in plan: enable_nested_virtualization",
+	)
+
 	// verify plan has tags input variable
 	assert.NotNil(
 		goTester,
@@ -507,6 +514,14 @@ func ValidateVariableValuesInMain(goTester *testing.T, tfPlan *util.MainModulePl
 		"Variable does not match in plan: min_cpu_platform.",
 	)
 
+	// verify input variable enable_nested_virtualization in plan matches
+	assert.Equal(
+		goTester,
+		(*vars)["enable_nested_virtualization"],
+		tfPlan.Variables.EnableNestedVirtualization.Value,
+		"Variable does not match in plan: enable_nested_virtualization.",
+	)
+
 	// verify input variable tags in plan matches every tag in the list
 	for _, tag := range tfPlan.Variables.Tags.Value {
 		assert.Contains(
@@ -654,6 +669,12 @@ func ValidateInstanceTemplateModule(goTester *testing.T, module *util.TFModule, 
 				(*vars)["min_cpu_platform"],
 				resource.Values.MinCPUPlatform,
 				fmt.Sprintf("Invalid value for resources[%d].values.min_cpu_platform in the instance_template child module", idx),
+			)
+			assert.Equal(
+				goTester,
+				(*vars)["enable_nested_virtualization"],
+				fmt.Sprint(resource.Values.AdvancedMachineFeatures[0].EnableNestedVirtualization),
+				fmt.Sprintf("Invalid value for resources[%d].values.advanced_machine_features[0].enable_nested_virtualization in the instance_template child module", idx),
 			)
 			assert.Equal(
 				goTester,
