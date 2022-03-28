@@ -40,5 +40,5 @@ No resources.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_vm_info"></a> [vm\_info](#output\_vm\_info) | n/a |
+| <a name="output_vm_info"></a> [vm\_info](#output\_vm\_info) | Information pertaining to all the VMs that were created. It is in the form<br>    of a list of objects. Each object contains the hostname, internal IP address<br>    and the external IP address of a specific VM that was created. |
 <!-- END_TF_DOCS -->
