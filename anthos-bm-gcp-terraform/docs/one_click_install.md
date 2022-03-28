@@ -1,6 +1,6 @@
-## One click install
+## All in one install
 
-This guide supplements the [quickstart guide](quickstart.md) for installing Anthos
+This guide is an alternative to the [quickstart guide](quickstart.md) for installing Anthos
 on bare metal. The quickstart is split into two phases to ensure that the readers can clearly
 distinguish between the two important steps required for the installation: ***Setting up
 the GCE VMs to emulate a bare metal environment*** and ***Installing Anthos on bare metal
@@ -87,6 +87,9 @@ Upon completion the Terraform script will print the following output to the cons
 
 Use these commands to SSH into the _admin workstation_ and to monitor the installation status.
 Once it is complete the output in the log file will look as follows:
+
+> **Note:** The installation process for Anthos on bare metal can take up to 15
+> minutes.
 
 ```sh
 ...

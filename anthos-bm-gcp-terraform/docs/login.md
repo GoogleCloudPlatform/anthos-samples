@@ -18,7 +18,7 @@ can login to a registered cluster in GCP. Here, we show how you can login by usi
 **Kubernetes Service Account Token**.
 
 Once you have completed the Anthos on bare metal installation by following either
-the [quickstart](quickstart.md) or [one click install](one_click_install.md) guide,
+the [quickstart](quickstart.md) or [all in one install](one_click_install.md) guide,
 the terraform scripts would have copied the [login.sh](/anthos-bm-gcp-terraform/resources/login.sh) script into the _admin workstation VM_. You can simply run that script to generate a
 **Kubernetes Service Account Token**.
 
