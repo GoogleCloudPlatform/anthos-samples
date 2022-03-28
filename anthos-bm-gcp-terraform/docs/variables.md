@@ -13,7 +13,6 @@ terraform-docs markdown table --output-file ${VARIABLES_MD_FILE} --output-mode i
 ```
 
 <!-- BEGIN_TF_DOCS -->
-
 ## Requirements
 
 | Name | Version |
@@ -59,6 +58,7 @@ terraform-docs markdown table --output-file ${VARIABLES_MD_FILE} --output-mode i
 | <a name="input_boot_disk_size"></a> [boot\_disk\_size](#input\_boot\_disk\_size) | Size of the primary boot disk to be attached to the Compute Engine VMs in GBs | `number` | `200` | no |
 | <a name="input_boot_disk_type"></a> [boot\_disk\_type](#input\_boot\_disk\_type) | Type of the boot disk to be attached to the Compute Engine VMs | `string` | `"pd-ssd"` | no |
 | <a name="input_credentials_file"></a> [credentials\_file](#input\_credentials\_file) | Path to the Google Cloud Service Account key file.<br>    This is the key that will be used to authenticate the provider with the Cloud APIs | `string` | n/a | yes |
+| <a name="input_enable_nested_virtualization"></a> [enable\_nested\_virtualization](#input\_enable\_nested\_virtualization) | Enable nested virtualization on the Compute Engine VMs are to be scheduled | `string` | `"true"` | no |
 | <a name="input_gce_vm_service_account"></a> [gce\_vm\_service\_account](#input\_gce\_vm\_service\_account) | Service Account to use for GCE instances | `string` | `""` | no |
 | <a name="input_gpu"></a> [gpu](#input\_gpu) | GPU information to be attached to the provisioned GCE instances.<br>    See https://cloud.google.com/compute/docs/gpus for supported types | `object({ type = string, count = number })` | <pre>{<br>  "count": 0,<br>  "type": ""<br>}</pre> | no |
 | <a name="input_image"></a> [image](#input\_image) | The source image to use when provisioning the Compute Engine VMs.<br>    Use 'gcloud compute images list' to find a list of all available images | `string` | `"ubuntu-2004-focal-v20210429"` | no |
@@ -67,7 +67,7 @@ terraform-docs markdown table --output-file ${VARIABLES_MD_FILE} --output-mode i
 | <a name="input_instance_count"></a> [instance\_count](#input\_instance\_count) | Number of instances to provision per layer (Control plane and Worker nodes) of the cluster | `map(any)` | <pre>{<br>  "controlplane": 3,<br>  "worker": 2<br>}</pre> | no |
 | <a name="input_machine_type"></a> [machine\_type](#input\_machine\_type) | Google Cloud machine type to use when provisioning the Compute Engine VMs | `string` | `"n1-standard-8"` | no |
 | <a name="input_min_cpu_platform"></a> [min\_cpu\_platform](#input\_min\_cpu\_platform) | Minimum CPU architecture upon which the Compute Engine VMs are to be scheduled | `string` | `"Intel Haswell"` | no |
-| <a name="input_mode"></a> [mode](#input\_mode) | Indication of the execution mode. By default the terraform execution will end<br>    after setting up the GCE VMs where the Anthos bare metal clusters can be deployed.<br><br>    **setup:** create and initialize the GCE VMs required to install Anthos bare metal.<br><br>    **install:** everything upto 'default' mode plus automatically run Anthos bare metal installation steps as well. | `string` | `"setup"` | no |
+| <a name="input_mode"></a> [mode](#input\_mode) | Indication of the execution mode. By default the terraform execution will end<br>    after setting up the GCE VMs where the Anthos bare metal clusters can be deployed.<br><br>    **setup:** create and initialize the GCE VMs required to install Anthos bare metal.<br><br>    **install:** everything upto 'setup' mode plus automatically run Anthos bare metal installation steps as well. | `string` | `"setup"` | no |
 | <a name="input_network"></a> [network](#input\_network) | VPC network to which the provisioned Compute Engine VMs is to be connected to | `string` | `"default"` | no |
 | <a name="input_primary_apis"></a> [primary\_apis](#input\_primary\_apis) | List of primary Google Cloud APIs to be enabled for this deployment | `list(string)` | <pre>[<br>  "cloudresourcemanager.googleapis.com"<br>]</pre> | no |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | Unique identifer of the Google Cloud Project that is to be used | `string` | n/a | yes |
