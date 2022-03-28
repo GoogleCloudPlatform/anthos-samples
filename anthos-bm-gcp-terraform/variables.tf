@@ -56,6 +56,12 @@ variable "min_cpu_platform" {
   default     = "Intel Haswell"
 }
 
+variable "enable_nested_virtualization" {
+  description = "Enable nested virtualization on the Compute Engine VMs are to be scheduled"
+  type        = string
+  default     = "true"
+}
+
 variable "machine_type" {
   description = "Google Cloud machine type to use when provisioning the Compute Engine VMs"
   type        = string
