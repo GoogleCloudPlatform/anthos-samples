@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.7.0](https://github.com/GoogleCloudPlatform/anthos-samples/compare/v0.6.2...v0.7.0) (2022-03-25)
+
+
+### Features
+
+* Enable nested virtualization support for ABM Terraform installation on GCE ([#212](https://github.com/GoogleCloudPlatform/anthos-samples/issues/212)) ([c41edb2](https://github.com/GoogleCloudPlatform/anthos-samples/commit/c41edb20837942482fe4e05307d5d1e6d405f2f7))
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/gruntwork-io/terratest to v0.40.6 ([#198](https://github.com/GoogleCloudPlatform/anthos-samples/issues/198)) ([24b845d](https://github.com/GoogleCloudPlatform/anthos-samples/commit/24b845dbfbcc12de8caa3a83a8ae8b6b8d725b7d))
+* **deps:** update module github.com/stretchr/testify to v1.7.1 ([#202](https://github.com/GoogleCloudPlatform/anthos-samples/issues/202)) ([91d7f2e](https://github.com/GoogleCloudPlatform/anthos-samples/commit/91d7f2ebe01caa073baec8c32fad2ee026a051f7))
+
 ### [0.6.2](https://github.com/GoogleCloudPlatform/anthos-samples/compare/v0.6.1...v0.6.2) (2022-03-03)
 
 
