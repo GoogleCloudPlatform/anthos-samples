@@ -15,6 +15,11 @@
  */
 
 output "vm_info" {
+  description = <<EOF
+    Information pertaining to all the VMs that were created. It is in the form
+    of a list of objects. Each object contains the hostname, internal IP address
+    and the external IP address of a specific VM that was created.
+  EOF
   value = flatten([
     for group in module.compute_instance[*] : [
       for vm_details in group : [

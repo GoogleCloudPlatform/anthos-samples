@@ -15,6 +15,11 @@
  */
 
 output "ips" {
+  description = <<EOF
+    IP information of all the VMs that were created. It is in the form of a map
+    which has the VM hostname as the key and an object as the value. The object
+    contains the IP address, tier and region.
+  EOF
   value = {
     for vmName, details in google_compute_address.external_ip_address :
     vmName => ({
