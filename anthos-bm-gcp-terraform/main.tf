@@ -24,6 +24,8 @@ locals {
   worker_vm_names                     = [for i in range(var.instance_count.worker) : format(local.vm_name_template, var.abm_cluster_id, "w", i + 1)]
   controlplane_vxlan_ips              = [for name in local.controlplane_vm_names : local.vm_vxlan_ip[name]]
   worker_vxlan_ips                    = [for name in local.worker_vm_names : local.vm_vxlan_ip[name]]
+  controlplane_internal_ips           = [for vm in module.controlplane_vm_hosts.vm_info : vm.internalIp],
+  worker_internal_ips                 = [for vm in module.worker_vm_hosts.vm_info : vm.internalIp],
   admin_vm_hostnames                  = [for vm in module.admin_vm_hosts.vm_info : vm.hostname]
   vm_vxlan_ip                         = { for idx, vmName in local.vm_names : vmName => format("10.200.0.%d", idx + 2) }
   vmHostnameToVmName                  = { for vmName in local.vm_names : "${vmName}-001" => vmName }
@@ -31,8 +33,9 @@ locals {
   private_key_file_path_template      = "${var.resources_path}/.temp/%s/ssh-key.priv"
   init_script_vars_file_path_template = "${var.resources_path}/.temp/%s/init.vars"
   cluster_yaml_file                   = "${var.resources_path}/.temp/.${var.abm_cluster_id}.yaml"
-  cluster_yaml_template_file          = "${var.resources_path}/anthos_gce_cluster.tpl"
-  init_script_vars_file               = "${var.resources_path}/init.vars.tpl"
+  cluster_yaml_template_file          = "${var.resources_path}/templates/anthos_gce_cluster.tpl"
+  cluster_yaml_manuallb_template_file = "${var.resources_path}/templates/manuallb_cluster.tpl"
+  init_script_vars_file               = "${var.resources_path}/templates/init.vars.tpl"
   init_script                         = "${var.resources_path}/init_vm.sh"
   init_check_script                   = "${var.resources_path}/run_initialization_checks.sh"
   install_abm_script                  = "${var.resources_path}/install_abm.sh"
@@ -45,8 +48,8 @@ locals {
   )
   vm_internal_ips = join("|", concat(
     [for vm in module.admin_vm_hosts.vm_info : vm.internalIp],
-    [for vm in module.controlplane_vm_hosts.vm_info : vm.internalIp],
-    [for vm in module.worker_vm_hosts.vm_info : vm.internalIp])
+    controlplane_internal_ips,
+    worker_internal_ips)
   )
   publicIps = merge(
     { for vm in module.admin_vm_hosts.vm_info : vm.hostname => vm.externalIp },

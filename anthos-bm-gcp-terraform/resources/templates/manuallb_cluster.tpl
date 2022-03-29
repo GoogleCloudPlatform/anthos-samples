@@ -35,7 +35,7 @@ spec:
       cidrBlocks:
       - 172.26.232.0/24
   loadBalancer:
-    mode: bundled
+    mode: manual
     ports:
       controlPlaneLBPort: 443
     vips:

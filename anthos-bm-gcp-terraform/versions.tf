@@ -18,7 +18,7 @@ terraform {
   provider_meta "google" {
     # Anthos Bare metal version used in this release is 1.10
     # See
-    # - https://github.com/GoogleCloudPlatform/anthos-samples/blob/main/anthos-bm-gcp-terraform/resources/anthos_gce_cluster.tpl#L20
+    # - https://github.com/GoogleCloudPlatform/anthos-samples/blob/main/anthos-bm-gcp-terraform/resources/templates/anthos_gce_cluster.tpl#L20
     # - https://github.com/GoogleCloudPlatform/anthos-samples/blob/main/anthos-bm-gcp-terraform/resources/init_vm.sh#L180
     module_name = "anthos-samples/terraform/anthos-bm-terraform:gce/v0.6.2"
   }
