@@ -60,13 +60,20 @@ type MainPlannedValues struct {
 
 // Outputs represents the outputs produced by the main terraform module
 type Outputs struct {
-	AdminVMSSH *AdminVMSSH `json:"admin_vm_ssh"`
+	AdminVMSSH   *AdminVMSSH   `json:"admin_vm_ssh"`
+	InstallCheck *InstallCheck `json:"installation_check"`
 }
 
 // AdminVMSSH represents the final output from the main terraform script with
 // instructions as to how to SSH into the admin host and create a new
 // ABM cluster
 type AdminVMSSH struct {
+	Value string `json:"value"`
+}
+
+// InstallCheck represents the final output from the main terraform script when
+// it is run with the "install" modeÎ
+type InstallCheck struct {
 	Value string `json:"value"`
 }
 

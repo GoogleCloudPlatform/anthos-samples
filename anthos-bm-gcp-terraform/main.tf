@@ -33,8 +33,10 @@ locals {
   cluster_yaml_file                   = "${var.resources_path}/.temp/.${var.abm_cluster_id}.yaml"
   cluster_yaml_template_file          = "${var.resources_path}/anthos_gce_cluster.tpl"
   init_script_vars_file               = "${var.resources_path}/init.vars.tpl"
-  init_script                         = "${var.resources_path}/init.sh"
+  init_script                         = "${var.resources_path}/init_vm.sh"
   init_check_script                   = "${var.resources_path}/run_initialization_checks.sh"
+  install_abm_script                  = "${var.resources_path}/install_abm.sh"
+  login_script                        = "${var.resources_path}/login.sh"
   vm_hostnames_str                    = join("|", local.vm_hostnames)
   vm_hostnames = concat(
     local.admin_vm_hostnames,
@@ -190,6 +192,7 @@ resource "local_file" "init_args_file" {
   filename = format(local.init_script_vars_file_path_template, each.value)
   content = templatefile(local.init_script_vars_file, {
     zone           = var.zone,
+    clusterId      = var.abm_cluster_id,
     isAdminVm      = contains(local.admin_vm_hostnames, each.value),
     vxLanIp        = local.vm_vxlan_ip[local.vmHostnameToVmName[each.value]],
     serviceAccount = var.anthos_service_account_name,
@@ -211,9 +214,20 @@ module "init_hosts" {
   publicIp               = local.publicIps[each.value]
   init_script            = local.init_script
   init_check_script      = local.init_check_script
+  install_abm_script     = local.install_abm_script
+  login_script           = local.login_script
   init_logs              = local.init_script_logfile_name
   pub_key_path_template  = local.public_key_file_path_template
   priv_key_path_template = local.private_key_file_path_template
   init_vars_file         = format(local.init_script_vars_file_path_template, each.value)
   cluster_yaml_path      = local.cluster_yaml_file
+}
+
+module "install_abm" {
+  source               = "./modules/install"
+  depends_on           = [module.init_hosts]
+  count                = var.mode == "install" ? 1 : 0
+  username             = var.username
+  publicIp             = local.publicIps[local.admin_vm_hostnames[0]]
+  ssh_private_key_file = format(local.private_key_file_path_template, local.admin_vm_hostnames[0])
 }

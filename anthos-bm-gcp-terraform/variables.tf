@@ -176,6 +176,25 @@ variable "gce_vm_service_account" {
   type        = string
   default     = ""
 }
+
+variable "mode" {
+  type        = string
+  description = <<EOF
+    Indication of the execution mode. By default the terraform execution will end
+    after setting up the GCE VMs where the Anthos bare metal clusters can be deployed.
+
+    **setup:** create and initialize the GCE VMs required to install Anthos bare metal.
+
+    **install:** everything up to 'setup' mode plus automatically run Anthos bare metal installation steps as well.
+  EOF
+  default     = "setup"
+
+  validation {
+    condition     = contains(["setup", "install"], var.mode)
+    error_message = "Allowed execution modes are: setup, install."
+  }
+}
+
 # [START anthosbaremetal_node_prefix]
 # [START anthos_bm_node_prefix]
 ###################################################################################

@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# [START anthosbaremetal_resources_init]
+# [START anthosbaremetal_resources_init_vm]
 
 ##############################################################################
 # Commands starting with leading double underscores (__) nand ending with
@@ -245,4 +245,4 @@ function __print_separator__ () {
 # Run the script from main()
 __main__ "$@"
 
-# [END anthosbaremetal_resources_init]
+# [END anthosbaremetal_resources_init_vm]

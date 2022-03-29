@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-output "ips" {
-  description = <<EOF
-    IP information of all the VMs that were created. It is in the form of a map
-    which has the VM hostname as the key and an object as the value. The object
-    contains the IP address, tier and region.
-  EOF
-  value = {
-    for vmName, details in google_compute_address.external_ip_address :
-    vmName => ({
-      region  = details.region
-      tier    = details.network_tier
-      address = details.address
-    })
-  }
+variable "username" {
+  description = "The name of the user who should run the install scripts"
+  type        = string
+  default     = "tfadmin"
+}
+
+variable "publicIp" {
+  description = "Publicly accessible IP address of the Admin VM"
+  type        = string
+}
+
+variable "ssh_private_key_file" {
+  description = "Path to private key to use when SSH'ing into the admin VM"
+  type        = string
 }

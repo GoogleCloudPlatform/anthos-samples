@@ -84,7 +84,7 @@ resource "null_resource" "exec_init_script" {
 
   provisioner "file" {
     source      = var.init_script
-    destination = "${local.home_dir}/init.sh"
+    destination = "${local.home_dir}/init_vm.sh"
   }
 
   provisioner "file" {
@@ -92,12 +92,24 @@ resource "null_resource" "exec_init_script" {
     destination = "${local.home_dir}/run_initialization_checks.sh"
   }
 
+  provisioner "file" {
+    source      = var.install_abm_script
+    destination = "${local.home_dir}/install_abm.sh"
+  }
+
+  provisioner "file" {
+    source      = var.login_script
+    destination = "${local.home_dir}/login.sh"
+  }
+
   provisioner "remote-exec" {
     inline = [
       "chmod 0600 ${local.home_dir}/${local.cluster_yaml_file_name}",
       "chmod 0600 ${local.home_dir}/init.vars",
-      "chmod 0100 ${local.home_dir}/init.sh",
-      "chmod 0100 ${local.home_dir}/run_initialization_checks.sh"
+      "chmod 0100 ${local.home_dir}/init_vm.sh",
+      "chmod 0100 ${local.home_dir}/run_initialization_checks.sh",
+      "chmod 0550 ${local.home_dir}/install_abm.sh",
+      "chmod 0550 ${local.home_dir}/login.sh"
     ]
   }
 
@@ -110,7 +122,7 @@ resource "null_resource" "exec_init_script" {
       -F /dev/null                      \
       -i ${local.ssh_private_key_file}  \
       ${var.username}@${var.publicIp}   \
-      'nohup sudo ${local.home_dir}/init.sh > ${local.home_dir}/${var.init_logs} 2>&1 &'
+      'nohup sudo ${local.home_dir}/init_vm.sh > ${local.home_dir}/${var.init_logs} 2>&1 &'
     EOT
   }
 }

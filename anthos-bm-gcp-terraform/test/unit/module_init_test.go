@@ -230,7 +230,7 @@ func TestUnit_InitModule_DefaultValues(goTester *testing.T) {
 	// verify input variable init_script in plan matches default value
 	assert.Equal(
 		goTester,
-		"../../resources/init.sh",
+		"../../resources/init_vm.sh",
 		initModulePlan.Variables.InitScriptPath.Value,
 		"Variable does not match in plan: init_script.",
 	)
