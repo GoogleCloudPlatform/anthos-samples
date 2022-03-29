@@ -24,8 +24,8 @@ locals {
   worker_vm_names                     = [for i in range(var.instance_count.worker) : format(local.vm_name_template, var.abm_cluster_id, "w", i + 1)]
   controlplane_vxlan_ips              = [for name in local.controlplane_vm_names : local.vm_vxlan_ip[name]]
   worker_vxlan_ips                    = [for name in local.worker_vm_names : local.vm_vxlan_ip[name]]
-  controlplane_internal_ips           = [for vm in module.controlplane_vm_hosts.vm_info : vm.internalIp],
-  worker_internal_ips                 = [for vm in module.worker_vm_hosts.vm_info : vm.internalIp],
+  controlplane_internal_ips           = [for vm in module.controlplane_vm_hosts.vm_info : vm.internalIp]
+  worker_internal_ips                 = [for vm in module.worker_vm_hosts.vm_info : vm.internalIp]
   admin_vm_hostnames                  = [for vm in module.admin_vm_hosts.vm_info : vm.hostname]
   vm_vxlan_ip                         = { for idx, vmName in local.vm_names : vmName => format("10.200.0.%d", idx + 2) }
   vmHostnameToVmName                  = { for vmName in local.vm_names : "${vmName}-001" => vmName }
@@ -172,17 +172,39 @@ module "worker_vm_hosts" {
   instance_template = module.instance_template.self_link
 }
 
-resource "local_file" "cluster_yaml" {
+// Generate the Anthos bare metal cluster yaml file using the template for
+// bundled load balancer setup. This resource is created only if the mode is
+// NOT 'manuallb' (i.e. setup or install)
+resource "local_file" "cluster_yaml_bundledlb" {
   depends_on = [
     module.controlplane_vm_hosts,
     module.worker_vm_hosts
   ]
+  count    = var.mode == "manuallb" ? 0 : 1
   filename = local.cluster_yaml_file
   content = templatefile(local.cluster_yaml_template_file, {
     clusterId       = var.abm_cluster_id,
     projectId       = var.project_id,
     controlPlaneIps = local.controlplane_vxlan_ips,
     workerNodeIps   = local.worker_vxlan_ips
+  })
+}
+
+// Generate the Anthos bare metal cluster yaml file using the template for
+// manual load balancer setup. This resource is created only if the mode is
+// 'manuallb'
+resource "local_file" "cluster_yaml_manuallb" {
+  depends_on = [
+    module.controlplane_vm_hosts,
+    module.worker_vm_hosts
+  ]
+  count    = var.mode == "manuallb" ? 1 : 0
+  filename = local.cluster_yaml_file
+  content = templatefile(local.cluster_yaml_manuallb_template_file, {
+    clusterId       = var.abm_cluster_id,
+    projectId       = var.project_id,
+    controlPlaneIps = local.controlplane_internal_ips,
+    workerNodeIps   = local.worker_internal_ips
   })
 }
 

@@ -186,6 +186,8 @@ variable "mode" {
     **setup:** create and initialize the GCE VMs required to install Anthos bare metal.
 
     **install:** everything up to 'setup' mode plus automatically run Anthos bare metal installation steps as well.
+    
+    **manuallb:** similar to 'install' mode but Anthos on bare metal is installed with ManualLB mode.
   EOF
   default     = "setup"
 
