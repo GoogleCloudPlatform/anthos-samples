@@ -192,8 +192,8 @@ variable "mode" {
   default     = "setup"
 
   validation {
-    condition     = contains(["setup", "install"], var.mode)
-    error_message = "Allowed execution modes are: setup, install."
+    condition     = contains(["setup", "install", "manuallb"], var.mode)
+    error_message = "Allowed execution modes are: setup, install, manuallb."
   }
 }
 
