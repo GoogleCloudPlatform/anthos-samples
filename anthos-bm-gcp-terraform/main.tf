@@ -48,8 +48,8 @@ locals {
   )
   vm_internal_ips = join("|", concat(
     [for vm in module.admin_vm_hosts.vm_info : vm.internalIp],
-    controlplane_internal_ips,
-    worker_internal_ips)
+    local.controlplane_internal_ips,
+    local.worker_internal_ips)
   )
   publicIps = merge(
     { for vm in module.admin_vm_hosts.vm_info : vm.hostname => vm.externalIp },
