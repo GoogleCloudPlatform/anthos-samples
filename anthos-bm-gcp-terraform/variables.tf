@@ -56,6 +56,12 @@ variable "min_cpu_platform" {
   default     = "Intel Haswell"
 }
 
+variable "enable_nested_virtualization" {
+  description = "Enable nested virtualization on the Compute Engine VMs are to be scheduled"
+  type        = string
+  default     = "true"
+}
+
 variable "machine_type" {
   description = "Google Cloud machine type to use when provisioning the Compute Engine VMs"
   type        = string
@@ -177,8 +183,9 @@ variable "mode" {
     Indication of the execution mode. By default the terraform execution will end
     after setting up the GCE VMs where the Anthos bare metal clusters can be deployed.
 
-    setup: create and initialize the GCE VMs required to install Anthos bare metal.
-    install: everything upto 'default' mode plus automatically run Anthos bare metal installation steps as well.
+    **setup:** create and initialize the GCE VMs required to install Anthos bare metal.
+
+    **install:** everything up to 'setup' mode plus automatically run Anthos bare metal installation steps as well.
   EOF
   default     = "setup"
 
