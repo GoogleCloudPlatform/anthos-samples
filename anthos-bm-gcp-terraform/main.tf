@@ -204,7 +204,9 @@ resource "local_file" "cluster_yaml_manuallb" {
     clusterId       = var.abm_cluster_id,
     projectId       = var.project_id,
     controlPlaneIps = local.controlplane_internal_ips,
-    workerNodeIps   = local.worker_internal_ips
+    workerNodeIps   = local.worker_internal_ips,
+    controlPlaneVIP = "",
+    ingressVIP      = ""
   })
 }
 
