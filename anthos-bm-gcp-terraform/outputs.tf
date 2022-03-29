@@ -39,7 +39,7 @@ output "admin_vm_ssh" {
 
 output "installation_check" {
   description = "Run the following command to check the Anthos bare metal installation status."
-  value = var.mode != "install" ? null : join("\n", [
+  value = var.mode == "setup" ? null : join("\n", [
     "################################################################################",
     "#          SSH into the admin host and check the installation progress         #",
     "################################################################################",
