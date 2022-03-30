@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+variable "is_global" {
+  description = "Indication of whether the IP address must be global"
+  type        = bool
+  default     = false
+}
+
 variable "region" {
   description = "Region where the IP addresses are to be created in"
   type        = string

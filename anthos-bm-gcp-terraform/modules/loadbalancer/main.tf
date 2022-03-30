@@ -15,9 +15,9 @@
  */
 
 module "public_ip" {
-  source   = "../external-ip"
-  region   = var.region
-  ip_names = [var.ip_name]
+  source    = "../external-ip"
+  is_global = true
+  ip_names  = [var.ip_name]
 }
 
 resource "google_compute_network_endpoint_group" "lb-neg" {
