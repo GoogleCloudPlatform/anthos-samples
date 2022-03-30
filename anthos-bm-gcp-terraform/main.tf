@@ -172,6 +172,54 @@ module "worker_vm_hosts" {
   instance_template = module.instance_template.self_link
 }
 
+module "configure_controlplane_lb" {
+  source = "./modules/loadbalancer"
+  count  = var.mode == "manuallb" ? 1 : 0
+  depends_on = [
+    module.admin_vm_hosts,
+    module.controlplane_vm_hosts,
+    module.worker_vm_hosts
+  ]
+  mode                      = "controlplanelb"
+  project                   = var.project
+  region                    = var.region
+  zone                      = var.zone
+  name_prefix               = "abm-cp"
+  ip_name                   = "abm-cp-public-ip"
+  health_check_path         = "/readyz"
+  health_check_port         = 6444
+  backend_protocol          = "TCP"
+  forwarding_rule_ports     = [443]
+  create_firewall_rule      = true
+  firewall_rule_target_tags = var.tags
+  firewall_rule_allow_ports = [6444, 443]
+  lb_endpoint_instances = [
+    for vm in module.controlplane_vm_hosts.vm_info : {
+      name = vm.hostname
+      ip   = vm.internalIp
+      port = 6444
+    }
+  ]
+}
+
+module "configure_ingress_lb" {
+  source = "./modules/loadbalancer"
+  count  = var.mode == "manuallb" ? 1 : 0
+  depends_on = [
+    module.admin_vm_hosts,
+    module.controlplane_vm_hosts,
+    module.worker_vm_hosts
+  ]
+  mode                  = "ingresslb"
+  project               = var.project
+  region                = var.region
+  zone                  = var.zone
+  name_prefix           = "abm-ing"
+  ip_name               = "abm-ing-public-ip"
+  backend_protocol      = "HTTP"
+  forwarding_rule_ports = [80]
+}
+
 // Generate the Anthos bare metal cluster yaml file using the template for
 // bundled load balancer setup. This resource is created only if the mode is
 // NOT 'manuallb' (i.e. setup or install)
@@ -205,8 +253,8 @@ resource "local_file" "cluster_yaml_manuallb" {
     projectId       = var.project_id,
     controlPlaneIps = local.controlplane_internal_ips,
     workerNodeIps   = local.worker_internal_ips,
-    controlPlaneVIP = "",
-    ingressVIP      = ""
+    controlPlaneVIP = module.configure_controlplane_lb.public_ip,
+    ingressVIP      = module.configure_ingress_lb.public_ip
   })
 }
 
