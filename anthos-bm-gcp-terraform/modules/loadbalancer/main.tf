@@ -114,7 +114,7 @@ resource "google_compute_global_forwarding_rule" "lb-forwarding-rule" {
   name        = "${var.name_prefix}-lb-forwarding-rule"
   project     = var.project
   ip_protocol = "TCP"
-  ports       = var.forwarding_rule_ports
+  port_range  = join(",", var.forwarding_rule_ports)
   ip_address  = module.public_ip.ips[var.ip_name].address
   target      = var.mode == "controlplanelb" ? google_compute_target_tcp_proxy.lb-target-tcp-proxy[0].id : google_compute_target_http_proxy.lb-target-http-proxy[0].id
 }
