@@ -110,7 +110,7 @@ resource "google_compute_target_tcp_proxy" "lb-target-tcp-proxy" {
   backend_service = google_compute_backend_service.lb-backend.id
 }
 
-resource "google_compute_forwarding_rule" "lb-forwarding-rule" {
+resource "google_compute_global_forwarding_rule" "lb-forwarding-rule" {
   name        = "${var.name_prefix}-lb-forwarding-rule"
   project     = var.project
   ip_protocol = "TCP"
