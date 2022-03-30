@@ -325,6 +325,13 @@ func ValidateVariablesInMain(goTester *testing.T, tfPlan *util.MainModulePlan) {
 		"Variable not found in plan: min_cpu_platform",
 	)
 
+	// verify plan has enable_nested_virtualization input variable
+	assert.NotNil(
+		goTester,
+		tfPlan.Variables.EnableNestedVirtualization.Value,
+		"Variable not found in plan: enable_nested_virtualization",
+	)
+
 	// verify plan has tags input variable
 	assert.NotNil(
 		goTester,
@@ -507,6 +514,14 @@ func ValidateVariableValuesInMain(goTester *testing.T, tfPlan *util.MainModulePl
 		"Variable does not match in plan: min_cpu_platform.",
 	)
 
+	// verify input variable enable_nested_virtualization in plan matches
+	assert.Equal(
+		goTester,
+		(*vars)["enable_nested_virtualization"],
+		tfPlan.Variables.EnableNestedVirtualization.Value,
+		"Variable does not match in plan: enable_nested_virtualization.",
+	)
+
 	// verify input variable tags in plan matches every tag in the list
 	for _, tag := range tfPlan.Variables.Tags.Value {
 		assert.Contains(
@@ -654,6 +669,12 @@ func ValidateInstanceTemplateModule(goTester *testing.T, module *util.TFModule, 
 				(*vars)["min_cpu_platform"],
 				resource.Values.MinCPUPlatform,
 				fmt.Sprintf("Invalid value for resources[%d].values.min_cpu_platform in the instance_template child module", idx),
+			)
+			assert.Equal(
+				goTester,
+				(*vars)["enable_nested_virtualization"],
+				fmt.Sprint(resource.Values.AdvancedMachineFeatures[0].EnableNestedVirtualization),
+				fmt.Sprintf("Invalid value for resources[%d].values.advanced_machine_features[0].enable_nested_virtualization in the instance_template child module", idx),
 			)
 			assert.Equal(
 				goTester,
@@ -818,6 +839,14 @@ func ValidateMainOutputs(goTester *testing.T, planOutputs *util.Outputs, vars *m
 		"Module is expected to have an output for admin_vm_ssh; but not found",
 	)
 
+	// verify module does NOT produce an output for installation_check in plan
+	assert.Equal(
+		goTester,
+		"",
+		planOutputs.InstallCheck.Value,
+		"Module is not expected to have an output for installation_check; but found",
+	)
+
 	outputValue := planOutputs.AdminVMSSH.Value
 	assert.True(
 		goTester,
@@ -843,5 +872,38 @@ func ValidateMainOutputs(goTester *testing.T, planOutputs *util.Outputs, vars *m
 		goTester,
 		strings.Contains(outputValue, "sudo ./run_initialization_checks.sh"),
 		"Output is expected to have 'sudo ./run_initialization_checks.sh'",
+	)
+}
+
+// ValidateMainOutputsForInstallMode validates if the outputs in the terraform plan matches
+// the outputs defined in the `output.tf` of the main module for the mode "install".
+func ValidateMainOutputsForInstallMode(goTester *testing.T, planOutputs *util.Outputs, vars *map[string]interface{}) {
+	// verify module produces output in plan
+	assert.NotNil(
+		goTester,
+		planOutputs,
+		"Module is expected to produce outputs; but none found",
+	)
+
+	// verify module produces an output for installation_check in plan
+	assert.NotNil(
+		goTester,
+		planOutputs.InstallCheck,
+		"Module is expected to have an output for installation_check; but not found",
+	)
+
+	// verify module does NOT produce an output for admin_vm_ssh in plan
+	assert.Equal(
+		goTester,
+		"",
+		planOutputs.AdminVMSSH.Value,
+		"Module is not expected to have an output for admin_vm_ssh; but found",
+	)
+
+	outputValue := planOutputs.InstallCheck.Value
+	assert.True(
+		goTester,
+		strings.Contains(outputValue, "tail -f ~/install_abm.log"),
+		"Output is expected to have 'tail -f ~/install_abm.log'",
 	)
 }

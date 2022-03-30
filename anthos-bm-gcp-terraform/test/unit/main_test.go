@@ -47,6 +47,7 @@ func TestUnit_MainScript(goTester *testing.T) {
 	resourcesPath := "./resources"
 	username := "test_username"
 	minCPUPlatform := "test_cpu_platform"
+	enableNestedVirtualization := "true"
 	machineType := "test_machine_type"
 	image := "test_image"
 	imageProject := "test_image_project"
@@ -85,28 +86,29 @@ func TestUnit_MainScript(goTester *testing.T) {
 	tfPlanOutput := "terraform_test.tfplan"
 	tfPlanOutputArg := fmt.Sprintf("-out=%s", tfPlanOutput)
 	tfVarsMap := map[string]interface{}{
-		"project_id":                  projectID,
-		"credentials_file":            credentialsFile,
-		"resources_path":              resourcesPath,
-		"region":                      region,
-		"zone":                        zone,
-		"username":                    username,
-		"min_cpu_platform":            minCPUPlatform,
-		"machine_type":                machineType,
-		"image":                       image,
-		"image_project":               imageProject,
-		"image_family":                imageFamily,
-		"boot_disk_type":              bootDiskType,
-		"boot_disk_size":              bootDiskSize,
-		"network":                     network,
-		"tags":                        tags,
-		"access_scopes":               accessScopes,
-		"anthos_service_account_name": anthosServiceAccountName,
-		"primary_apis":                primaryApis,
-		"secondary_apis":              secondaryApis,
-		"abm_cluster_id":              abmClusterID,
-		"instance_count":              instanceCount,
-		"gpu":                         gpu,
+		"project_id":                   projectID,
+		"credentials_file":             credentialsFile,
+		"resources_path":               resourcesPath,
+		"region":                       region,
+		"zone":                         zone,
+		"username":                     username,
+		"min_cpu_platform":             minCPUPlatform,
+		"enable_nested_virtualization": enableNestedVirtualization,
+		"machine_type":                 machineType,
+		"image":                        image,
+		"image_project":                imageProject,
+		"image_family":                 imageFamily,
+		"boot_disk_type":               bootDiskType,
+		"boot_disk_size":               bootDiskSize,
+		"network":                      network,
+		"tags":                         tags,
+		"access_scopes":                accessScopes,
+		"anthos_service_account_name":  anthosServiceAccountName,
+		"primary_apis":                 primaryApis,
+		"secondary_apis":               secondaryApis,
+		"abm_cluster_id":               abmClusterID,
+		"instance_count":               instanceCount,
+		"gpu":                          gpu,
 	}
 
 	tfOptions := terraform.WithDefaultRetryableErrors(goTester, &terraform.Options{
@@ -312,6 +314,14 @@ func TestUnit_MainScript_ValidateDefaults(goTester *testing.T) {
 		"Variable does not match expected default value: min_cpu_platform.",
 	)
 
+	// verify input variable enable_nested_virtualization in plan matches the default value
+	assert.Equal(
+		goTester,
+		"true",
+		terraformPlan.Variables.EnableNestedVirtualization.Value,
+		"Variable does not match expected default value: enable_nested_virtualization.",
+	)
+
 	// verify input variable image in plan matches the default value
 	assert.Equal(
 		goTester,
@@ -484,4 +494,89 @@ func TestUnit_MainScript_ValidateDefaults(goTester *testing.T) {
 		terraformPlan.Variables.Gpu.Value.Type,
 		"Variable does not match expected default value: gpu.type",
 	)
+}
+
+func TestUnit_MainScript_InstallMode(goTester *testing.T) {
+	moduleDir := testStructure.CopyTerraformFolderToTemp(goTester, "../../", ".")
+	projectID := gcp.GetGoogleProjectIDFromEnvVar(goTester) // from GOOGLE_CLOUD_PROJECT
+
+	workingDir, err := os.Getwd()
+	util.LogError(err, "Failed to read current working directory")
+	credentialsFile := fmt.Sprintf("%s/credentials_file.json", workingDir)
+
+	tmpFile, err := os.Create(credentialsFile)
+	util.LogError(err, fmt.Sprintf("Could not create temporary file at %s", credentialsFile))
+	defer tmpFile.Close()
+	defer os.Remove(credentialsFile)
+
+	mode := "install"
+	resourcesPath := "./resources"
+	bootDiskSize := 175
+	instanceCount := map[string]int{
+		"controlplane": 3,
+		"worker":       2,
+	}
+
+	tfPlanOutput := "terraform_test.tfplan"
+	tfPlanOutputArg := fmt.Sprintf("-out=%s", tfPlanOutput)
+	tfVarsMap := map[string]interface{}{
+		"project_id":       projectID,
+		"credentials_file": credentialsFile,
+		"mode":             mode,
+		"resources_path":   resourcesPath,
+		"instance_count":   instanceCount,
+		"boot_disk_size":   bootDiskSize,
+	}
+
+	tfOptions := terraform.WithDefaultRetryableErrors(goTester, &terraform.Options{
+		TerraformDir: moduleDir,
+		// Variables to pass to our Terraform code using -var options
+		Vars:         tfVarsMap,
+		PlanFilePath: tfPlanOutput,
+	})
+
+	// Terraform init and plan only
+	terraform.Init(goTester, tfOptions)
+	terraform.RunTerraformCommand(
+		goTester,
+		tfOptions,
+		terraform.FormatArgs(tfOptions, "plan", tfPlanOutputArg)...,
+	)
+	tfPlanJSON, err := terraform.ShowE(goTester, tfOptions)
+	util.LogError(err, fmt.Sprintf("Failed to parse the plan file %s into JSON format", tfPlanOutput))
+
+	var terraformPlan util.MainModulePlan
+	err = json.Unmarshal([]byte(tfPlanJSON), &terraformPlan)
+	util.LogError(err, "Failed to parse the JSON plan into the MainModulePlan struct in unit/module_main.go")
+	/**
+	 * Pro tip:
+	 * Write the json to a file using the util.WriteToFile() method to easily debug
+	 * util.WriteToFile(tfPlanJSON, "../../plan.json")
+	 */
+
+	var installAbmModule []util.TFModule // install_abm
+
+	for _, childModule := range terraformPlan.PlannedValues.RootModule.ChildModules {
+		moduleAddress := childModule.ModuleAddress
+		if strings.HasSuffix(moduleAddress, "instance_template") ||
+			strings.HasSuffix(moduleAddress, "vm_hosts") ||
+			strings.HasSuffix(moduleAddress, "service_accounts") ||
+			strings.Contains(moduleAddress, "google_apis") ||
+			strings.Contains(moduleAddress, "init_hosts") {
+			continue
+		} else if strings.Contains(moduleAddress, "install_abm") {
+			installAbmModule = append(installAbmModule, childModule)
+		} else {
+			goTester.Errorf("Unexpected module with address [%s] at planned_values.root_module.child_modules", moduleAddress)
+		}
+	}
+
+	assert.Len(
+		goTester,
+		installAbmModule,
+		1,
+		"Unexpected number of child modules with address type install_abm at planned_values.root_module.child_modules",
+	)
+	// validate the outputs from the script
+	validation.ValidateMainOutputsForInstallMode(goTester, terraformPlan.PlannedValues.Outputs, &tfVarsMap)
 }

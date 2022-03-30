@@ -1,4 +1,5 @@
 ZONE=${zone}
+CLUSTER_ID=${clusterId}
 IS_ADMIN_VM=${isAdminVm}
 VXLAN_IP_ADDRESS=${vxLanIp}
 SERVICE_ACCOUNT=${serviceAccount}

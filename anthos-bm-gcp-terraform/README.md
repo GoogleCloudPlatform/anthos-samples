@@ -12,7 +12,7 @@ This repository shows you how to use Terraform to try Anthos clusters on bare me
 
 - A [Google Cloud Project](https://console.cloud.google.com/cloud-resource-manager?_ga=2.187862184.1029435410.1614837439-1338907320.1614299892) _(in which the resources for the setup will be provisioned)_
 
-- A [Service Account](https://cloud.devsite.corp.google.com/iam/docs/creating-managing-service-accounts) in the project that satisfies **one** of the following requirements and its **[key file downloaded](https://cloud.devsite.corp.google.com/iam/docs/creating-managing-service-account-keys)** to the workstation:
+- A [Service Account](https://cloud.google.com/iam/docs/creating-managing-service-accounts) in the project that satisfies **one** of the following requirements and its **[key file downloaded](docs/create_sa_key.md)** to the workstation:
   - The Service Account has `Owner` permissions
   - The Service Account has both `Editor` and `Project IAM Admin` permissions
 
@@ -21,13 +21,17 @@ This repository shows you how to use Terraform to try Anthos clusters on bare me
 
 The [Quick starter](docs/quickstart.md) guide sets up the following infrastructure in Google Cloud using Compute Engine VMs. The diagram assumes that the none of the default values for the [variables](variables.tf) were changed other than the ones mentioned in the quick starter.
 
-![Bare metal infrastructure on Google Cloud using Compute Engine VMs](resources/images/abm_gcp_infra.svg)
+![Bare metal infrastructure on Google Cloud using Compute Engine VMs](docs/images/abm_gcp_infra.svg)
 
 ---
 ## Getting started
 
-- [Quick starter guide](docs/quickstart.md)
-- [Variables guide](docs/variables.md)
+- [Terraform Module Information _(includes variables definitions)_](docs/variables.md)
+- [Quick starter guide](docs/quickstart.md):
+    - The terraform script sets up the GCE VM environment. The output of the script prints out the commands to follow to install **Anthos on bare metal** in the provisioned GCE VMs.
+- [All in one install](docs/one_click_install.md):
+    - The terraform script sets up the GCE VM environment and also triggers the **Anthos on bare metal** installation on the provisioned GCE VMs. The output of the script prints out the commands to SSH into the *admin workstation VM* and monitor the Anthos on bare metal installation process.
+
 
 ---
 ## Contributing
