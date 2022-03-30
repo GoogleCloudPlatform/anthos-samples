@@ -29,7 +29,6 @@ resource "google_compute_network_endpoint_group" "lb-neg" {
 }
 
 resource "google_compute_network_endpoint" "lb-network-endpoint" {
-  count                  = var.mode == "controlplanelb" ? 1 : 0
   project                = var.project
   zone                   = var.zone
   network_endpoint_group = google_compute_network_endpoint_group.lb-neg.name
