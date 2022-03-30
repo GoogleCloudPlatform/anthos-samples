@@ -24,8 +24,6 @@ output "ips" {
     for ipName, details in google_compute_global_address.global_external_ip_address :
     ipName => ({
       id      = details.self_link
-      region  = details.region
-      tier    = details.network_tier
       address = details.address
     })
     } : {
