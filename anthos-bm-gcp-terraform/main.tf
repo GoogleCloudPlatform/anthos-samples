@@ -181,6 +181,8 @@ module "configure_controlplane_lb" {
   source = "./modules/loadbalancer"
   count  = var.mode == "manuallb" ? 1 : 0
   depends_on = [
+    module.enable_google_apis_primary,
+    module.enable_google_apis_secondary,
     module.admin_vm_hosts,
     module.controlplane_vm_hosts,
     module.worker_vm_hosts
@@ -209,6 +211,8 @@ module "configure_ingress_lb" {
   source = "./modules/loadbalancer"
   count  = var.mode == "manuallb" ? 1 : 0
   depends_on = [
+    module.enable_google_apis_primary,
+    module.enable_google_apis_secondary,
     module.admin_vm_hosts,
     module.controlplane_vm_hosts,
     module.worker_vm_hosts
