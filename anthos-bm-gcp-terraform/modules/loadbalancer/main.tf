@@ -33,7 +33,10 @@ resource "google_compute_network_endpoint" "lb-network-endpoint" {
   zone                   = var.zone
   network_endpoint_group = google_compute_network_endpoint_group.lb-neg.name
 
-  for_each   = var.lb_endpoint_instances
+  #   for_each   = var.lb_endpoint_instances
+  for_each = {
+    for index, vm in var.lb_endpoint_instances : vm.name => vm
+  }
   instance   = each.value.name
   port       = each.value.port
   ip_address = each.value.ip
@@ -67,18 +70,22 @@ resource "google_compute_backend_service" "lb-backend" {
     google_compute_health_check.lb-l4-health-check[0].id
   ]
 
-  backend {
-    for_each        = var.mode == "controlplanelb" ? [1] : []
-    group           = google_compute_network_endpoint_group.lb-neg.id
-    balancing_mode  = "CONNECTION"
-    max_connections = 200
+  dynamic "backend" {
+    for_each = var.mode == "controlplanelb" ? [1] : []
+    content {
+      group           = google_compute_network_endpoint_group.lb-neg.id
+      balancing_mode  = "CONNECTION"
+      max_connections = 200
+    }
   }
 
-  backend {
-    for_each       = var.mode == "ingresslb" ? [1] : []
-    group          = google_compute_network_endpoint_group.lb-neg.id
-    balancing_mode = "RATE"
-    max_rate       = 1000
+  dynamic "backend" {
+    for_each = var.mode == "ingresslb" ? [1] : []
+    content {
+      group          = google_compute_network_endpoint_group.lb-neg.id
+      balancing_mode = "RATE"
+      max_rate       = 1000
+    }
   }
 }
 
@@ -113,11 +120,12 @@ resource "google_compute_forwarding_rule" "lb-forwarding-rule" {
 }
 
 resource "google_compute_firewall" "lb-firewall-rule" {
-  count       = var.create_firewall_rule ? 1 : 0
-  name        = "${var.name_prefix}-lb-firewall-rule"
-  network     = var.network
-  target_tags = var.firewall_rule_target_tags
-  direction   = "INGRESS"
+  count         = var.create_firewall_rule ? 1 : 0
+  name          = "${var.name_prefix}-lb-firewall-rule"
+  network       = var.network
+  source_ranges = var.firewall_rule_source_ranges
+  target_tags   = var.firewall_rule_target_tags
+  direction     = "INGRESS"
 
   allow {
     protocol = "tcp"

@@ -77,7 +77,6 @@ variable "forwarding_rule_ports" {
   default = [443, 80]
 }
 
-
 variable "create_firewall_rule" {
   type    = bool
   default = false
@@ -91,4 +90,9 @@ variable "firewall_rule_allow_ports" {
 variable "firewall_rule_target_tags" {
   type    = list(string)
   default = ["http-server", "https-server"]
+}
+
+variable "firewall_rule_source_ranges" {
+  type    = list(string)
+  default = ["0.0.0.0/0"]
 }
