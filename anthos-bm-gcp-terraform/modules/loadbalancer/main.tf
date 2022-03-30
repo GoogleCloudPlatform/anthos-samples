@@ -51,6 +51,8 @@ resource "google_compute_health_check" "lb-l4-health-check" {
   count   = var.mode == "ingresslb" ? 1 : 0
   name    = "${var.name_prefix}-lb-health-check"
   project = var.project
+
+  tcp_health_check {}
 }
 
 resource "google_compute_backend_service" "lb-backend" {

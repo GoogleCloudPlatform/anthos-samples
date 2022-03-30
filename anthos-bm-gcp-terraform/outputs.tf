@@ -52,9 +52,9 @@ output "installation_check" {
 }
 
 output "controlplane_ip" {
-  value = module.configure_controlplane_lb.public_ip
+  value = module.configure_controlplane_lb
 }
 
 output "ingress_ip" {
-  value = module.configure_ingress_lb.public_ip
+  value = module.configure_ingress_lb
 }
