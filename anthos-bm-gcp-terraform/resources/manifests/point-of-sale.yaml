@@ -1,0 +1,264 @@
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# [START anthosbaremetal_manifests_point_of_sale_configmap_service_configs]
+####################################################
+#                     ConfigMap
+####################################################
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: service-configs
+data:
+  INVENTORY_EP: "http://inventory-svc:8080"
+  PAYMENTS_EP: "http://payments-svc:8080"
+  CONNECTOR: "IN_MEMORY"
+  ACTIVE_ITEM_TYPE: "burgers"
+  ITEMS: |
+    items:
+      - name: "BigBurger"
+        type: "burgers"
+        price: 5.50
+        imageUrl: "usr/lib/images/bigburger.png"
+        quantity: 200
+        labels: [ "retail", "restaurant", "food" ]
+      - name: "DoubleBurger"
+        type: "burgers"
+        price: 7.20
+        imageUrl: "usr/lib/images/burgers.png"
+        quantity: 200
+        labels: [ "retail", "restaurant", "food" ]
+      - name: "Shirt"
+        type: "textile"
+        price: 15.50
+        imageUrl: "usr/lib/images/shirt.png"
+        quantity: 50
+        labels: [ "retail", "textile", "clothing" ]
+      - name: "Short"
+        type: "textile"
+        price: 17.20
+        imageUrl: "usr/lib/images/short.png"
+        quantity: 20
+        labels: [ "retail", "textile", "clothing" ]
+# [END anthosbaremetal_manifests_point_of_sale_configmap_service_configs]
+---
+# [START anthosbaremetal_manifests_point_of_sale_deployment_api_server]
+####################################################
+#            Deployments - API Server
+####################################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-server
+spec:
+  selector:
+    matchLabels:
+      app: api-server
+  template:
+    metadata:
+      labels:
+        app: api-server
+    spec:
+      serviceAccountName: default
+      terminationGracePeriodSeconds: 5
+      containers:
+      - name: api-server
+        image: us-docker.pkg.dev/anthos-dpe-abm-edge-pos/abm-edge-pos-images/api-server:v1
+        env:
+        - name: INVENTORY_EP
+          valueFrom:
+            configMapKeyRef:
+              name: service-configs
+              key: INVENTORY_EP
+        - name: PAYMENTS_EP
+          valueFrom:
+            configMapKeyRef:
+              name: service-configs
+              key: PAYMENTS_EP
+        resources:
+          requests:
+            cpu: 100m
+            memory: 512Mi
+          limits:
+            cpu: 500m
+            memory: 1Gi
+        readinessProbe:
+          httpGet:
+            path: /api/ready
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 5
+          timeoutSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /api/healthy
+            port: 8080
+          initialDelaySeconds: 120
+          periodSeconds: 5
+          timeoutSeconds: 10
+# [END anthosbaremetal_manifests_point_of_sale_deployment_api_server]
+---
+# [START anthosbaremetal_manifests_point_of_sale_deployment_payments]
+####################################################
+#          Deployments - Payments Service
+####################################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payments
+spec:
+  selector:
+    matchLabels:
+      app: payments
+  template:
+    metadata:
+      labels:
+        app: payments
+    spec:
+      serviceAccountName: default
+      terminationGracePeriodSeconds: 5
+      containers:
+      - name: payments
+        image: us-docker.pkg.dev/anthos-dpe-abm-edge-pos/abm-edge-pos-images/payments:v1
+        resources:
+          requests:
+            cpu: 100m
+            memory: 512Mi
+          limits:
+            cpu: 500m
+            memory: 1Gi
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 5
+          timeoutSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /healthy
+            port: 8080
+          initialDelaySeconds: 120
+          periodSeconds: 5
+          timeoutSeconds: 10
+# [END anthosbaremetal_manifests_point_of_sale_deployment_payments]
+---
+# [START anthosbaremetal_manifests_point_of_sale_deployment_inventory]
+####################################################
+#         Deployments - Inventory Servies
+####################################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventory
+spec:
+  selector:
+    matchLabels:
+      app: inventory
+  template:
+    metadata:
+      labels:
+        app: inventory
+    spec:
+      serviceAccountName: default
+      terminationGracePeriodSeconds: 5
+      containers:
+      - name: inventory
+        image: us-docker.pkg.dev/anthos-dpe-abm-edge-pos/abm-edge-pos-images/inventory:v1
+        env:
+        - name: CONNECTOR
+          valueFrom:
+            configMapKeyRef:
+              name: service-configs
+              key: CONNECTOR
+        - name: ACTIVE_ITEM_TYPE
+          valueFrom:
+            configMapKeyRef:
+              name: service-configs
+              key: ACTIVE_ITEM_TYPE
+        - name: ITEMS
+          valueFrom:
+            configMapKeyRef:
+              name: service-configs
+              key: ITEMS
+        resources:
+          requests:
+            cpu: 100m
+            memory: 512Mi
+          limits:
+            cpu: 500m
+            memory: 1Gi
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 5
+          timeoutSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /healthy
+            port: 8080
+          initialDelaySeconds: 120
+          periodSeconds: 5
+          timeoutSeconds: 10
+# [END anthosbaremetal_manifests_point_of_sale_deployment_inventory]
+---
+# [START anthosbaremetal_manifests_point_of_sale_service_api_server_svc]
+####################################################
+#            Services - Type ClusterIP
+####################################################
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-server-svc
+spec:
+  type: ClusterIP
+  selector:
+    app: api-server
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+# [END anthosbaremetal_manifests_point_of_sale_service_api_server_svc]
+---
+# [START anthosbaremetal_manifests_point_of_sale_service_payments_svc]
+apiVersion: v1
+kind: Service
+metadata:
+  name: payments-svc
+spec:
+  type: ClusterIP
+  selector:
+    app: payments
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+# [END anthosbaremetal_manifests_point_of_sale_service_payments_svc]
+---
+# [START anthosbaremetal_manifests_point_of_sale_service_inventory_svc]
+apiVersion: v1
+kind: Service
+metadata:
+  name: inventory-svc
+spec:
+  type: ClusterIP
+  selector:
+    app: inventory
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+# [END anthosbaremetal_manifests_point_of_sale_service_inventory_svc]
