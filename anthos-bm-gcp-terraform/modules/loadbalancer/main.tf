@@ -63,8 +63,8 @@ resource "google_compute_backend_service" "lb-backend" {
   protocol = var.backend_protocol
   health_checks = [
     var.mode == "controlplanelb" ?
-    google_compute_https_health_check.lb-health-check.id :
-    google_compute_health_check.lb-l4-health-check.id
+    google_compute_https_health_check.lb-l7-health-check[0].id :
+    google_compute_health_check.lb-l4-health-check[0].id
   ]
 
   backend {
@@ -93,7 +93,7 @@ resource "google_compute_target_http_proxy" "lb-target-http-proxy" {
   count   = var.mode == "ingresslb" ? 1 : 0
   name    = "${var.name_prefix}-lb-http-proxy"
   project = var.project
-  url_map = google_compute_url_map.ingress-lb-urlmap.id
+  url_map = google_compute_url_map.ingress-lb-urlmap[0].id
 }
 
 resource "google_compute_target_tcp_proxy" "lb-target-tcp-proxy" {
@@ -109,7 +109,7 @@ resource "google_compute_forwarding_rule" "lb-forwarding-rule" {
   ip_protocol = "TCP"
   ports       = var.forwarding_rule_ports
   ip_address  = module.public_ip.ips[var.ip_name].address
-  target      = var.mode == "controlplanelb" ? google_compute_target_tcp_proxy.lb-target-tcp-proxy.id : google_compute_target_http_proxy.lb-target-http-proxy.id
+  target      = var.mode == "controlplanelb" ? google_compute_target_tcp_proxy.lb-target-tcp-proxy[0].id : google_compute_target_http_proxy.lb-target-http-proxy[0].id
 }
 
 resource "google_compute_firewall" "lb-firewall-rule" {
