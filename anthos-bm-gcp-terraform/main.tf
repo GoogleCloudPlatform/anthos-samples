@@ -320,9 +320,13 @@ module "init_hosts" {
 }
 
 module "install_abm" {
-  source               = "./modules/install"
-  depends_on           = [module.init_hosts]
-  count                = var.mode == "install" ? 1 : 0
+  source = "./modules/install"
+  depends_on = [
+    module.init_hosts,
+    module.configure_ingress_lb,
+    module.configure_controlplane_lb
+  ]
+  count                = var.mode == "install" || var.mode == "manuallb" ? 1 : 0
   username             = var.username
   publicIp             = local.publicIps[local.admin_vm_hostnames[0]]
   ssh_private_key_file = format(local.private_key_file_path_template, local.admin_vm_hostnames[0])
