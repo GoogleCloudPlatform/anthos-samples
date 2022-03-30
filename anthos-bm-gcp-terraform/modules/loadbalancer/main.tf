@@ -46,14 +46,14 @@ resource "google_compute_health_check" "lb-health-check" {
   project = var.project
 
   dynamic "tcp_health_check" {
-    for_each = var.mode == "controlplanelb" ? [1] : []
+    for_each = var.mode == "ingresslb" ? [1] : []
     content {
       port_specification = "USE_SERVING_PORT"
     }
   }
 
   dynamic "https_health_check" {
-    for_each = var.mode == "ingresslb" ? [1] : []
+    for_each = var.mode == "controlplanelb" ? [1] : []
     content {
       request_path = var.health_check_path
       port         = var.health_check_port
