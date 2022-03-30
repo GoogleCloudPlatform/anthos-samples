@@ -42,7 +42,7 @@ resource "google_compute_network_endpoint" "lb-network-endpoint" {
   ip_address = each.value.ip
 }
 
-resource "google_compute_health_check" "lb-l4-health-check" {
+resource "google_compute_health_check" "lb-health-check" {
   name    = "${var.name_prefix}-lb-health-check"
   project = var.project
 
@@ -63,14 +63,10 @@ resource "google_compute_health_check" "lb-l4-health-check" {
 }
 
 resource "google_compute_backend_service" "lb-backend" {
-  name     = "${var.name_prefix}-lb-backend"
-  project  = var.project
-  protocol = var.backend_protocol
-  health_checks = [
-    var.mode == "controlplanelb" ?
-    google_compute_https_health_check.lb-l7-health-check[0].id :
-    google_compute_health_check.lb-l4-health-check[0].id
-  ]
+  name          = "${var.name_prefix}-lb-backend"
+  project       = var.project
+  protocol      = var.backend_protocol
+  health_checks = google_compute_health_check.lb-health-check.id
 
   dynamic "backend" {
     for_each = var.mode == "controlplanelb" ? [1] : []
