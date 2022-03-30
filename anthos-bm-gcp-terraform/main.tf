@@ -181,7 +181,7 @@ module "configure_controlplane_lb" {
     module.worker_vm_hosts
   ]
   mode                      = "controlplanelb"
-  project                   = var.project
+  project                   = var.project_id
   region                    = var.region
   zone                      = var.zone
   name_prefix               = "abm-cp"
@@ -211,7 +211,7 @@ module "configure_ingress_lb" {
     module.worker_vm_hosts
   ]
   mode                  = "ingresslb"
-  project               = var.project
+  project               = var.project_id
   region                = var.region
   zone                  = var.zone
   name_prefix           = "abm-ing"
@@ -253,8 +253,8 @@ resource "local_file" "cluster_yaml_manuallb" {
     projectId       = var.project_id,
     controlPlaneIps = local.controlplane_internal_ips,
     workerNodeIps   = local.worker_internal_ips,
-    controlPlaneVIP = module.configure_controlplane_lb.public_ip,
-    ingressVIP      = module.configure_ingress_lb.public_ip
+    # controlPlaneVIP = module.configure_controlplane_lb.public_ip,
+    # ingressVIP      = module.configure_ingress_lb.public_ip
   })
 }
 
