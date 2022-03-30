@@ -49,7 +49,7 @@ variable "network" {
 }
 
 variable "lb_endpoint_instances" {
-  type    = [object({ name = string, port = number, ip = string })]
+  type    = list(object({ name = string, port = number, ip = string }))
   default = []
 }
 
@@ -73,7 +73,7 @@ variable "backend_protocol" {
 }
 
 variable "forwarding_rule_ports" {
-  type    = [number]
+  type    = list(number)
   default = [443, 80]
 }
 
@@ -84,11 +84,11 @@ variable "create_firewall_rule" {
 }
 
 variable "firewall_rule_allow_ports" {
-  type    = [number]
+  type    = list(number)
   default = [443, 80]
 }
 
 variable "firewall_rule_target_tags" {
-  type    = [string]
+  type    = list(string)
   default = ["http-server", "https-server"]
 }
