@@ -115,17 +115,3 @@ resource "google_compute_global_forwarding_rule" "lb-forwarding-rule" {
   ip_address  = module.public_ip.ips[var.ip_name].id
   target      = var.mode == "controlplanelb" ? google_compute_target_tcp_proxy.lb-target-tcp-proxy[0].id : google_compute_target_http_proxy.lb-target-http-proxy[0].id
 }
-
-resource "google_compute_firewall" "lb-firewall-rule" {
-  count         = var.create_firewall_rule ? 1 : 0
-  name          = "${var.name_prefix}-lb-firewall-rule"
-  network       = var.network
-  source_ranges = var.firewall_rule_source_ranges
-  target_tags   = var.firewall_rule_target_tags
-  direction     = "INGRESS"
-
-  allow {
-    protocol = "tcp"
-    ports    = var.firewall_rule_allow_ports
-  }
-}

@@ -17,3 +17,7 @@
 output "public_ip" {
   value = module.public_ip.ips[var.ip_name].address
 }
+
+output "neg_name" {
+  value = google_compute_network_endpoint_group.lb-neg.name
+}

@@ -27,8 +27,59 @@ cp "$DIR/$CLUSTER_ID".yaml "$DIR/bmctl-workspace/$CLUSTER_ID"
 # create the Anthos bare metal cluster
 bmctl create cluster -c "$CLUSTER_ID"
 
+KUBECONFIG_PATH="$DIR/bmctl-workspace/$CLUSTER_ID/$CLUSTER_ID-kubeconfig"
 echo "Anthos on bare metal installation complete!"
-echo "Run [export KUBECONFIG=$DIR/bmctl-workspace/$CLUSTER_ID/$CLUSTER_ID-kubeconfig] to set the kubeconfig"
+echo "Run [export KUBECONFIG=$KUBECONFIG_PATH] to set the kubeconfig"
 echo "Run the [$DIR/login.sh] script to generate a token that you can use to login to the cluster from the Google Cloud Console"
+
+echo "Configuring the istio ingress for public access..."
+
+# cead the necessary variables from the init.vars file
+ZONE=$(cut -d "=" -f2- <<< "$(grep < init.vars ZONE)")
+CONTROLPLAN_VM_NAMES=$(cut -d "=" -f2- <<< "$(grep < init.vars CONTROLPLAN_VM_NAMES)")
+INGRESS_LB_IP=$(cut -d "=" -f2- <<< "$(grep < init.vars INGRESS_LB_IP)")
+INGRESS_NEG=$(cut -d "=" -f2- <<< "$(grep < init.vars INGRESS_NEG)")
+FIREWALL_NAME=$(cut -d "=" -f2- <<< "$(grep < init.vars FIREWALL_NAME)")
+FIREWALL_PORTS=$(cut -d "=" -f2- <<< "$(grep < init.vars FIREWALL_PORTS)")
+FIREWALL_PORTS="$FIREWALL_PORTS,tcp:$NODEPORT"
+
+# retrieve the NodePort for http connections on the istio-ingress service
+NODEPORT=$(kubectl \
+    --kubeconfig $KUBECONFIG_PATH \
+    --namespace gke-system get service/istio-ingress \
+    --output jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
+
+# create a patch file to update the istio-ingress service with the LB IP
+cat <<EOF > /tmp/ingress-patch.yaml
+spec:
+  externalIPs:
+    - ${INGRESS_LB_IP}
+EOF
+
+# update the istio-ingress service with the patch, so it has the external IP
+kubectl apply --kubeconfig "$KUBECONFIG_PATH" -f /tmp/ingress-patch.yaml
+
+# deploy the Point of Sale application manifest found in the anthos-samples repo
+kubectl apply \
+    --kubeconfig "$KUBECONFIG_PATH" \
+    -f https://raw.githubusercontent.com/GoogleCloudPlatform/anthos-samples/main/anthos-bm-gcp-terraform/resources/manifests/point-of-sales.yaml
+
+# create an ingress to route traffic to the api-server of the Point of Sale app
+kubectl apply \
+    --kubeconfig "$KUBECONFIG_PATH" \
+    -f https://raw.githubusercontent.com/GoogleCloudPlatform/anthos-samples/main/anthos-bm-gcp-terraform/resources/manifests/pos-ingress.yaml
+
+# update the ingress loadbalancer's network-endpoint-group to include the
+# controlplane node IPs and NodePorts
+for host in ${CONTROLPLAN_VM_NAMES//|/ }
+do
+    echo "Adding network endpoint [instance=$host,port=$NODEPORT] to NEG group [$INGRESS_NEG]"
+    gcloud compute network-endpoint-groups update ${INGRESS_NEG} \
+        --zone=${ZONE} \
+        --add-endpoint "instance=$host,port=$NODEPORT"
+done
+
+# update the firewall to include the http NodePort of the istio-ingress service
+gcloud compute firewall-rules update $FIREWALL_NAME --allow=$FIREWALL_PORTS
 
 # [END anthosbaremetal_resources_install_abm]

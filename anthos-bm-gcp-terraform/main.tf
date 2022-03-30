@@ -27,6 +27,7 @@ locals {
   controlplane_internal_ips           = [for vm in module.controlplane_vm_hosts.vm_info : vm.internalIp]
   worker_internal_ips                 = [for vm in module.worker_vm_hosts.vm_info : vm.internalIp]
   admin_vm_hostnames                  = [for vm in module.admin_vm_hosts.vm_info : vm.hostname]
+  controlplane_vm_hostnames           = [for vm in module.controlplane_vm_hosts.vm_info : vm.hostname]
   vm_vxlan_ip                         = { for idx, vmName in local.vm_names : vmName => format("10.200.0.%d", idx + 2) }
   vmHostnameToVmName                  = { for vmName in local.vm_names : "${vmName}-001" => vmName }
   public_key_file_path_template       = "${var.resources_path}/.temp/%s/ssh-key.pub"
@@ -40,10 +41,14 @@ locals {
   init_check_script                   = "${var.resources_path}/run_initialization_checks.sh"
   install_abm_script                  = "${var.resources_path}/install_abm.sh"
   login_script                        = "${var.resources_path}/login.sh"
+  firewall_rule_name                  = "abm-allow-lb-traffic-rule"
+  firewall_rule_ports                 = [6444, 443]
+  firewall_rule_port_str              = join(",", [for port in local.firewall_rule_ports : "tcp:${port}"])
   vm_hostnames_str                    = join("|", local.vm_hostnames)
+  controlplan_vm_hostnames_str        = join("|", local.controlplane_vm_hostnames)
   vm_hostnames = concat(
     local.admin_vm_hostnames,
-    [for vm in module.controlplane_vm_hosts.vm_info : vm.hostname],
+    local.controlplane_vm_hostnames,
     [for vm in module.worker_vm_hosts.vm_info : vm.hostname]
   )
   vm_internal_ips = join("|", concat(
@@ -180,19 +185,17 @@ module "configure_controlplane_lb" {
     module.controlplane_vm_hosts,
     module.worker_vm_hosts
   ]
-  mode                      = "controlplanelb"
-  project                   = var.project_id
-  region                    = var.region
-  zone                      = var.zone
-  name_prefix               = "abm-cp"
-  ip_name                   = "abm-cp-public-ip"
-  health_check_path         = "/readyz"
-  health_check_port         = 6444
-  backend_protocol          = "TCP"
-  forwarding_rule_ports     = [443]
-  create_firewall_rule      = true
-  firewall_rule_target_tags = var.tags
-  firewall_rule_allow_ports = [6444, 443]
+  mode                  = "controlplanelb"
+  project               = var.project_id
+  region                = var.region
+  zone                  = var.zone
+  name_prefix           = "abm-cp"
+  ip_name               = "abm-cp-public-ip"
+  health_check_path     = "/readyz"
+  health_check_port     = 6444
+  backend_protocol      = "TCP"
+  forwarding_rule_ports = [443]
+  create_firewall_rule  = true
   lb_endpoint_instances = [
     for vm in module.controlplane_vm_hosts.vm_info : {
       name = vm.hostname
@@ -218,6 +221,19 @@ module "configure_ingress_lb" {
   ip_name               = "abm-ing-public-ip"
   backend_protocol      = "HTTP"
   forwarding_rule_ports = [80]
+}
+
+resource "google_compute_firewall" "lb-firewall-rule" {
+  name          = local.firewall_rule_name
+  network       = var.network
+  target_tags   = var.tags
+  source_ranges = ["0.0.0.0/0"]
+  direction     = "INGRESS"
+
+  allow {
+    protocol = "tcp"
+    ports    = local.firewall_rule_ports
+  }
 }
 
 // Generate the Anthos bare metal cluster yaml file using the template for
@@ -266,14 +282,19 @@ resource "local_file" "init_args_file" {
   for_each = toset(local.vm_hostnames)
   filename = format(local.init_script_vars_file_path_template, each.value)
   content = templatefile(local.init_script_vars_file, {
-    zone           = var.zone,
-    clusterId      = var.abm_cluster_id,
-    isAdminVm      = contains(local.admin_vm_hostnames, each.value),
-    vxLanIp        = local.vm_vxlan_ip[local.vmHostnameToVmName[each.value]],
-    serviceAccount = var.anthos_service_account_name,
-    hostnames      = local.vm_hostnames_str,
-    vmInternalIps  = local.vm_internal_ips,
-    logFile        = local.init_script_logfile_name
+    zone             = var.zone,
+    clusterId        = var.abm_cluster_id,
+    isAdminVm        = contains(local.admin_vm_hostnames, each.value),
+    vxLanIp          = local.vm_vxlan_ip[local.vmHostnameToVmName[each.value]],
+    serviceAccount   = var.anthos_service_account_name,
+    hostnames        = local.vm_hostnames_str,
+    controlplaneVms  = local.controlplan_vm_hostnames_str,
+    vmInternalIps    = local.vm_internal_ips,
+    logFile          = local.init_script_logfile_name
+    firewallRuleName = local.firewall_rule_name
+    firewallPorts    = local.firewall_rule_port_str
+    ingressNeg       = module.configure_ingress_lb[0].neg_name
+    ingressLbIp      = module.configure_ingress_lb[0].public_ip
   })
 }
 
