@@ -52,9 +52,19 @@ output "installation_check" {
 }
 
 output "controlplane_ip" {
-  value = local.contorlplane_lb_ip
+  description = <<EOF
+    You may access the control plane nodes of the Anthos on bare metal cluster
+    by accessing this IP address. You need to copy the kubeconfig file for the
+    cluster from the admin workstation [${local.admin_vm_hostnames}] to access
+    using the kubectl CLI.
+  EOF
+  value = var.mode == "manuallb" ? local.contorlplane_lb_ip : null
 }
 
 output "ingress_ip" {
-  value = local.ingress_lb_ip
+  description = <<EOF
+    You may access the application deployed in the Anthos on bare metal cluster
+    by accessing this IP address
+  EOF
+  value       = var.mode == "manuallb" ? local.ingress_lb_ip : null
 }
