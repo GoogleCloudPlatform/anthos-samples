@@ -23,6 +23,7 @@ variable "is_global" {
 variable "region" {
   description = "Region where the IP addresses are to be created in"
   type        = string
+  default     = "us-central1"
 }
 
 variable "ip_names" {
