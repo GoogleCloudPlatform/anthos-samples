@@ -66,7 +66,7 @@ resource "google_compute_backend_service" "lb-backend" {
   name          = "${var.name_prefix}-lb-backend"
   project       = var.project
   protocol      = var.backend_protocol
-  health_checks = google_compute_health_check.lb-health-check.id
+  health_checks = [google_compute_health_check.lb-health-check.id]
 
   dynamic "backend" {
     for_each = var.mode == "controlplanelb" ? [1] : []
