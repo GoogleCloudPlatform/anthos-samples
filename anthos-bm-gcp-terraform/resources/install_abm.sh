@@ -41,13 +41,13 @@ INGRESS_LB_IP=$(cut -d "=" -f2- <<< "$(grep < init.vars INGRESS_LB_IP)")
 INGRESS_NEG=$(cut -d "=" -f2- <<< "$(grep < init.vars INGRESS_NEG)")
 FIREWALL_NAME=$(cut -d "=" -f2- <<< "$(grep < init.vars FIREWALL_NAME)")
 FIREWALL_PORTS=$(cut -d "=" -f2- <<< "$(grep < init.vars FIREWALL_PORTS)")
-FIREWALL_PORTS="$FIREWALL_PORTS,tcp:$NODEPORT"
 
 # retrieve the NodePort for http connections on the istio-ingress service
 NODEPORT=$(kubectl \
     --kubeconfig $KUBECONFIG_PATH \
     --namespace gke-system get service/istio-ingress \
     --output jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
+FIREWALL_PORTS="$FIREWALL_PORTS,tcp:$NODEPORT"
 
 # create a patch file to update the istio-ingress service with the LB IP
 cat <<EOF > /tmp/ingress-patch.yaml
@@ -55,9 +55,13 @@ spec:
   externalIPs:
     - ${INGRESS_LB_IP}
 EOF
+# --namespace ${INGRESS_NAMESPACE} patch service/istio-ingress --patch "$(cat ${patch_file})
 
 # update the istio-ingress service with the patch, so it has the external IP
-kubectl apply --kubeconfig "$KUBECONFIG_PATH" -f /tmp/ingress-patch.yaml
+kubectl patch \
+    --kubeconfig "$KUBECONFIG_PATH" \
+    --namespace gke-system service/istio-ingress \
+    --patch-file /tmp/ingress-patch.yaml
 
 # deploy the Point of Sale application manifest found in the anthos-samples repo
 kubectl apply \
