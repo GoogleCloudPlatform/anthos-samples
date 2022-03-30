@@ -33,7 +33,6 @@ resource "google_compute_network_endpoint" "lb-network-endpoint" {
   zone                   = var.zone
   network_endpoint_group = google_compute_network_endpoint_group.lb-neg.name
 
-  #   for_each   = var.lb_endpoint_instances
   for_each = {
     for index, vm in var.lb_endpoint_instances : vm.name => vm
   }
