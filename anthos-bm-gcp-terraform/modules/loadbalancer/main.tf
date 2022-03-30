@@ -42,21 +42,23 @@ resource "google_compute_network_endpoint" "lb-network-endpoint" {
   ip_address = each.value.ip
 }
 
-resource "google_compute_https_health_check" "lb-l7-health-check" {
-  count        = var.mode == "controlplanelb" ? 1 : 0
-  name         = "${var.name_prefix}-lb-health-check"
-  project      = var.project
-  request_path = var.health_check_path
-  port         = var.health_check_port
-}
-
 resource "google_compute_health_check" "lb-l4-health-check" {
-  count   = var.mode == "ingresslb" ? 1 : 0
   name    = "${var.name_prefix}-lb-health-check"
   project = var.project
 
-  tcp_health_check {
-    port_specification = "USE_SERVING_PORT"
+  dynamic "tcp_health_check" {
+    for_each = var.mode == "controlplanelb" ? [1] : []
+    content {
+      port_specification = "USE_SERVING_PORT"
+    }
+  }
+
+  dynamic "https_health_check" {
+    for_each = var.mode == "ingresslb" ? [1] : []
+    content {
+      request_path = var.health_check_path
+      port         = var.health_check_port
+    }
   }
 }
 
@@ -115,7 +117,7 @@ resource "google_compute_global_forwarding_rule" "lb-forwarding-rule" {
   project     = var.project
   ip_protocol = "TCP"
   port_range  = join(",", var.forwarding_rule_ports)
-  ip_address  = module.public_ip.ips[var.ip_name].address
+  ip_address  = module.public_ip.ips[var.ip_name].id
   target      = var.mode == "controlplanelb" ? google_compute_target_tcp_proxy.lb-target-tcp-proxy[0].id : google_compute_target_http_proxy.lb-target-http-proxy[0].id
 }
 
