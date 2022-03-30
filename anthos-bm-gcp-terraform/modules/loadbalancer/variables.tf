@@ -67,7 +67,7 @@ variable "backend_protocol" {
   type = string
 
   validation {
-    condition     = contains(["TCP", "HTTP"], var.mode)
+    condition     = contains(["TCP", "HTTP"], var.backend_protocol)
     error_message = "Allowed backend protocols are: TCP, HTTP."
   }
 }
