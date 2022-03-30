@@ -52,7 +52,9 @@ resource "google_compute_health_check" "lb-l4-health-check" {
   name    = "${var.name_prefix}-lb-health-check"
   project = var.project
 
-  tcp_health_check {}
+  tcp_health_check {
+    port_specification = "USE_SERVING_PORT"
+  }
 }
 
 resource "google_compute_backend_service" "lb-backend" {
