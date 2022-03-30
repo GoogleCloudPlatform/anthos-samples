@@ -46,6 +46,9 @@ locals {
   firewall_rule_port_str              = join(",", [for port in local.firewall_rule_ports : "tcp:${port}"])
   vm_hostnames_str                    = join("|", local.vm_hostnames)
   controlplan_vm_hostnames_str        = join("|", local.controlplane_vm_hostnames)
+  ingress_neg_name                    = length(module.configure_ingress_lb) != 0 ? module.configure_ingress_lb[0].neg_name : ""
+  ingress_lb_ip                       = length(module.configure_ingress_lb) != 0 ? module.configure_ingress_lb[0].public_ip : ""
+  contorlplane_lb_ip                  = length(module.configure_controlplane_lb) != 0 ? module.configure_controlplane_lb[0].public_ip : ""
   vm_hostnames = concat(
     local.admin_vm_hostnames,
     local.controlplane_vm_hostnames,
@@ -273,8 +276,8 @@ resource "local_file" "cluster_yaml_manuallb" {
     projectId       = var.project_id,
     controlPlaneIps = local.controlplane_internal_ips,
     workerNodeIps   = local.worker_internal_ips,
-    controlPlaneVIP = module.configure_controlplane_lb[0].public_ip,
-    ingressVIP      = module.configure_ingress_lb[0].public_ip
+    controlPlaneVIP = local.contorlplane_lb_ip,
+    ingressVIP      = local.ingress_lb_ip
   })
 }
 
@@ -297,8 +300,8 @@ resource "local_file" "init_args_file" {
     logFile          = local.init_script_logfile_name
     firewallRuleName = local.firewall_rule_name
     firewallPorts    = local.firewall_rule_port_str
-    ingressNeg       = module.configure_ingress_lb[0].neg_name
-    ingressLbIp      = module.configure_ingress_lb[0].public_ip
+    ingressNeg       = local.ingress_neg_name
+    ingressLbIp      = local.ingress_lb_ip
   })
 }
 
