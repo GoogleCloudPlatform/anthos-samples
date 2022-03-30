@@ -28,9 +28,11 @@ cp "$DIR/$CLUSTER_ID".yaml "$DIR/bmctl-workspace/$CLUSTER_ID"
 bmctl create cluster -c "$CLUSTER_ID"
 
 KUBECONFIG_PATH="$DIR/bmctl-workspace/$CLUSTER_ID/$CLUSTER_ID-kubeconfig"
+echo ""
 echo "Anthos on bare metal installation complete!"
 echo "Run [export KUBECONFIG=$KUBECONFIG_PATH] to set the kubeconfig"
 echo "Run the [$DIR/login.sh] script to generate a token that you can use to login to the cluster from the Google Cloud Console"
+echo ""
 
 echo "Configuring the istio ingress for public access..."
 
