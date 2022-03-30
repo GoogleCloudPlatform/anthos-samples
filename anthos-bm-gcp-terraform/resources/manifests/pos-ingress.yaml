@@ -29,7 +29,7 @@ spec:
       - path: /
         pathType: Prefix
         backend:
-          service: 
+          service:
             name: api-server-svc
             port:
               number: 8080
