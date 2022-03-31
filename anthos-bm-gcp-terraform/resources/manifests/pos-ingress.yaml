@@ -14,8 +14,10 @@
 #################################################################
 # You have to have the Point-of-Sale application deployed first
 # kubectl apply -f \
-#   https://raw.githubusercontent.com/GoogleCloudPlatform/anthos-samples/main/anthos-bm-gcp-terraform/resources/manifests/point-of-sales.yaml
+#   https://raw.githubusercontent.com/GoogleCloudPlatform/anthos-samples/main/anthos-bm-gcp-terraform/resources/manifests/point-of-sale.yaml
 #################################################################
+
+# [START anthosbaremetal_manifests_pos_ingress_ingress_pos_ingress]
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -27,7 +29,8 @@ spec:
       - path: /
         pathType: Prefix
         backend:
-          service: 
+          service:
             name: api-server-svc
             port:
               number: 8080
+# [END anthosbaremetal_manifests_pos_ingress_ingress_pos_ingress]
