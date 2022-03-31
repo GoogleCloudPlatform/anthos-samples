@@ -57,7 +57,7 @@ output "controlplane_ip" {
     by accessing this IP address. You need to copy the kubeconfig file for the
     cluster from the admin workstation to access using the kubectl CLI.
   EOF
-  value       = var.mode == "manuallb" ? local.contorlplane_lb_ip : null
+  value       = var.mode == "manuallb" ? module.configure_controlplane_lb[0].public_ip : null
 }
 
 output "ingress_ip" {
@@ -65,5 +65,5 @@ output "ingress_ip" {
     You may access the application deployed in the Anthos on bare metal cluster
     by accessing this IP address
   EOF
-  value       = var.mode == "manuallb" ? local.ingress_lb_ip : null
+  value       = var.mode == "manuallb" ? module.configure_ingress_lb[0].public_ip : null
 }
