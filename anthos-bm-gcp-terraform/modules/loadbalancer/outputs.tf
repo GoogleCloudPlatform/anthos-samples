@@ -15,9 +15,14 @@
  */
 
 output "public_ip" {
-  value = module.public_ip.ips[var.ip_name].address
+  description = "The external ip that can be used to reach the loadbalancer that was created"
+  value       = module.public_ip.ips[var.ip_name].address
 }
 
 output "neg_name" {
-  value = google_compute_network_endpoint_group.lb-neg.name
+  description = <<EOF
+        The name of the network endpoint group (https://cloud.google.com/load-balancing/docs/negs#zonal-neg)
+        that was created as part of the load balancer setup.
+    EOF
+  value       = google_compute_network_endpoint_group.lb-neg.name
 }
