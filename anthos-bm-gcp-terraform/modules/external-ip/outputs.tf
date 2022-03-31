@@ -20,7 +20,6 @@ output "ips" {
     which has the VM hostname as the key and an object as the value. The object
     contains the IP address, tier and region.
   EOF
-<<<<<<< HEAD
   value = var.is_global ? {
     for ipName, details in google_compute_global_address.global_external_ip_address :
     ipName => ({
@@ -31,11 +30,6 @@ output "ips" {
     for ipName, details in google_compute_address.external_ip_address :
     ipName => ({
       id      = details.self_link
-=======
-  value = {
-    for vmName, details in google_compute_address.external_ip_address :
-    vmName => ({
->>>>>>> main
       region  = details.region
       tier    = details.network_tier
       address = details.address
