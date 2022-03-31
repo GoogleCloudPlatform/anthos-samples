@@ -68,7 +68,7 @@ kubectl patch \
 # deploy the Point of Sale application manifest found in the anthos-samples repo
 kubectl apply \
     --kubeconfig "$KUBECONFIG_PATH" \
-    -f https://raw.githubusercontent.com/GoogleCloudPlatform/anthos-samples/main/anthos-bm-gcp-terraform/resources/manifests/point-of-sales.yaml
+    -f https://raw.githubusercontent.com/GoogleCloudPlatform/anthos-samples/main/anthos-bm-gcp-terraform/resources/manifests/point-of-sale.yaml
 
 # create an ingress to route traffic to the api-server of the Point of Sale app
 kubectl apply \
