@@ -10,4 +10,4 @@
 /aws-logging-monitoring/          @GoogleCloudPlatform/onyx-gke-observability
 /attached-logging-monitoring/     @GoogleCloudPlatform/onyx-gke-observability
 /anthos-multi-cloud/		      @GoogleCloudPlatform/anthos-multicloud
-/.github/                         @googleapis/cdpe-devplat
+/.github/                         @GoogleCloudPlatform/cdpe-devplat
