@@ -178,7 +178,6 @@ variable "gce_vm_service_account" {
 }
 
 variable "mode" {
-  type        = string
   description = <<EOF
     Indication of the execution mode. By default the terraform execution will end
     after setting up the GCE VMs where the Anthos bare metal clusters can be deployed.
@@ -189,6 +188,7 @@ variable "mode" {
     
     **manuallb:** similar to 'install' mode but Anthos on bare metal is installed with ManualLB mode.
   EOF
+  type        = string
   default     = "setup"
 
   validation {

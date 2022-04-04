@@ -185,7 +185,7 @@ module "configure_controlplane_lb" {
     module.controlplane_vm_hosts,
     module.worker_vm_hosts
   ]
-  mode                  = "controlplanelb"
+  type                  = "controlplanelb"
   project               = var.project_id
   region                = var.region
   zone                  = var.zone
@@ -213,7 +213,7 @@ module "configure_ingress_lb" {
     module.controlplane_vm_hosts,
     module.worker_vm_hosts
   ]
-  mode                  = "ingresslb"
+  type                  = "ingresslb"
   project               = var.project_id
   region                = var.region
   zone                  = var.zone

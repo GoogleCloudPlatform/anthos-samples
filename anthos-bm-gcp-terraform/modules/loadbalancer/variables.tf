@@ -14,58 +14,87 @@
  * limitations under the License.
  */
 
-variable "mode" {
-  type = string
+variable "type" {
+  description = <<EOF
+    Indication of the type of loadbalancer you want to create; whether it is a
+    L4 loadbalancer for the control plane of the cluster or a L7 loadbalancer
+    for the Ingress controller. Supported values are: controlplanelb, ingresslb
+  EOF
+  type        = string
 
   validation {
-    condition     = contains(["controlplanelb", "ingresslb"], var.mode)
-    error_message = "Allowed execution modes are: controlplanelb, ingresslb."
+    condition     = contains(["controlplanelb", "ingresslb"], var.type)
+    error_message = "Allowed load balancer types are: controlplanelb, ingresslb."
   }
 }
 
 variable "project" {
-  type = string
+  description = "Unique identifer of the Google Cloud Project that is to be used"
+  type        = string
 }
 
 variable "region" {
-  type = string
+  description = "Google Cloud Region in which the loadbalancer resources should be provisioned"
+  type        = string
 }
 
 variable "zone" {
-  type = string
+  description = "Zone within the selected Google Cloud Region that is to be used"
+  type        = string
 }
 
 variable "name_prefix" {
-  type = string
+  description = "Prefix to associate to the names of the loadbalancer resources created by this module"
+  type        = string
 }
 
 variable "ip_name" {
-  type = string
+  description = "Name to be given to the external IP that is created to expose the loadbalancer"
+  type        = string
 }
 
 variable "network" {
-  type    = string
-  default = "default"
+  description = "VPC network to which the loadbalancer resources are connected to"
+  type        = string
+  default     = "default"
 }
 
 variable "lb_endpoint_instances" {
-  type    = list(object({ name = string, port = number, ip = string }))
-  default = []
+  description = <<EOF
+  Details (name, port, ip) of the backend instances that the loadbalancer will
+  distribute traffic to
+  EOF
+  type        = list(object({ name = string, port = number, ip = string }))
+  default     = []
 }
 
 variable "health_check_path" {
-  type    = string
-  default = "/readyz"
+  description = <<EOF
+  URL context to use when pinging the backend instances (of the loadbalancer) to
+  do health checks. Health checks are used to verify if the instance is
+  available to receive loadbalanced traffic
+  EOF
+  type        = string
+  default     = "/readyz"
 }
 
 variable "health_check_port" {
-  type    = number
-  default = 6444
+  description = <<EOF
+  Network port on the backend instance to use when pinging to do health checks.
+  Health checks are used to verify if the instance is available to receive
+  loadbalanced traffic
+  EOF
+  type        = number
+  default     = 6444
 }
 
 variable "backend_protocol" {
-  type = string
-
+  description = <<EOF
+  The type of network traffic that the loadbalancer is expected to load balance.
+  This attribute defines the type of loadbalancer that is created.
+  https://cloud.google.com/load-balancing/docs/load-balancing-overview#summary-of-google-cloud-load-balancers
+  EOF
+  type        = string
   validation {
     condition     = contains(["TCP", "HTTP"], var.backend_protocol)
     error_message = "Allowed backend protocols are: TCP, HTTP."
@@ -73,11 +102,11 @@ variable "backend_protocol" {
 }
 
 variable "forwarding_rule_ports" {
-  type    = list(number)
-  default = [443, 80]
-}
-
-variable "create_firewall_rule" {
-  type    = bool
-  default = false
+  description = <<EOF
+  List of ports on the external IP address (created by this module) that should
+  have a forwarding rule associated to them. The forwarding rule configures
+  traffic to these ports on the external IP to be forwarded to the loadbalancer.
+  EOF
+  type        = list(number)
+  default     = [443, 80]
 }

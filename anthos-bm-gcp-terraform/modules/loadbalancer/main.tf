@@ -46,14 +46,14 @@ resource "google_compute_health_check" "lb-health-check" {
   project = var.project
 
   dynamic "tcp_health_check" {
-    for_each = var.mode == "ingresslb" ? [1] : []
+    for_each = var.type == "ingresslb" ? [1] : []
     content {
       port_specification = "USE_SERVING_PORT"
     }
   }
 
   dynamic "https_health_check" {
-    for_each = var.mode == "controlplanelb" ? [1] : []
+    for_each = var.type == "controlplanelb" ? [1] : []
     content {
       request_path = var.health_check_path
       port         = var.health_check_port
@@ -68,7 +68,7 @@ resource "google_compute_backend_service" "lb-backend" {
   health_checks = [google_compute_health_check.lb-health-check.id]
 
   dynamic "backend" {
-    for_each = var.mode == "controlplanelb" ? [1] : []
+    for_each = var.type == "controlplanelb" ? [1] : []
     content {
       group           = google_compute_network_endpoint_group.lb-neg.id
       balancing_mode  = "CONNECTION"
@@ -77,7 +77,7 @@ resource "google_compute_backend_service" "lb-backend" {
   }
 
   dynamic "backend" {
-    for_each = var.mode == "ingresslb" ? [1] : []
+    for_each = var.type == "ingresslb" ? [1] : []
     content {
       group          = google_compute_network_endpoint_group.lb-neg.id
       balancing_mode = "RATE"
@@ -87,21 +87,21 @@ resource "google_compute_backend_service" "lb-backend" {
 }
 
 resource "google_compute_url_map" "ingress-lb-urlmap" {
-  count           = var.mode == "ingresslb" ? 1 : 0
+  count           = var.type == "ingresslb" ? 1 : 0
   name            = "abm-ingress-lb-urlmap"
   project         = var.project
   default_service = google_compute_backend_service.lb-backend.id
 }
 
 resource "google_compute_target_http_proxy" "lb-target-http-proxy" {
-  count   = var.mode == "ingresslb" ? 1 : 0
+  count   = var.type == "ingresslb" ? 1 : 0
   name    = "${var.name_prefix}-lb-http-proxy"
   project = var.project
   url_map = google_compute_url_map.ingress-lb-urlmap[0].id
 }
 
 resource "google_compute_target_tcp_proxy" "lb-target-tcp-proxy" {
-  count           = var.mode == "controlplanelb" ? 1 : 0
+  count           = var.type == "controlplanelb" ? 1 : 0
   name            = "${var.name_prefix}-lb-tcp-proxy"
   project         = var.project
   backend_service = google_compute_backend_service.lb-backend.id
@@ -113,5 +113,5 @@ resource "google_compute_global_forwarding_rule" "lb-forwarding-rule" {
   ip_protocol = "TCP"
   port_range  = join(",", var.forwarding_rule_ports)
   ip_address  = module.public_ip.ips[var.ip_name].id
-  target      = var.mode == "controlplanelb" ? google_compute_target_tcp_proxy.lb-target-tcp-proxy[0].id : google_compute_target_http_proxy.lb-target-http-proxy[0].id
+  target      = var.type == "controlplanelb" ? google_compute_target_tcp_proxy.lb-target-tcp-proxy[0].id : google_compute_target_http_proxy.lb-target-http-proxy[0].id
 }
