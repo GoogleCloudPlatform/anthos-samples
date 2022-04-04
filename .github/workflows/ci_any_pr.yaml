@@ -57,7 +57,9 @@ jobs:
         tf-sample: [
           'anthos-bm-gcp-terraform',
           'anthos-bm-openstack-terraform',
-          'anthos-multi-cloud']
+          'anthos-multi-cloud/AWS',
+          'anthos-multi-cloud/Azure'
+        ]
     steps:
       - uses: actions/checkout@v3
         with:
