@@ -15,5 +15,6 @@
  */
 
 output "admin_ws_public_ip" {
+  description = "Public IP address of the admin workstation VM in the Openstack deployment"
   value = openstack_networking_floatingip_v2.abm_ws_floatingip.address
 }
