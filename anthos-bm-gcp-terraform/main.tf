@@ -195,7 +195,6 @@ module "configure_controlplane_lb" {
   health_check_port     = 6444
   backend_protocol      = "TCP"
   forwarding_rule_ports = [443]
-  create_firewall_rule  = true
   lb_endpoint_instances = [
     for vm in module.controlplane_vm_hosts.vm_info : {
       name = vm.hostname
