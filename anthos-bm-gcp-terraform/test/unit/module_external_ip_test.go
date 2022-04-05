@@ -43,8 +43,9 @@ func TestUnit_ExternalIpsModule(goTester *testing.T) {
 		TerraformDir: moduleDir,
 		// Variables to pass to our Terraform code using -var options
 		Vars: map[string]interface{}{
-			"region":   region,
-			"ip_names": expectedIPNames,
+			"region":    region,
+			"ip_names":  expectedIPNames,
+			"is_global": false,
 		},
 		PlanFilePath: tfPlanOutput,
 	})
