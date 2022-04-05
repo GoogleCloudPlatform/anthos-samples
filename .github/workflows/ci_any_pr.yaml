@@ -121,7 +121,7 @@ jobs:
       with:
         config-file: .github/terraform-docs/main.yaml
         working-dir: ${{ matrix.terraform-dir }}
-        output-file: docs/variable.md
+        output-file: docs/variables.md
         output-method: inject
         git-push: "true"
         git-push-sign-off: "true"
