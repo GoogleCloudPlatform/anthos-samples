@@ -145,8 +145,15 @@ func TestUnit_MainScript(goTester *testing.T) {
 	// validate the plan has the expected resources and modules
 	instanceCountMapInTest := tfVarsMap["instance_count"].(map[string]int)
 	numberOfHostsForInitialization :=
-		instanceCountMapInTest["controlplane"] + instanceCountMapInTest["worker"] + 1 // 1 for the admin vm
-	rootResourceCount := numberOfHostsForInitialization + 1 // 1 for the cluster_yaml created from template
+		instanceCountMapInTest["controlplane"] +
+			instanceCountMapInTest["worker"] +
+			1 // 1 for the admin vm
+
+	rootResourceCount :=
+		numberOfHostsForInitialization +
+			1 + // 1 for the cluster_yaml created from template
+			1 // 1 for google_compute_firewall resource
+
 	assert.Len(
 		goTester,
 		terraformPlan.PlannedValues.RootModule.Resources,

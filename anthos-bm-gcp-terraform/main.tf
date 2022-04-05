@@ -296,8 +296,8 @@ resource "local_file" "init_args_file" {
     logFile          = local.init_script_logfile_name
     firewallRuleName = local.firewall_rule_name
     firewallPorts    = local.firewall_rule_port_str
-    ingressNeg       = module.configure_ingress_lb[0].neg_name
-    ingressLbIp      = module.configure_ingress_lb[0].public_ip
+    ingressNeg       = var.mode == "manuallb" ? module.configure_ingress_lb[0].neg_name : ""
+    ingressLbIp      = var.mode == "manuallb" ? module.configure_ingress_lb[0].public_ip : ""
   })
 }
 

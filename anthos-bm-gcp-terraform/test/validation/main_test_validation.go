@@ -37,13 +37,18 @@ func ValidateRootResources(
 	vmHostnames := make(map[string]interface{})
 	envVarFilenames := make(map[string]interface{})
 	for idx, rootResource := range terraformPlan.PlannedValues.RootModule.Resources {
-		assert.Equal(
+		assert.Contains(
 			goTester,
-			"local_file",
+			[]string{"local_file", "google_compute_firewall"},
 			rootResource.Type,
 			fmt.Sprintf("Invalid resource type for planned_values.root_module.resources[%d]", idx),
 		)
-		if rootResource.Name == "cluster_yaml" {
+
+		if rootResource.Type == "google_compute_firewall" {
+			continue // nothing to check
+		}
+
+		if rootResource.Name == "cluster_yaml_bundledlb" {
 			ValidateYaml(goTester, instanceCountMapInTest, rootResource, projectID, abmClusterID)
 		} else {
 			vmHostnames[rootResource.Values.Index] = nil
