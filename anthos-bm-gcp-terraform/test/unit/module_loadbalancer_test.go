@@ -37,7 +37,7 @@ func TestUnit_LoadbalancerModule_ControlPlane(goTester *testing.T) {
 	zone := "test_zone"
 	loadbalancerType := "controlplanelb"
 	namePrefix := "cp-loadbalancer"
-	externalIpName := "cp-lb-externalip"
+	externalIPName := "cp-lb-externalip"
 	network := "default"
 	healthCheckPath := "/health_check"
 	healthCheckPort := util.GetRandomPort()
@@ -55,11 +55,11 @@ func TestUnit_LoadbalancerModule_ControlPlane(goTester *testing.T) {
 	randomVMPortNumTwo := strconv.Itoa(util.GetRandomPort())
 	randomVMPortNumThree := strconv.Itoa(util.GetRandomPort())
 
-	expectedVmHostNames := []string{
+	expectedVMHostNames := []string{
 		randomVMHostNameOne, randomVMHostNameTwo, randomVMHostNameThree}
-	expectedVmIps := []string{
+	expectedVMIps := []string{
 		randomVMIpNumOne, randomVMIpNumTwo, randomVMIpNumThree}
-	expectedVmPorts := []string{
+	expectedVMPorts := []string{
 		randomVMPortNumOne, randomVMPortNumTwo, randomVMPortNumThree}
 
 	lbEndpointInstances := []interface{}{
@@ -91,7 +91,7 @@ func TestUnit_LoadbalancerModule_ControlPlane(goTester *testing.T) {
 		"region":                region,
 		"zone":                  zone,
 		"name_prefix":           namePrefix,
-		"ip_name":               externalIpName,
+		"ip_name":               externalIPName,
 		"network":               network,
 		"lb_endpoint_instances": lbEndpointInstances,
 		"health_check_path":     healthCheckPath,
@@ -101,9 +101,9 @@ func TestUnit_LoadbalancerModule_ControlPlane(goTester *testing.T) {
 	}
 
 	testContainer := map[string]interface{}{
-		"vmNames": expectedVmHostNames,
-		"vmIps":   expectedVmIps,
-		"vmPorts": expectedVmPorts,
+		"vmNames": expectedVMHostNames,
+		"vmIps":   expectedVMIps,
+		"vmPorts": expectedVMPorts,
 	}
 
 	tfPlanOutput := "terraform_test.tfplan"
@@ -157,7 +157,7 @@ func TestUnit_LoadbalancerModule_Ingress(goTester *testing.T) {
 	zone := "test_zone"
 	loadbalancerType := "ingresslb"
 	namePrefix := "cp-loadbalancer"
-	externalIpName := "cp-lb-externalip"
+	externalIPName := "cp-lb-externalip"
 	network := "default"
 	healthCheckPath := "/health_check"
 	healthCheckPort := util.GetRandomPort()
@@ -204,7 +204,7 @@ func TestUnit_LoadbalancerModule_Ingress(goTester *testing.T) {
 		"region":                region,
 		"zone":                  zone,
 		"name_prefix":           namePrefix,
-		"ip_name":               externalIpName,
+		"ip_name":               externalIPName,
 		"network":               network,
 		"lb_endpoint_instances": lbEndpointInstances,
 		"health_check_path":     healthCheckPath,

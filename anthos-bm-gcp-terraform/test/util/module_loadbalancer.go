@@ -26,7 +26,7 @@ type LoadBalancerPlan struct {
 // to be modified
 type LBVariables struct {
 	Type             *Variable                      `json:"type"`
-	ProjectId        *Variable                      `json:"project"`
+	ProjectID        *Variable                      `json:"project"`
 	Region           *Variable                      `json:"region"`
 	Zone             *Variable                      `json:"zone"`
 	NamePrefix       *Variable                      `json:"name_prefix"`
