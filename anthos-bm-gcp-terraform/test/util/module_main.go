@@ -49,6 +49,7 @@ type MainVariables struct {
 	SecondaryAPIs              *ListVariable `json:"secondary_apis"`
 	InstanceCount              *MapVariable  `json:"instance_count"`
 	Gpu                        *GpuVariable  `json:"gpu"`
+	Mode                       *Variable     `json:"mode"`
 }
 
 // MainPlannedValues represents the planned state of the terraform run resulting

@@ -178,6 +178,8 @@ func TestUnit_MainScript(goTester *testing.T) {
 	var serviceAccModules []util.TFModule
 	var googleAPIsModules []util.TFModule
 	var initHostsModules []util.TFModule
+	var ingressLBModule []util.TFModule
+	var controlplaneLBModule []util.TFModule
 
 	for _, childModule := range terraformPlan.PlannedValues.RootModule.ChildModules {
 		moduleAddress := childModule.ModuleAddress
@@ -191,6 +193,10 @@ func TestUnit_MainScript(goTester *testing.T) {
 			googleAPIsModules = append(googleAPIsModules, childModule)
 		} else if strings.Contains(moduleAddress, "init_hosts") {
 			initHostsModules = append(initHostsModules, childModule)
+		} else if strings.HasSuffix(moduleAddress, "configure_ingress_lb[0]") {
+			ingressLBModule = append(ingressLBModule, childModule)
+		} else if strings.HasSuffix(moduleAddress, "configure_controlplane_lb[0]") {
+			controlplaneLBModule = append(controlplaneLBModule, childModule)
 		} else {
 			goTester.Errorf("Unexpected module with address [%s] at planned_values.root_module.child_modules", moduleAddress)
 		}
@@ -225,6 +231,18 @@ func TestUnit_MainScript(goTester *testing.T) {
 		initHostsModules,
 		numberOfHostsForInitialization,
 		"Unexpected number of child modules with address type init_hosts at planned_values.root_module.child_modules",
+	)
+	assert.Len(
+		goTester,
+		ingressLBModule,
+		0,
+		"Unexpected number of child modules with address type configure_ingress_lb at planned_values.root_module.child_modules",
+	)
+	assert.Len(
+		goTester,
+		controlplaneLBModule,
+		0,
+		"Unexpected number of child modules with address type configure_controlplane_lb at planned_values.root_module.child_modules",
 	)
 
 	// validate the instance template module
