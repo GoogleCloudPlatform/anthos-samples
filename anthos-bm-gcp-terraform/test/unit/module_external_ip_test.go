@@ -69,8 +69,16 @@ func TestUnit_ExternalIpsModule(goTester *testing.T) {
 	 * util.WriteToFile(tfPlanJSON, "../../plan.json")
 	 */
 
-	// verify plan has ip_names input variable
+	// verify plan has is_global input variable added as default
 	hasVar := assert.NotNil(
+		goTester,
+		externalIPPlan.Variables.IsGlobal,
+		"Variable not found in plan: is_global",
+	)
+	util.ExitIf(hasVar, false)
+
+	// verify plan has ip_names input variable
+	hasVar = assert.NotNil(
 		goTester,
 		externalIPPlan.Variables.IPNames,
 		"Variable not found in plan: ip_names",
@@ -164,6 +172,117 @@ func TestUnit_ExternalIpsModule(goTester *testing.T) {
 			"EXTERNAL",
 			resource.Values.AddressType,
 			"AddressType used for the external ip address is incorrect",
+		)
+	}
+}
+
+func TestUnit_ExternalIpsModule_GlobalIP(goTester *testing.T) {
+	goTester.Parallel()
+
+	moduleDir := testStructure.CopyTerraformFolderToTemp(goTester, "../../", "modules/external-ip")
+	region := "test_region"
+	randomVMHostNameOne := gcp.RandomValidGcpName()
+	randomVMHostNameTwo := gcp.RandomValidGcpName()
+	randomVMHostNameThree := gcp.RandomValidGcpName()
+	expectedIPNames := []string{
+		randomVMHostNameOne, randomVMHostNameTwo, randomVMHostNameThree}
+
+	tfPlanOutput := "terraform_test.tfplan"
+	tfPlanOutputArg := fmt.Sprintf("-out=%s", tfPlanOutput)
+	tfOptions := terraform.WithDefaultRetryableErrors(goTester, &terraform.Options{
+		TerraformDir: moduleDir,
+		// Variables to pass to our Terraform code using -var options
+		Vars: map[string]interface{}{
+			"region":    region,
+			"ip_names":  expectedIPNames,
+			"is_global": true,
+		},
+		PlanFilePath: tfPlanOutput,
+	})
+
+	// Terraform init and plan only
+	terraform.Init(goTester, tfOptions)
+	terraform.RunTerraformCommand(
+		goTester,
+		tfOptions,
+		terraform.FormatArgs(tfOptions, "plan", tfPlanOutputArg)...,
+	)
+	tfPlanJSON, err := terraform.ShowE(goTester, tfOptions)
+	util.LogError(err, fmt.Sprintf("Failed to parse the plan file %s into JSON format", tfPlanOutput))
+
+	var externalIPPlan util.ExternalIPPlan
+	err = json.Unmarshal([]byte(tfPlanJSON), &externalIPPlan)
+	util.LogError(err, "Failed to parse the JSON plan into the ExternalIpPlan struct in unit/module_external_ip.go")
+
+	/**
+	 * Pro tip:
+	 * Write the json to a file using the util.WriteToFile() method to easily debug
+	 * util.WriteToFile(tfPlanJSON, "../../plan.json")
+	 */
+	util.WriteToFile(tfPlanJSON, "../../plan.json")
+	// verify plan has is_global input variable added as default
+	hasVar := assert.NotNil(
+		goTester,
+		externalIPPlan.Variables.IsGlobal,
+		"Variable not found in plan: is_global",
+	)
+	util.ExitIf(hasVar, false)
+
+	// verify input variable is_global in plan matches
+	assert.Equal(
+		goTester,
+		"true",
+		externalIPPlan.Variables.IsGlobal.Value,
+		"Variable does not match in plan: is_global.",
+	)
+
+	// verify output variable ips in plan matches
+	hasVar = assert.NotNil(
+		goTester,
+		externalIPPlan.PlannedValues.Outputs.IPS,
+		"Variable not found in plan: region",
+	)
+	util.ExitIf(hasVar, false)
+
+	// verify the number of resources planned
+	assert.Len(
+		goTester,
+		externalIPPlan.PlannedValues.RootModule.Resources,
+		len(expectedIPNames),
+		"Resource count does not match in plan: google_compute_address.",
+	)
+
+	// verify attributes of each planned resource
+	for _, resource := range externalIPPlan.PlannedValues.RootModule.Resources {
+		assert.Equal(
+			goTester,
+			"google_compute_global_address",
+			resource.Type,
+			"Resource type does not match.",
+		)
+		assert.Equal(
+			goTester,
+			"global_external_ip_address",
+			resource.Name,
+			"Resource name does not match.",
+		)
+		assert.Contains(
+			goTester,
+			expectedIPNames,
+			resource.Values.Name,
+			"Name given for an instance of the resource does not match.",
+		)
+		assert.Equal(
+			goTester,
+			"registry.terraform.io/hashicorp/google",
+			resource.Provider,
+			"Provider name does not match.",
+		)
+		assert.Equal(
+			goTester,
+			"",
+			resource.Values.Region,
+			"Region used for the gloabl external ip address is not Nil",
 		)
 	}
 }
