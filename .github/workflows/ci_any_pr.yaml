@@ -98,7 +98,7 @@ jobs:
       with:
         config-file: .github/terraform-docs/module.yaml
         working-dir: ${{ matrix.terraform-module-dir }}
-        output-file: ${{ matrix.terraform-module-dir }}/README.md
+        output-file: README.md
         output-method: inject
         git-push: "true"
   # Generate the documentation for the main terrafrom script of the samples
@@ -120,7 +120,7 @@ jobs:
       with:
         config-file: .github/terraform-docs/main.yaml
         working-dir: ${{ matrix.terraform-dir }}
-        output-file: ${{ matrix.terraform-dir }}/docs/variable.md
+        output-file: docs/variable.md
         output-method: inject
         git-push: "true"
   # Run the Golang unit tests in any of the samples
