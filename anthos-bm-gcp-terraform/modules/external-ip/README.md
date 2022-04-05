@@ -5,7 +5,7 @@ This module creates a Google Cloud External IP using the [`google_compute_addres
 The following information is generated using the
 [`terraform-docs`](https://github.com/terraform-docs/terraform-docs)
 CLI tool. Use the commands below to re-generate this information during a
-release or when you update the variables file. 
+release or when you update the variables file.
 
 ```sh
 export VARIABLES_TF_FILE=<PATH_TO_THE_VARIABLES_FILE_FOR_MODULE>

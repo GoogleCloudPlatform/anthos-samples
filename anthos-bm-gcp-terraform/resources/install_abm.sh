@@ -46,7 +46,7 @@ FIREWALL_PORTS=$(cut -d "=" -f2- <<< "$(grep < init.vars FIREWALL_PORTS)")
 
 # retrieve the NodePort for http connections on the istio-ingress service
 NODEPORT=$(kubectl \
-    --kubeconfig $KUBECONFIG_PATH \
+    --kubeconfig "$KUBECONFIG_PATH" \
     --namespace gke-system get service/istio-ingress \
     --output jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
 FIREWALL_PORTS="$FIREWALL_PORTS,tcp:$NODEPORT"
@@ -80,12 +80,12 @@ kubectl apply \
 for host in ${CONTROLPLAN_VM_NAMES//|/ }
 do
     echo "Adding network endpoint [instance=$host,port=$NODEPORT] to NEG group [$INGRESS_NEG]"
-    gcloud compute network-endpoint-groups update ${INGRESS_NEG} \
-        --zone=${ZONE} \
+    gcloud compute network-endpoint-groups update "${INGRESS_NEG}" \
+        --zone="${ZONE}" \
         --add-endpoint "instance=$host,port=$NODEPORT"
 done
 
 # update the firewall to include the http NodePort of the istio-ingress service
-gcloud compute firewall-rules update $FIREWALL_NAME --allow=$FIREWALL_PORTS
+gcloud compute firewall-rules update "$FIREWALL_NAME" --allow="$FIREWALL_PORTS"
 
 # [END anthosbaremetal_resources_install_abm]

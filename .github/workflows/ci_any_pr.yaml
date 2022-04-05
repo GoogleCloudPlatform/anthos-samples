@@ -123,7 +123,7 @@ jobs:
         output-file: ${{ matrix.terraform-dir }}/docs/variable.md
         output-method: inject
         git-push: "true"
-  # Run the Golang unit tests in any of the samples 
+  # Run the Golang unit tests in any of the samples
   go-unit-tests:
     runs-on: [self-hosted, runner-july-21]
     needs: tf-validate
