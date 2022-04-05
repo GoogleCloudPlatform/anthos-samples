@@ -29,7 +29,7 @@ func ValidateLoadBalancerVariables(goTester *testing.T, tfPlan *util.LoadBalance
 	// verify plan has project input variable
 	hasVar := assert.NotNil(
 		goTester,
-		tfPlan.Variables.ProjectId,
+		tfPlan.Variables.ProjectID,
 		"Variable not found in plan: project",
 	)
 	util.ExitIf(hasVar, false)
@@ -125,7 +125,7 @@ func ValidateLoadBalancerVariableValues(
 	assert.Equal(
 		goTester,
 		(*vars)["project"],
-		tfPlan.Variables.ProjectId.Value,
+		tfPlan.Variables.ProjectID.Value,
 		"Variable does not match in plan: project.",
 	)
 
