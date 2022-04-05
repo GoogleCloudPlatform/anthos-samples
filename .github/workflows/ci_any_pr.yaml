@@ -101,6 +101,7 @@ jobs:
         output-file: README.md
         output-method: inject
         git-push: "true"
+        git-push-sign-off: "true"
   # Generate the documentation for the main terrafrom script of the samples
   terraform-main-docs:
     runs-on: [self-hosted, runner-july-21]
@@ -123,6 +124,7 @@ jobs:
         output-file: docs/variable.md
         output-method: inject
         git-push: "true"
+        git-push-sign-off: "true"
   # Run the Golang unit tests in any of the samples
   go-unit-tests:
     runs-on: [self-hosted, runner-july-21]
