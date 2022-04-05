@@ -58,11 +58,5 @@ type IPPlannedValues struct {
 
 // IPOutputs represents the outputs produced by the external-ip terraform module
 type IPOutputs struct {
-	IPS *IPS `json:"ips"`
-}
-
-// IPS represent the external ip information that will be created as a result of
-// running the external-ip terraform module
-type IPS struct {
-	Sensitive bool `json:"sensitive"`
+	IPS *SensitiveVariable `json:"ips"`
 }
