@@ -36,7 +36,7 @@ jobs:
 
     steps:
       - name: "Checkout code"
-        uses: actions/checkout@5126516654c75f76bca1de45dd82a3006d8890f9
+        uses: actions/checkout@add3486cc3b55d4a5e11c8045058cef96538edc7
         with:
           persist-credentials: false
 
@@ -64,6 +64,6 @@ jobs:
 
       # Upload the results to GitHub's code scanning dashboard.
       - name: "Upload to code-scanning"
-        uses: github/codeql-action/upload-sarif@935969c6f771d9f0a35efa2ae9cf7c10d9886ca3
+        uses: github/codeql-action/upload-sarif@b9bb8dd18d106b7d904ac49760af4eae81a6f49e
         with:
           sarif_file: results.sarif
