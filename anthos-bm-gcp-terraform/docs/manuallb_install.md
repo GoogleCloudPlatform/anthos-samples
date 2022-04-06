@@ -55,7 +55,20 @@ as the loadbalancer fronting the Anthos on bare metal cluster.
 
 ---
 
-### Pre-requisites
+### Sections
+  - [Complete deployment architecture](#complete-deployment-architecture)
+  - [Prerequisites](#prerequisites)
+  - [Step by step guide](#step-by-step-guide)
+  - [Verify installation](#verify-installation)
+  - [Interacting with the Baremetal cluster](#interacting-with-the-baremetal-cluster)
+    - [Controlplane / API Server](#controlplane--api-server)
+    - [Ingress Service](#ingress-service)
+    - [Interacting with the cluster via the GCP console](#interacting-with-the-cluster-via-the-gcp-console)
+  - [Cleanup](#cleanup)
+
+---
+
+### Prerequisites
 - This guide has the [same pre-requisites as the quickstart guide](/anthos-bm-gcp-terraform/README.md#pre-requisites)
 
 ### Step by step guide
@@ -128,11 +141,11 @@ Upon completion the Terraform script will print the following output to the cons
 
 ```sh
 controlplane_ip = <<EOT
-Public IP of the control plane loadbalancer: 34.111.101.76
+Public IP of the control plane loadbalancer: <GCP_EXTERNAL_IP_ADDRESS>
 
 EOT
 ingress_ip = <<EOT
-Public IP of the ingress service loadbalancer: 34.111.235.160
+Public IP of the ingress service loadbalancer: <GCP_EXTERNAL_IP_ADDRESS>
 
 EOT
 installation_check = <<EOT
