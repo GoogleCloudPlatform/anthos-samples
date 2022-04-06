@@ -92,7 +92,8 @@ jobs:
     steps:
     - uses: actions/checkout@v3
       with:
-        ref: ${{ github.event.pull_request.head.ref }}
+        ref: ${{github.event.pull_request.head.ref}}
+        repository: ${{github.event.pull_request.head.repo.full_name}}
     - name: Render terraform docs inside the docs and push changes back to PR branch
       uses: terraform-docs/gh-actions@v1.0.0
       with:
@@ -114,7 +115,8 @@ jobs:
     steps:
     - uses: actions/checkout@v3
       with:
-        ref: ${{ github.event.pull_request.head.ref }}
+        ref: ${{github.event.pull_request.head.ref}}
+        repository: ${{github.event.pull_request.head.repo.full_name}}
     - name: Render terraform docs for the main script
       uses: terraform-docs/gh-actions@v1.0.0
       with:
