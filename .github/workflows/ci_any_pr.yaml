@@ -78,6 +78,7 @@ jobs:
   # Generate the documentation for the terrafrom modules used by different samples
   terraform-module-docs:
     runs-on: [self-hosted, runner-july-21]
+    needs: [static-code-tests, tf-validate]
     strategy:
       matrix:
         # list of directories in the repo that hosts terraform modules
@@ -105,6 +106,7 @@ jobs:
   # Generate the documentation for the main terrafrom script of the samples
   terraform-main-docs:
     runs-on: [self-hosted, runner-july-21]
+    needs: [static-code-tests, tf-validate]
     strategy:
       matrix:
         # list of directories in the repo that hosts terraform modules
@@ -128,7 +130,7 @@ jobs:
   # Run the Golang unit tests in any of the samples
   go-unit-tests:
     runs-on: [self-hosted, runner-july-21]
-    needs: tf-validate
+    needs: [terraform-main-docs, terraform-module-docs]
     strategy:
       matrix:
         # list of directories in the repo that hosts Golang unit tests
