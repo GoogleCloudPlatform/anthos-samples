@@ -27,12 +27,12 @@ as the loadbalancer fronting the Anthos on bare metal cluster.
    the loadbalancer configured to front the `API Server (Controlplane)` of the
    ABM cluster. You can reach the `API Server` of your cluster via the
    `External IP Address` associated to this loadbalancer.
-   
+
 2. [**HTTP(S) Loadbalancer**](https://cloud.google.com/load-balancing/docs/https):
    this is the loadbalancer configured to front the `Ingress Service` of the ABM
    cluster. You can reach the `Kubernetes Services` of your cluster via the
    `External IP Address` associated to this loadbalancer.
- 
+
 <p align="center">
   <img src="images/gcp_lbs.png">
   <em>
@@ -224,7 +224,7 @@ You can find your cluster's `kubeconfig` file on the admin machine in the
 Since the `API Server` of the cluster is exposed via the GCP Loadbalancer, the
 `kubeconfig` file is configured to use the **Public IP Address** of the
 loadbalancer. Thus, you can copy the `kubeconfig` file to your local workstation
-and interact with the cluster using `kubectl`. 
+and interact with the cluster using `kubectl`.
 
 To verify your deployment, complete the following steps:
 
@@ -297,4 +297,3 @@ The [Logging into the Anthos bare metal cluster](login.md) explains how you can 
 ### Cleanup
 
 - Follow the [same cleanup steps as the quickstart guide](quickstart.md#cleanup).
-- 
