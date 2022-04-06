@@ -23,12 +23,12 @@ as the loadbalancer fronting the Anthos on bare metal cluster.
 ---
 
 ### This new mode of installation creates **two** new Google Cloud Loadbalancers:
-1. [TCP Loadbalancer](https://cloud.google.com/load-balancing/docs/ssl): this is
+1. [**TCP Loadbalancer**](https://cloud.google.com/load-balancing/docs/ssl): this is
    the loadbalancer configured to front the `API Server (Controlplane)` of the
    ABM cluster. You can reach the `API Server` of your cluster via the
    `External IP Address` associated to this loadbalancer.
    
-2. [HTTP(S) Loadbalancer](https://cloud.google.com/load-balancing/docs/https):
+2. [**HTTP(S) Loadbalancer**](https://cloud.google.com/load-balancing/docs/https):
    this is the loadbalancer configured to front the `Ingress Service` of the ABM
    cluster. You can reach the `Kubernetes Services` of your cluster via the
    `External IP Address` associated to this loadbalancer.
