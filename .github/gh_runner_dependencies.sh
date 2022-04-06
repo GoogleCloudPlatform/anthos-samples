@@ -44,8 +44,6 @@ git clone https://github.com/tfutils/tfenv.git ~/.tfenv
 sudo ln -s "$HOME"/.tfenv/bin/* /bin
 
 # install the terraform versions and configure it to the latest
-tfenv install 0.14.9
-tfenv install 0.15.5
 tfenv install 1.0.0
 tfenv install 1.0.1
 tfenv install 1.0.6
