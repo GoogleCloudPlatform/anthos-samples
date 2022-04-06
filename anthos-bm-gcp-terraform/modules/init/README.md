@@ -25,7 +25,7 @@ terraform-docs markdown table \
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_gcloud_add_ssh_key_metadata"></a> [gcloud\_add\_ssh\_key\_metadata](#module\_gcloud\_add\_ssh\_key\_metadata) | terraform-google-modules/gcloud/google | 3.1.0 |
+| <a name="module_gcloud_add_ssh_key_metadata"></a> [gcloud\_add\_ssh\_key\_metadata](#module\_gcloud\_add\_ssh\_key\_metadata) | terraform-google-modules/gcloud/google | 3.1.1 |
 
 ## Resources
 
