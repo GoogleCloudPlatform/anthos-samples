@@ -297,3 +297,4 @@ The [Logging into the Anthos bare metal cluster](login.md) explains how you can 
 ### Cleanup
 
 - Follow the [same cleanup steps as the quickstart guide](quickstart.md#cleanup).
+- 
