@@ -12,12 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
+# [START gkeonaws_monitoring_gke_metrics_agent_serviceaccount_gke_metrics_agent]
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: gke-metrics-agent
   namespace: kube-system
+# [END gkeonaws_monitoring_gke_metrics_agent_serviceaccount_gke_metrics_agent]
 ---
+# [START gkeonaws_monitoring_gke_metrics_agent_clusterrole_stackdriver_user:gke_metrics_agent]
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -41,7 +45,9 @@ rules:
   - 'serviceaccounts/token'
   verbs:
   - 'create'
+# [END gkeonaws_monitoring_gke_metrics_agent_clusterrole_stackdriver_user:gke_metrics_agent]
 ---
+# [START gkeonaws_monitoring_gke_metrics_agent_clusterrolebinding_stackdriver_user:gke_metrics_agent]
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
@@ -55,7 +61,9 @@ subjects:
 - kind: ServiceAccount
   name: gke-metrics-agent
   namespace: kube-system
+# [END gkeonaws_monitoring_gke_metrics_agent_clusterrolebinding_stackdriver_user:gke_metrics_agent]
 ---
+# [START gkeonaws_monitoring_gke_metrics_agent_daemonset_gke_metrics_agent]
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
@@ -139,7 +147,9 @@ spec:
     rollingUpdate:
       maxUnavailable: 1
     type: RollingUpdate
+# [END gkeonaws_monitoring_gke_metrics_agent_daemonset_gke_metrics_agent]
 ---
+# [START gkeonaws_monitoring_gke_metrics_agent_configmap_gke_metrics_agent_config]
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -1096,3 +1106,4 @@ data:
           - infer_resource
           receivers:
           - prometheus/metrics
+# [END gkeonaws_monitoring_gke_metrics_agent_configmap_gke_metrics_agent_config]

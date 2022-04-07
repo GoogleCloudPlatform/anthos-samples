@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# [START anthosbaremetal_resources_init_vm]
 
 ##############################################################################
 # Commands starting with leading double underscores (__) nand ending with
@@ -177,7 +178,7 @@ function __setup_kubctl__ () {
 ##############################################################################
 function __setup_bmctl__ () {
   mkdir baremetal && cd baremetal || return
-  gsutil cp gs://anthos-baremetal-release/bmctl/1.10.0/linux-amd64/bmctl .
+  gsutil cp gs://anthos-baremetal-release/bmctl/1.10.2/linux-amd64/bmctl .
   chmod a+x bmctl
   mv bmctl /usr/local/sbin/
   __check_exit_status__ $? \
@@ -243,3 +244,5 @@ function __print_separator__ () {
 
 # Run the script from main()
 __main__ "$@"
+
+# [END anthosbaremetal_resources_init_vm]

@@ -56,6 +56,12 @@ variable "min_cpu_platform" {
   default     = "Intel Haswell"
 }
 
+variable "enable_nested_virtualization" {
+  description = "Enable nested virtualization on the Compute Engine VMs are to be scheduled"
+  type        = string
+  default     = "true"
+}
+
 variable "machine_type" {
   description = "Google Cloud machine type to use when provisioning the Compute Engine VMs"
   type        = string
@@ -154,6 +160,8 @@ variable "secondary_apis" {
     "logging.googleapis.com",
     "iam.googleapis.com",
     "compute.googleapis.com",
+    "anthosaudit.googleapis.com",
+    "opsconfigmonitoring.googleapis.com"
   ]
 }
 
@@ -163,6 +171,31 @@ variable "abm_cluster_id" {
   default     = "cluster1"
 }
 
+variable "gce_vm_service_account" {
+  description = "Service Account to use for GCE instances"
+  type        = string
+  default     = ""
+}
+
+variable "mode" {
+  type        = string
+  description = <<EOF
+    Indication of the execution mode. By default the terraform execution will end
+    after setting up the GCE VMs where the Anthos bare metal clusters can be deployed.
+
+    **setup:** create and initialize the GCE VMs required to install Anthos bare metal.
+
+    **install:** everything up to 'setup' mode plus automatically run Anthos bare metal installation steps as well.
+  EOF
+  default     = "setup"
+
+  validation {
+    condition     = contains(["setup", "install"], var.mode)
+    error_message = "Allowed execution modes are: setup, install."
+  }
+}
+
+# [START anthosbaremetal_node_prefix]
 # [START anthos_bm_node_prefix]
 ###################################################################################
 # The recommended instance count for High Availability (HA) is 3 for Control plane
@@ -177,3 +210,4 @@ variable "instance_count" {
   }
 }
 # [END anthos_bm_node_prefix]
+# [END anthosbaremetal_node_prefix]

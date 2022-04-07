@@ -21,29 +21,7 @@ steps:
   - 'TF_VAR_org_id=$_ORG_ID'
   - 'TF_VAR_folder_id=$_FOLDER_ID'
   - 'TF_VAR_billing_account=$_BILLING_ACCOUNT'
-- id: create abm-gce-defaults-on-owner-project-local
-  waitFor:
-    - prepare
-  name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
-  args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do create abm-gce-defaults-on-owner-project-local']
-- id: converge abm-gce-defaults-on-owner-project-local
-  waitFor:
-    - create abm-gce-defaults-on-owner-project-local
-  name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
-  args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do converge abm-gce-defaults-on-owner-project-local']
-- id: verify abm-gce-defaults-on-owner-project-local
-  waitFor:
-    - converge abm-gce-defaults-on-owner-project-local
-  name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
-  args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do verify abm-gce-defaults-on-owner-project-local']
-- id: destroy abm-gce-defaults-on-owner-project-local
-  waitFor:
-    - verify abm-gce-defaults-on-owner-project-local
-  name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
-  args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do destroy abm-gce-defaults-on-owner-project-local']
 - id: create abm-gce-defaults-on-editor-project-local
-  waitFor:
-    - destroy abm-gce-defaults-on-owner-project-local
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'cd test/integration && RUN_STAGE=init go test -v -run TestABMEditor ./... -p 1']
 - id: converge abm-gce-defaults-on-editor-project-local
@@ -55,7 +33,7 @@ steps:
   waitFor:
     - converge abm-gce-defaults-on-editor-project-local
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
-  args: ['/bin/bash', '-c', 'cd test/integration && sleep 60 &&  RUN_STAGE=verify go test -v -run TestABMEditor ./... -p 1']
+  args: ['/bin/bash', '-c', 'cd test/integration && sleep 60 &&  RUN_STAGE=verify go test -v -run TestABMEditor ./... -p 1 -timeout 60m']
 - id: destroy abm-gce-defaults-on-editor-project-local
   waitFor:
     - verify abm-gce-defaults-on-editor-project-local

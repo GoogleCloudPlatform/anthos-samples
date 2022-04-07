@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,18 @@
  * limitations under the License.
  */
 
-variable "owner_project_id" {
-  type = string
+variable "username" {
+  description = "The name of the user who should run the install scripts"
+  type        = string
+  default     = "tfadmin"
 }
 
-variable "owner_sa_key_file_path" {
-  type = string
+variable "publicIp" {
+  description = "Publicly accessible IP address of the Admin VM"
+  type        = string
+}
+
+variable "ssh_private_key_file" {
+  description = "Path to private key to use when SSH'ing into the admin VM"
+  type        = string
 }

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-variable "owner_project_id" {
+variable "editor_project_id" {
   type = string
 }
 
-variable "owner_sa_key_file_path" {
+variable "editor_sa_key_file_path" {
   type = string
 }

@@ -57,13 +57,25 @@ variable "publicIp" {
 variable "init_script" {
   description = "Path to the initilization script that is to be run on the target VM"
   type        = string
-  default     = "../../resources/init.sh"
+  default     = "../../resources/init_vm.sh"
 }
 
 variable "init_check_script" {
   description = "Path to the script that validates if the initialization is complete"
   type        = string
   default     = "../../resources/run_initialization_checks.sh"
+}
+
+variable "install_abm_script" {
+  description = "Path to the script that installs Anthos on bare metal"
+  type        = string
+  default     = "../../resources/install_abm.sh"
+}
+
+variable "login_script" {
+  description = "Path to the script that generates the token used to login to the Anthos bare metal cluster"
+  type        = string
+  default     = "../../resources/login.sh"
 }
 
 variable "init_logs" {

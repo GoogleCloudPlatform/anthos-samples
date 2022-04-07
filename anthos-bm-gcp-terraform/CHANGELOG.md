@@ -1,5 +1,36 @@
 # Changelog
 
+## [0.7.0](https://github.com/GoogleCloudPlatform/anthos-samples/compare/v0.6.2...v0.7.0) (2022-03-25)
+
+
+### Features
+
+* Enable nested virtualization support for ABM Terraform installation on GCE ([#212](https://github.com/GoogleCloudPlatform/anthos-samples/issues/212)) ([c41edb2](https://github.com/GoogleCloudPlatform/anthos-samples/commit/c41edb20837942482fe4e05307d5d1e6d405f2f7))
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/gruntwork-io/terratest to v0.40.6 ([#198](https://github.com/GoogleCloudPlatform/anthos-samples/issues/198)) ([24b845d](https://github.com/GoogleCloudPlatform/anthos-samples/commit/24b845dbfbcc12de8caa3a83a8ae8b6b8d725b7d))
+* **deps:** update module github.com/stretchr/testify to v1.7.1 ([#202](https://github.com/GoogleCloudPlatform/anthos-samples/issues/202)) ([91d7f2e](https://github.com/GoogleCloudPlatform/anthos-samples/commit/91d7f2ebe01caa073baec8c32fad2ee026a051f7))
+
+### [0.6.2](https://github.com/GoogleCloudPlatform/anthos-samples/compare/v0.6.1...v0.6.2) (2022-03-03)
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/gruntwork-io/terratest to v0.40.5 ([#180](https://github.com/GoogleCloudPlatform/anthos-samples/issues/180)) ([b48a622](https://github.com/GoogleCloudPlatform/anthos-samples/commit/b48a6222b4450089c222c6547836c9a31cc15b7a))
+* missing services needed for setup ([#159](https://github.com/GoogleCloudPlatform/anthos-samples/issues/159)) ([7977e91](https://github.com/GoogleCloudPlatform/anthos-samples/commit/7977e9134cfcafaae16af57c521a3035e9accf81))
+* zone mismatch for vm ([#190](https://github.com/GoogleCloudPlatform/anthos-samples/issues/190)) ([b85a559](https://github.com/GoogleCloudPlatform/anthos-samples/commit/b85a559da40f1419ee94639084b18e276278f78a))
+
+### [0.6.1](https://github.com/GoogleCloudPlatform/anthos-samples/compare/v0.6.0...v0.6.1) (2022-02-25)
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/gruntwork-io/terratest to v0.40.0 ([#161](https://github.com/GoogleCloudPlatform/anthos-samples/issues/161)) ([1c85f29](https://github.com/GoogleCloudPlatform/anthos-samples/commit/1c85f29e3838d1bb1fb53d31676393fb853ceb1b))
+* **deps:** update module github.com/gruntwork-io/terratest to v0.40.1 ([#168](https://github.com/GoogleCloudPlatform/anthos-samples/issues/168)) ([0942cf0](https://github.com/GoogleCloudPlatform/anthos-samples/commit/0942cf05f9b2e705dc3badf585111105f4de4d2d))
+* **deps:** update module github.com/gruntwork-io/terratest to v0.40.3 ([#172](https://github.com/GoogleCloudPlatform/anthos-samples/issues/172)) ([239b1d7](https://github.com/GoogleCloudPlatform/anthos-samples/commit/239b1d74250a219ac5d102eda7201c8931ad998a))
+
 ## [0.6.0](https://github.com/GoogleCloudPlatform/anthos-samples/compare/v0.5.0...v0.6.0) (2022-01-19)
 
 

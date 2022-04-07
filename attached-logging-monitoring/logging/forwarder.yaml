@@ -12,13 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# [START anthos_logging_forwarder_serviceaccount_stackdriver_log_forwarder2]
 # Service account for Log Forwarder (Fluent Bit).
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: stackdriver-log-forwarder
   namespace: kube-system
+# [END anthos_logging_forwarder_serviceaccount_stackdriver_log_forwarder2]
 ---
+# [START anthos_logging_forwarder_clusterrole_stackdriver_user:stackdriver_log_forwarder2]
 # ClusterRole with permissions required by Log Forwarder (Fluent Bit).
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -34,7 +37,9 @@ rules:
   - watch
   - get
   - list
+# [END anthos_logging_forwarder_clusterrole_stackdriver_user:stackdriver_log_forwarder2]
 ---
+# [START anthos_logging_forwarder_clusterrolebinding_stackdriver_user:stackdriver_log_forwarder2]
 # ClusterRoleBinding for Log Forwarder (Fluent Bit).
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -49,7 +54,9 @@ subjects:
 - kind: ServiceAccount
   name: stackdriver-log-forwarder
   namespace: kube-system
+# [END anthos_logging_forwarder_clusterrolebinding_stackdriver_user:stackdriver_log_forwarder2]
 ---
+# [START anthos_logging_forwarder_daemonset_stackdriver_log_forwarder2]
 # Log Forwarder (Fluent Bit) DaemonSet to tail log files.
 apiVersion: apps/v1
 kind: DaemonSet
@@ -121,7 +128,9 @@ spec:
     rollingUpdate:
       maxUnavailable: 1
     type: RollingUpdate
+# [END anthos_logging_forwarder_daemonset_stackdriver_log_forwarder2]
 ---
+# [START anthos_logging_forwarder_configmap_stackdriver_log_forwarder_config2]
 # Log Forwarder (Fluent Bit) configuration map.
 apiVersion: v1
 kind: ConfigMap
@@ -421,3 +430,4 @@ data:
         Name    k8s-container-custom-tag
         Format  regex
         Regex   ^(?<namespace_name>[^_.]+)\.(?<pod_name>[a-z0-9](?:[-a-z0-9]*[a-z0-9])?(?:\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*+)\.(?<container_name>[^.]+)$
+# [END anthos_logging_forwarder_configmap_stackdriver_log_forwarder_config2]

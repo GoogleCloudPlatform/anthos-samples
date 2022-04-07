@@ -16,7 +16,7 @@
 
 output "admin_vm_ssh" {
   description = "Run the following command to provision the anthos cluster."
-  value = join("\n", [
+  value = var.mode != "setup" ? null : join("\n", [
     "################################################################################",
     "##              AnthosBM on Google Compute Engine VM with Terraform           ##",
     "##                        (Run the following commands)                        ##",
@@ -32,6 +32,20 @@ output "admin_vm_ssh" {
     "  sudo bmctl create config -c ${var.abm_cluster_id} && \\",
     "  sudo cp ~/${var.abm_cluster_id}.yaml bmctl-workspace/${var.abm_cluster_id} && \\",
     "  sudo bmctl create cluster -c ${var.abm_cluster_id}",
+    "",
+    "################################################################################",
+  ])
+}
+
+output "installation_check" {
+  description = "Run the following command to check the Anthos bare metal installation status."
+  value = var.mode != "install" ? null : join("\n", [
+    "################################################################################",
+    "#          SSH into the admin host and check the installation progress         #",
+    "################################################################################",
+    "",
+    "> gcloud compute ssh ${var.username}@${local.admin_vm_hostnames[0]} --project=${var.project_id} --zone=${var.zone}",
+    "> tail -f ~/install_abm.log",
     "",
     "################################################################################",
   ])
