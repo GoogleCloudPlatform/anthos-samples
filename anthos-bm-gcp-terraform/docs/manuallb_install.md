@@ -131,9 +131,10 @@ from inside the _admin workstation_ VM.
 Upon completion the Terraform script will print the following output to the console.
 
 > **Note:** You will notice that the output of the terraform script also has the
-> **Public IP addresses** of the `Controlplane` and `Ingress` loadbalancers. You
-> must wait until the Anthos on bare cluster installation is complete before
-> being able to use them.
+> **Public IP addresses** of the `Controlplane` and `Ingress` loadbalancers.
+> Note down these Public IPs, since you will need them later. You must wait
+> until the Anthos on bare cluster installation is complete before being able to
+> use them.
 
 ```sh
 controlplane_ip = <<EOT
