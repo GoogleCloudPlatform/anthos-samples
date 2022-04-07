@@ -14,7 +14,7 @@ _admin workstation_ GCE VM, and monitor the status of the Anthos on bare metal i
 We can force the terraform run to continue onto the Anthos on bare metal installation
 _(after creating the GCE VMs)_ by setting the variable `mode` to `install`.
 
-### Pre-requisites
+### Prerequisites
 - This guide has the [same pre-requisites as the quickstart guide](/anthos-bm-gcp-terraform/README.md#pre-requisites).
 
 ### Step by step guide
@@ -84,6 +84,8 @@ Upon completion the Terraform script will print the following output to the cons
 
 ################################################################################
 ```
+
+</br>
 
 Use these commands to SSH into the _admin workstation_ and to monitor the installation status.
 Once it is complete the output in the log file will look as follows:

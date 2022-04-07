@@ -37,13 +37,18 @@ func ValidateRootResources(
 	vmHostnames := make(map[string]interface{})
 	envVarFilenames := make(map[string]interface{})
 	for idx, rootResource := range terraformPlan.PlannedValues.RootModule.Resources {
-		assert.Equal(
+		assert.Contains(
 			goTester,
-			"local_file",
+			[]string{"local_file", "google_compute_firewall"},
 			rootResource.Type,
 			fmt.Sprintf("Invalid resource type for planned_values.root_module.resources[%d]", idx),
 		)
-		if rootResource.Name == "cluster_yaml" {
+
+		if rootResource.Type == "google_compute_firewall" {
+			continue // nothing to check
+		}
+
+		if rootResource.Name == "cluster_yaml_bundledlb" {
 			ValidateYaml(goTester, instanceCountMapInTest, rootResource, projectID, abmClusterID)
 		} else {
 			vmHostnames[rootResource.Values.Index] = nil
@@ -890,6 +895,69 @@ func ValidateMainOutputsForInstallMode(goTester *testing.T, planOutputs *util.Ou
 		goTester,
 		planOutputs.InstallCheck,
 		"Module is expected to have an output for installation_check; but not found",
+	)
+
+	// verify module does NOT produce an output for admin_vm_ssh in plan
+	assert.Equal(
+		goTester,
+		"",
+		planOutputs.AdminVMSSH.Value,
+		"Module is not expected to have an output for admin_vm_ssh; but found",
+	)
+
+	// verify module does NOT produce an output for controlplane_ip in plan
+	assert.Equal(
+		goTester,
+		planOutputs.ControlPlaneIP.Value,
+		"",
+		"Module is not expected to have an output for controlplane_ip; but found",
+	)
+
+	// verify module does NOT produce an output for ingress_ip in plan
+	assert.Equal(
+		goTester,
+		planOutputs.IngressIP.Value,
+		"",
+		"Module is not expected to have an output for ingress_ip; but found",
+	)
+
+	outputValue := planOutputs.InstallCheck.Value
+	assert.True(
+		goTester,
+		strings.Contains(outputValue, "tail -f ~/install_abm.log"),
+		"Output is expected to have 'tail -f ~/install_abm.log'",
+	)
+}
+
+// ValidateMainOutputsForManualMode validates if the outputs in the terraform plan matches
+// the outputs defined in the `output.tf` of the main module for the mode "manuallb".
+func ValidateMainOutputsForManualMode(goTester *testing.T, planOutputs *util.Outputs, vars *map[string]interface{}) {
+	// verify module produces output in plan
+	assert.NotNil(
+		goTester,
+		planOutputs,
+		"Module is expected to produce outputs; but none found",
+	)
+
+	// verify module produces an output for installation_check in plan
+	assert.NotNil(
+		goTester,
+		planOutputs.InstallCheck,
+		"Module is expected to have an output for installation_check; but not found",
+	)
+
+	// verify module produces an output for controlplane_ip in plan
+	assert.NotNil(
+		goTester,
+		planOutputs.ControlPlaneIP,
+		"Module is expected to have an output for controlplane_ip; but not found",
+	)
+
+	// verify module produces an output for ingress_ip in plan
+	assert.NotNil(
+		goTester,
+		planOutputs.IngressIP,
+		"Module is expected to have an output for ingress_ip; but not found",
 	)
 
 	// verify module does NOT produce an output for admin_vm_ssh in plan

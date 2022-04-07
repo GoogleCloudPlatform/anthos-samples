@@ -25,8 +25,15 @@ type ExternalIPPlan struct {
 // terraform module. When variables are added to the module this struct needs
 // to be modified
 type IPVariables struct {
-	IPNames *IPNames  `json:"ip_names"`
-	Region  *IPRegion `json:"region"`
+	IsGlobal *IsGlobal `json:"is_global"`
+	IPNames  *IPNames  `json:"ip_names"`
+	Region   *IPRegion `json:"region"`
+}
+
+// IsGlobal is an input type to the external-ip terraform module that expresses
+// whether the IP to be created must be a Global or Regional IP address
+type IsGlobal struct {
+	Value string `json:"value"`
 }
 
 // An IPRegion represents the 'region' variable which is part of the inputs
@@ -51,11 +58,5 @@ type IPPlannedValues struct {
 
 // IPOutputs represents the outputs produced by the external-ip terraform module
 type IPOutputs struct {
-	IPS *IPS `json:"ips"`
-}
-
-// IPS represent the external ip information that will be created as a result of
-// running the external-ip terraform module
-type IPS struct {
-	Sensitive bool `json:"sensitive"`
+	IPS *SensitiveVariable `json:"ips"`
 }

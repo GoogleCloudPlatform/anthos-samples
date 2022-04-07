@@ -49,6 +49,7 @@ type MainVariables struct {
 	SecondaryAPIs              *ListVariable `json:"secondary_apis"`
 	InstanceCount              *MapVariable  `json:"instance_count"`
 	Gpu                        *GpuVariable  `json:"gpu"`
+	Mode                       *Variable     `json:"mode"`
 }
 
 // MainPlannedValues represents the planned state of the terraform run resulting
@@ -60,8 +61,10 @@ type MainPlannedValues struct {
 
 // Outputs represents the outputs produced by the main terraform module
 type Outputs struct {
-	AdminVMSSH   *AdminVMSSH   `json:"admin_vm_ssh"`
-	InstallCheck *InstallCheck `json:"installation_check"`
+	AdminVMSSH     *AdminVMSSH   `json:"admin_vm_ssh"`
+	InstallCheck   *InstallCheck `json:"installation_check"`
+	ControlPlaneIP *Variable     `json:"controlplane_ip"`
+	IngressIP      *Variable     `json:"ingress_ip"`
 }
 
 // AdminVMSSH represents the final output from the main terraform script with

@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-variable "is_global" {
-  description = "Indication of whether the IP address must be global"
-  type        = bool
-  default     = false
+output "public_ip" {
+  description = "The external ip that can be used to reach the loadbalancer that was created"
+  value       = module.public_ip.ips[var.ip_name].address
 }
 
-variable "region" {
-  description = "Region where the IP addresses are to be created in"
-  type        = string
-  default     = "us-central1"
-}
-
-variable "ip_names" {
-  description = "List of names to be used to name the IP addresses"
-  type        = list(string)
+output "neg_name" {
+  description = <<EOF
+        The name of the network endpoint group (https://cloud.google.com/load-balancing/docs/negs#zonal-neg)
+        that was created as part of the load balancer setup
+    EOF
+  value       = google_compute_network_endpoint_group.lb-neg.name
 }
