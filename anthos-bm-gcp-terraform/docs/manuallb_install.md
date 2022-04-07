@@ -47,10 +47,6 @@ as the loadbalancer fronting the Anthos on bare metal cluster.
 
 <p align="center">
   <img src="images/manuallb_architecture.svg">
-  <em>
-    </br>
-    (click image to enlarge)
-  </em>
 </p>
 
 ---
