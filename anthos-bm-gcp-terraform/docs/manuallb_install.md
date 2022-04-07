@@ -9,7 +9,7 @@ This means that the loadbalancer and the cluster services are reachable only
 from inside one of the GCE VMs _(i.e. Admin workstation, Controlplane nodes, Worker nodes)_
 created during the installation process.
 
-While, this setup closely represents how **Anthos on bare metal (ABM)** will be
+While this setup closely represents how **Anthos on bare metal (ABM)** will be
 deployed in an actual enterprise baremetal environment, this is not ideal for
 demos. With demo environments we would like to be able to easily reach the
 `control plane` and the `ingress` of the Anthos on bare metal cluster without
@@ -158,9 +158,10 @@ EOT
 
 </br>
 
-Use these commands to SSH into the _admin workstation_ and to monitor the
-installation status. Once it is complete the output in the log file will look as
-follows:
+Use `gcloud compute ssh tfadmin@cluster1-abm-ws0-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>`
+to ssh into the admin workstation, and use `tail -f ~/install_abm.log` to monitor
+the installation progress. Once it is complete the output in the log file will
+be as follows:
 
 > **Note:** The installation process for Anthos on bare metal can take up to 15
 > minutes. Upon completion of the Anthos on bare metal installation you will see
