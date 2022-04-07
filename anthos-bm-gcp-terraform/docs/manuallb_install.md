@@ -46,7 +46,7 @@ as the loadbalancer fronting the Anthos on bare metal cluster.
 ### Complete deployment architecture
 
 <p align="center">
-  <img src="images/manuallb_architecture.png">
+  <img src="images/manuallb_architecture.svg">
   <em>
     </br>
     (click image to enlarge)
