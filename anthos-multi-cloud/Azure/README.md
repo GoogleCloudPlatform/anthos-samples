@@ -1,6 +1,6 @@
 # Install GKE on Azure using Terraform
 
-This script is meant to be a quick start to working with Anthos on Azure. For more information on Anthos Multi-Cloud please [click here](https://cloud.google.com/anthos/clusters/docs/multi-cloud/). This terraform script will install all relevant IaaS in Azure _(VNet, App Registration, Resource Groups, KMS)_. 
+This script is meant to be a quick start to working with Anthos on Azure. For more information on Anthos Multi-Cloud please [click here](https://cloud.google.com/anthos/clusters/docs/multi-cloud/). This terraform script will install all relevant IaaS in Azure _(VNet, App Registration, Resource Groups, KMS)_.
 The Anthos on **Azure Cluster full Terraform** references area here:
  - [Clusters ](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/container_azure_cluster)
  - [Node Pool](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/container_azure_node_pool)
