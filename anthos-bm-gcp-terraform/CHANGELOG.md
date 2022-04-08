@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.0](https://github.com/GoogleCloudPlatform/anthos-samples/compare/v0.7.1...v0.8.0) (2022-04-08)
+
+
+### Features
+
+* Update ABM version to 1.11 ([#233](https://github.com/GoogleCloudPlatform/anthos-samples/issues/233)) ([e5591b5](https://github.com/GoogleCloudPlatform/anthos-samples/commit/e5591b56028650990fa29b1046c6f25c701ad268))
+
 ### [0.7.1](https://github.com/GoogleCloudPlatform/anthos-samples/compare/v0.7.0...v0.7.1) (2022-04-08)
 
 
