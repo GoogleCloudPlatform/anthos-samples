@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/*
+ * Full Cluster terraform: https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/container_azure_cluster
+ * Full Node Pool terraform:  https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/container_azure_node_pool
+ * Azure client terraform: https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/container_azure_client
+*/
+
 module "azure_client" {
   source         = "./client"
   anthos_prefix  = var.anthos_prefix

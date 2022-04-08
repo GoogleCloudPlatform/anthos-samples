@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+
+/*
+ * Full Cluster terraform: https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/container_aws_cluster
+ * Full Node Pool terraform:  https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/container_aws_node_pool
+*/
+
 data "google_project" "project" {
 }
 
