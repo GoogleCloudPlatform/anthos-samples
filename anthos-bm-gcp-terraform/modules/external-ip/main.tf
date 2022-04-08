@@ -17,7 +17,12 @@
 
 
 resource "google_compute_address" "external_ip_address" {
-  for_each = toset(var.ip_names)
+  for_each = !var.is_global ? toset(var.ip_names) : []
   region   = var.region
+  name     = each.value
+}
+
+resource "google_compute_global_address" "global_external_ip_address" {
+  for_each = var.is_global ? toset(var.ip_names) : []
   name     = each.value
 }

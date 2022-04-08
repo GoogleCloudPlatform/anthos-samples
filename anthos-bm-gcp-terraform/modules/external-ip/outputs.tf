@@ -17,12 +17,21 @@
 output "ips" {
   description = <<EOF
     IP information of all the VMs that were created. It is in the form of a map
-    which has the VM hostname as the key and an object as the value. The object
-    contains the IP address, tier and region.
+    which has the VM hostname as the key and an object as the value. The details
+    in the object differs based on the type of the IP address.
+      Global IP address: [id, ip_address]
+      Regional IP address: [id, ip_address, tier, region]
   EOF
-  value = {
-    for vmName, details in google_compute_address.external_ip_address :
-    vmName => ({
+  value = var.is_global ? {
+    for ipName, details in google_compute_global_address.global_external_ip_address :
+    ipName => ({
+      id      = details.self_link
+      address = details.address
+    })
+    } : {
+    for ipName, details in google_compute_address.external_ip_address :
+    ipName => ({
+      id      = details.self_link
       region  = details.region
       tier    = details.network_tier
       address = details.address

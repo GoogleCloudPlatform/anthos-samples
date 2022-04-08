@@ -102,15 +102,27 @@ type Variable struct {
 }
 
 // ListVariable represents an instance of a single terraform input variable
-// which is of type list
+// which is of type list(string)
 type ListVariable struct {
 	Value []string `json:"value"`
+}
+
+// ListIntVariable represents an instance of a single terraform input variable
+// which is of type list(int)
+type ListIntVariable struct {
+	Value []int `json:"value"`
 }
 
 // MapVariable represents an instance of a single terraform input variable
 // which is of type map
 type MapVariable struct {
 	Value map[string]int `json:"value"`
+}
+
+// SensitiveVariable represents a terraform variable that has been marked as
+// sensitive by the provider
+type SensitiveVariable struct {
+	Sensitive bool `json:"sensitive"`
 }
 
 // GpuVariable represents an instance of a variable carrying Gpu information
