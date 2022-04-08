@@ -1,5 +1,17 @@
 # Changelog
 
+### [0.7.1](https://github.com/GoogleCloudPlatform/anthos-samples/compare/v0.7.0...v0.7.1) (2022-04-08)
+
+
+### Features
+
+* setup manuallb with GCE VMs for ABM ([#218](https://github.com/GoogleCloudPlatform/anthos-samples/issues/218)) ([2a90c94](https://github.com/GoogleCloudPlatform/anthos-samples/commit/2a90c94b08264da2e644d3fb845e31eda04e7c18))
+
+
+### Miscellaneous Chores
+
+* release 0.7.1 ([4187f98](https://github.com/GoogleCloudPlatform/anthos-samples/commit/4187f985494f0dcab22edacfdbe5874b6cae0aa9))
+
 ## [0.7.0](https://github.com/GoogleCloudPlatform/anthos-samples/compare/v0.6.2...v0.7.0) (2022-03-25)
 
 
