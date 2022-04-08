@@ -145,8 +145,15 @@ func TestUnit_MainScript(goTester *testing.T) {
 	// validate the plan has the expected resources and modules
 	instanceCountMapInTest := tfVarsMap["instance_count"].(map[string]int)
 	numberOfHostsForInitialization :=
-		instanceCountMapInTest["controlplane"] + instanceCountMapInTest["worker"] + 1 // 1 for the admin vm
-	rootResourceCount := numberOfHostsForInitialization + 1 // 1 for the cluster_yaml created from template
+		instanceCountMapInTest["controlplane"] +
+			instanceCountMapInTest["worker"] +
+			1 // 1 for the admin vm
+
+	rootResourceCount :=
+		numberOfHostsForInitialization +
+			1 + // 1 for the cluster_yaml created from template
+			1 // 1 for google_compute_firewall resource
+
 	assert.Len(
 		goTester,
 		terraformPlan.PlannedValues.RootModule.Resources,
@@ -171,6 +178,8 @@ func TestUnit_MainScript(goTester *testing.T) {
 	var serviceAccModules []util.TFModule
 	var googleAPIsModules []util.TFModule
 	var initHostsModules []util.TFModule
+	var ingressLBModule []util.TFModule
+	var controlplaneLBModule []util.TFModule
 
 	for _, childModule := range terraformPlan.PlannedValues.RootModule.ChildModules {
 		moduleAddress := childModule.ModuleAddress
@@ -184,6 +193,10 @@ func TestUnit_MainScript(goTester *testing.T) {
 			googleAPIsModules = append(googleAPIsModules, childModule)
 		} else if strings.Contains(moduleAddress, "init_hosts") {
 			initHostsModules = append(initHostsModules, childModule)
+		} else if strings.HasSuffix(moduleAddress, "configure_ingress_lb[0]") {
+			ingressLBModule = append(ingressLBModule, childModule)
+		} else if strings.HasSuffix(moduleAddress, "configure_controlplane_lb[0]") {
+			controlplaneLBModule = append(controlplaneLBModule, childModule)
 		} else {
 			goTester.Errorf("Unexpected module with address [%s] at planned_values.root_module.child_modules", moduleAddress)
 		}
@@ -218,6 +231,18 @@ func TestUnit_MainScript(goTester *testing.T) {
 		initHostsModules,
 		numberOfHostsForInitialization,
 		"Unexpected number of child modules with address type init_hosts at planned_values.root_module.child_modules",
+	)
+	assert.Len(
+		goTester,
+		ingressLBModule,
+		0,
+		"Unexpected number of child modules with address type configure_ingress_lb at planned_values.root_module.child_modules",
+	)
+	assert.Len(
+		goTester,
+		controlplaneLBModule,
+		0,
+		"Unexpected number of child modules with address type configure_controlplane_lb at planned_values.root_module.child_modules",
 	)
 
 	// validate the instance template module
@@ -494,89 +519,4 @@ func TestUnit_MainScript_ValidateDefaults(goTester *testing.T) {
 		terraformPlan.Variables.Gpu.Value.Type,
 		"Variable does not match expected default value: gpu.type",
 	)
-}
-
-func TestUnit_MainScript_InstallMode(goTester *testing.T) {
-	moduleDir := testStructure.CopyTerraformFolderToTemp(goTester, "../../", ".")
-	projectID := gcp.GetGoogleProjectIDFromEnvVar(goTester) // from GOOGLE_CLOUD_PROJECT
-
-	workingDir, err := os.Getwd()
-	util.LogError(err, "Failed to read current working directory")
-	credentialsFile := fmt.Sprintf("%s/credentials_file.json", workingDir)
-
-	tmpFile, err := os.Create(credentialsFile)
-	util.LogError(err, fmt.Sprintf("Could not create temporary file at %s", credentialsFile))
-	defer tmpFile.Close()
-	defer os.Remove(credentialsFile)
-
-	mode := "install"
-	resourcesPath := "./resources"
-	bootDiskSize := 175
-	instanceCount := map[string]int{
-		"controlplane": 3,
-		"worker":       2,
-	}
-
-	tfPlanOutput := "terraform_test.tfplan"
-	tfPlanOutputArg := fmt.Sprintf("-out=%s", tfPlanOutput)
-	tfVarsMap := map[string]interface{}{
-		"project_id":       projectID,
-		"credentials_file": credentialsFile,
-		"mode":             mode,
-		"resources_path":   resourcesPath,
-		"instance_count":   instanceCount,
-		"boot_disk_size":   bootDiskSize,
-	}
-
-	tfOptions := terraform.WithDefaultRetryableErrors(goTester, &terraform.Options{
-		TerraformDir: moduleDir,
-		// Variables to pass to our Terraform code using -var options
-		Vars:         tfVarsMap,
-		PlanFilePath: tfPlanOutput,
-	})
-
-	// Terraform init and plan only
-	terraform.Init(goTester, tfOptions)
-	terraform.RunTerraformCommand(
-		goTester,
-		tfOptions,
-		terraform.FormatArgs(tfOptions, "plan", tfPlanOutputArg)...,
-	)
-	tfPlanJSON, err := terraform.ShowE(goTester, tfOptions)
-	util.LogError(err, fmt.Sprintf("Failed to parse the plan file %s into JSON format", tfPlanOutput))
-
-	var terraformPlan util.MainModulePlan
-	err = json.Unmarshal([]byte(tfPlanJSON), &terraformPlan)
-	util.LogError(err, "Failed to parse the JSON plan into the MainModulePlan struct in unit/module_main.go")
-	/**
-	 * Pro tip:
-	 * Write the json to a file using the util.WriteToFile() method to easily debug
-	 * util.WriteToFile(tfPlanJSON, "../../plan.json")
-	 */
-
-	var installAbmModule []util.TFModule // install_abm
-
-	for _, childModule := range terraformPlan.PlannedValues.RootModule.ChildModules {
-		moduleAddress := childModule.ModuleAddress
-		if strings.HasSuffix(moduleAddress, "instance_template") ||
-			strings.HasSuffix(moduleAddress, "vm_hosts") ||
-			strings.HasSuffix(moduleAddress, "service_accounts") ||
-			strings.Contains(moduleAddress, "google_apis") ||
-			strings.Contains(moduleAddress, "init_hosts") {
-			continue
-		} else if strings.Contains(moduleAddress, "install_abm") {
-			installAbmModule = append(installAbmModule, childModule)
-		} else {
-			goTester.Errorf("Unexpected module with address [%s] at planned_values.root_module.child_modules", moduleAddress)
-		}
-	}
-
-	assert.Len(
-		goTester,
-		installAbmModule,
-		1,
-		"Unexpected number of child modules with address type install_abm at planned_values.root_module.child_modules",
-	)
-	// validate the outputs from the script
-	validation.ValidateMainOutputsForInstallMode(goTester, terraformPlan.PlannedValues.Outputs, &tfVarsMap)
 }

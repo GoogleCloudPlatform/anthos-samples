@@ -56,7 +56,10 @@ jobs:
         # update this list as new terraform samples are added to the repo
         tf-sample: [
           'anthos-bm-gcp-terraform',
-          'anthos-bm-openstack-terraform']
+          'anthos-bm-openstack-terraform',
+          'anthos-multi-cloud/AWS',
+          'anthos-multi-cloud/Azure'
+        ]
     steps:
       - uses: actions/checkout@v3
         with:

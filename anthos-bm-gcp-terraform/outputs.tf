@@ -39,7 +39,7 @@ output "admin_vm_ssh" {
 
 output "installation_check" {
   description = "Run the following command to check the Anthos bare metal installation status."
-  value = var.mode != "install" ? null : join("\n", [
+  value = var.mode == "setup" ? null : join("\n", [
     "################################################################################",
     "#          SSH into the admin host and check the installation progress         #",
     "################################################################################",
@@ -49,4 +49,21 @@ output "installation_check" {
     "",
     "################################################################################",
   ])
+}
+
+output "controlplane_ip" {
+  description = <<EOF
+    You may access the control plane nodes of the Anthos on bare metal cluster
+    by accessing this IP address. You need to copy the kubeconfig file for the
+    cluster from the admin workstation to access using the kubectl CLI.
+  EOF
+  value       = var.mode == "manuallb" ? "Public IP of the control plane loadbalancer: ${module.configure_controlplane_lb[0].public_ip}\n" : null
+}
+
+output "ingress_ip" {
+  description = <<EOF
+    You may access the application deployed in the Anthos on bare metal cluster
+    by accessing this IP address
+  EOF
+  value       = var.mode == "manuallb" ? "Public IP of the ingress service loadbalancer: ${module.configure_ingress_lb[0].public_ip}\n" : null
 }

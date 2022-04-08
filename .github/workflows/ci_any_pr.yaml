@@ -19,6 +19,7 @@ on:
     branches:
       - main
 jobs:
+  # Run static code tests: license-check, terraform format, Golang linting
   static-code-tests:
     runs-on: [self-hosted, runner-july-21]
     steps:
@@ -46,6 +47,7 @@ jobs:
             cat golint.err
             exit 1
           fi
+  # Run terraform validate on terraform based samples
   tf-validate:
     runs-on: [self-hosted, runner-july-21]
     strategy:
@@ -54,7 +56,10 @@ jobs:
         # update this list as new terraform samples are added to the repo
         tf-sample: [
           'anthos-bm-gcp-terraform',
-          'anthos-bm-openstack-terraform']
+          'anthos-bm-openstack-terraform',
+          'anthos-multi-cloud/AWS',
+          'anthos-multi-cloud/Azure'
+        ]
     steps:
       - uses: actions/checkout@v3
         with:
@@ -70,9 +75,62 @@ jobs:
           tfenv use 1.1.3
           terraform init -backend=false
           terraform validate -json .
+  # Generate the documentation for the terrafrom modules used by different samples
+  terraform-module-docs:
+    runs-on: [self-hosted, runner-july-21]
+    needs: [static-code-tests, tf-validate]
+    strategy:
+      matrix:
+        # list of directories in the repo that hosts terraform modules
+        terraform-module-dir: [
+          'anthos-bm-gcp-terraform/modules/external-ip',
+          'anthos-bm-gcp-terraform/modules/init',
+          'anthos-bm-gcp-terraform/modules/install',
+          'anthos-bm-gcp-terraform/modules/loadbalancer',
+          'anthos-bm-gcp-terraform/modules/vm',
+          'anthos-bm-openstack-terraform/modules/vm'
+        ]
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{github.event.pull_request.head.ref}}
+        repository: ${{github.event.pull_request.head.repo.full_name}}
+    - name: Render terraform docs inside the docs and push changes back to PR branch
+      uses: terraform-docs/gh-actions@v1.0.0
+      with:
+        config-file: .github/terraform-docs/module.yaml
+        working-dir: ${{ matrix.terraform-module-dir }}
+        output-file: README.md
+        output-method: inject
+        fail-on-diff: true
+  # Generate the documentation for the main terrafrom script of the samples
+  terraform-main-docs:
+    runs-on: [self-hosted, runner-july-21]
+    needs: [static-code-tests, tf-validate]
+    strategy:
+      matrix:
+        # list of directories in the repo that hosts terraform modules
+        terraform-dir: [
+          'anthos-bm-gcp-terraform/',
+          'anthos-bm-openstack-terraform/'
+        ]
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{github.event.pull_request.head.ref}}
+        repository: ${{github.event.pull_request.head.repo.full_name}}
+    - name: Render terraform docs for the main script
+      uses: terraform-docs/gh-actions@v1.0.0
+      with:
+        config-file: .github/terraform-docs/main.yaml
+        working-dir: ${{ matrix.terraform-dir }}
+        output-file: docs/variables.md
+        output-method: inject
+        fail-on-diff: true
+  # Run the Golang unit tests in any of the samples
   go-unit-tests:
     runs-on: [self-hosted, runner-july-21]
-    needs: tf-validate
+    needs: [terraform-main-docs, terraform-module-docs]
     strategy:
       matrix:
         # list of directories in the repo that hosts Golang unit tests

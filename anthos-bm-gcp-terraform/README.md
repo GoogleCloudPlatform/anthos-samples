@@ -1,7 +1,7 @@
 
 ## Anthos Baremetal on Google Compute Engine VMs with Terraform
 
-This repository shows you how to use Terraform to try Anthos clusters on bare metal in High Availability (HA) mode using Virtual Machines (VMs) running on Compute Engine. For information about how to use the `gcloud` command-line tool to try this, see [Try Anthos clusters on bare metal on Compute Engine VMs](https://cloud.google.com/anthos/clusters/docs/bare-metal/1.6/try/gce-vms).
+This repository shows you how to use Terraform to try Anthos clusters on bare metal in High Availability (HA) mode using Virtual Machines (VMs) running on Compute Engine. For information about how to use the `gcloud` command-line tool to try this, see [Try Anthos clusters on bare metal on Compute Engine VMs](https://cloud.google.com/anthos/clusters/docs/bare-metal/latest/try/gce-vms).
 
 ### Pre-requisites
 
@@ -27,11 +27,12 @@ The [Quick starter](docs/quickstart.md) guide sets up the following infrastructu
 ## Getting started
 
 - [Terraform Module Information _(includes variables definitions)_](docs/variables.md)
-- [Quick starter guide](docs/quickstart.md):
+- [Quick start guide](docs/quickstart.md):
     - The terraform script sets up the GCE VM environment. The output of the script prints out the commands to follow to install **Anthos on bare metal** in the provisioned GCE VMs.
 - [All in one install](docs/one_click_install.md):
     - The terraform script sets up the GCE VM environment and also triggers the **Anthos on bare metal** installation on the provisioned GCE VMs. The output of the script prints out the commands to SSH into the *admin workstation VM* and monitor the Anthos on bare metal installation process.
-
+- [Manual LB install](docs/manuallb_install.md):
+    - The terraform script sets up the GCE environment and triggers the **Anthos on bare metal** installation similar to the [all-in-one install](docs/one_click_install.md). However, in this mode **Anthos on bare metal** is installed with a [`Manual Loadbalancer`](https://cloud.google.com/anthos/clusters/docs/bare-metal/latest/installing/manual-lb) instead of the default [`Bundled LB`](https://cloud.google.com/anthos/clusters/docs/bare-metal/latest/installing/bundled-lb). We use [Google Cloud Loadbalancer](https://cloud.google.com/load-balancing/docs/load-balancing-overview) as the manual loadbalancer for the Anthos on bare metal cluster. The output of the script prints out the same instructions as the all-in-one install; additionally it also prints out the **Public IP** addresses of the loadbalancers.
 
 ---
 ## Contributing
