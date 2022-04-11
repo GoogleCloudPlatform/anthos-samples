@@ -1,0 +1,243 @@
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: nettest
+---
+kind: DaemonSet
+apiVersion: apps/v1
+metadata:
+  name: echoserver-non-hostnetwork
+  namespace: nettest
+spec:
+  selector:
+    matchLabels:
+      run: echoserver-non-hostnetwork
+  template:
+    metadata:
+      labels:
+        run: echoserver-non-hostnetwork
+    spec:
+      containers:
+      - name: echoserver
+        image: gcr.io/google_containers/echoserver:1.4
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          operator: Exists
+          effect: NoSchedule
+---
+kind: DaemonSet
+apiVersion: apps/v1
+metadata:
+  name: echoserver-hostnetwork
+  namespace: nettest
+spec:
+  selector:
+    matchLabels:
+      run: echoserver-hostnetwork
+  template:
+    metadata:
+      labels:
+        run: echoserver-hostnetwork
+    spec:
+      hostNetwork: true
+      containers:
+      - name: echoserver
+        image: gcr.io/google_containers/echoserver:1.4
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          operator: Exists
+          effect: NoSchedule
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: echoserver-non-hostnetwork
+  namespace: nettest
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+  selector:
+    run: echoserver-non-hostnetwork
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: echoserver-hostnetwork
+  namespace: nettest
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+  selector:
+    run: echoserver-hostnetwork
+---
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: nettest
+  namespace: nettest
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: nettest:nettest
+rules:
+  - apiGroups: [""]
+    resources: ["nodes"]
+    verbs: ["get", "list"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["services"]
+    verbs: ["create", "get", "list", "delete"]
+  - apiGroups: [""]
+    resources: ["endpoints"]
+    verbs: ["get", "list"]
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["create", "get", "list", "delete"]
+  - apiGroups: ["apps"]
+    resources: ["daemonsets"]
+    verbs: ["create", "get", "update", "delete"]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: nettest:nettest
+subjects:
+  - kind: ServiceAccount
+    name: nettest
+    namespace: nettest
+roleRef:
+  kind: ClusterRole
+  name: nettest:nettest
+  apiGroup: rbac.authorization.k8s.io
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: nettest-engine
+  namespace: nettest
+data:
+  engine.yaml: |
+    steps:
+    - sanityCheck: {}
+    - setupTargets:
+        targets:
+          google.com:
+            url:
+              endpoint: www.google.com
+          service:
+            service:
+              namespace: nettest
+              name: echoserver-non-hostnetwork
+              checkDNS: true
+          service-hostnetwork:
+            service:
+              namespace: nettest
+              name: echoserver-hostnetwork
+          pods:
+            endpoint:
+              namespace: nettest
+              name: echoserver-non-hostnetwork
+          vms:
+            endpoint:
+              namespace: nettest
+              name: echoserver-hostnetwork
+    - createCloudprobers:
+        cloudproberImage: gcr.io/anthos-baremetal-release/cloudprober:release-0.11.6-gke.5
+        probeFromCPNodes: true
+    - waitFor:
+        duration: 5m
+    - validateMetrics: {}
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: nettest-prometheus
+  namespace: nettest
+data:
+  prometheus.yaml: |
+    scrape_configs:
+    - job_name: 'nettest'
+      scrape_interval: 15s
+      kubernetes_sd_configs:
+      - role: pod
+      relabel_configs:
+      # Only scrape pods with specific annotation.
+      - source_labels: [__meta_kubernetes_pod_annotation_nettest_should_be_scraped]
+        action: keep
+        regex: true
+      # Only scrape the prometheus port.
+      - source_labels: [__address__, __meta_kubernetes_pod_annotation_nettest_scrape_port]
+        action: replace
+        regex: ([^:]+)(?::\d+)?;(\d+)
+        replacement: $1:$2
+        target_label: __address__
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nettest
+  namespace: nettest
+  labels:
+    app: nettest
+spec:
+  containers:
+  - name: nettest
+    image: gcr.io/anthos-baremetal-release/nettest:v0.2.0__linux_amd64
+    imagePullPolicy: Always
+    command: ["/nettest"]
+    args: ["-v=0", "-alsologtostderr", "-engine_config=/cfg/engine.yaml"]
+    ports:
+    - name: http
+      containerPort: 8999
+    volumeMounts:
+    - name: nettest-engine
+      mountPath: /cfg
+  - name: prometheus
+    imagePullPolicy: Always
+    image: gcr.io/anthos-baremetal-release/prometheus:2.18.1-gke.5
+    args:
+    - --config.file=/cfg/prometheus.yaml
+    - --storage.tsdb.path=/prometheus/
+    ports:
+    - name: http
+      containerPort: 9090
+    volumeMounts:
+    - name: nettest-prometheus
+      mountPath: /cfg
+  volumes:
+  - name: nettest-engine
+    configMap:
+      name: nettest-engine
+  - name: nettest-prometheus
+    configMap:
+      name: nettest-prometheus
+  serviceAccountName: nettest
+  restartPolicy: Never
+
