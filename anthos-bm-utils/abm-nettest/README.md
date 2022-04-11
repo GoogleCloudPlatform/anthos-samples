@@ -14,13 +14,13 @@ Run the nettest by running the following commands.
 For non-RHEL OS:
 
 ```
-$ kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/anthos-samples/main/anthos-bm-utils/abm-nettest/nettest.yaml
+kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/anthos-samples/main/anthos-bm-utils/abm-nettest/nettest.yaml
 ```
 
 For RHEL OS:
 
 ```
-$ kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/anthos-samples/main/anthos-bm-utils/abm-nettest/nettest_rhel.yaml
+kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/anthos-samples/main/anthos-bm-utils/abm-nettest/nettest_rhel.yaml
 ```
 
 NOTE: private registry users needs to download the manifest and modify all image names respectively.
