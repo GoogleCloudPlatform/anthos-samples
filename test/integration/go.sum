@@ -69,6 +69,8 @@ github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test v0.
 github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test v0.0.0-20220401205256-9f9a444009fd/go.mod h1:ZA21UTC1O82Y8uUfWFDe9rll4pZD/1kpPCC1HSpL2T0=
 github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test v0.0.0-20220407185349-7acc10e98fa7 h1:5qA80xSCz8YSBAqerTI7rF6z51ufIWiNMXy/sLd1o08=
 github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test v0.0.0-20220407185349-7acc10e98fa7/go.mod h1:ZA21UTC1O82Y8uUfWFDe9rll4pZD/1kpPCC1HSpL2T0=
+github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test v0.0.0-20220411150117-8383c92c8a54 h1:bjLK1c/yc96IYIY0FfQx/0IWMcRZKitNuoziQlUWvNc=
+github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test v0.0.0-20220411150117-8383c92c8a54/go.mod h1:ZA21UTC1O82Y8uUfWFDe9rll4pZD/1kpPCC1HSpL2T0=
 github.com/GoogleCloudPlatform/k8s-cloud-provider v0.0.0-20190822182118-27a4ced34534/go.mod h1:iroGtC8B3tQiqtds1l+mgk/BBOrxbqjH+eUfFQYRc14=
 github.com/GoogleContainerTools/kpt-functions-catalog/functions/go/list-setters v0.1.0/go.mod h1:ju1d4EAij/igLgN+0er7tPc1nTKn/PTjY00buPEsx0Q=
 github.com/GoogleContainerTools/kpt-functions-sdk/go v0.0.0-20210810181223-632b30549de6/go.mod h1:k86q33ABlA9TnUqRmHH9dnKY2Edh8YbxjRyPfjlM8jE=
