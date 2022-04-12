@@ -29,7 +29,7 @@ jobs:
           repository: ${{github.event.pull_request.head.repo.full_name}}
       - name: License Check
         run: |
-          addlicense -check -skip cloud-config.yaml ./
+          addlicense -check -ignore anthos-bm-openstack-terraform/resources/cloud-config.yaml ./
       - name: Terraform Checkstyle
         timeout-minutes: 20
         run: |
