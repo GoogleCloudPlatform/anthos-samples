@@ -7,7 +7,7 @@ connectivity issues among k8s components in the cluster of interest.
 
 ## Quickstart
 
-### Run Nettest
+### Run nettest
 
 Run the nettest by running the following commands.
 
@@ -25,12 +25,12 @@ kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/anthos-sa
 
 NOTE: private registry users needs to download the manifest and modify all image names respectively.
 
-### Get test results
+### Get the test result
 
 Run the following command to see the nettest result:
 
 ```
-kubectl -n nettest logs nettest nettest
+kubectl -n nettest logs nettest -c nettest
 ```
 
 While the nettest is running, you will see messages like the following:
@@ -92,8 +92,8 @@ In addition, `{dst}` can also be:
 
 The details for service IP can be found in the probe sections above. For
 example, the following probe is saying that 172.26.27.229:80 is
-`service-clusterip` (and you will see two probes that has same targets - one for
-pod and another for vm)
+`service-clusterip` (and you will see two probes with this `targets` - one for
+pod, `pod-service-clusterip` and another for vm, `vm-service-clusterip`)
 
 ```
 probe {
