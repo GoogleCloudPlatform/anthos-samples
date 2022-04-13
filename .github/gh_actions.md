@@ -23,7 +23,7 @@ The actions runners for this repository are hosted in the `anthos-gke-samples-ci
   > **Note:** Once the script is complete you should see some extra steps printed out. Those steps must also be executed to complete the runner setup
 
 - You might have to restart the VM for the changes to take effect
-  
+
 - Finally open a PR with the following changes:
   - Update the [workflow files](./workflows) to use the new runner label _(e.g: runner-jan-2031 as used above)_ for the `runs-on` directive for Github actions
 - Verify that the actions run on the new runner without any issues
