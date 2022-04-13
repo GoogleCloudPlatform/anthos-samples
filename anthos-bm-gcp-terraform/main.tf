@@ -105,7 +105,7 @@ module "create_service_accounts" {
 
 module "instance_template" {
   source  = "terraform-google-modules/vm/google//modules/instance_template"
-  version = "~> 7.6.0"
+  version = "~> 7.7.0"
   depends_on = [
     module.enable_google_apis_primary,
     module.enable_google_apis_secondary
