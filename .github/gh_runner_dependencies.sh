@@ -27,16 +27,14 @@ sudo apt-get install -y \
   lsb-release
 
 # install Golang
-wget "https://dl.google.com/go/$(curl https://golang.org/VERSION?m=text).linux-amd64.tar.gz"
+wget "https://go.dev/dl/go1.18.linux-amd64.tar.gz"
 sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go*
-sudo chown -R root:root ./go
-sudo mv go /usr/local
 echo "export GOPATH=$HOME/go" >> "$HOME"/.profile
 echo "export PATH=$PATH:/usr/local/go/bin:$GOPATH/bin" >> "$HOME"/.profile
 source "$HOME"/.profile
 
 # install the addlicense tool used to check files for license headers
-go get -u github.com/google/addlicense
+go install github.com/google/addlicense@latest
 sudo ln -s "$HOME"/go/bin/addlicense /bin
 
 # install the tfenv tool to manage terraform versions
@@ -51,7 +49,7 @@ tfenv install 1.1.3
 tfenv use 1.1.3
 
 # install the golint binary
-go get -u golang.org/x/lint/golint
+go install golang.org/x/lint/golint@latest
 sudo ln -s "$HOME"/go/bin/golint /bin/
 
 # install docker
@@ -70,9 +68,7 @@ echo "All dependencies have been installed."
 echo "You have to download the Service Account key into this host, store it under /var/local/gh-runner and give it 444 permissions"
 echo "
   > gcloud auth login
-  > PROJECT_ID=anthos-gke-samples-ci
-  > SERVICE_ACCOUNT_NAME=gh-actions-anthos-samples-sa
-  > gcloud iam service-accounts keys create sa-key.json --iam-account=${SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com
+  > gcloud iam service-accounts keys create sa-key.json --iam-account=gh-actions-anthos-samples-sa@anthos-gke-samples-ci.iam.gserviceaccount.com
   > sudo mv ./sa-key.json /var/local/gh-runner/
   > sudo chmod 444 /var/local/gh-runner/sa-key.json
   > sudo bash -c 'echo export GOOGLE_APPLICATION_CREDENTIALS=/var/local/gh-runner/sa-key.json > /var/local/gh-runner/env_vars'
