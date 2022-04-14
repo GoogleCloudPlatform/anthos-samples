@@ -22,7 +22,7 @@ on:
       - release/*
 jobs:
   static-code-tests:
-    runs-on: [self-hosted, runner-july-21]
+    runs-on: [self-hosted, runner-apr-22]
     steps:
       - uses: actions/checkout@v3
         with:
@@ -30,7 +30,7 @@ jobs:
           repository: ${{github.event.pull_request.head.repo.full_name}}
       - name: License Check
         run: |
-          addlicense -check -skip cloud-config.yaml ./
+          addlicense -check -ignore anthos-bm-openstack-terraform/resources/cloud-config.yaml ./
       - name: Terraform Checkstyle
         timeout-minutes: 20
         run: |
@@ -49,7 +49,7 @@ jobs:
             exit 1
           fi
   tf-validate:
-    runs-on: [self-hosted, runner-july-21]
+    runs-on: [self-hosted, runner-apr-22]
     strategy:
       matrix:
         # list of directories in the repo that hosts Terraform samples
@@ -76,7 +76,7 @@ jobs:
           terraform init -backend=false
           terraform validate -json .
   go-unit-tests:
-    runs-on: [self-hosted, runner-july-21]
+    runs-on: [self-hosted, runner-apr-22]
     needs: tf-validate
     strategy:
       matrix:
