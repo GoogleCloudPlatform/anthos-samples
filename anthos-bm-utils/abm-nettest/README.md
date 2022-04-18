@@ -11,9 +11,9 @@ Anthos clusters on bare metal `nettest` identifies connectivity issues in the Ku
 
 It also includes `nettest` namespace, ServiceAccount (along with ClusterRole and ClusterRoleBinding) to achieve separation from other namespaces.
 
-## Run nettest
+## Run `nettest`
 
-Deploy `nettest` by running the following command for your operating system. Upon `nettest` Pod is started, the test will run automatically.
+Deploy `nettest` by running the following command for your operating system. Upon `nettest` Pod is started, the test will run automatically. Note that `nettest` take about 5 minutes and it will keep running even after it detects any connection issues.
 
 For non-RHEL OS:
 
@@ -31,7 +31,7 @@ Note: If you use a private registry, you need to download the manifest and edit 
 
 ## Get the test result
 
-Run the following command to see the nettest result:
+Run the following command to see the `nettest` result:
 
 ```
 kubectl -n nettest logs nettest -c nettest
@@ -62,6 +62,14 @@ E0211 06:40:11.948634       1 collector.go:65] Engine error: step validateMetric
 "Error rate in percentage": probe from "192.168.3.248" to "echoserver-hostnetwork_10.200.0.2_8080" has value 2.007046, threshold is 1.000000
 ```
 
+When the issue has been addressed, you can remove the `nettest` pod and reapply the same manifest:
+
+for non-RHEL OS (for example):
+
+```
+kubectl -n nettest delete pod nettest
+kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/anthos-samples/main/anthos-bm-utils/abm-nettest/nettest.yaml
+```
 
 ## Cleanup
 
