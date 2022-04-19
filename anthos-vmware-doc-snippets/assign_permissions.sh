@@ -37,7 +37,7 @@ if ! command -v govc &> /dev/null; then
     exit 1
 fi
 
-# [START anthosvmware_anthos_vmware_doc_snippets_assign_permissions]
+# [START gkeonprem_anthos_vmware_doc_snippets_assign_permissions]
 cat <<END | xargs govc role.create anthos 
 Datastore.AllocateSpace
 Datastore.Browse
@@ -160,6 +160,6 @@ VirtualMachine.State.RemoveSnapshot
 VirtualMachine.State.RenameSnapshot
 VirtualMachine.State.RevertToSnapshot
 END
-# [END anthosvmware_anthos_vmware_doc_snippets_assign_permissions]
+# [END gkeonprem_anthos_vmware_doc_snippets_assign_permissions]
 
 govc permissions.set -principal "$CLUSTER_USER_ACCOUNT@vsphere.local" -role anthos -propagate=true
