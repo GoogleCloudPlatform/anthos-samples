@@ -66,27 +66,31 @@ function __install_deps__ () {
 # hosts in the cluster. This adds this host to an L2 overlay network
 ##############################################################################
 function __setup_vxlan__ () {
-  echo "Setting up ip address [$VXLAN_IP_ADDRESS/24] for net device vxlan0"
-  ip link add vxlan0 type vxlan id 42 dev "$DEFAULT_IFACE" dstport 0
-  __check_exit_status__ $? \
+  current_vxlan0_ip=$(ip --json a show dev vxlan0 | jq '.[0].addr_info[0].local' -r)
+  if [ "$VXLAN_IP_ADDRESS" != "$current_vxlan0_ip" ]; then
+    echo "Setting up ip address [$VXLAN_IP_ADDRESS/24] for net device vxlan0"
+    ip link add vxlan0 type vxlan id 42 dev "$DEFAULT_IFACE" dstport 0
+    __check_exit_status__ $? \
     "[+] Successfully added a new network device of type vxlan" \
     "[-] Failed to add new network device for vxlan setup. Check for failures on [ip link add] in ~/$LOG_FILE"
 
-  __update_bridge_entries__
+    __update_bridge_entries__
 
-  ip addr add "$VXLAN_IP_ADDRESS"/24 dev vxlan0
-  __check_exit_status__ $? \
+    ip addr add "$VXLAN_IP_ADDRESS"/24 dev vxlan0
+    __check_exit_status__ $? \
     "[+] Successfully associated ip address $VXLAN_IP_ADDRESS/24 to the new vxlan network interface" \
     "[-] Failed to associate ip address $VXLAN_IP_ADDRESS/24 to the new vxlan network interface. Check for failures on [ip addr add] in ~/$LOG_FILE"
 
-  ip link set up dev vxlan0
-  __check_exit_status__ $? \
+    ip link set up dev vxlan0
+    __check_exit_status__ $? \
     "[+] Successfully started the new network device vxlan0" \
     "[-] Failed to start the new network device vxlan0. Check for failures on [ip link set up] in ~/$LOG_FILE"
 
-  __print_separator__
+  else
+    echo "Skipping vxlan0 setup. vxlan0 device is already configured with $VXLAN_IP_ADDRESS address "
+  fi
+    __print_separator__
 }
-
 ##############################################################################
 # Update the host's linux bridge to include forwarding entries for each of
 # the hosts in the cluster. The bridge entries are populated using the VPC
@@ -208,7 +212,7 @@ function __setup_docker__ () {
 # The gcloud CLI is used here update the SSH key information on the hosts.
 ##############################################################################
 function __setup_ssh_access__ () {
-  ssh-keygen -t rsa -N "" -f "$HOME"/.ssh/id_rsa
+  yes 'y' | ssh-keygen -t rsa -N "" -f "$HOME"/.ssh/id_rsa
   __check_exit_status__ $? \
     "[+] Successfully generated SSH key pair" \
     "[-] Failed to generate SSH key pair. Check for failures on [ssh-keygen] in ~/$LOG_FILE"
