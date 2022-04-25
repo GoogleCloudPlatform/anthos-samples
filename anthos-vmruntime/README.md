@@ -9,7 +9,7 @@ We will use a GCE VM as the base VM workload that we eventually migrate into
 an Anthos on bare metal cluster. The process for VMs running in any other
 virtualization platform should be almost the same.
 
-### The guide has the following highlevel steps:
+#### The guide has the following highlevel steps:
 
 > You may skip some of these steps if you already have the necessary setup. For
 example if you already have an Anthos on bare metal cluster running, then you
@@ -29,7 +29,7 @@ on bare metal cluster nodes. For the purpose of this guide, we have already
 created an image of a GCE VM and made it publicly accesible.
 
 ---
-#### Deploy an Anthos on bare metal cluster
+### Deploy an Anthos on bare metal cluster
 
 > **Note:** If you already have an Anthos on bare metal cluster then you can
 > skip this step. If you do skip, then note that some future steps also might
@@ -56,7 +56,7 @@ gcloud compute ssh tfadmin@cluster1-abm-ws0-001 --project=<YOUR_PROJECT> --zone=
 export KUBECONFIG=/home/tfadmin/bmctl-workspace/cluster1/cluster1-kubeconfig
 ```
 ---
-#### Cleanup the resources created by default in the installation guide
+### Cleanup the resources created by default in the installation guide
 
 ```sh
 # delete the sample application pods in the default namespace
@@ -66,7 +66,7 @@ kubectl delete pods --all -n default
 kubectl delete svc api-server-svc inventory-svc payments-svc
 ```
 ---
-#### Deploy a `MySQL` container that the VM workload will connect to
+### Deploy a `MySQL` container that the VM workload will connect to
 
 Copy the [mysql-db.yaml](mysql-db.yaml) file into the admin workstation and
 apply it to the cluster.
@@ -75,7 +75,7 @@ apply it to the cluster.
 kubectl apply -f mysql-db.yaml
 ```
 ---
-#### Enable the `Anthos VMRuntime` on the cluster
+### Enable the `Anthos VMRuntime` on the cluster
 
 The `Anthos VMRuntime` custom resource definition (CRD) is part of all Anthos on
 bare metal clusters since version `1.10`. An instance of the `VMRuntime` custom
@@ -97,7 +97,7 @@ using `kubectl apply -f vmruntime.yaml`.
 > Setting this to true ensures that the VMRuntime makes use of hardware
 > virtualization for better performace if your node supports it.
 ---
-####  Install the [`virtctl`](https://kubevirt.io/user-guide/operations/virtctl_client_tool/) plugin for `kubectl`
+###  Install the [`virtctl`](https://kubevirt.io/user-guide/operations/virtctl_client_tool/) plugin for `kubectl`
 
 > **Note:** The path for the ServiceAccount key is based on the install guide
 > linked previously. If you did not follow that guide to set up your Anthos on
@@ -130,7 +130,7 @@ Available Commands:
 ...
 ```
 ---
-####  Create a new VM in the Anthos on bare metal cluster
+###  Create a new VM in the Anthos on bare metal cluster
 
 Here we use an already created and [publicly hosted `qcow2` image](https://storage.googleapis.com/abm-vm-images).
 This image was created based off of a GCE VM. Before the image was created the
@@ -168,7 +168,7 @@ Creating gvm "pos-vm"
 > see the definiton of the `VirtualMachine` and `DataVolume`.  
 
 ---
-#### Check the VM creation status
+### Check the VM creation status
 
 Creation of the VM requires two resources to be created: `DataVolume` and
 `VirtualMachine`. `DataVolume` is the _persistent disk_ where the contents of
@@ -249,7 +249,7 @@ into the `VirtualMachine` before the VM is booted up. Creation of a
     pos-vm    40m     Running   192.168.3.250   kubevirt-cluster-abm-w1-001   True
     ```
 ---
-#### Verify access into the VM
+### Verify access into the VM
 
 - Connect to the VM console. Press the `return ⏎` key
   once you see the `Successfully connected to pos-vm ...` message.
@@ -315,7 +315,7 @@ into the `VirtualMachine` before the VM is booted up. Creation of a
 - To exit the console connection use `Ctrl + ]` (`^]`). You could have also used
   this escape sequence (`^]`) to directly exit out from the VM login shell.
 ---
-#### Create a new `Kubernetes Service` that will route traffic to the VM
+### Create a new `Kubernetes Service` that will route traffic to the VM
 
 The [installation guide](/anthos-bm-gcp-terraform/docs/manuallb_install.md)
 based on which the Anthos on bare metal cluster was setup, automatically creates
