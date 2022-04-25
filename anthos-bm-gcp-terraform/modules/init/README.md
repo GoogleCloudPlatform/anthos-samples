@@ -49,6 +49,8 @@ terraform-docs markdown table \
 | <a name="input_init_vars_file"></a> [init\_vars\_file](#input\_init\_vars\_file) | Path to the file containing the host specific arguments to the init script | `string` | n/a | yes |
 | <a name="input_install_abm_script"></a> [install\_abm\_script](#input\_install\_abm\_script) | Path to the script that installs Anthos on bare metal | `string` | `"../../resources/install_abm.sh"` | no |
 | <a name="input_login_script"></a> [login\_script](#input\_login\_script) | Path to the script that generates the token used to login to the Anthos bare metal cluster | `string` | `"../../resources/login.sh"` | no |
+| <a name="input_module_depends_on"></a> [module\_depends\_on](#input\_module\_depends\_on) | List of modules or resources this module depends on. | `list(any)` | `[]` | no |
+| <a name="input_nfs_yaml_path"></a> [nfs\_yaml\_path](#input\_nfs\_yaml\_path) | Path to the NFS YAML configuration file for the Anthos cluster | `string` | `"../../resources/.nfs-csi.yaml"` | no |
 | <a name="input_priv_key_path_template"></a> [priv\_key\_path\_template](#input\_priv\_key\_path\_template) | Template denoting the path where the private key is to be stored | `string` | `"../../resources/.ssh-key-%s.priv"` | no |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | Google Cloud Project where the target resources live | `string` | n/a | yes |
 | <a name="input_pub_key_path_template"></a> [pub\_key\_path\_template](#input\_pub\_key\_path\_template) | Template denoting the path where the public key is to be stored | `string` | `"../../resources/.ssh-key-%s.pub"` | no |

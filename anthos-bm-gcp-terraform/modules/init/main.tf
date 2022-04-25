@@ -22,6 +22,14 @@ locals {
   home_dir                  = "/home/${var.username}"
 }
 
+resource "null_resource" "module_depends_on" {
+  count = length(var.module_depends_on) > 0 ? 1 : 0
+
+  triggers = {
+    value = length(var.module_depends_on)
+  }
+}
+
 resource "tls_private_key" "ssh_key_pair" {
   algorithm = "RSA"
   rsa_bits  = 4096
@@ -64,7 +72,7 @@ module "gcloud_add_ssh_key_metadata" {
 }
 
 resource "null_resource" "exec_init_script" {
-  depends_on = [module.gcloud_add_ssh_key_metadata]
+  depends_on = [module.gcloud_add_ssh_key_metadata, null_resource.module_depends_on]
   connection {
     type        = "ssh"
     user        = var.username
@@ -100,6 +108,11 @@ resource "null_resource" "exec_init_script" {
   provisioner "file" {
     source      = var.login_script
     destination = "${local.home_dir}/login.sh"
+  }
+
+  provisioner "file" {
+    source      = var.nfs_yaml_path
+    destination = "${local.home_dir}/nfs-csi.yaml"
   }
 
   provisioner "remote-exec" {

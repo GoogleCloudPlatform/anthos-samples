@@ -42,8 +42,9 @@ resource "google_compute_network_endpoint" "lb-network-endpoint" {
 }
 
 resource "google_compute_health_check" "lb-health-check" {
-  name    = "${var.name_prefix}-lb-health-check"
-  project = var.project
+  name              = "${var.name_prefix}-lb-health-check"
+  project           = var.project
+  healthy_threshold = 1
 
   dynamic "tcp_health_check" {
     for_each = var.type == "ingresslb" ? [1] : []

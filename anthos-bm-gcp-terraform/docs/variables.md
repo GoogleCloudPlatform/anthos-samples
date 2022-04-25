@@ -22,7 +22,7 @@ terraform-docs markdown table \
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | < 1.2 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= v0.15.5, < 1.2 |
 | <a name="requirement_google"></a> [google](#requirement\_google) | >= 3.68.0 |
 | <a name="requirement_google-beta"></a> [google-beta](#requirement\_google-beta) | >= 3.68.0 |
 
@@ -42,12 +42,12 @@ terraform-docs markdown table \
 | <a name="module_configure_ingress_lb"></a> [configure\_ingress\_lb](#module\_configure\_ingress\_lb) | ./modules/loadbalancer | n/a |
 | <a name="module_controlplane_vm_hosts"></a> [controlplane\_vm\_hosts](#module\_controlplane\_vm\_hosts) | ./modules/vm | n/a |
 | <a name="module_create_service_accounts"></a> [create\_service\_accounts](#module\_create\_service\_accounts) | terraform-google-modules/service-accounts/google | ~> 4.0 |
-| <a name="module_enable_google_apis_primary"></a> [enable\_google\_apis\_primary](#module\_enable\_google\_apis\_primary) | terraform-google-modules/project-factory/google//modules/project_services | 12.0.0 |
-| <a name="module_enable_google_apis_secondary"></a> [enable\_google\_apis\_secondary](#module\_enable\_google\_apis\_secondary) | terraform-google-modules/project-factory/google//modules/project_services | 12.0.0 |
+| <a name="module_enable_google_apis_primary"></a> [enable\_google\_apis\_primary](#module\_enable\_google\_apis\_primary) | terraform-google-modules/project-factory/google//modules/project_services | 13.0.0 |
+| <a name="module_enable_google_apis_secondary"></a> [enable\_google\_apis\_secondary](#module\_enable\_google\_apis\_secondary) | terraform-google-modules/project-factory/google//modules/project_services | 13.0.0 |
 | <a name="module_gke_hub_membership"></a> [gke\_hub\_membership](#module\_gke\_hub\_membership) | terraform-google-modules/gcloud/google | ~>3.1.1 |
 | <a name="module_init_hosts"></a> [init\_hosts](#module\_init\_hosts) | ./modules/init | n/a |
 | <a name="module_install_abm"></a> [install\_abm](#module\_install\_abm) | ./modules/install | n/a |
-| <a name="module_instance_template"></a> [instance\_template](#module\_instance\_template) | terraform-google-modules/vm/google//modules/instance_template | ~> 7.6.0 |
+| <a name="module_instance_template"></a> [instance\_template](#module\_instance\_template) | terraform-google-modules/vm/google//modules/instance_template | ~> 7.7.0 |
 | <a name="module_worker_vm_hosts"></a> [worker\_vm\_hosts](#module\_worker\_vm\_hosts) | ./modules/vm | n/a |
 
 ## Resources
@@ -55,9 +55,11 @@ terraform-docs markdown table \
 | Name | Type |
 |------|------|
 | [google_compute_firewall.lb-firewall-rule](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_firewall) | resource |
+| [google_filestore_instance.cluster-abm-nfs](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/filestore_instance) | resource |
 | [local_file.cluster_yaml_bundledlb](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [local_file.cluster_yaml_manuallb](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [local_file.init_args_file](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
+| [local_file.nfs_yaml](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 
 ## Inputs
 
@@ -80,11 +82,12 @@ terraform-docs markdown table \
 | <a name="input_min_cpu_platform"></a> [min\_cpu\_platform](#input\_min\_cpu\_platform) | Minimum CPU architecture upon which the Compute Engine VMs are to be scheduled | `string` | `"Intel Haswell"` | no |
 | <a name="input_mode"></a> [mode](#input\_mode) | Indication of the execution mode. By default the terraform execution will end<br>    after setting up the GCE VMs where the Anthos bare metal clusters can be deployed.<br><br>    **setup:** create and initialize the GCE VMs required to install Anthos bare metal.<br><br>    **install:** everything up to 'setup' mode plus automatically run Anthos bare metal installation steps as well.<br><br>    **manuallb:** similar to 'install' mode but Anthos on bare metal is installed with ManualLB mode. | `string` | `"setup"` | no |
 | <a name="input_network"></a> [network](#input\_network) | VPC network to which the provisioned Compute Engine VMs is to be connected to | `string` | `"default"` | no |
+| <a name="input_nfs_server"></a> [nfs\_server](#input\_nfs\_server) | Provision a Google Filestore instance for NFS shared storage | `bool` | `false` | no |
 | <a name="input_primary_apis"></a> [primary\_apis](#input\_primary\_apis) | List of primary Google Cloud APIs to be enabled for this deployment | `list(string)` | <pre>[<br>  "cloudresourcemanager.googleapis.com"<br>]</pre> | no |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | Unique identifer of the Google Cloud Project that is to be used | `string` | n/a | yes |
 | <a name="input_region"></a> [region](#input\_region) | Google Cloud Region in which the Compute Engine VMs should be provisioned | `string` | `"us-central1"` | no |
 | <a name="input_resources_path"></a> [resources\_path](#input\_resources\_path) | Path to the resources folder with the template files | `string` | n/a | yes |
-| <a name="input_secondary_apis"></a> [secondary\_apis](#input\_secondary\_apis) | List of secondary Google Cloud APIs to be enabled for this deployment | `list(string)` | <pre>[<br>  "anthos.googleapis.com",<br>  "anthosgke.googleapis.com",<br>  "container.googleapis.com",<br>  "gkeconnect.googleapis.com",<br>  "gkehub.googleapis.com",<br>  "serviceusage.googleapis.com",<br>  "stackdriver.googleapis.com",<br>  "monitoring.googleapis.com",<br>  "logging.googleapis.com",<br>  "iam.googleapis.com",<br>  "compute.googleapis.com",<br>  "anthosaudit.googleapis.com",<br>  "opsconfigmonitoring.googleapis.com"<br>]</pre> | no |
+| <a name="input_secondary_apis"></a> [secondary\_apis](#input\_secondary\_apis) | List of secondary Google Cloud APIs to be enabled for this deployment | `list(string)` | <pre>[<br>  "anthos.googleapis.com",<br>  "anthosgke.googleapis.com",<br>  "container.googleapis.com",<br>  "gkeconnect.googleapis.com",<br>  "gkehub.googleapis.com",<br>  "serviceusage.googleapis.com",<br>  "stackdriver.googleapis.com",<br>  "monitoring.googleapis.com",<br>  "logging.googleapis.com",<br>  "iam.googleapis.com",<br>  "compute.googleapis.com",<br>  "anthosaudit.googleapis.com",<br>  "opsconfigmonitoring.googleapis.com",<br>  "file.googleapis.com"<br>]</pre> | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | List of tags to be associated to the provisioned Compute Engine VMs | `list(string)` | <pre>[<br>  "http-server",<br>  "https-server"<br>]</pre> | no |
 | <a name="input_username"></a> [username](#input\_username) | The name of the user to be created on each Compute Engine VM to execute the init script | `string` | `"tfadmin"` | no |
 | <a name="input_zone"></a> [zone](#input\_zone) | Zone within the selected Google Cloud Region that is to be used | `string` | `"us-central1-a"` | no |
