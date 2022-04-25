@@ -26,6 +26,7 @@ WorkingDirectory=/pos
 Environment=INVENTORY_PORT=8082
 Environment=MYSQL_HOST=mysql-db
 Environment=SPRING_PROFILES_ACTIVE=database
+Environment=ACTIVE_ITEM_TYPE=burgers
 Environment=ITEMS="items:\n  - name: "BigBurger"\n    type: "burgers"\n    price: 5.50\n    imageUrl: "usr/lib/images/bigburger.png"\n    quantity: 200\n    labels: [ "retail", "restaurant", "food" ]\n  - name: "DoubleBurger"\n    type: "burgers"\n    price: 7.20\n    imageUrl: "usr/lib/images/burgers.png"\n    quantity: 200\n    labels: [ "retail", "restaurant", "food" ]\n  - name: "Shirt"\n    type: "textile"\n    price: 15.50\n    imageUrl: "usr/lib/images/shirt.png"\n    quantity: 50\n    labels: [ "retail", "textile", "clothing" ]\n  - name: "Short"\n    type: "textile"\n    price: 17.20\n    imageUrl: "usr/lib/images/short.png"\n    quantity: 20\n    labels: [ "retail", "textile", "clothing" ]"
 
 ExecStart=/pos/scripts/inventory.sh

@@ -26,8 +26,8 @@ User=shabirmean
 WorkingDirectory=/pos
 
 Environment=API_SERVER_PORT=8081
-Environment=INVENTORY_EP=localhost:8082
-Environment=PAYMENTS_EP=localhost:8083
+Environment=INVENTORY_EP=http://localhost:8082
+Environment=PAYMENTS_EP=http://localhost:8083
 ExecStart=/pos/scripts/api-server.sh
 TimeoutStopSec=10
 Restart=on-failure
