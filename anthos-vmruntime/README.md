@@ -382,3 +382,10 @@ echo $INGRESS_IP
 ```sh
 34.117.58.199 # you might have a different IP address
 ```
+<p align="center">
+  <img src="docs/images/pos.png">
+  <em>
+    </br>
+    (click image to enlarge)
+  </em>
+</p>
