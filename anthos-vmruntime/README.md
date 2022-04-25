@@ -9,7 +9,7 @@ We will use a GCE VM as the base VM workload that we eventually migrate into
 an Anthos on bare metal cluster. The process for VMs running in any other
 virtualization platform should be almost the same.
 
-#### The guide has the following highlevel steps:
+### The guide has the following highlevel steps:
 
 > You may skip some of these steps if you already have the necessary setup. For
 example if you already have an Anthos on bare metal cluster running, then you
@@ -26,9 +26,9 @@ To create a VM in the Anthos on bare metal cluster, you need a VM image
 _(accepted formats are: `qcow2` or `raw`)_ similar to container images for Pods. 
 This image must be hosted in a repository that can be reached from your Anthos
 on bare metal cluster nodes. For the purpose of this guide, we have already
-created an image of a GCE VM and made it publicly accesible. 
+created an image of a GCE VM and made it publicly accesible.
 
-
+---
 #### Pre-requisites
 - 
 
@@ -59,8 +59,7 @@ gcloud compute ssh tfadmin@cluster1-abm-ws0-001 --project=<YOUR_PROJECT> --zone=
 # set the KUBECONFIG environment variable
 export KUBECONFIG=/home/tfadmin/bmctl-workspace/cluster1/cluster1-kubeconfig
 ```
-</br>
-
+---
 #### Cleanup the resources created by default in the installation guide
 
 ```sh
@@ -70,8 +69,7 @@ kubectl delete pods --all -n default
 # delete the sample application services in the default namespace
 kubectl delete svc api-server-svc inventory-svc payments-svc
 ```
-</br>
-
+---
 #### Deploy a `MySQL` container that the VM workload will connect to
 
 Copy the [mysql-db.yaml](mysql-db.yaml) file into the admin workstation and
@@ -80,8 +78,7 @@ apply it to the cluster.
 ```sh
 kubectl apply -f mysql-db.yaml
 ```
-</br>
-
+---
 #### Enable the `Anthos VMRuntime` on the cluster
 
 The `Anthos VMRuntime` custom resource definition (CRD) is part of all Anthos on
@@ -97,14 +94,13 @@ by setting the `spec.enabled` field to `true`.
 kubectl edit vmruntime
 ```
  You can also copy the [vmruntime.yaml](vmruntime.yaml)
-file from this repository into your admin workstation and directly apply that (`kubectl apply -f vmruntime.yaml`).
+file from this repository into your admin workstation and directly apply that
+using `kubectl apply -f vmruntime.yaml`.
 
 > **Note:** Optionally, you can set the `spec.useEmulation` field to `true`.
 > Setting this to true ensures that the VMRuntime makes use of hardware
 > virtualization for better performace if your node supports it.
-
-</br>
-
+---
 ####  Install the [`virtctl`](https://kubevirt.io/user-guide/operations/virtctl_client_tool/) plugin for `kubectl`
 
 > **Note:** The path for the ServiceAccount key is based on the install guide
@@ -137,8 +133,7 @@ Available Commands:
 ...
 ...
 ```
-</br>
-
+---
 ####  Create a new VM in the Anthos on bare metal cluster
 
 Here we use an already created and [publicly hosted `qcow2` image](https://storage.googleapis.com/abm-vm-images).
