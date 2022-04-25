@@ -144,6 +144,12 @@ configured to start the sample application when the VM boots up. You can see the
 `systemd` service config files in the [pos-systemd-services](pos-systemd-services)
 directory.
 
+The following command uses the `virtctl` plugin of the `kubectl` CLI.
+Alternatively, you can also create the VM using **KRM** definitions in a yaml.
+The [pos-vm.yaml](/pos-vm.yaml) is another way of expressing the creation of a
+VM. Thus, you can also copy this yaml definition into the admin workstation and
+create the VM using `kubectl apply -f pos-vm.yaml`.
+
 ```sh
 kubectl virt create vm pos-vm \
 --boot-disk-size=80Gi \
@@ -161,3 +167,153 @@ Apply yaml for vm "pos-vm"
 Creating boot DataVolume "pos-vm-boot-dv"
 Creating gvm "pos-vm"
 ```
+> **Note:** After you run `kubectl virt create vm pos-vm`, the CLI would have
+> created a yaml file named after the vm (`pos-vm.yaml`). You can inspect it to
+> see the definiton of the `VirtualMachine` and `DataVolume`.  
+
+---
+#### Check the VM creation status
+
+Creation of the VM requires two resources to be created: `DataVolume` and
+`VirtualMachine`. `DataVolume` is the _persistent disk_ where the contents of
+the **VM image** is imported into and is made bootable from. `VirtualMachine` is
+the **VM template** created based off of the image. The `DataVolume` is mounted
+into the `VirtualMachine` before the VM is booted up. Creation of a
+`VirtualMachine`, automatically triggers the creation of a
+`VirtualMachineInstance` resource which represents a _RUNNING_ instance of a VM.
+
+- Check the status of the `DataVolume`.
+    ```sh
+    # you can use dv and datavolume interchangeably
+    kubectl get dv
+    ```
+    ```sh
+    # expected output
+    NAME              PHASE             PROGRESS   RESTARTS   AGE
+    pos-vm-boot-dv    ImportScheduled   N/A                   8s
+    ```
+- Check the status of the `VirtualMachine`.
+    ```sh
+    # you can use vm and virtualmachine interchangeably
+    kubectl get vm
+    ```
+    ```sh
+    # expected output
+    NAME      AGE     STATUS         READY
+    pos-vm    10s     Provisioning   False
+    ```
+- Check the status of the `VirtualMachineInstance`.
+    ```sh
+    # you can use vmi and virtualmachineinstance interchangeably
+    kubectl get vmi
+    ```
+    ```sh
+    # expected output
+    NAME      AGE     PHASE     IP              NODENAME                      READY
+    pos-vm2   22m     Pending                                                 False
+    ```
+- Wait for the **VM image** to be fully imported into the `DataVolume`. You can
+  continue to watch the progress while the image is being imported.
+    ```sh
+    # you can use dv and datavolume interchangeably
+    kubectl get dv -w
+
+    NAME              PHASE              PROGRESS   RESTARTS   AGE
+    pos-vm-boot-dv   ImportInProgress   0.00%                 14s
+    ...
+    ...
+    pos-vm-boot-dv   ImportInProgress   0.00%                 31s
+    pos-vm-boot-dv   ImportInProgress   1.02%                 33s
+    pos-vm-boot-dv   ImportInProgress   1.02%                 35s
+    ...
+    ```
+
+    Once the import is complete and the `DataVolume` has been created, the output
+    would change as follows.
+    ```sh
+    kubectl get dv
+
+    NAME              PHASE             PROGRESS   RESTARTS   AGE
+    pos-vm-boot-dv    Succeeded         100.0%                22m18s
+    ```
+    > **Note:** The import time is dependent on the size of the VM image being used.
+    > The GCE VM image we have used here is **~11GB**s and can take upto **35 mins**
+    > to be fully imported.
+- Verify that the `VirtualMachine` and `VirtualMachineInstance` resources are **RUNNING**.
+    ```sh
+    kubectl get vm
+
+    NAME      AGE     STATUS         READY
+    pos-vm    40m     Running        True
+    ```
+    ```sh
+    kubectl get vmi
+
+    NAME      AGE     PHASE     IP              NODENAME                      READY
+    pos-vm    40m     Running   192.168.3.250   kubevirt-cluster-abm-w1-001   True
+    ```
+---
+#### Verify access into the VM
+
+- Connect to the VM console. Press the `return ⏎` key
+  once you see the `Successfully connected to pos-vm ...` message.
+    ```sh
+    kubectl virt console pos-vm
+    ```
+    ```sh
+    # expected output
+    Successfully connected to pos-vm console. The escape sequence is ^]
+
+    pos-from-public-image login:
+    ```
+- Use the following default username` and `password`.
+    ```sh
+    pos-from-public-image login: abmuser
+    Password: abmworks
+    ```
+    ```sh
+    # expected output
+    Welcome to Ubuntu 20.04.4 LTS (GNU/Linux 5.4.0-109-generic x86_64)
+
+    ...
+    
+    System load:  1.63               Processes:               135
+    Usage of /:   12.2% of 73.10GB   Users logged in:         0
+    Memory usage: 23%                IPv4 address for enp1s0: 10.0.2.2
+    Swap usage:   0%
+
+    ...
+
+    Apr 25 15:52:11 pos-from-public-image systemd[1]: Created slice User Slice of UID 1003.
+    Apr 25 15:52:11 pos-from-public-image systemd[1]: Starting User Runtime Directory /run/user/1003...
+    Apr 25 15:52:11 pos-from-public-image systemd[1]: Finished User Runtime Directory /run/user/1003.
+    Apr 25 15:52:11 pos-from-public-image systemd[1]: Starting User Manager for UID 1003...
+    ...
+    Apr 25 15:52:14 pos-from-public-image systemd[1]: Started User Manager for UID 1003.
+    Apr 25 15:52:14 pos-from-public-image systemd[1]: Started Session 1 of user abmuser.
+    To run a command as administrator (user "root"), use "sudo <command>".
+    See "man sudo_root" for details.
+
+    abmuser@pos-from-public-image:~$
+    ```
+    > **Note:** You may see additional logs from the `systemd` services when you
+    > connect to the VM console for the first time. Give it a few minutes and
+    > press the `return ⏎` key get the login prompt. 
+- To exit out of the VM, first you have to exit out of the login shell session.
+  Then, you have to exit out of the console connection to the VM.
+    ```sh
+    abmuser@pos-from-public-image:~$ exit
+    ```
+    ```sh
+    # expected output
+    logout
+    Apr 25 15:56:11 pos-from-public-image systemd[1]: Starting Cleanup of Temporary Directories...
+    Apr 25 15:56:11 pos-from-public-image systemd[1]: serial-getty@ttyS0.service: Succeeded.
+    ...
+    Apr 25 15:56:11 pos-from-public-image systemd[1]: Finished Cleanup of Temporary Directories.
+
+    Ubuntu 20.04.4 LTS pos-from-public-image ttyS0
+
+    pos-from-public-image login:
+    ```
+- To exit the console connection use `Ctrl + ]` (`^]`)

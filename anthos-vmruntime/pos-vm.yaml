@@ -1,0 +1,71 @@
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# [START anthosbaremetal_anthos_vmruntime_pos_vm_datavolume_pos_vm_boot_dv]
+apiVersion: cdi.kubevirt.io/v1beta1
+kind: DataVolume
+metadata:
+  creationTimestamp: null
+  name: pos-vm-boot-dv
+  namespace: default
+spec:
+  pvc:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 80Gi
+    storageClassName: standard
+  source:
+    http:
+      url: https://storage.googleapis.com/abm-vm-images/ubuntu-2004-pos.qcow2
+# [END anthosbaremetal_anthos_vmruntime_pos_vm_datavolume_pos_vm_boot_dv]
+---
+# [START anthosbaremetal_anthos_vmruntime_pos_vm_virtualmachine_pos_vm]
+apiVersion: vm.cluster.gke.io/v1alpha1
+kind: VirtualMachine
+metadata:
+  creationTimestamp: null
+  name: pos-vm
+  namespace: default
+spec:
+  compute: {}
+  disks: null
+  interfaces:
+  - name: eth0
+    networkName: pod-network
+  virtSpec:
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          kubevirt.io/vm: pos-vm
+      spec:
+        domain:
+          cpu:
+            cores: 2
+          devices:
+            disks:
+            - bootOrder: 1
+              disk:
+                bus: virtio
+              name: pos-vm-boot-dv
+          resources:
+            requests:
+              memory: 4Gi
+        volumes:
+        - dataVolume:
+            name: pos-vm-boot-dv
+          name: pos-vm-boot-dv
+# [END anthosbaremetal_anthos_vmruntime_pos_vm_virtualmachine_pos_vm]
