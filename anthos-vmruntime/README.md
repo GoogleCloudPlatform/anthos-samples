@@ -15,12 +15,12 @@ virtualization platform should be almost the same.
 example if you already have an Anthos on bare metal cluster running, then you
 can skip the first step.
 
-  - Deploy an Anthos on bare metal cluster
-  - Deploy a `MySQL` container that the VM workload will connect to
-  - Enable the `Anthos VMRuntime` on the cluster
-  - Create a new VM in the Anthos on bare metal cluster referencing a publicly avaiable GCE VM image
-  - Create a new `Kubernetes Service` that will route traffic to the created VM
-  - Access the VM based sample application via the `Ingress Loadbalancer` of the Anthos on bare metal cluster
+  - [Deploy an Anthos on bare metal cluster](#deploy-an-anthos-on-bare-metal-cluster)
+  - [Deploy a `MySQL` container that the VM workload will connect to](#deploy-a-mysql-container-that-the-vm-workload-will-connect-to)
+  - [Enable the `Anthos VMRuntime` on the cluster](#enable-the-anthos-vmruntime-on-the-cluster)
+  - [Create a new VM in the Anthos on bare metal cluster referencing a publicly avaiable GCE VM image](#create-a-new-vm-in-the-anthos-on-bare-metal-cluster)
+  - [Create a new `Kubernetes Service` that will route traffic to the created VM](#create-a-new-kubernetes-service-that-will-route-traffic-to-the-vm)
+  - [Access the VM based sample application via the `Ingress Loadbalancer` of the Anthos on bare metal cluster](#access-the-vm-workload-via-the-ingress-loadbalancer)
 
 To create a VM in the Anthos on bare metal cluster, you need a VM image
 _(accepted formats are: `qcow2` or `raw`)_ similar to container images for Pods. 
@@ -369,8 +369,10 @@ kubectl apply -f pos-service.yaml
 service/api-server-svc created
 endpoints/api-server-svc created
 ```
+---
+### Access the VM workload via the `Ingress Loadbalancer`
 
-Now, retrieve the public IP address of the `Ingress LB` and try accessing it via
+Retrieve the public IP address of the `Ingress LB` and try accessing it via
 a browser.
 
 ```sh
