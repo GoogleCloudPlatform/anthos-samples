@@ -29,10 +29,6 @@ on bare metal cluster nodes. For the purpose of this guide, we have already
 created an image of a GCE VM and made it publicly accesible.
 
 ---
-#### Pre-requisites
-- 
-
----
 #### Deploy an Anthos on bare metal cluster
 
 > **Note:** If you already have an Anthos on bare metal cluster then you can
@@ -266,7 +262,7 @@ into the `VirtualMachine` before the VM is booted up. Creation of a
 
     pos-from-public-image login:
     ```
-- Use the following default username` and `password`.
+- Use the following default `username` and `password`.
     ```sh
     pos-from-public-image login: abmuser
     Password: abmworks
@@ -300,7 +296,7 @@ into the `VirtualMachine` before the VM is booted up. Creation of a
     > connect to the VM console for the first time. Give it a few minutes and
     > press the `return ⏎` key get the login prompt. 
 - To exit out of the VM, first you have to exit out of the login shell session.
-  Then, you have to exit out of the console connection to the VM.
+  Then, you have to exit out of the VM console.
     ```sh
     abmuser@pos-from-public-image:~$ exit
     ```
@@ -316,4 +312,71 @@ into the `VirtualMachine` before the VM is booted up. Creation of a
 
     pos-from-public-image login:
     ```
-- To exit the console connection use `Ctrl + ]` (`^]`)
+- To exit the console connection use `Ctrl + ]` (`^]`). You could have also used
+  this escape sequence (`^]`) to directly exit out from the VM login shell.
+---
+#### Create a new `Kubernetes Service` that will route traffic to the VM
+
+The [installation guide](/anthos-bm-gcp-terraform/docs/manuallb_install.md)
+based on which the Anthos on bare metal cluster was setup, automatically creates
+an [`Ingress` resource named `pos-ingress`](https://github.com/GoogleCloudPlatform/anthos-samples/blob/kubevirt-guide/anthos-bm-gcp-terraform/resources/manifests/pos-ingress.yaml).
+This resource routes the traffic from the public IP address of the Ingress
+loadbalancer to the _api server service_ of the Point Of Sale sample application.
+
+```sh
+kubectl describe ingress/pos-ingress
+```
+```sh
+# expected output
+Name:             pos-ingress
+Labels:           <none>
+Namespace:        default
+Address:          34.117.58.199
+Default backend:  default-http-backend:80 (<error: endpoints "default-http-backend" not found>)
+Rules:
+  Host        Path  Backends
+  ----        ----  --------
+  *
+              /   api-server-svc:8080 (<error: endpoints "api-server-svc" not found>)
+Annotations:  <none>
+Events:       <none>
+```
+
+Note that there are erros indicating that the `api-server-svc` was not found.
+This is because we deleted the resources created by default in [an earlier step](#cleanup-the-resources-created-by-default-in-the-installation-guide).
+We will have to re-create this `Service` pointing to the
+`VirtualMachineInstance`. This way, we can get the `Ingress` working once again
+and reach the sample application inside the VM via the `Ingress` LB IP.
+
+Copy the [`pos-service.yaml`](pos-service.yaml) file into the admin workstation
+VM. Then, update the file to include the IP address of the VM as a service
+`Endpoint`. Finally apply the changes to the cluster.
+
+```sh
+# you should have the pos-service.yaml copied into the admin workstation
+
+# retrieve the IP address of the virtual machine we created
+export VM_IP=$(kubectl get vmi/pos-vm -o jsonpath='{.status.interfaces[0].ipAddress}')
+
+# update the pos-service.yaml with the virtual machine's IP address
+sed -i "s/VM_IP/${VM_IP}/g" pos-service.yaml
+
+# apply the changes to the Anthos on bare metal cluster
+kubectl apply -f pos-service.yaml
+```
+```sh
+# expected output
+service/api-server-svc created
+endpoints/api-server-svc created
+```
+
+Now, retrieve the public IP address of the `Ingress LB` and try accessing it via
+a browser.
+
+```sh
+INGRESS_IP=$(kubectl get ingress/pos-ingress -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+echo $INGRESS_IP
+```
+```sh
+34.117.58.199 # you might have a different IP address
+```
