@@ -1,4 +1,4 @@
-gcp_project_id          = "xxx-xxx-xxx"
+gcp_project_id          = "project-id"
 admin_user              = "example@example.com"
 name_prefix             = "aws-cluster"
 node_pool_instance_type = "c5.2xlarge"
