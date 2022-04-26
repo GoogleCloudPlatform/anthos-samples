@@ -20,7 +20,7 @@ PartOf=pos.service
 After=pos.service
 
 [Service]
-User=shabirmean
+User=abmuser
 WorkingDirectory=/pos
 
 Environment=PAYMENTS_PORT=8083

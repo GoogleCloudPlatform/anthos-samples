@@ -22,7 +22,7 @@ After=pos_inventory.service
 After=pos_payments.service
 
 [Service]
-User=shabirmean
+User=abmuser
 WorkingDirectory=/pos
 
 Environment=API_SERVER_PORT=8081

@@ -20,7 +20,7 @@ PartOf=pos.service
 After=pos.service
 
 [Service]
-User=shabirmean
+User=abmuser
 WorkingDirectory=/pos
 
 Environment=INVENTORY_PORT=8082
