@@ -23,7 +23,7 @@ can skip the first step.
   - [Access the VM based sample application via the `Ingress Loadbalancer` of the Anthos on bare metal cluster](#access-the-vm-workload-via-the-ingress-loadbalancer)
 
 To create a VM in the Anthos on bare metal cluster, you need a VM image
-_(accepted formats are: `qcow2` or `raw`)_ similar to container images for Pods. 
+_(accepted formats are: `qcow2` or `raw`)_ similar to container images for Pods.
 This image must be hosted in a repository that can be reached from your Anthos
 on bare metal cluster nodes. For the purpose of this guide, we have already
 created an image of a GCE VM and made it publicly accesible.
@@ -49,7 +49,7 @@ cluster using `kubectl`.
 ```sh
 # these are example commands from the installation guide
 
-# SSH into the admin workstation 
+# SSH into the admin workstation
 gcloud compute ssh tfadmin@cluster1-abm-ws0-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
 
 # set the KUBECONFIG environment variable
@@ -165,7 +165,7 @@ Creating gvm "pos-vm"
 ```
 > **Note:** After you run `kubectl virt create vm pos-vm`, the CLI would have
 > created a yaml file named after the vm (`pos-vm.yaml`). You can inspect it to
-> see the definiton of the `VirtualMachine` and `DataVolume`.  
+> see the definiton of the `VirtualMachine` and `DataVolume`.
 
 ---
 ### Check the VM creation status
@@ -272,7 +272,7 @@ into the `VirtualMachine` before the VM is booted up. Creation of a
     Welcome to Ubuntu 20.04.4 LTS (GNU/Linux 5.4.0-109-generic x86_64)
 
     ...
-    
+
     System load:  1.63               Processes:               135
     Usage of /:   12.2% of 73.10GB   Users logged in:         0
     Memory usage: 23%                IPv4 address for enp1s0: 10.0.2.2
@@ -294,7 +294,7 @@ into the `VirtualMachine` before the VM is booted up. Creation of a
     ```
     > **Note:** You may see additional logs from the `systemd` services when you
     > connect to the VM console for the first time. Give it a few minutes and
-    > press the `return ⏎` key get the login prompt. 
+    > press the `return ⏎` key get the login prompt.
 - To exit out of the VM, first you have to exit out of the login shell session.
   Then, you have to exit out of the VM console.
     ```sh
@@ -389,3 +389,17 @@ echo $INGRESS_IP
     (click image to enlarge)
   </em>
 </p>
+
+---
+### Clean up
+
+When you delete the VM, the associated resources are also deleted except for the
+`DataVolume` that gets created to import/host the VM image. You can manually
+delete this resource. You can also use it to mount as a boot volume into new VM.
+
+```sh
+kubectl virt delete vm pos-vm
+
+# if you want to also delete the datavolume
+kubectl delete dv pos-vm-dv
+```
