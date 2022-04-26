@@ -39,7 +39,7 @@ resource "google_container_aws_cluster" "this" {
   }
   control_plane {
     iam_instance_profile = var.iam_instance_profile
-    instance_type        = "t3.medium"
+    instance_type        = var.control_plane_instance_type
     subnet_ids           = var.subnet_ids
     tags = {
       "Name" : "${var.anthos_prefix}-cp"
@@ -55,13 +55,13 @@ resource "google_container_aws_cluster" "this" {
       kms_key_arn = var.database_encryption_kms_key_arn
     }
     main_volume {
-      size_gib    = 30
+      size_gib    = 50
       volume_type = "GP3"
       iops        = 3000
       kms_key_arn = var.volume_kms_key_arn
     }
     root_volume {
-      size_gib    = 30
+      size_gib    = 50
       volume_type = "GP3"
       iops        = 3000
       kms_key_arn = var.volume_kms_key_arn
@@ -98,10 +98,10 @@ resource "google_container_aws_node_pool" "this" {
     config_encryption {
       kms_key_arn = var.database_encryption_kms_key_arn
     }
-    instance_type        = "t3.medium"
+    instance_type        = var.node_pool_instance_type
     iam_instance_profile = var.iam_instance_profile
     root_volume {
-      size_gib    = 30
+      size_gib    = 50
       volume_type = "GP3"
       iops        = 3000
       kms_key_arn = var.volume_kms_key_arn

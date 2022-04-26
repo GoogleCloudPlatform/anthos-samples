@@ -69,6 +69,8 @@ module "anthos_cluster" {
   subnet_ids                      = [module.vpc.aws_cp_subnet_id_1, module.vpc.aws_cp_subnet_id_2, module.vpc.aws_cp_subnet_id_3]
   node_pool_subnet_id             = module.vpc.aws_cp_subnet_id_1
   fleet_project                   = "projects/${module.gcp_data.project_number}"
+  node_pool_instance_type         = var.node_pool_instance_type
+  control_plane_instance_type     = var.control_plane_instance_type
   depends_on                      = [module.kms, module.iam, module.vpc]
 }
 module "create_vars" {

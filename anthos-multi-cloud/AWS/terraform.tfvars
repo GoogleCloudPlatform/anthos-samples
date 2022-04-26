@@ -1,8 +1,9 @@
 gcp_project_id          = "xxx-xxx-xxx"
 admin_user              = "example@example.com"
 name_prefix             = "aws-cluster"
-node_pool_instance_type = "t3.medium"
-cluster_version         = "1.21.6-gke.1500"
+node_pool_instance_type = "c5.2xlarge"
+control_plane_instance_type = "m5.large"
+cluster_version         = "1.22.8-gke.200"
 #--Use 'gcloud container aws get-server-config --location [gcp-region]' to see Availability --
 gcp_location              = "us-east4"
 aws_region                = "us-east-1"
