@@ -103,6 +103,30 @@ jobs:
         output-file: README.md
         output-method: inject
         fail-on-diff: true
+  # Generate the documentation for the main terrafrom script of the samples
+  terraform-main-docs:
+    runs-on: [self-hosted, runner-apr-22]
+    needs: [static-code-tests, tf-validate]
+    strategy:
+      matrix:
+        # list of directories in the repo that hosts terraform modules
+        terraform-dir: [
+          'anthos-bm-gcp-terraform/',
+          'anthos-bm-openstack-terraform/'
+        ]
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{github.event.pull_request.head.ref}}
+        repository: ${{github.event.pull_request.head.repo.full_name}}
+    - name: Render terraform docs for the main script
+      uses: terraform-docs/gh-actions@v1.0.0
+      with:
+        config-file: .github/terraform-docs/main.yaml
+        working-dir: ${{ matrix.terraform-dir }}
+        output-file: docs/variables.md
+        output-method: inject
+        fail-on-diff: true
   # Run the Golang unit tests in any of the samples
   go-unit-tests:
     runs-on: [self-hosted, runner-apr-22]
