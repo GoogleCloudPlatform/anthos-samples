@@ -80,7 +80,7 @@ gcloud components update
 1. Edit the following  values in the **terraform.tfvars** file. You can find the project ID in the GCP console on the left side of the dashboard page. The admin user will be the GCP account email address that can login to the clusters once they are created via the connect gateway.
 
    ```bash
-   gcp_project_id = "xxx-xxx-xxx"
+   gcp_project_id = "project-id"
    admin_user = "example@example.com"
    ```
 
