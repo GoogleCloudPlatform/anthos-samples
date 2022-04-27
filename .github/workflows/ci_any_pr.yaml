@@ -75,7 +75,7 @@ jobs:
           tfenv use 1.1.3
           terraform init -backend=false
           terraform validate -json .
-  # Run the Golang unit tests in any of the samples
+  # Run the Golang unit tests in any of the available samples
   go-unit-tests:
     runs-on: [self-hosted, runner-apr-22]
     needs: [terraform-main-docs, terraform-module-docs]
