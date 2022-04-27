@@ -103,7 +103,7 @@ jobs:
         output-file: README.md
         output-method: inject
         fail-on-diff: true
-  # Generate the documentation for the main terrafrom script of the samples
+  # Generate the documentation for the main terrafrom script
   terraform-main-docs:
     runs-on: [self-hosted, runner-apr-22]
     needs: [static-code-tests, tf-validate]
