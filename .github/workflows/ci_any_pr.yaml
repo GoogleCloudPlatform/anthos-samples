@@ -75,62 +75,9 @@ jobs:
           tfenv use 1.1.3
           terraform init -backend=false
           terraform validate -json .
-  # Generate the documentation for the terrafrom modules used by different samples
-  terraform-module-docs:
-    runs-on: [self-hosted, runner-apr-22]
-    needs: [static-code-tests, tf-validate]
-    strategy:
-      matrix:
-        # list of directories in the repo that hosts terraform modules
-        terraform-module-dir: [
-          'anthos-bm-gcp-terraform/modules/external-ip',
-          'anthos-bm-gcp-terraform/modules/init',
-          'anthos-bm-gcp-terraform/modules/install',
-          'anthos-bm-gcp-terraform/modules/loadbalancer',
-          'anthos-bm-gcp-terraform/modules/vm',
-          'anthos-bm-openstack-terraform/modules/vm'
-        ]
-    steps:
-    - uses: actions/checkout@v3
-      with:
-        ref: ${{github.event.pull_request.head.ref}}
-        repository: ${{github.event.pull_request.head.repo.full_name}}
-    - name: Render terraform docs inside the docs and push changes back to PR branch
-      uses: terraform-docs/gh-actions@v1.0.0
-      with:
-        config-file: .github/terraform-docs/module.yaml
-        working-dir: ${{ matrix.terraform-module-dir }}
-        output-file: README.md
-        output-method: inject
-        fail-on-diff: true
-  # Generate the documentation for the main terrafrom script of the samples
-  terraform-main-docs:
-    runs-on: [self-hosted, runner-apr-22]
-    needs: [static-code-tests, tf-validate]
-    strategy:
-      matrix:
-        # list of directories in the repo that hosts terraform modules
-        terraform-dir: [
-          'anthos-bm-gcp-terraform/',
-          'anthos-bm-openstack-terraform/'
-        ]
-    steps:
-    - uses: actions/checkout@v3
-      with:
-        ref: ${{github.event.pull_request.head.ref}}
-        repository: ${{github.event.pull_request.head.repo.full_name}}
-    - name: Render terraform docs for the main script
-      uses: terraform-docs/gh-actions@v1.0.0
-      with:
-        config-file: .github/terraform-docs/main.yaml
-        working-dir: ${{ matrix.terraform-dir }}
-        output-file: docs/variables.md
-        output-method: inject
-        fail-on-diff: true
   # Run the Golang unit tests in any of the samples
   go-unit-tests:
     runs-on: [self-hosted, runner-apr-22]
-    needs: [terraform-main-docs, terraform-module-docs]
     strategy:
       matrix:
         # list of directories in the repo that hosts Golang unit tests
