@@ -33,8 +33,12 @@ resource "google_container_aws_cluster" "this" {
   location    = var.location
   name        = var.anthos_prefix
   authorization {
-    admin_users {
-      username = var.admin_user
+    dynamic "admin_users" {
+      for_each = var.admin_users
+
+      content {
+        username = admin_users.value
+      }
     }
   }
   control_plane {

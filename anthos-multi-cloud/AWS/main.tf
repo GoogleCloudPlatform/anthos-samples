@@ -63,7 +63,7 @@ module "anthos_cluster" {
   cluster_version                 = coalesce(var.cluster_version, module.gcp_data.latest_version)
   database_encryption_kms_key_arn = module.kms.database_encryption_kms_key_arn
   iam_instance_profile            = module.iam.cp_instance_profile_id
-  admin_user                      = var.admin_user
+  admin_users                     = var.admin_users
   vpc_id                          = module.vpc.aws_vpc_id
   role_arn                        = module.iam.api_role_arn
   subnet_ids                      = [module.vpc.aws_cp_subnet_id_1, module.vpc.aws_cp_subnet_id_2, module.vpc.aws_cp_subnet_id_3]
