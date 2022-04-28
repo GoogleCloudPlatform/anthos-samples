@@ -41,7 +41,7 @@ jobs:
           persist-credentials: false
 
       - name: "Run analysis"
-        uses: ossf/scorecard-action@b9b932ff99c14c6f1d6494b8d8f62fdc7789c8b5
+        uses: ossf/scorecard-action@d79d8bf2a8e64f023a3a49743539597b60825ab2
         with:
           results_file: results.sarif
           results_format: sarif
@@ -56,7 +56,7 @@ jobs:
 
       # Upload the results as artifacts (optional).
       - name: "Upload artifact"
-        uses: actions/upload-artifact@6673cd052c4cd6fcf4b4e6e60ea986c889389535
+        uses: actions/upload-artifact@09a5d6a283da3e7c9f3253a5d4cdab2347712a66
         with:
           name: SARIF file
           path: results.sarif
