@@ -210,7 +210,7 @@ spec:
   containers:
   - name: nettest
     image: gcr.io/anthos-baremetal-release/nettest:v0.2.0__linux_amd64
-    imagePullPolicy: Always
+    imagePullPolicy: IfNotPresent
     command: ["/nettest"]
     args: ["-v=0", "-alsologtostderr", "-engine_config=/cfg/engine.yaml"]
     ports:
@@ -220,7 +220,7 @@ spec:
     - name: nettest-engine
       mountPath: /cfg
   - name: prometheus
-    imagePullPolicy: Always
+    imagePullPolicy: IfNotPresent
     image: gcr.io/anthos-baremetal-release/prometheus:2.18.1-gke.5
     args:
     - --config.file=/cfg/prometheus.yaml
