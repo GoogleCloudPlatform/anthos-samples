@@ -22,7 +22,7 @@ terraform {
     # - https://github.com/GoogleCloudPlatform/anthos-samples/blob/main/anthos-bm-gcp-terraform/resources/init_vm.sh#L180
     module_name = "anthos-samples/terraform/anthos-bm-terraform:gce/v0.8.0"
   }
-  required_version = "< 1.2"
+  required_version = ">= v0.15.5, < 1.2"
   required_providers {
     google = {
       source  = "hashicorp/google"
