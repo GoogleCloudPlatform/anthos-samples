@@ -30,7 +30,8 @@ variable "pod_address_cidr_blocks" {
 variable "service_address_cidr_blocks" {
   default = ["10.1.0.0/16"]
 }
-variable "admin_user" {
+variable "admin_users" {
+  type = list(string)
 }
 variable "vpc_id" {
 }

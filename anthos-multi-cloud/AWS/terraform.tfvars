@@ -1,5 +1,5 @@
 gcp_project_id          = "xxx-xxx-xxx"
-admin_user              = "example@example.com"
+admin_users             = ["user1@domain.com", "user2@domain.com"]
 name_prefix             = "aws-cluster"
 node_pool_instance_type = "t3.medium"
 cluster_version         = "1.21.6-gke.1500"
