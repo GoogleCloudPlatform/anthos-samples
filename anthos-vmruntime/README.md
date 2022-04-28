@@ -100,10 +100,10 @@ using `kubectl apply -f vmruntime.yaml`.
 
 Validate that the `VMRuntime` is enabled.
 ```sh
-kubectl describe vmruntime vmruntime | grep Enabled
+kubectl describe vmruntime vmruntime | grep Ready
 
 # expected output
-  Enabled:                       true
+  Ready:                       true
 ```
 ---
 ###  Install the [`virtctl`](https://kubevirt.io/user-guide/operations/virtctl_client_tool/) plugin for `kubectl`
@@ -261,7 +261,7 @@ into the `VirtualMachine` before the VM is booted up. Creation of a
   update of the two resources above.
     ```sh
     k get gvm
-    
+
     NAME      STATUS    AGE     IP
     pos-vm    Running   40m     192.168.3.250
     ```
