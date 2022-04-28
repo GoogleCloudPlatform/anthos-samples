@@ -85,7 +85,7 @@ the `Anthos VMRuntime`.
 
 The following command would open the resource specification for the `VMRuntime`
 instance in the default editor of your shell session. Update the specification
-by setting the `spec.enabled` field to `true`.
+by setting the `spec.enabled` field to `true`, save and exit the editor.
 ```sh
 kubectl edit vmruntime
 ```
@@ -94,8 +94,17 @@ file from this repository into your admin workstation and directly apply that
 using `kubectl apply -f vmruntime.yaml`.
 
 > **Note:** Optionally, you can set the `spec.useEmulation` field to `true`.
-> Setting this to true ensures that the VMRuntime makes use of hardware
-> virtualization for better performace if your node supports it.
+> This field controls whether the VMRuntime should be using software emulation
+> to run the VMs. Software emulation will be attempted only if your environment
+> doesn't support hardware virtualization.
+
+Validate that the `VMRuntime` is enabled.
+```sh
+kubectl describe vmruntime vmruntime | grep Enabled
+
+# expected output
+  Enabled:                       true
+```
 ---
 ###  Install the [`virtctl`](https://kubevirt.io/user-guide/operations/virtctl_client_tool/) plugin for `kubectl`
 
@@ -247,6 +256,14 @@ into the `VirtualMachine` before the VM is booted up. Creation of a
 
     NAME      AGE     PHASE     IP              NODENAME                      READY
     pos-vm    40m     Running   192.168.3.250   kubevirt-cluster-abm-w1-001   True
+    ```
+- You may also use the `vm.cluster.gke.io/v1alpha1` API to get a concatanated
+  update of the two resources above.
+    ```sh
+    k get gvm
+    
+    NAME      STATUS    AGE     IP
+    pos-vm    Running   40m     192.168.3.250
     ```
 ---
 ### Verify access into the VM
@@ -401,5 +418,5 @@ delete this resource. You can also use it to mount as a boot volume into new VM.
 kubectl virt delete vm pos-vm
 
 # if you want to also delete the datavolume
-kubectl delete dv pos-vm-dv
+kubectl delete dv pos-vm-boot-dv
 ```
