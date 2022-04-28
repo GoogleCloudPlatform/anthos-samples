@@ -12,7 +12,7 @@
   "labels": ["dependencies"],
     "vulnerabilityAlerts":{
      "labels":[
-       "type:security" 
+       "type:security"
      ],
      "stabilityDays":0
   }
