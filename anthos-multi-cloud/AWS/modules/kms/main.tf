@@ -34,5 +34,5 @@ resource "aws_kms_key" "database_encryption_kms_key" {
 
 resource "aws_kms_alias" "database_encryption_kms_key_alias" {
   target_key_id = aws_kms_key.database_encryption_kms_key.arn
-  name          = "alias/-${var.anthos_prefix}-database-encryption-key"
+  name          = "alias/anthos-${var.anthos_prefix}-database-encryption-key"
 }

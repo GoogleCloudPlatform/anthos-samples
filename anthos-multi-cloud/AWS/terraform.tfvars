@@ -15,4 +15,3 @@ https://cloud.google.com/anthos/clusters/docs/multi-cloud/aws/reference/supporte
 gcp_location              = "us-east4"
 aws_region                = "us-east-1"
 subnet_availability_zones = ["us-east-1a", "us-east-1b", "us-east-1c"]
-
