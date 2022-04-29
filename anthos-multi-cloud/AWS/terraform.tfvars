@@ -1,13 +1,13 @@
-gcp_project_id          = "projectId"
+gcp_project_id = "projectId"
 #add up to 10 GCP Ids for cluster admin via connect gateway
-admin_users             = ["user1@domain.com", "user2@domain.com"]
-name_prefix             = "aws-cluster"
+admin_users = ["user1@domain.com", "user2@domain.com"]
+name_prefix = "aws-cluster"
 /* supported instance types
 https://cloud.google.com/anthos/clusters/docs/multi-cloud/aws/reference/supported-instance-types
 */
-node_pool_instance_type = "m5.large"
-control_plane_instance_type ="c5.large"
-cluster_version         = "1.22.8-gke.200"
+node_pool_instance_type     = "m5.large"
+control_plane_instance_type = "c5.large"
+cluster_version             = "1.22.8-gke.200"
 /*
 Use 'gcloud container aws get-server-config --location [gcp-region]' to see Availability --
 https://cloud.google.com/anthos/clusters/docs/multi-cloud/aws/reference/supported-regions
