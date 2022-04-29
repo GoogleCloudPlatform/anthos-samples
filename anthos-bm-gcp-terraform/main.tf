@@ -335,3 +335,11 @@ module "install_abm" {
   publicIp             = local.publicIps[local.admin_vm_hostnames[0]]
   ssh_private_key_file = format(local.private_key_file_path_template, local.admin_vm_hostnames[0])
 }
+
+module "gke_hub_membership" {
+  source   = "terraform-google-modules/gcloud/google"
+  version  = "~>3.1.1"
+  platform = "linux"
+  # Delete the hub membership created by 'bmctl create cluster'
+  destroy_cmd_body = "container hub memberships delete --quiet --project ${var.project_id} ${var.abm_cluster_id} --verbosity=none || true"
+}
