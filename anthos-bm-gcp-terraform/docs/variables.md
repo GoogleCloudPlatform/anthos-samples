@@ -44,6 +44,7 @@ terraform-docs markdown table \
 | <a name="module_create_service_accounts"></a> [create\_service\_accounts](#module\_create\_service\_accounts) | terraform-google-modules/service-accounts/google | ~> 4.0 |
 | <a name="module_enable_google_apis_primary"></a> [enable\_google\_apis\_primary](#module\_enable\_google\_apis\_primary) | terraform-google-modules/project-factory/google//modules/project_services | 12.0.0 |
 | <a name="module_enable_google_apis_secondary"></a> [enable\_google\_apis\_secondary](#module\_enable\_google\_apis\_secondary) | terraform-google-modules/project-factory/google//modules/project_services | 12.0.0 |
+| <a name="module_gke_hub_membership"></a> [gke\_hub\_membership](#module\_gke\_hub\_membership) | terraform-google-modules/gcloud/google | ~>3.1.1 |
 | <a name="module_init_hosts"></a> [init\_hosts](#module\_init\_hosts) | ./modules/init | n/a |
 | <a name="module_install_abm"></a> [install\_abm](#module\_install\_abm) | ./modules/install | n/a |
 | <a name="module_instance_template"></a> [instance\_template](#module\_instance\_template) | terraform-google-modules/vm/google//modules/instance_template | ~> 7.6.0 |

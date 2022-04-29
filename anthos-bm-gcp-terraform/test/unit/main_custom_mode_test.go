@@ -95,7 +95,8 @@ func TestUnit_MainScript_InstallMode(goTester *testing.T) {
 			strings.HasSuffix(moduleAddress, "vm_hosts") ||
 			strings.HasSuffix(moduleAddress, "service_accounts") ||
 			strings.Contains(moduleAddress, "google_apis") ||
-			strings.Contains(moduleAddress, "init_hosts") {
+			strings.Contains(moduleAddress, "init_hosts")  ||
+			strings.Contains(moduleAddress, "gke_hub_membership") {
 			continue
 		} else if strings.Contains(moduleAddress, "install_abm") {
 			installAbmModule = append(installAbmModule, childModule)
@@ -211,7 +212,8 @@ func TestUnit_MainScript_ManualLB(goTester *testing.T) {
 			strings.HasSuffix(moduleAddress, "vm_hosts") ||
 			strings.HasSuffix(moduleAddress, "service_accounts") ||
 			strings.Contains(moduleAddress, "google_apis") ||
-			strings.Contains(moduleAddress, "init_hosts") {
+			strings.Contains(moduleAddress, "init_hosts") ||
+			strings.Contains(moduleAddress, "gke_hub_membership") {
 			continue
 		} else if strings.HasSuffix(moduleAddress, "configure_ingress_lb[0]") {
 			ingressLBModule = append(ingressLBModule, childModule)
