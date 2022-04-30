@@ -115,8 +115,3 @@ variable "control_plane_instance_type" {
   description = "AWS Node instance type"
   type        = string
 }
-
-
-
-
-
