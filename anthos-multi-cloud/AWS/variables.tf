@@ -110,3 +110,8 @@ variable "node_pool_instance_type" {
   description = "AWS Node instance type"
   type        = string
 }
+
+variable "control_plane_instance_type" {
+  description = "AWS Node instance type"
+  type        = string
+}
