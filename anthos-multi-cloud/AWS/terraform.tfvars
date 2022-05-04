@@ -5,8 +5,8 @@ name_prefix = "aws-cluster"
 /* supported instance types
 https://cloud.google.com/anthos/clusters/docs/multi-cloud/aws/reference/supported-instance-types
 */
-node_pool_instance_type     = "m5.large"
-control_plane_instance_type = "c5.large"
+node_pool_instance_type     = "t3.medium"
+control_plane_instance_type = "t3.medium"
 cluster_version             = "1.22.8-gke.200"
 /*
 Use 'gcloud container aws get-server-config --location [gcp-region]' to see Availability --
