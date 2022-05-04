@@ -77,6 +77,7 @@ data "aws_iam_policy_document" "api_policy_document" {
       "ec2:RunInstances",
       "ec2:RevokeSecurityGroupIngress",
       "ec2:RevokeSecurityGroupEgress",
+      "ec2:GetConsoleOutput",
       "ec2:DescribeVpcs",
       "ec2:DescribeVolumes",
       "ec2:DescribeSubnets",
