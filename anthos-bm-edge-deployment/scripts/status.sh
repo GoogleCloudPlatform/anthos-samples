@@ -17,7 +17,7 @@
 
 # Use the path to this script to determine the path to gce-helper.vars
 PREFIX_DIR=$(dirname -- "$0")
-# shellcheck source=/dev/null
+# shellcheck source=./cloud/gce-helper.vars
 source "${PREFIX_DIR}/cloud/gce-helper.vars"
 
 display_gce_vms_ips
