@@ -98,7 +98,7 @@ resource "aws_route_table" "public" {
   vpc_id = aws_vpc.this.id
 
   tags = {
-    Name = "${local.vpc_name}-public-[count.index]"
+    Name = "${local.vpc_name}-public-${count.index}"
   }
 }
 
@@ -148,7 +148,7 @@ resource "aws_route_table" "private" {
   count  = local.az_count
   vpc_id = aws_vpc.this.id
   tags = {
-    Name = "${local.vpc_name}-private{[count.index]}"
+    Name = "${local.vpc_name}-private-${count.index}"
   }
 }
 
