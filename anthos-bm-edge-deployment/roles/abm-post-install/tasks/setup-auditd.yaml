@@ -23,7 +23,7 @@
 - name: Copy auditd rules
   become: yes
   template:
-    src: audit.rules.tf
+    src: audit.rules.j2
     dest: "/etc/audit/rules.d/audit.rules"
     owner: root
     group: root
