@@ -13,7 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# shellcheck disable=SC1091,SC1090
+# shellcheck disable=SC1091
+# shellcheck source=/dev/null
 
 # [START anthosbaremetal_scripts_status]
 
