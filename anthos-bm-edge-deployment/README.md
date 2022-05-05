@@ -341,10 +341,10 @@ spec:
   selector:
   template:
     spec:
-      # [START api_server_image]
+      # [START anthosbaremetal_pos_deployment_api_server]
       - name: api-server
         image: us-docker.pkg.dev/anthos-dpe-abm-edge-pos/abm-edge-pos-images/api-server:v1
-      # [END api_server_image]
+      # [END anthosbaremetal_pos_deployment_api_server]
 ```
 
 ```sh

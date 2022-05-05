@@ -29,11 +29,11 @@ spec:
     spec:
       serviceAccountName: default
       terminationGracePeriodSeconds: 5
-      # [START api_server_image]
+      # [START anthosbaremetal_pos_deployment_api_server]
       containers:
       - name: api-server
         image: us-docker.pkg.dev/anthos-dpe-abm-edge-pos/abm-edge-pos-images/api-server:v1
-      # [END api_server_image]
+      # [END anthosbaremetal_pos_deployment_api_server]
         env:
         - name: INVENTORY_EP
           valueFrom:
