@@ -1,4 +1,3 @@
-
 #!/bin/bash -e
 # Copyright 2021 Google LLC
 #
@@ -34,47 +33,47 @@ if [[ -z "${EXISTS}" ]]; then
     gcloud iam service-accounts create ${GSA_NAME} \
         --description="GSA used on each Target machine to make gcloud commands" \
         --display-name="target-machine-gsa" \
-        --project ${PROJECT_ID}
+        --project "${PROJECT_ID}"
 else
     if [[ "$EXISTS" =~ .*"disabled".* ]]; then
         # Found GSA is disabled, enable
-        gcloud iam service-accounts enable ${GSA_EMAIL} --project ${PROJECT_ID}
+        gcloud iam service-accounts enable "${GSA_EMAIL}" --project "${PROJECT_ID}"
     fi
     # otherwise, no need to do anything
 fi
 
 echo "Adding roles/editor"
-gcloud projects add-iam-policy-binding $PROJECT_ID \
+gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
     --member="serviceAccount:${GSA_EMAIL}" \
     --role="roles/editor" --no-user-output-enabled
 
 echo "Adding roles/storage.objectViewer"
-gcloud projects add-iam-policy-binding $PROJECT_ID \
+gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
     --member="serviceAccount:${GSA_EMAIL}" \
     --role="roles/storage.objectViewer" --no-user-output-enabled
 
 echo "Adding roles/resourcemanager.projectIamAdmin"
-gcloud projects add-iam-policy-binding $PROJECT_ID \
+gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
     --member="serviceAccount:${GSA_EMAIL}" \
     --role="roles/resourcemanager.projectIamAdmin" --no-user-output-enabled
 
 echo "Adding roles/secretmanager.admin"
-gcloud projects add-iam-policy-binding $PROJECT_ID \
+gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
     --member="serviceAccount:${GSA_EMAIL}" \
     --role="roles/secretmanager.admin" --no-user-output-enabled
 
 echo "Adding roles/secretmanager.secretAccessor"
-gcloud projects add-iam-policy-binding $PROJECT_ID \
+gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
     --member="serviceAccount:${GSA_EMAIL}" \
     --role="roles/secretmanager.secretAccessor" --no-user-output-enabled
 
 echo "Adding roles/secretmanager.secretAccessor"
-gcloud projects add-iam-policy-binding $PROJECT_ID \
+gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
     --member="serviceAccount:${GSA_EMAIL}" \
     --role="roles/gkehub.gatewayAdmin" --no-user-output-enabled
 
 echo "Adding roles/secretmanager.secretAccessor"
-gcloud projects add-iam-policy-binding $PROJECT_ID \
+gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
     --member="serviceAccount:${GSA_EMAIL}" \
     --role="roles/gkehub.viewer" --no-user-output-enabled
 
@@ -84,9 +83,9 @@ echo -e "\n====================\n"
 
 read -r -p "Create a new key for GSA? [y/N] " response
 if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
-    gcloud iam service-accounts keys create ${KEY_LOCATION} \
-        --iam-account=${GSA_EMAIL} \
-        --project ${PROJECT_ID}
+    gcloud iam service-accounts keys create "${KEY_LOCATION}" \
+        --iam-account="${GSA_EMAIL}" \
+        --project "${PROJECT_ID}"
 else
     echo "Skipping making new keys"
 fi
