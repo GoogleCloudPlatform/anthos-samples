@@ -29,11 +29,11 @@ GSAs=(
 
 for GSA in "${GSAs[@]}"
 do
-    KEYS=( $(gcloud iam service-accounts keys list --iam-account=$GSA --format="value(name)" --managed-by="user" --project="${PROJECT_ID}") )
+    KEYS=$(gcloud iam service-accounts keys list --iam-account="$GSA" --format="value(name)" --managed-by="user" --project="${PROJECT_ID}")
     echo "Removing ${#KEYS[@]} keys for: $GSA"
     for KEY in "${KEYS[@]}"
     do
-        gcloud iam service-accounts keys delete $KEY --iam-account=$GSA --quiet --project="${PROJECT_ID}"
+        gcloud iam service-accounts keys delete "$KEY" --iam-account="$GSA" --quiet --project="${PROJECT_ID}"
     done
 done
 # [END anthosbaremetal_scripts_delete_abm_gsa_keys_gcp]

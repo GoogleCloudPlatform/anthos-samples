@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# shellcheck disable=SC1091
+
 # [START anthosbaremetal_cloud_create_cloud_gce_baseline]
 
 # Create n-number of GCE instances with named conventions to be picked up by Ansible
@@ -24,7 +26,7 @@ GCE_COUNT=1
 CLUSTER_START_INDEX=1
 unset PREEMPTIBLE_OPTION
 
-while getopts 'c:p:s:tz:': option
+while getopts 'c:p:s:tz:k::': option
 do
     # #*= allows for c=1 and strips out the c= in addition to -c 1
     case "${option}" in
@@ -34,13 +36,14 @@ do
         s) CLUSTER_START_INDEX="${OPTARG#*=}";;
         t) PREEMPTIBLE_OPTION="--preemptible";;
         z) ZONE="${OPTARG#*=}";;
+        *) ;;
     esac
 done
 
 ## Get directory this script was run from. gce-helpers.vars is in the same directory.
 ## -- is used in case the directory name starts with a -
 PREFIX_DIR=$(dirname -- "$0")
-source ${PREFIX_DIR}/gce-helper.vars
+source "${PREFIX_DIR}/gce-helper.vars"
 
 usage()
 {
@@ -123,7 +126,7 @@ echo "PROJECT_ID: ${PROJECT_ID}"
 echo "START_INDEX: ${CLUSTER_START_INDEX}"
 echo "ZONE: ${ZONE}"
 
-if [[ ! -z "$PREEMPTIBLE_OPTION" ]]; then
+if [[ -n "$PREEMPTIBLE_OPTION" ]]; then
     echo "NOTE: USING PREEMPTIBLE MACHINE. The GCE will be up at most 24h and will need to be re-created and re-provisioned. This option keeps the costs of testing/trying ABM Retail Edge to a minimum"
 fi
 
@@ -149,17 +152,17 @@ copy_init_script
 gcloud services enable secretmanager.googleapis.com
 
 # setup default compute to view secrets
-PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID --format="value(projectNumber)")
+PROJECT_NUMBER=$(gcloud projects describe "$PROJECT_ID" --format="value(projectNumber)")
 echo "Adding roles/secretmanager.secretAccessor to default compute service account..."
-gcloud projects add-iam-policy-binding $PROJECT_ID \
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
     --member="serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
     --role="roles/secretmanager.secretAccessor" --no-user-output-enabled
 
 # Store the SSH pub key as a secret
-store_public_key_secret ${SSH_PUB_KEY_LOCATION}
+store_public_key_secret "${SSH_PUB_KEY_LOCATION}"
 
 # Create the GCE instances
-create_gce_vms $GCE_COUNT
+create_gce_vms "$GCE_COUNT"
 
 # Setup firewall rules to allow public pod access
 setup_proxy_firewall
