@@ -1,0 +1,52 @@
+
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# [START anthosbaremetal_pos_service_configs_configmap_service_configs]
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: service-configs
+data:
+  INVENTORY_EP: "http://inventory-svc:8080"
+  PAYMENTS_EP: "http://payments-svc:8080"
+  CONNECTOR: "IN_MEMORY"
+  ACTIVE_ITEM_TYPE: "burgers"
+  ITEMS: |
+    items:
+      - name: "BigBurger"
+        type: "burgers"
+        price: 5.50
+        imageUrl: "usr/lib/images/bigburger.png"
+        quantity: 200
+        labels: [ "retail", "restaurant", "food" ]
+      - name: "DoubleBurger"
+        type: "burgers"
+        price: 7.20
+        imageUrl: "usr/lib/images/burgers.png"
+        quantity: 200
+        labels: [ "retail", "restaurant", "food" ]
+      - name: "Shirt"
+        type: "textile"
+        price: 15.50
+        imageUrl: "usr/lib/images/shirt.png"
+        quantity: 50
+        labels: [ "retail", "textile", "clothing" ]
+      - name: "Short"
+        type: "textile"
+        price: 17.20
+        imageUrl: "usr/lib/images/short.png"
+        quantity: 20
+        labels: [ "retail", "textile", "clothing" ]
+# [END anthosbaremetal_pos_service_configs_configmap_service_configs]

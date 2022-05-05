@@ -1,0 +1,39 @@
+combiner: OR
+conditions:
+- conditionMonitoringQueryLanguage:
+    duration: 600s
+    query: |-
+      { t_0:
+          fetch k8s_node
+          | metric 'kubernetes.io/anthos/node_filesystem_avail_bytes'
+          | group_by 1m,
+              [value_node_filesystem_avail_bytes_mean:
+                 mean(value.node_filesystem_avail_bytes)]
+          | every 1m
+          | group_by
+              [resource.cluster_name, resource.node_name, resource.location,
+               resource.project_id],
+              [value_node_filesystem_avail_bytes_mean_aggregate:
+                 aggregate(value_node_filesystem_avail_bytes_mean)]
+      ; t_1:
+          fetch k8s_node
+          | metric 'kubernetes.io/anthos/node_filesystem_size_bytes'
+          | group_by 1m,
+              [value_node_filesystem_size_bytes_mean:
+                 mean(value.node_filesystem_size_bytes)]
+          | every 1m
+          | group_by
+              [resource.node_name, resource.cluster_name, resource.project_id,
+               resource.location],
+              [value_node_filesystem_size_bytes_mean_aggregate:
+                 aggregate(value_node_filesystem_size_bytes_mean)] }
+      | join
+      | value
+          [v_0:
+             div(t_0.value_node_filesystem_avail_bytes_mean_aggregate,
+               t_1.value_node_filesystem_size_bytes_mean_aggregate)]
+      | condition v_0 < 0.2 '1'
+    trigger:
+      count: 1
+  displayName: Anthos on baremetal node allocatable disk
+displayName: Anthos on baremetal node disk usage exceeds 80 percent (critical)

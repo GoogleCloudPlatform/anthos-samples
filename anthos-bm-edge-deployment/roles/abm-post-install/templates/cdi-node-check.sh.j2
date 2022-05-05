@@ -1,0 +1,35 @@
+#!/bin/bash
+
+VERBOSE=$1
+DELIM=','
+
+
+if [[ ! -z "${VERBOSE}" ]]; then
+    echo "Checking CDI Node status..."
+fi
+
+LINES=$(kubectl get vmi -o jsonpath="{range .items[*]}{@..items[0].status.nodeName }{\"${DELIM}\"}{@..items[0].status.phase }{\"${DELIM}\"}{@..items[*].metadata.name}{\"\\n\"}" --all-namespaces)
+
+readarray -t VMI_LINES <<<"$LINES"
+
+for LINE in ${VMI_LINES[@]}; do
+
+    readarray -d ${DELIM} -t TOKENS <<< "$LINE"
+
+    if [[ ! -z "${TOKENS[0]}" ]]; then
+        NODE="${TOKENS[0]}"
+        STATUS="${TOKENS[1]}"
+        VMI="${TOKENS[2]}"
+        if [[ "${STATUS}" != "Running" ]]; then
+            kubectl label node ${NODE} cpumanager=true --overwrite=true
+        else
+            if [[ ! -z "${VERBOSE}" ]]; then
+                echo "${VMI} is ${STATUS}, no need to add or change the cpumanager flag on the node"
+            fi
+        fi
+    else
+        if [[ ! -z "${VERBOSE}" ]]; then
+            echo "No changes needed"
+        fi
+    fi
+done

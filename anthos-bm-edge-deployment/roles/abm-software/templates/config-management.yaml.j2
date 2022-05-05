@@ -1,0 +1,14 @@
+apiVersion: configmanagement.gke.io/v1
+kind: ConfigManagement
+metadata:
+  name: config-management
+  namespace: config-management-system
+spec:
+  # Unique across all clusters using the same ConfigSync repo. Name is used in Cluster Selectors
+  clusterName: {{ acm_cluster_name }}
+  enableMultiRepo: true
+  policyController:
+    enabled: false
+    # exemptableNamespaces: ["default"]
+    logDeniesEnabled: true
+    templateLibraryInstalled: false

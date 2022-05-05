@@ -1,0 +1,120 @@
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+### Add pub-key to facts by name
+- name: Get Public Key
+  shell: "cat {{ ssh_user_home }}/{{ ssh_key_name }}.pub"
+  register: key_value
+  tags:
+  - abm-authorized-keys
+  - abm-ssh
+
+- name: Add key to dictionary
+  set_fact:
+    keys: "{{ keys | default({}) | combine( { cluster_name: key_value.stdout } ) }}"
+    cacheable: true
+  tags:
+  - abm-authorized-keys
+  - abm-ssh
+
+- name: Create temporary file
+  become: no
+  run_once: true
+  local_action:
+    module: ansible.builtin.tempfile
+    state: file
+    suffix: temp
+    path: "${HOME}"
+  register: tempfile_1
+  tags:
+  - abm-ssh
+  - abm-authorized-keys
+  - create-local-temp
+
+- name: Display path to to Temp file
+  debug:
+    msg: "{{ tempfile_1.path }}"
+  tags:
+  - abm-ssh
+  - abm-authorized-keys
+  - create-local-temp
+
+- name: Create tmp authorized_keys file contain all pub keys
+  become: no
+  local_action:
+    module: lineinfile
+    line: "{{ item.value }}"
+    dest: "{{ tempfile_1.path }}"
+    create: true
+  loop:
+    - "{{ lookup('dict', keys) }}"
+  tags:
+  - abm-ssh
+  - abm-authorized-keys
+
+### Loop pub-key facts and add all of them to {{ ssh_user_home }}/authorized_keys
+- name: Copy authorized_keys to remote
+  ansible.builtin.copy:
+    src: "{{ tempfile_1.path }}"
+    dest: "{{ ssh_user_home }}/authorized_keys"
+    mode: '0600'
+    owner: "{{ abm_install_user }}"
+    group: "{{ abm_install_user }}"
+  tags:
+  - abm-ssh
+  - abm-authorized-keys
+
+- name: Remove the temp file after copying
+  ansible.builtin.file:
+    path: "{{ tempfile_1.path }}"
+    state: absent
+  when: tempfile_1.path is defined
+  tags:
+  - abm-ssh
+  - abm-authorized-keys
+  - delete-local-temp
+
+### Setup keyless ssh across cluster
+- name: Setup keyless SSH from primary to all others in group
+  command:
+    cmd: ssh-keyscan {{ machine }} >> {{ ssh_user_home }}/known_hosts
+  when:
+    - (primary_cluster_machine is defined)
+    - (primary_cluster_machine == true)
+    - (control_plane_ip != machine)
+  loop: "{{ control_plane_ips }}"
+  loop_control:
+    loop_var: machine
+  tags:
+  - abm-ssh
+  - debug-ssh
+  - abm-authorized-keys
+
+### Test by ssh 10.200.0.x 'echo hi'
+- name: verify SSH access to other machines
+  command:
+    cmd: ssh {{abm_install_user}}@{{ machine }} -i {{ ssh_user_home }}/{{ ssh_key_name }} 'echo this-works'
+  when:
+    - (primary_cluster_machine is defined)
+    - (primary_cluster_machine == true)
+    - (control_plane_ip != machine)
+    - (is_cloud_resource is defined)
+    - (is_cloud_resource == True)
+  loop: "{{ control_plane_ips }}"
+  loop_control:
+    loop_var: machine
+  tags:
+  - abm-ssh
+  - debug-ssh

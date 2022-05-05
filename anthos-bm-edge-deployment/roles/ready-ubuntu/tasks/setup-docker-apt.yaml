@@ -1,0 +1,104 @@
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- name: Stop docker, if started
+  ansible.builtin.service:
+    name: docker
+    state: stopped
+  ignore_errors: yes
+
+#### Setup Docker
+- name: Remove all docker-based existing packages
+  apt:
+    pkg:
+    - docker
+    - docker-engine
+    - docker.io
+    - containerd
+    - runc
+    state: absent
+
+- name: Add GPG key to apt for Docker Community
+  shell: |
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+    touch /root/has-gpg-key
+  args:
+    creates: /root/has-gpg-key
+
+- name: Install Docker 19+ packages
+  apt:
+    pkg:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - gnupg-agent
+    - software-properties-common
+    # Docker Community edition
+    - docker-ce
+    - docker-ce-cli
+    - containerd.io
+    # Docker standard/20.x+
+    # - docker.io
+    state: present
+    update_cache: yes
+
+- name: Start docker, if not started
+  ansible.builtin.service:
+    name: docker
+    state: started
+  register: task_result
+  until: task_result is succeeded
+  retries: 10
+  delay: 1
+
+- name: Get Docker version
+  command: docker version
+  register: docker
+
+- name: Show output with docker version
+  debug:
+    msg: "{{ docker.stdout }}"
+
+- name: Add the docker group (NOTE, users will need to be manually added with `usermod` if needed)
+  group:
+    name: docker
+    state: present
+
+# sudo usermod -aG docker root
+- name: Add ansible_user user to "docker" group
+  user:
+    name: "{{ ansible_user }}"
+    group: "docker"
+    append: yes
+
+- name: Reboot machine to get new session with updated docker group
+  reboot:
+    reboot_timeout: 300
+
+- name: Verify docker can be run
+  command:
+    cmd: docker ps
+  register: docker_output
+  ignore_errors: yes
+
+- name: Output of Docker PS run
+  debug:
+    msg: "{{ docker_output.stdout }}"
+
+- name: Set GCloud to authenticate docker
+  command:
+    cmd: gcloud auth configure-docker -q
+  environment:
+    PATH: "{{ tools_base_path }}/google-cloud-sdk/bin:{{ ansible_env.PATH }}"

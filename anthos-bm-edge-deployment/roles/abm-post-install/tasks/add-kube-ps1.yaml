@@ -1,0 +1,59 @@
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+## Create download directory for KubePS1
+
+  - name: Create directory for kube-ps1
+    file:
+      path: '/var/kube-ps1'
+      state: directory
+      mode: '0755'
+      group: 'sudo'
+      owner: 'root'
+    tags:
+    - optional
+    - kube-ps1
+
+## Download kube_ps1
+  - name: Download kube-kube_ps1
+    ansible.builtin.unarchive:
+      src: "https://github.com/jonmosco/kube-ps1/archive/refs/tags/v{{ kube_ps1_version }}.tar.gz"
+      dest: /var/kube-ps1
+      remote_src: yes
+      creates: "/var/kube-ps1/kube-ps1-{{ kube_ps1_version }}"
+    tags:
+    - optional
+    - kube-ps1
+
+  - name: Add source of kube-ps1 to bashrc
+    lineinfile:
+      path: "/home/{{ item }}/.bashrc"
+      line: 'source "/var/kube-ps1/kube-ps1-{{ kube_ps1_version }}/kube-ps1.sh"'
+    loop:
+      - "{{ ansible_user }}"
+      - "{{ abm_install_user }}"
+    tags:
+    - optional
+    - kube-ps1
+
+  - name: Add kube_ps1 to PS1 line
+    lineinfile:
+      path: "/home/{{ item }}/.bashrc"
+      line: PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\] $(kube_ps1):\[\033[01;34m\]\w\[\033[00m\]\$ '
+    loop:
+      - "{{ ansible_user }}"
+      - "{{ abm_install_user }}"
+    tags:
+    - optional
+    - kube-ps1
