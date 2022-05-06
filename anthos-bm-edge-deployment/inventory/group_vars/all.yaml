@@ -21,7 +21,7 @@
 ####
 #### Anthos Config Management
 ####
-acm_root_repo: "{{ lookup('env', 'ROOT_REPO_URL') | default('https://github.com/GoogleCloudPlatform/point-of-sale', True) }}"
+acm_root_repo: "{{ lookup('env', 'ROOT_REPO_URL') | default('https://github.com/GoogleCloudPlatform/anthos-samples', True) }}"
 
 
 #######
@@ -41,7 +41,7 @@ tools_base_path: "/var/google-tools-install"
 kubeconfig_shared_root: "/var/kubeconfig"
 kubeconfig_shared_location: "{{ kubeconfig_shared_root }}/kubeconfig"
 
-# Latest version can be found: gsutil ls -al gs://anthos-baremetal-release/bmctl
+# Latest version can be found: gsutil ls -al gs://anthos-bm-release/bmctl
 # Version of Anthos Bare Metal to install
 abm_version: "1.8.2" # verify coupling of ABM to BMCTL versions
 # bmctl binary version

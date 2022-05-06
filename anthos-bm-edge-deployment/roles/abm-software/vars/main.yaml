@@ -20,7 +20,7 @@ acm_config_files: "/var/acm-configs"
 external_secrets_files: "/var/external-secrets"
 
 root_repository_branch: "main"
-root_repository_policy_dir: "/anthos-baremetal-edge-deployment/acm-config-sink"
+root_repository_policy_dir: "/anthos-bm-edge-deployment/acm-config-sink"
 root_repository_git_auth_type: "token"
 # NOTE: This is a tight coupling with the "Root Repo" that contains "ExternalSecret" instances with the `git-creds` name
 #       IF changed, both the ACM root-repo and this field need to match
