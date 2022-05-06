@@ -1,0 +1,8 @@
+<source>
+   @type tail
+   tag audit
+   read_from_head true
+   path /var/log/audit/audit.log
+   pos_file /var/lib/google-fluentd/pos/audit.pos
+   format kv
+ </source>
