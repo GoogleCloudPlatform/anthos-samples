@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- name: Install auditd 
+- name: Install auditd
   become: yes
   command:
     cmd: apt-get install -y auditd audispd-plugins
@@ -23,7 +23,7 @@
 - name: Copy auditd rules
   become: yes
   template:
-    src: audit.rules.tf
+    src: audit.rules.j2
     dest: "/etc/audit/rules.d/audit.rules"
     owner: root
     group: root

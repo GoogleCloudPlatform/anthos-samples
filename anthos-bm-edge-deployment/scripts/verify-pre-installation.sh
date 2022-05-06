@@ -13,10 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# shellcheck disable=SC1091
+
 # [START anthosbaremetal_scripts_verify_pre_installation]
 
 PREFIX_DIR=$(dirname -- "$0")
-source ${PREFIX_DIR}/cloud/gce-helper.vars
+# shellcheck source=./cloud/gce-helper.vars
+source "${PREFIX_DIR}/cloud/gce-helper.vars"
 
 ERROR=0
 if [[ ! -x $(command -v gcloud) ]]; then

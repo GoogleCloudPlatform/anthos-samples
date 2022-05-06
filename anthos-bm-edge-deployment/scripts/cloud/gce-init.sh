@@ -37,16 +37,16 @@ apt-get -qq update > /dev/null
 apt-get -qq install -y jq > /dev/null
 
 # 1. Establish a user (same user for all GCEs)
-useradd -m -s /bin/bash -g users ${ANSIBLE_USER}
-echo "${ANSIBLE_USER}  ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/${ANSIBLE_USER}
+useradd -m -s /bin/bash -g users "${ANSIBLE_USER}"
+echo "${ANSIBLE_USER}  ALL=(ALL) NOPASSWD:ALL" | sudo tee "/etc/sudoers.d/${ANSIBLE_USER}"
 
 # 2. Copy/place/setup a authorized_keys from a GCP Secret under that user and under root
-gcloud secrets versions access latest --secret=${PROVISION_KEY_PUB_KEY} > /tmp/install-pub-key.pub
+gcloud secrets versions access latest --secret="${PROVISION_KEY_PUB_KEY}" > /tmp/install-pub-key.pub
 
 # 3. Setup a common password for root (or setup user to be sudoer)
-mkdir -p /home/${ANSIBLE_USER}/.ssh
-cat /tmp/install-pub-key.pub >> /home/${ANSIBLE_USER}/.ssh/authorized_keys
-chown -R ${ANSIBLE_USER}.users /home/${ANSIBLE_USER}/.ssh
+mkdir -p "/home/${ANSIBLE_USER}/.ssh"
+cat /tmp/install-pub-key.pub >> "/home/${ANSIBLE_USER}/.ssh/authorized_keys"
+chown -R "${ANSIBLE_USER}.users" "/home/${ANSIBLE_USER}/.ssh"
 
 # 4. Setup VXLAN configuration
 VXLAN_ID=$(curl http://metadata.google.internal/computeMetadata/v1/instance/attributes/vxlanid -H "Metadata-Flavor: Google")
@@ -59,7 +59,7 @@ MACHINE_NAME="cnuc-${INSTANCE_ID}"
 
 ### Setup the service to restart vxlan when rebooting
 
-cat > ${SETUP_VXLAN_SCRIPT} <<EOF
+cat > "${SETUP_VXLAN_SCRIPT}" <<EOF
 #!/bin/bash
 
 ip link add vxlan0 type vxlan id ${VXLAN_ID} dev ens4 dstport 0
@@ -79,7 +79,7 @@ ip link set up dev vxlan0
 
 EOF
 
-cat > ${SYSTEM_SERVICE_VXLAN} <<EOF
+cat > "${SYSTEM_SERVICE_VXLAN}" <<EOF
 [Unit]
 
 After=network.service
@@ -93,13 +93,13 @@ ExecStart=${SETUP_VXLAN_SCRIPT}
 WantedBy=default.target
 EOF
 
-chmod 644 ${SYSTEM_SERVICE_VXLAN}
-chmod 744 ${SETUP_VXLAN_SCRIPT}
+chmod 644 "${SYSTEM_SERVICE_VXLAN}"
+chmod 744 "${SETUP_VXLAN_SCRIPT}"
 
 # Setup vxlan service
-systemctl enable ${SYSTEM_SERVICE_NAME}
+systemctl enable "${SYSTEM_SERVICE_NAME}"
 # Start the vxlan service
-systemctl start ${SYSTEM_SERVICE_NAME}
+systemctl start "${SYSTEM_SERVICE_NAME}"
 
 # setup SSH config to skip key checking
 cat >> ~/.ssh/config <<EOF
@@ -111,16 +111,15 @@ Host 10.200.0.*
 EOF
 
 # re-use the same SSH config for the ansible user
-cp ~/.ssh/config /home/${ANSIBLE_USER}/.ssh/config
-chown ${ANSIBLE_USER} /home/${ANSIBLE_USER}/.ssh/config # note, just assigning owner since group is 0 anyway
-chmod 400 /home/${ANSIBLE_USER}/.ssh/config
+cp ~/.ssh/config "/home/${ANSIBLE_USER}/.ssh/config"
+chown "${ANSIBLE_USER}" "/home/${ANSIBLE_USER}/.ssh/config" # note, just assigning owner since group is 0 anyway
+chmod 400 "/home/${ANSIBLE_USER}/.ssh/config"
 
 # Set ownership and permissions
 chmod 400 ~/.ssh/config
 
 # Verify VXLAN IP works
-ping -c 3 ${VXLANIP}
-if [[ $? -gt 0 ]]; then
+if ! ping -c 3 "${VXLANIP}"; then
     echo "Cannot ping the vxlan IP address"
     exit 1
 fi
@@ -128,7 +127,7 @@ fi
 # setup nginx to enable public access of the pods running inside the Anthos Bare
 # Metal user-cluster
 IS_CLUSTER_FIRST=$(gcloud compute instances list --filter='tags:public-ingress AND tags:public-egress' | grep -c "${MACHINE_NAME}")
-if [[ ${IS_CLUSTER_FIRST} != 1 ]]; then
+if [[ "${IS_CLUSTER_FIRST}" != 1 ]]; then
     echo "Skipping nginx installation..."
     exit 0
 fi

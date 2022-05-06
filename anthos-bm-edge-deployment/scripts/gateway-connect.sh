@@ -28,11 +28,11 @@ fi
 
 COMMAND="set"
 
-if [[ ! -z "${UNSET}" ]]; then
+if [[ -n "${UNSET}" ]]; then
     COMMAND="unset"
 fi
 
-gcloud config ${COMMAND} auth/impersonate_service_account gateway-connect-agent@${PROJECT_ID}.iam.gserviceaccount.com
-gcloud beta container hub memberships get-credentials $CLUSTER_NAME
+gcloud config "${COMMAND}" auth/impersonate_service_account "gateway-connect-agent@${PROJECT_ID}.iam.gserviceaccount.com"
+gcloud beta container hub memberships get-credentials "$CLUSTER_NAME"
 
 # [END anthosbaremetal_scripts_gateway_connect]
