@@ -21,7 +21,7 @@
 ####
 #### Anthos Config Management
 ####
-acm_root_repo: "{{ lookup('env', 'ROOT_REPO_URL') | default('https://github.com/GoogleCloudPlatform/point-of-sale', True) }}"
+acm_root_repo: "{{ lookup('env', 'ROOT_REPO_URL') | default('https://github.com/GoogleCloudPlatform/anthos-samples', True) }}"
 
 
 #######
