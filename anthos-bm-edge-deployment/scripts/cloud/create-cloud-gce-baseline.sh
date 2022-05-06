@@ -43,6 +43,7 @@ done
 ## Get directory this script was run from. gce-helpers.vars is in the same directory.
 ## -- is used in case the directory name starts with a -
 PREFIX_DIR=$(dirname -- "$0")
+# shellcheck source=./gce-helper.vars
 source "${PREFIX_DIR}/gce-helper.vars"
 
 usage()

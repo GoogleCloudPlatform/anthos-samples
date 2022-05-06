@@ -18,6 +18,7 @@
 # [START anthosbaremetal_scripts_verify_pre_installation]
 
 PREFIX_DIR=$(dirname -- "$0")
+# shellcheck source=./cloud/gce-helper.vars
 source "${PREFIX_DIR}/cloud/gce-helper.vars"
 
 ERROR=0
