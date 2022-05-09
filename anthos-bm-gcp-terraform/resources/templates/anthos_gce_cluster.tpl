@@ -8,13 +8,13 @@ cloudOperationsServiceAccountKeyPath: /root/bm-gcr.json
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: ${clusterId}-ns
+  name: cluster-${clusterId}
 ---
 apiVersion: baremetal.cluster.gke.io/v1
 kind: Cluster
 metadata:
   name: ${clusterId}
-  namespace: ${clusterId}-ns
+  namespace: cluster-${clusterId}
 spec:
   type: hybrid
   anthosBareMetalVersion: 1.11.0
@@ -62,7 +62,7 @@ apiVersion: baremetal.cluster.gke.io/v1
 kind: NodePool
 metadata:
   name: node-pool-1
-  namespace: ${clusterId}-ns
+  namespace: cluster-${clusterId}
 spec:
   clusterName: ${clusterId}
   nodes:
