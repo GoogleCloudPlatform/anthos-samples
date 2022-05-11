@@ -1,4 +1,5 @@
-# Copyright 2022 Google LLC
+#!/bin/bash
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,16 +13,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# [START anthosbaremetal_anthos_vmruntime_pos_service_service_api_server_svc]
-apiVersion: v1
-kind: Service
-metadata:
-  name: api-server-svc
-spec:
-  selector:
-    vm.cluster.gke.io/vm-name: pos-vm
-  ports:
-  - protocol: TCP
-    port: 8080
-    targetPort: 8081
-# [END anthosbaremetal_anthos_vmruntime_pos_service_service_api_server_svc]
+# shellcheck disable=SC1091
+
+# [START anthosbaremetal_scripts_status]
+
+# Use the path to this script to determine the path to gce-helper.vars
+PREFIX_DIR=$(dirname -- "$0")
+# shellcheck source=./cloud/gce-helper.vars
+source "${PREFIX_DIR}/cloud/gce-helper.vars"
+
+display_gce_vms_ips
+
+# [END anthosbaremetal_scripts_status]

@@ -1,0 +1,51 @@
+combiner: OR
+conditions:
+- conditionMonitoringQueryLanguage:
+    duration: 600s
+    query: |-
+      { t_0:
+          { t_0:
+              fetch k8s_container
+              | metric 'kubernetes.io/anthos/kube_node_status_allocatable_cpu_cores'
+              | group_by 1m,
+                  [value_kube_node_status_allocatable_cpu_cores_mean:
+                     mean(value.kube_node_status_allocatable_cpu_cores)]
+              | every 1m
+              | group_by
+                  [resource.cluster_name, metric.node, resource.location,
+                   resource.project_id],
+                  [value_kube_node_status_allocatable_cpu_cores_mean_aggregate:
+                     aggregate(value_kube_node_status_allocatable_cpu_cores_mean)]
+          ; t_1:
+              fetch k8s_container
+              | metric 'kubernetes.io/anthos/kube_node_status_capacity_cpu_cores'
+              | group_by 1m,
+                  [value_kube_node_status_capacity_cpu_cores_mean:
+                     mean(value.kube_node_status_capacity_cpu_cores)]
+              | every 1m
+              | group_by
+                  [metric.node, resource.cluster_name, resource.project_id,
+                   resource.location],
+                  [value_kube_node_status_capacity_cpu_cores_mean_aggregate:
+                     aggregate(value_kube_node_status_capacity_cpu_cores_mean)] }
+          | join
+          | value
+              [v_0:
+                 div(t_0.value_kube_node_status_allocatable_cpu_cores_mean_aggregate,
+                   t_1.value_kube_node_status_capacity_cpu_cores_mean_aggregate)]
+      ; t_2:
+          fetch k8s_container::kubernetes.io/anthos/anthos_cluster_info
+          | filter (metric.anthos_distribution = 'baremetal')
+          | align mean_aligner()
+          | group_by [resource.project_id, resource.location, resource.cluster_name],
+              [value_anthos_cluster_info_aggregate:
+                 aggregate(value.anthos_cluster_info)]
+          | every 1m }
+      | join
+      | window 1m
+      | value [t_0.v_0]
+      | condition t_0.v_0 < 0.2 '1'
+    trigger:
+      count: 1
+  displayName: Anthos on baremetal node allocatable cpu cores percent
+displayName: Anthos on baremetal node cpu usage exceeds 80 percent (critical)

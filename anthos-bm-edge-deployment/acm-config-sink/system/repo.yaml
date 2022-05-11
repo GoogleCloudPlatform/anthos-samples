@@ -1,4 +1,5 @@
-# Copyright 2022 Google LLC
+
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,16 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# [START anthosbaremetal_anthos_vmruntime_pos_service_service_api_server_svc]
-apiVersion: v1
-kind: Service
+# [START anthosbaremetal_system_repo_repo_repo]
+kind: Repo
+apiVersion: configmanagement.gke.io/v1
 metadata:
-  name: api-server-svc
+  name: repo
 spec:
-  selector:
-    vm.cluster.gke.io/vm-name: pos-vm
-  ports:
-  - protocol: TCP
-    port: 8080
-    targetPort: 8081
-# [END anthosbaremetal_anthos_vmruntime_pos_service_service_api_server_svc]
+  version: "0.1.0"
+# [END anthosbaremetal_system_repo_repo_repo]

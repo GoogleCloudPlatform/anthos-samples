@@ -1,0 +1,51 @@
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+# vars file for abm-install
+
+# Folder to run installation out of
+abm_install_folder: "/var/abm-install"
+abm_workspace_folder: "{{ abm_install_folder }}/bmctl-workspace"
+
+# Match with Google-Tools (by convention, not required, but good idea)
+remote_gsa_key: "/var/keys"
+
+kubeconfig_shared_root: "/var/kubeconfig"
+kubeconfig_shared_location: "{{ kubeconfig_shared_root }}/kubeconfig"
+
+# User that has sudo, password less SSH access to control_plane_ip
+abm_install_user: "el-gato"
+
+# Cluster Configuration
+install_type: standalone
+multi_network_enabled: true
+enable_application_logging: true
+
+# Skip preflight checks?
+skip_preflight: false
+
+# Cluster IP Ranges
+pod_cidr: "100.127.0.0/16"
+services_cidr: "192.168.30.0/23"
+
+# Cluster Persistant Volumes (outside of overlay storage options)
+local_pvc_mount: "/opt/pvc-disk"
+local_share_pvc_mount: "/opt/localpv-share" # Default value
+
+# Cluster runtime
+container_runtime: "containerd" # docker or containerd
+
+# Secret used for Longhorn
+longhorn_secret_name: "longhorn-cloud-storage-hmac"

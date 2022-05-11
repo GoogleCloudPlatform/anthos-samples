@@ -1,4 +1,5 @@
-# Copyright 2022 Google LLC
+#!/bin/bash
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,16 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# [START anthosbaremetal_anthos_vmruntime_pos_service_service_api_server_svc]
-apiVersion: v1
-kind: Service
-metadata:
-  name: api-server-svc
-spec:
-  selector:
-    vm.cluster.gke.io/vm-name: pos-vm
-  ports:
-  - protocol: TCP
-    port: 8080
-    targetPort: 8081
-# [END anthosbaremetal_anthos_vmruntime_pos_service_service_api_server_svc]
+
+# [START anthosbaremetal_scripts_check_network_status]
+# Cloud specific
+ansible-playbook -i inventory/ cloud-full-install.yaml --tags network-vxlan,update-dependencies
+
+# [END anthosbaremetal_scripts_check_network_status]

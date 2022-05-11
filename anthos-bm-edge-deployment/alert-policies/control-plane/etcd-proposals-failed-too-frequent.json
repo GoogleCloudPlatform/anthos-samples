@@ -1,0 +1,27 @@
+combiner: OR
+conditions:
+- conditionMonitoringQueryLanguage:
+    duration: 3600s
+    query: |-
+      { t_0:
+          fetch k8s_container
+          | metric 'kubernetes.io/anthos/etcd_server_proposals_failed_total'
+          | align delta()
+          | group_by [resource.project_id, resource.location, resource.cluster_name],
+              [value_etcd_server_proposals_failed_total:
+                 aggregate(value.etcd_server_proposals_failed_total)]
+      ; t_1:
+          fetch k8s_container::kubernetes.io/anthos/anthos_cluster_info
+          | filter (metric.anthos_distribution = 'baremetal')
+          | align mean_aligner()
+          | group_by [resource.project_id, resource.location, resource.cluster_name],
+              [value_anthos_cluster_info_aggregate:
+                 aggregate(value.anthos_cluster_info)] }
+      | join
+      | value [t_0.value_etcd_server_proposals_failed_total]
+      | align delta(10m)
+      | condition t_0.value_etcd_server_proposals_failed_total > 0 '1'
+    trigger:
+      count: 1
+  displayName: etcd server proposals failed total
+displayName: Anthos on baremetal etcd proposals failed too frequent (critical)

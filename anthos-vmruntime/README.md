@@ -359,32 +359,21 @@ Annotations:  <none>
 Events:       <none>
 ```
 
-Note that there are erros indicating that the `api-server-svc` was not found.
+Note that there are errors indicating that the `api-server-svc` was not found.
 This is because we deleted the resources created by default in [an earlier step](#cleanup-the-resources-created-by-default-in-the-installation-guide).
 We will have to re-create this `Service` pointing to the
 `VirtualMachineInstance`. This way, we can get the `Ingress` working once again
 and reach the sample application inside the VM via the `Ingress` LB IP.
 
 Copy the [`pos-service.yaml`](pos-service.yaml) file into the admin workstation
-VM. Then, update the file to include the IP address of the VM as a service
-`Endpoint`. Finally apply the changes to the cluster.
+and apply to the cluster.
 
 ```sh
-# you should have the pos-service.yaml copied into the admin workstation
-
-# retrieve the IP address of the virtual machine we created
-export VM_IP=$(kubectl get vmi/pos-vm -o jsonpath='{.status.interfaces[0].ipAddress}')
-
-# update the pos-service.yaml with the virtual machine's IP address
-sed -i "s/VM_IP/${VM_IP}/g" pos-service.yaml
-
-# apply the changes to the Anthos on bare metal cluster
 kubectl apply -f pos-service.yaml
 ```
 ```sh
 # expected output
 service/api-server-svc created
-endpoints/api-server-svc created
 ```
 ---
 ### Access the VM workload via the `Ingress Loadbalancer`

@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# VXLAN IP space
+IP_RANGE="10.200.0."
+START=2
+END=4
+
+EXPECTED_SIZE=$(( END-START+1 ))
+
+TMP_FILE=$(mktemp) || exit 1
+
+# Get status
+nmap --max-rtt-timeout 200ms -sn -sP -sV "${IP_RANGE}$START-$END" -oG ${TMP_FILE}
+# verify
+cat ${TMP_FILE} | grep "(${EXPECTED_SIZE} hosts up)"
+
+if [[ "$?" -gt 0 ]]; then
+    echo "There were errors"
+    echo ""
+    cat ${TMP_FILE}
+    echo ""
+    exit 1
+fi
+
+rm -rf ${TMP_FILE}
