@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.9.0](https://github.com/GoogleCloudPlatform/anthos-samples/compare/v0.8.0...v0.9.0) (2022-05-11)
+
+
+### Features
+
+* [anthos-bm-gcp-terraform] add back AppArmor ([#285](https://github.com/GoogleCloudPlatform/anthos-samples/issues/285)) ([d355918](https://github.com/GoogleCloudPlatform/anthos-samples/commit/d355918508ff838aaaac630070e59ef8ba70bb3f))
+* [anthos-bm-gcp-terraform] auto remove gke hub membership ([#269](https://github.com/GoogleCloudPlatform/anthos-samples/issues/269)) ([9a0ea7e](https://github.com/GoogleCloudPlatform/anthos-samples/commit/9a0ea7e510e967898108554c0886ca6923c38aa5))
+
+
+### Bug Fixes
+
+* [anthos-bm-gcp-terraform] adjust version block ordering ([#279](https://github.com/GoogleCloudPlatform/anthos-samples/issues/279)) ([151898a](https://github.com/GoogleCloudPlatform/anthos-samples/commit/151898a7010bad3e67c4912187e28ec9f8ef17a3))
+* [anthos-bm-gcp-terraform] enforce min TF per README.md ([#268](https://github.com/GoogleCloudPlatform/anthos-samples/issues/268)) ([0e503f6](https://github.com/GoogleCloudPlatform/anthos-samples/commit/0e503f6eeaeda320c9dfb2727dd4d943cd4f26b0))
+* **deps:** update module github.com/gruntwork-io/terratest to v0.40.7 ([#242](https://github.com/GoogleCloudPlatform/anthos-samples/issues/242)) ([7211f5a](https://github.com/GoogleCloudPlatform/anthos-samples/commit/7211f5ab8d320435040d509a9ab4800b066de896))
+
 ## [0.8.0](https://github.com/GoogleCloudPlatform/anthos-samples/compare/v0.7.1...v0.8.0) (2022-04-08)
 
 
