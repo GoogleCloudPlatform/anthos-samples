@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.10.0](https://github.com/GoogleCloudPlatform/anthos-samples/compare/v0.9.0...v0.10.0) (2022-05-14)
+
+
+### Features
+
+* Update ABM version to 1.11.1 ([#295](https://github.com/GoogleCloudPlatform/anthos-samples/issues/295)) ([159bacc](https://github.com/GoogleCloudPlatform/anthos-samples/commit/159baccfcf7f2a369a36bd88f6bbd5f98fd4c934))
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/gruntwork-io/terratest to v0.40.8 ([#291](https://github.com/GoogleCloudPlatform/anthos-samples/issues/291)) ([c0ec98b](https://github.com/GoogleCloudPlatform/anthos-samples/commit/c0ec98bb10590e17395e19843dd74ff241cf23b8))
+
 ## [0.9.0](https://github.com/GoogleCloudPlatform/anthos-samples/compare/v0.8.0...v0.9.0) (2022-05-11)
 
 
