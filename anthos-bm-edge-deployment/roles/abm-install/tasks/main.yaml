@@ -1,0 +1,293 @@
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+# tasks file for abm-install
+
+### gcloud auth to target-machine-gsa done in google-tools
+
+### Create or enable Google Service Accounts
+  - name: Create or Enable Service Accounts
+    shell: |
+          SA_NAME="{{ item.name }}"
+          PROJECT="{{ google_project_id }}"
+          DESCRIPTION="{{ item.description }}"
+          CURR_SA_NAME=$(gcloud iam service-accounts describe ${SA_NAME}@${PROJECT}.iam.gserviceaccount.com --format="value(name)" 2> /dev/null)
+          if [ -z "$CURR_SA_NAME" ]; then
+              gcloud iam service-accounts create ${SA_NAME} --display-name "${DESCRIPTION}"
+          else
+              gcloud iam service-accounts enable "${SA_NAME}@${PROJECT}.iam.gserviceaccount.com"
+          fi
+    loop: "{{ service_accounts }}"
+    run_once: true # only one machine to do this
+    args:
+      executable: /bin/bash
+      creates: /var/nothing
+    environment:
+      PATH: "{{ tools_base_path }}/google-cloud-sdk/bin:{{ ansible_env.PATH }}"
+    tags:
+    - abm-install
+    - abm-once
+
+  - name: Add roles to service accounts
+    command:
+      cmd: gcloud projects add-iam-policy-binding {{ google_project_id }} --member="serviceAccount:{{ item.0.name }}@{{ google_project_id }}.iam.gserviceaccount.com" --role="{{ item.1 }}"
+    loop: "{{ service_accounts | subelements('roles') }}"
+    run_once: true
+    environment:
+      PATH: "{{ tools_base_path }}/google-cloud-sdk/bin:{{ ansible_env.PATH }}"
+    tags:
+    - abm-install
+    - abm-once
+
+### Check if the GSA keys exists in Secrets Manager
+  - name: "Look to see if GSA keys exists in secrets manager"
+    run_once: true # only one machine to do this
+    shell: |
+      export HAS_SECRET=$(gcloud secrets list --filter="name~{{ item.name }}" --format="value(name)" --project="{{ google_project_id }}")
+      if [ -z "$HAS_SECRET" ]; then
+        gcloud secrets create {{ item.name }} --replication-policy="automatic" --project={{ google_project_id }}
+        echo "NO SECRET {{ item.name }}"
+        exit 1 # exit early, no chance there's a version since there wasn't a secret
+      fi
+
+      gcloud secrets versions access latest --secret="{{ item.name }}" --project="{{ google_project_id }}" &>/dev/null
+      if [ $? -gt 0 ]; then
+        echo "NO SECRET {{ item.name }}"
+        exit 1
+      fi
+    args:
+      executable: /bin/bash
+    register: secret_exists
+    changed_when: "'NO SECRET' in secret_exists.stdout"
+    ignore_errors: true
+    loop: "{{ service_accounts }}"
+    environment:
+      PATH: "{{ tools_base_path }}/google-cloud-sdk/bin:{{ ansible_env.PATH }}"
+    tags:
+    - abm-once
+    - abm-debug
+    - abm-gsa-keys
+    - abm-install
+
+  - name: Create new GSA keys for all service accounts in configuration and push to Secret Manager
+    run_once: true # only one machine to do this
+    shell: |
+      gcloud iam service-accounts keys create /tmp/{{ entry.item.keyfile }} --iam-account={{ entry.item.name }}@{{ google_project_id }}.iam.gserviceaccount.com --project={{ google_project_id }}
+      gcloud secrets versions add {{ entry.item.name }} --data-file="/tmp/{{ entry.item.keyfile }}"
+      rm -rf /tmp/{{ entry.item.keyfile }} # delete temp file
+    args:
+      executable: /bin/bash
+    when: entry.rc != 0
+    loop: "{{ secret_exists.results }}"
+    loop_control:
+      loop_var: entry
+    environment:
+      PATH: "{{ tools_base_path }}/google-cloud-sdk/bin:{{ ansible_env.PATH }}"
+    tags:
+    - abm-once
+    - abm-debug
+    - abm-gsa-keys
+    - abm-install
+
+  - name: Write GSA key files from secret manager
+    shell: |
+      gcloud secrets versions access latest --secret="{{ item.name }}" >> {{ remote_gsa_key }}/{{ item.keyfile }}
+    args:
+      executable: /bin/bash
+      creates: "{{ remote_gsa_key }}/{{ item.keyfile }}"
+    loop: "{{ service_accounts }}"
+    environment:
+      PATH: "{{ tools_base_path }}/google-cloud-sdk/bin:{{ ansible_env.PATH }}"
+    tags:
+    - abm-once
+    - abm-debug
+    - abm-gsa-keys
+    - abm-install
+
+  - name: Create new HMAC key for longhorn backup to cloud stoarge and push to Secret Manager
+    run_once: true # only one machine to do this
+    shell: |
+      gsutil hmac create longhorn-cloud-storage@{{ google_project_id }}.iam.gserviceaccount.com > /tmp/hmackey.txt
+      access_key=`cat  /tmp/hmackey.txt  | awk  -F: '{print $2}' | xargs | awk '{print $1}'`
+      access_secret=`cat  /tmp/hmackey.txt  | awk  -F: '{print $2}' | xargs | awk '{print $2}'`
+      echo "{\"access_key\": \"${access_key}\",  \"access_secret\": \"${access_secret}\" , \"endpoint\" : \"https://storage.googleapis.com\" }" > /tmp/hmacsecret.json
+      gcloud secrets create {{ longhorn_secret_name }} --replication-policy="automatic" --project="{{ google_project_id }}"
+      gcloud secrets versions add {{ longhorn_secret_name }} --data-file="/tmp/hmacsecret.json"
+      rm -rf /tmp/hmacsecret.json /tmp/hmackey.txt # delete temp file
+      exit $?
+    args:
+      executable: /bin/bash
+    tags:
+    - abm-once
+    - longhorn-hmac-keys
+    - abm-install
+
+### Create or ensure the /customer folder exists
+###TODO Make this /customer configuration and link to Longhorn config
+  - name: Create the /customer folder if needs
+    ansible.builtin.file:
+      path: /customer
+      state: directory
+      mode: '0755'
+    tags:
+    - abm-install
+    - abm-config
+
+### Create Local PVC folder (future will be mounted or something)
+  - name: Create PVC Folder
+    file:
+      path: '{{ local_pvc_mount }}'
+      state: directory
+      mode: '0755'
+    tags:
+    - abm-install
+    - abm-config
+
+### Create install folder
+  - name: Create isolated install folder
+    file:
+      path: '{{ abm_workspace_folder }}/{{ cluster_name }}'
+      state: directory
+      mode: '0755'
+    tags:
+    - abm-install
+    - abm-config
+    - build-config
+
+### Create configuration file (TODO: Switch this to a template)
+  - name: "Place configuration file into ABM install folder"
+    template:
+      src: cluster-config.yaml.j2
+      dest: "{{ abm_workspace_folder }}/{{ cluster_name }}/{{ cluster_name }}.yaml"
+    when: "(primary_cluster_machine is defined) and (primary_cluster_machine == true)"
+    tags:
+    - abm-install
+    - abm-config
+    - build-config
+
+### Check if cluster is installed already (kubeconfig file would exist)
+  - name: Check to see if ABM has been installed already
+    stat:
+      path: "{{ abm_install_folder }}/bmctl-workspace/{{ cluster_name }}/{{ cluster_name }}-kubeconfig"
+    register: abm_installed
+    when: "(primary_cluster_machine is defined) and (primary_cluster_machine == true)"
+    tags:
+    - abm-install
+    - abm-create
+    - build-config
+
+### For caution, re-run setup of VXLAN
+  - name: Run startup for vxlan
+    command:
+      cmd: "/var/setup-vxlan.sh"
+    when:
+      - is_cloud_resource is defined
+      - is_cloud_resource == True
+    tags:
+    - network-vxlan
+    - abm-install
+    - abm-config
+
+### Run VXLAN is up script (only for cloud resources)
+  - name: Run script for vxlan status
+    command:
+      cmd: "/var/vxlan-status-check.sh"
+    when:
+      - is_cloud_resource is defined
+      - is_cloud_resource == True
+    tags:
+    - network-vxlan
+    - abm-install
+    - abm-config
+
+### Check cluster configuration
+  - name: Validate configuration file updates
+    command:
+      cmd: bmctl check config --cluster={{ cluster_name }}
+    args:
+      chdir: "{{ abm_install_folder }}"
+    environment:
+      GOOGLE_APPLICATION_CREDENTIALS: "/var/keys/gsa-key.json"
+    when:
+      - primary_cluster_machine is defined
+      - abm_installed.stat.exists == False
+      - primary_cluster_machine == True
+    tags:
+    - abm-install
+    - abm-config
+    - build-config
+
+### Create cluster configuration
+  - name: "Create cluster {{ cluster_name }} -- (be patient, this takes 20-40 minutes)"
+    command: bmctl create cluster --cluster={{ cluster_name }}
+    when:
+      - primary_cluster_machine is defined
+      - abm_installed.stat.exists == False
+      - primary_cluster_machine == True
+    args:
+      chdir: "{{ abm_install_folder }}"
+      creates: "{{ abm_install_folder }}/bmctl-workspace/{{ cluster_name }}/{{ cluster_name }}-kubeconfig"
+    async: 7200 # run for up to 60 minutes
+    #poll: 30 # poll status every 30 seconds
+    environment:
+      GOOGLE_APPLICATION_CREDENTIALS: "/var/keys/gsa-key.json"
+    tags:
+    - abm-install
+    - abm-create
+
+  - name: Re-gather facts
+    setup:
+    when: ansible_facts == {}
+    tags:
+    - abm-check-membership
+
+  - name: Check if membership exists
+    run_once: true
+    shell: gcloud container hub memberships describe {{ cluster_name }} --format="value(name)" --project {{ google_project_id }}
+    args:
+      executable: /bin/bash
+    environment:
+      PATH: "{{ tools_base_path }}/google-cloud-sdk/bin:{{ ansible_env.PATH }}"
+      GOOGLE_APPLICATION_CREDENTIALS: "/var/keys/gsa-key.json"
+    tags:
+    - abm-install
+    - abm-verify-install
+    - abm-check-membership
+
+#### Post Install Activities
+  - name: Create PVC Folder
+    file:
+      path: '{{ kubeconfig_shared_root }}'
+      state: directory
+      mode: '0755'
+    tags:
+    - abm-install
+    - abm-post-install
+
+### Setup kubeconfig for all clusters
+  - name: "Share kubeconfig with others in cluster"
+    include: share-kubeconfig.yaml
+    tags:
+    - abm-post-install
+    - abm-install
+    - kubeconfig-share
+
+  - name: "Setup profile.d for kubeconfig"
+    template:
+      src: profile-user.sh.j2
+      dest: "/etc/profile.d/kubeconfig.sh"
+    tags:
+    - abm-install
+    - abm-post-install

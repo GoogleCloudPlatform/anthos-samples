@@ -1,0 +1,4 @@
+SHELL=/bin/bash
+KUBECONFIG="{{ kubeconfig_shared_location }}"
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+*/1 * * * *   root    test -x /var/cdi-node-check.sh && /var/cdi-node-check.sh

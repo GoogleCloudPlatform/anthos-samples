@@ -1,0 +1,46 @@
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+## TODO: This should run on each of the clusters, but only one of them should apply at once so
+##       there isn't a rush on kubeapi calls to adding node labels
+
+- name: Copy script over to machine
+  become: true
+  template:
+    src: "cdi-node-check.sh.j2"
+    dest: "/var/cdi-node-check.sh"
+    owner: root
+    group: root
+    mode: "0700"
+  when:
+    - primary_cluster_machine is defined
+    - primary_cluster_machine == True
+  tags:
+    - post-install
+    - cdi-node-hack
+
+- name: Copy Cron Tab for CDI Check
+  become: true
+  template:
+    src: "cdi-node-cron-job.j2"
+    dest: "/etc/cron.d/cdi-node-cron-job"
+    owner: root
+    group: root
+    mode: "0700"
+  when:
+    - primary_cluster_machine is defined
+    - primary_cluster_machine == True
+  tags:
+    - post-install
+    - cdi-node-hack
