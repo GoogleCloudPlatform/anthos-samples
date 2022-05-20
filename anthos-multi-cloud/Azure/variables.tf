@@ -34,9 +34,11 @@ variable "name_prefix" {
   type        = string
 }
 
-variable "admin_user" {
-  description = "GCP User to give admin RBAC to in the cluster"
-  type        = string
+# This step sets up the default RBAC policy in your cluster for a Google
+# user so you can login after cluster creation
+variable "admin_users" {
+  description = "User to get default Admin RBAC"
+  type        = list(string)
 }
 
 variable "cluster_version" {
@@ -46,5 +48,10 @@ variable "cluster_version" {
 
 variable "node_pool_instance_type" {
   description = "Azure instance type for node pool"
+  type        = string
+}
+
+variable "control_plane_instance_type" {
+  description = "Azure instance type for control plane"
   type        = string
 }

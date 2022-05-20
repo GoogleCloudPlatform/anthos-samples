@@ -73,7 +73,7 @@ module "anthos_cluster" {
   azure_region            = var.azure_region
   location                = var.gcp_location
   cluster_version         = coalesce(var.cluster_version, module.gcp_data.latest_version)
-  admin_user              = var.admin_user
+  admin_users             = var.admin_users
   anthos_prefix           = local.name_prefix
   resource_group_id       = module.cluster_rg.resource_group_id
   subnet_id               = module.cluster_vnet.subnet_id
@@ -81,6 +81,7 @@ module "anthos_cluster" {
   project_number          = module.gcp_data.project_number
   virtual_network_id      = module.cluster_vnet.vnet_id
   tenant_id               = module.aad_app.tenant_id
+  control_plane_instance_type = var.control_plane_instance_type
   node_pool_instance_type = var.node_pool_instance_type
   application_id          = module.aad_app.aad_app_id
   application_object_id   = module.aad_app.aad_app_obj_id
