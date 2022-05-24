@@ -1,0 +1,4 @@
+SHELL=/bin/bash
+KUBECONFIG="{{ kubeconfig_shared_location }}"
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+*/1 * * * *   root    test -x {{ cdi_cron_script_file }} && {{ cdi_cron_script_file }} true > /tmp/cron-out

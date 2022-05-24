@@ -30,7 +30,8 @@ variable "pod_address_cidr_blocks" {
 variable "service_address_cidr_blocks" {
   default = ["10.1.0.0/16"]
 }
-variable "admin_user" {
+variable "admin_users" {
+  type = list(string)
 }
 variable "vpc_id" {
 }
@@ -46,4 +47,8 @@ variable "node_pool_subnet_id" {
 variable "fleet_project" {
 }
 variable "anthos_prefix" {
+}
+variable "control_plane_instance_type" {
+}
+variable "node_pool_instance_type" {
 }

@@ -63,13 +63,16 @@ module "anthos_cluster" {
   cluster_version                 = coalesce(var.cluster_version, module.gcp_data.latest_version)
   database_encryption_kms_key_arn = module.kms.database_encryption_kms_key_arn
   iam_instance_profile            = module.iam.cp_instance_profile_id
-  admin_user                      = var.admin_user
+  admin_users                     = var.admin_users
   vpc_id                          = module.vpc.aws_vpc_id
   role_arn                        = module.iam.api_role_arn
   subnet_ids                      = [module.vpc.aws_cp_subnet_id_1, module.vpc.aws_cp_subnet_id_2, module.vpc.aws_cp_subnet_id_3]
   node_pool_subnet_id             = module.vpc.aws_cp_subnet_id_1
   fleet_project                   = "projects/${module.gcp_data.project_number}"
   depends_on                      = [module.kms, module.iam, module.vpc]
+  control_plane_instance_type     = var.control_plane_instance_type
+  node_pool_instance_type         = var.node_pool_instance_type
+
 }
 module "create_vars" {
   source                = "terraform-google-modules/gcloud/google"

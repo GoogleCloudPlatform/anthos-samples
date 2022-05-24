@@ -1,0 +1,6 @@
+{# ssh -o StrictHostKeyChecking=no "$user@$host" #}
+Host {{ control_plane_ip.split('.')[0] }}.{{ control_plane_ip.split('.')[1] }}.{{ control_plane_ip.split('.')[2] }}.*
+    User {{ abm_install_user }}
+    Port 22
+    StrictHostKeyChecking no
+    IdentityFile ~/.ssh/{{ ssh_key_name }}

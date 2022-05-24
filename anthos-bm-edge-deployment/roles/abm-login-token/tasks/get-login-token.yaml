@@ -1,0 +1,33 @@
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+### Get Token for Login (this might change with OIDC)
+
+- name: "Get login token for console"
+  shell: |
+    set -o pipefail
+    export SECRET_NAME=$(kubectl get serviceaccount console-cluster-reader -o jsonpath='{$.secrets[0].name}' -n default)
+    export KSA_TOKEN=$(kubectl get secret ${SECRET_NAME} -o jsonpath='{$.data.token}' -n default | base64 --decode)
+    export TOKEN_NAME="{{ cluster_name }}-k8s-token"
+    echo $KSA_TOKEN
+  register: token
+  args:
+    executable: /bin/bash
+  changed_when: false
+  environment:
+    KUBECONFIG: "{{ kubeconfig_shared_location }}"
+
+- name: Display login token
+  debug:
+    msg: "{{ token.stdout }}"

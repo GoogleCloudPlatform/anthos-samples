@@ -15,14 +15,7 @@
  */
 
 terraform {
-  provider_meta "google" {
-    # Anthos Bare metal version used in this release is 1.11.0
-    # See
-    # - https://github.com/GoogleCloudPlatform/anthos-samples/blob/main/anthos-bm-gcp-terraform/resources/templates/anthos_gce_cluster.tpl#L20
-    # - https://github.com/GoogleCloudPlatform/anthos-samples/blob/main/anthos-bm-gcp-terraform/resources/init_vm.sh#L180
-    module_name = "anthos-samples/terraform/anthos-bm-terraform:gce/v0.8.0"
-  }
-  required_version = ">= v0.15.5, < 1.2"
+  required_version = ">= v0.15.5, < 1.2" # this line should not change during a release
   required_providers {
     google = {
       source  = "hashicorp/google"
@@ -33,6 +26,15 @@ terraform {
       version = ">= 3.68.0"
     }
   }
+
+  provider_meta "google" {
+    # Anthos Bare metal version used in this release is 1.11.1
+    # See
+    # - https://github.com/GoogleCloudPlatform/anthos-samples/blob/main/anthos-bm-gcp-terraform/resources/templates/anthos_gce_cluster.tpl#L20
+    # - https://github.com/GoogleCloudPlatform/anthos-samples/blob/main/anthos-bm-gcp-terraform/resources/init_vm.sh#L180
+    module_name = "anthos-samples/terraform/anthos-bm-terraform:gce/v0.10.0"
+  }
+
 }
 
 provider "google" {

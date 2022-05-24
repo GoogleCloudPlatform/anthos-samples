@@ -26,9 +26,9 @@ variable "name_prefix" {
 
 # This step sets up the default RBAC policy in your cluster for a Google
 # user so you can login after cluster creation
-variable "admin_user" {
+variable "admin_users" {
   description = "User to get default Admin RBAC"
-  type        = string
+  type        = list(string)
 }
 
 variable "cluster_version" {
@@ -107,6 +107,11 @@ variable "service_address_cidr_blocks" {
 }
 
 variable "node_pool_instance_type" {
+  description = "AWS Node instance type"
+  type        = string
+}
+
+variable "control_plane_instance_type" {
   description = "AWS Node instance type"
   type        = string
 }

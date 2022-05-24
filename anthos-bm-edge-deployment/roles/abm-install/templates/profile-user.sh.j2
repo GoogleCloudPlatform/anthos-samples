@@ -1,0 +1,6 @@
+# shellcheck shell=sh
+
+# Shared location for kubeconfig
+export KUBECONFIG="{{ kubeconfig_shared_location }}"
+
+source <(kubectl completion bash)

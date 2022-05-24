@@ -1,0 +1,145 @@
+#jinja2: lstrip_blocks: "True", trim_blocks: "True"
+
+sshPrivateKeyPath: {{ ssh_key_path }} # Created for access to worker nodes
+gcrKeyPath: {{ remote_gsa_key }}/{{ (service_accounts | selectattr('name', 'equalto', 'abm-gcr-agent') | first ).keyfile }}
+gkeConnectAgentServiceAccountKeyPath: {{ remote_gsa_key }}/{{ (service_accounts | selectattr('name', 'equalto', 'abm-gke-connect-agent') | first ).keyfile }}
+gkeConnectRegisterServiceAccountKeyPath: {{ remote_gsa_key }}/{{ (service_accounts | selectattr('name', 'equalto', 'abm-gke-register-agent') | first ).keyfile }}
+cloudOperationsServiceAccountKeyPath: {{ remote_gsa_key }}/{{ (service_accounts | selectattr('name', 'equalto', 'abm-cloud-operations-agent') | first ).keyfile }}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ cluster_name }}
+---
+apiVersion: baremetal.cluster.gke.io/v1
+kind: Cluster
+metadata:
+  name: {{ cluster_name }}
+  namespace: {{ cluster_name }}
+spec:
+  type: {{ install_type }}
+  profile: edge
+  # Anthos cluster version.
+  anthosBareMetalVersion: {{ abm_version }}
+  bypassPreflightCheck: {{ skip_preflight }}
+  # GKE connect configuration
+  gkeConnect:
+    projectID: {{ google_project_id }}
+  # Control plane configuration
+  controlPlane:
+    nodePoolSpec:
+      nodes:
+      {% for ipaddr in control_plane_ips %}
+      - address: {{ ipaddr }}
+      {% endfor %}
+  # Cluster networking configuration
+  clusterNetwork:
+    multipleNetworkInterfaces: {{ multi_network_enabled }}
+    pods:
+      cidrBlocks:
+      - {{ pod_cidr }}
+    services:
+      cidrBlocks:
+      - {{ services_cidr }}
+  loadBalancer:
+    mode: bundled
+    ports:
+      controlPlaneLBPort: 443
+    vips:
+      controlPlaneVIP: {{ control_plane_vip }}
+      ingressVIP: {{ ingress_vip }}
+    addressPools:
+    - name: load-balance-pool
+      addresses:
+      {% for range in load_balancer_pool_cidr %}
+      - {{ range }}
+      {% endfor %}
+  # Proxy configuration
+  # proxy:
+  #   url: http://[username:password@]domain
+  #   # A list of IPs, hostnames or domains that should not be proxied.
+  #   noProxy:
+  #   - 127.0.0.1
+  #   - localhost
+  # Logging and Monitoring
+  clusterOperations:
+    # Cloud project for logs and metrics.
+    projectID: {{ google_project_id }}
+    # Cloud location for logs and metrics.
+    location: {{ google_region }}
+    enableApplication: {{ enable_application_logging }}
+  # Storage configuration
+  storage:
+    lvpNodeMounts:
+      path: {{ local_pvc_mount }}
+      storageClassName: local-disks
+    lvpShare:
+      path: {{ local_share_pvc_mount }}
+      storageClassName: local-shared
+      numPVUnderSharedPath: 5
+  # NodeConfig specifies the configuration that applies to all nodes in the cluster.
+  nodeConfig:
+    podDensity:
+      maxPodsPerNode: 110
+    containerRuntime: {{ container_runtime }}
+  # KubeVirt configuration, uncomment this section if you want to install kubevirt to the cluster
+  kubevirt:
+    useEmulation: {{ kubevirt_use_emulation }}
+
+  # Authentication; uncomment this section if you wish to enable authentication to the cluster with OpenID Connect.
+  # authentication:
+  #   oidc:
+  #     # issuerURL specifies the URL of your OpenID provider, such as "https://accounts.google.com". The Kubernetes API
+  #     # server uses this URL to discover public keys for verifying tokens. Must use HTTPS.
+  #     issuerURL: <URL for OIDC Provider; required>
+  #     # clientID specifies the ID for the client application that makes authentication requests to the OpenID
+  #     # provider.
+  #     clientID: <ID for OIDC client application; required>
+  #     # clientSecret specifies the secret for the client application.
+  #     clientSecret: <Secret for OIDC client application; optional>
+  #     # kubectlRedirectURL specifies the redirect URL (required) for the gcloud CLI, such as
+  #     # "http://localhost:[PORT]/callback".
+  #     kubectlRedirectURL: <Redirect URL for the gcloud CLI; optional, default is "http://kubectl.redirect.invalid">
+  #     # username specifies the JWT claim to use as the username. The default is "sub", which is expected to be a
+  #     # unique identifier of the end user.
+  #     username: <JWT claim to use as the username; optional, default is "sub">
+  #     # usernamePrefix specifies the prefix prepended to username claims to prevent clashes with existing names.
+  #     usernamePrefix: <Prefix prepended to username claims; optional>
+  #     # group specifies the JWT claim that the provider will use to return your security groups.
+  #     group: <JWT claim to use as the group name; optional>
+  #     # groupPrefix specifies the prefix prepended to group claims to prevent clashes with existing names.
+  #     groupPrefix: <Prefix prepended to group claims; optional>
+  #     # scopes specifies additional scopes to send to the OpenID provider as a comma-delimited list.
+  #     scopes: <Additional scopes to send to OIDC provider as a comma-separated list; optional>
+  #     # extraParams specifies additional key-value parameters to send to the OpenID provider as a comma-delimited
+  #     # list.
+  #     extraParams: <Additional key-value parameters to send to OIDC provider as a comma-separated list; optional>
+  #     # proxy specifies the proxy server to use for the cluster to connect to your OIDC provider, if applicable.
+  #     # Example: https://user:password@10.10.10.10:8888. If left blank, this defaults to no proxy.
+  #     proxy: <Proxy server to use for the cluster to connect to your OIDC provider; optional, default is no proxy>
+  #     # deployCloudConsoleProxy specifies whether to deploy a reverse proxy in the cluster to allow Google Cloud
+  #     # Console access to the on-premises OIDC provider for authenticating users. If your identity provider is not
+  #     # reachable over the public internet, and you wish to authenticate using Google Cloud Console, then this field
+  #     # must be set to true. If left blank, this field defaults to false.
+  #     deployCloudConsoleProxy: <Whether to deploy a reverse proxy for Google Cloud Console authentication; optional>
+  #     # certificateAuthorityData specifies a Base64 PEM-encoded certificate authority certificate of your identity
+  #     # provider. It's not needed if your identity provider's certificate was issued by a well-known public CA.
+  #     # However, if deployCloudConsoleProxy is true, then this value must be provided, even for a well-known public
+  #     # CA.
+  #     certificateAuthorityData: <Base64 PEM-encoded certificate authority certificate of your OIDC provider; optional>
+  # Node access configuration; uncomment this section if you wish to use a non-root user
+  # with passwordless sudo capability for machine login.
+  nodeAccess:
+    loginUser: {{ abm_install_user }}
+---
+# Node pools for worker nodes
+#apiVersion: baremetal.cluster.gke.io/v1
+#kind: NodePool
+#metadata:
+#  name: node-pool-1
+#  namespace: cluster-abm-1
+#spec:
+#  clusterName: abm-1
+#  nodes:
+#  - address: <Machine 2 IP>
+#  - address: <Machine 3 IP>
