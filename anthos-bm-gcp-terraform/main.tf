@@ -65,7 +65,7 @@ locals {
 
 module "enable_google_apis_primary" {
   source                      = "terraform-google-modules/project-factory/google//modules/project_services"
-  version                     = "12.0.0"
+  version                     = "13.0.0"
   project_id                  = var.project_id
   activate_apis               = var.primary_apis
   disable_services_on_destroy = false
@@ -73,7 +73,7 @@ module "enable_google_apis_primary" {
 
 module "enable_google_apis_secondary" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "12.0.0"
+  version = "13.0.0"
   # fetched from previous module to explicitely express dependency
   project_id                  = module.enable_google_apis_primary.project_id
   depends_on                  = [module.enable_google_apis_primary]
@@ -105,7 +105,7 @@ module "create_service_accounts" {
 
 module "instance_template" {
   source  = "terraform-google-modules/vm/google//modules/instance_template"
-  version = "~> 7.6.0"
+  version = "~> 7.7.0"
   depends_on = [
     module.enable_google_apis_primary,
     module.enable_google_apis_secondary
@@ -334,4 +334,12 @@ module "install_abm" {
   username             = var.username
   publicIp             = local.publicIps[local.admin_vm_hostnames[0]]
   ssh_private_key_file = format(local.private_key_file_path_template, local.admin_vm_hostnames[0])
+}
+
+module "gke_hub_membership" {
+  source   = "terraform-google-modules/gcloud/google"
+  version  = "~>3.1.1"
+  platform = "linux"
+  # Delete the hub membership created by 'bmctl create cluster'
+  destroy_cmd_body = "container hub memberships delete --quiet --project ${var.project_id} ${var.abm_cluster_id} --verbosity=none || true"
 }

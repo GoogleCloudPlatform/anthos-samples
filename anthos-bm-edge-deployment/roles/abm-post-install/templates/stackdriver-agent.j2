@@ -1,0 +1,227 @@
+#!/bin/bash
+#
+# stackdriver-agent - start and stop the Stackdriver agent
+# http://www.stackdriver.com
+#
+# Based on collectd.init from Debian package
+# Copyright (C) 2005-2006 Florian Forster <octo@verplant.org>
+# Copyright (C) 2006-2009 Sebastian Harl <tokkee@debian.org>
+#
+
+### BEGIN INIT INFO
+# Provides:          stackdriver-agent
+# Required-Start:    $local_fs $remote_fs
+# Required-Stop:     $local_fs $remote_fs
+# Should-Start:      $network $named $syslog $time cpufrequtils
+# Should-Stop:       $network $named $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: start and stop Stackdriver Agent
+# Description: The Stackdriver Agent is used with the Stackdriver monitoring SaaS service.
+### END INIT INFO
+
+. /lib/lsb/init-functions
+
+export PATH=/sbin:/bin:/usr/sbin:/usr/bin
+
+DESC="Stackdriver metrics collection agent"
+NAME=stackdriver-agent
+DAEMON=/opt/stackdriver/collectd/sbin/stackdriver-collectd
+COLLECTDMON=/opt/stackdriver/collectd/sbin/stackdriver-collectdmon
+
+CONFIG=/etc/stackdriver/collectd.conf
+_PIDFILE=/var/run/stackdriver-agent.pid
+
+export GOOGLE_APPLICATION_CREDENTIALS="{{ remote_gsa_key }}/{{ (service_accounts | selectattr('name', 'equalto', 'abm-cloud-operations-agent') | first ).keyfile }}"
+
+JAVA_LIB_DIR=""
+
+# Gracefully exit if the package has been removed.
+test -x "$COLLECTDMON" || exit 0
+test -x "$DAEMON" || exit 0
+
+if [ -r "/etc/default/${NAME}" ]; then
+    . "/etc/default/${NAME}"
+fi
+
+if test "$ENABLE_COREFILES" == 1; then
+    ulimit -c unlimited
+fi
+
+# TODO(dhrupadb): Extract common logic between deb and rpm scripts.
+# Attempt to discover the location of the Java libraries.
+find_libjvm_so () {
+    local java_lib_dir
+    local java_home=$(dirname "$(readlink -f "$(bash -lc "which java 2>/dev/null")")")/..
+    [ "$java_home" = "./.." ] && return
+    local lib_subdirs=("lib/amd64/server" "lib/x64/server" "lib/i386/server" "lib/server")
+    local lib_subdirs_with_jre=()
+    for subdir in "${lib_subdirs[@]}"; do
+        lib_subdirs_with_jre+=("$subdir" "jre/$subdir")
+    done
+    for libdir in "${lib_subdirs_with_jre[@]/#/$java_home/}"; do
+        if [ -f "$libdir/libjvm.so" ]; then
+            java_lib_dir="$libdir"
+            break
+        fi
+    done
+    echo $java_lib_dir
+}
+
+[ -n "$JAVA_LIB_DIR" ] || JAVA_LIB_DIR=$(find_libjvm_so)
+if [ -n "$JAVA_LIB_DIR" ]; then
+    export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$JAVA_LIB_DIR"
+fi
+
+# return:
+#   0 if config is fine
+#   1 if there is a syntax error
+#   2 if there is no configuration
+#   3 if the instance doesn't have the necessary credentials
+check_config() {
+    if test ! -r "$CONFIG"; then
+        return 2
+    fi
+    if ! LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/opt/stackdriver/collectd/lib64:/opt/stackdriver/collectd/lib" "$DAEMON" -t -C "$CONFIG"; then
+        return 1
+    fi
+    # Check if the application default credentials file is in the system
+    # location.
+    if [ ! -f "${GOOGLE_APPLICATION_CREDENTIALS:-/etc/google/auth/application_default_credentials.json}" ]; then
+        # See if the instance has the correct monitoring scopes.
+        INSTANCE_SCOPES=$(curl --silent --connect-timeout 1 -f -H "Metadata-Flavor: Google" http://169.254.169.254/computeMetadata/v1/instance/service-accounts/default/scopes 2>/dev/null || /bin/true)
+        if [ `echo "$INSTANCE_SCOPES" | grep -cE '(monitoring.write|monitoring|cloud-platform)$'` -lt 1 ]; then
+            log_failure_msg "The instance has neither the application default" \
+              "credentials file nor the correct monitoring scopes; Exiting."
+            return 3
+        fi
+    else
+        log_progress_msg "Sufficient authentication scope found to talk to the" \
+          "Stackdriver Monitoring API."
+    fi
+    return 0
+}
+
+# return:
+#   0 if the daemon has been started
+#   2 if the daemon could not be started
+#   3 if the daemon was not supposed to be started due to user configuration
+start() {
+    GOOGLE_MONITORING_ENABLE=$(curl --silent --connect-timeout 1 -f -H "Metadata-Flavor: Google" http://169.254.169.254/computeMetadata/v1/instance/attributes/google-monitoring-enable 2>/dev/null)
+    if [ -n "$GOOGLE_MONITORING_ENABLE" -a "$GOOGLE_MONITORING_ENABLE" = "0" ]; then
+        log_warning_msg "disabled via metadata"
+        return 3
+    fi
+
+    # allow setting a proxy
+    if [ -n "$PROXY_URL" ]; then
+        export https_proxy=$PROXY_URL
+    fi
+
+    if ! check_config; then
+        log_failure_msg "not starting, configuration/credentials error."
+        return 3
+    fi
+
+    LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/opt/stackdriver/collectd/lib64:/opt/stackdriver/collectd/lib" \
+        start_daemon -p "$_PIDFILE" "$COLLECTDMON" -P "$_PIDFILE" -c "$DAEMON" -- -C "$CONFIG" \
+        || return 2
+    return 0
+}
+
+# return:
+#   0 if the daemon has been stopped
+#   1 if the daemon could not be stopped
+#   3 if the daemon was already stopped
+stop() {
+    DAEMON_NAME=${DAEMON##*/}
+    DAEMON_NAME=${DAEMON_NAME:0:15}
+    killproc -p "$_PIDFILE" "$DAEMON_NAME"
+}
+
+# return:
+#   0 if the daemon has been restarted
+#   1 if the daemon could not be stopped
+#   2 if the daemon could not be started
+#   3 if the daemon was not supposed to be restarted due to user configuration
+restart() {
+    if ! check_config; then
+        log_failure_msg "not restarting, configuration/credentials error"
+        return 3
+    fi
+    stop
+    rc="$?"
+    case "$rc" in
+        0|3) ;;
+        *) return "$rc" ;;
+    esac
+    start
+}
+
+# See how we were called.
+case "$1" in
+    start)
+        log_daemon_msg "Starting $DESC" "$NAME"
+        start
+        case "$?" in
+            0|1) log_end_msg 0 ;;
+            2) log_end_msg 1 ;;
+            3) log_end_msg 255; true ;;
+            *) log_end_msg 1 ;;
+        esac
+        ;;
+    stop)
+        log_daemon_msg "Stopping $DESC" "$NAME"
+        stop
+        case "$?" in
+            0|3) log_end_msg 0 ;;
+            *) log_end_msg 1 ;;
+        esac
+        ;;
+    status)
+        pidofproc -p "$_PIDFILE" "$COLLECTDMON" >/dev/null
+        rc="$?"
+        case "$rc" in
+            0) log_success_msg "$NAME is running" ;;
+            4) log_failure_msg "could not access PID file for $NAME" ;;
+            *) log_failure_msg "$NAME is not running" ;;
+        esac
+        exit "$rc"
+        ;;
+    restart|force-reload)
+        log_daemon_msg "Restarting $DESC" "$NAME"
+        restart
+        rc="$?"
+        case "$rc" in
+            0) log_end_msg 0 ;;
+            1|2) log_end_msg 1 ;;
+            3) log_end_msg 255; true ;;
+            *) log_end_msg 1 ;;
+        esac
+        exit "$rc"
+        ;;
+    condrestart|try-restart)
+        log_daemon_msg "Trying to restart $DESC" "$NAME"
+        pidofproc -p "$_PIDFILE" "$COLLECTDMON" >/dev/null
+        case "$rc" in
+            0) ;;
+            4) log_end_msg 1; exit "$rc" ;;
+            *) log_end_msg 255; true ;;
+        esac
+        restart
+        rc="$?"
+        case "$rc" in
+            0) log_end_msg 0 ;;
+            1|2) log_end_msg 1 ;;
+            3) log_end_msg 255; true ;;
+            *) log_end_msg 1 ;;
+        esac
+        exit "$rc"
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|status|restart|force-reload|condrestart|try-restart}"
+        exit 3
+        ;;
+esac
+
+# vim: syntax=sh noexpandtab sw=4 ts=4 :

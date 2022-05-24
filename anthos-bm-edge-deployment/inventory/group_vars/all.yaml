@@ -1,0 +1,153 @@
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+
+#######
+
+# These are the most commonly changed variables for a particular provisioning
+
+####
+#### Anthos Config Management
+####
+acm_root_repo: "{{ lookup('env', 'ROOT_REPO_URL') | default('https://github.com/GoogleCloudPlatform/anthos-samples', True) }}"
+
+
+#######
+
+
+# All ansible interactions are using this user during provisioning
+ansible_user: abm-admin
+
+# Variables assigned to all inventory
+
+google_project_id: "{{ lookup('env', 'PROJECT_ID') }}"
+google_region: "{{ lookup('env', 'REGION') | default('us-central1', True) }}"
+google_zone: "{{ lookup('env', 'ZONE') | default('us-central1-a', True) }}"
+local_gsa_key: "{{ lookup('env', 'LOCAL_GSA_FILE') }}"
+tools_base_path: "/var/google-tools-install"
+
+kubeconfig_shared_root: "/var/kubeconfig"
+kubeconfig_shared_location: "{{ kubeconfig_shared_root }}/kubeconfig"
+
+# Latest version can be found: gsutil ls -al gs://anthos-baremetal-release/bmctl
+# Version of Anthos Bare Metal to install
+abm_version: "1.8.2" # verify coupling of ABM to BMCTL versions
+# bmctl binary version
+#TODO: set this up to query for the version, then upgrade automatically if updated
+bmctl_version: "1.8.2" # If changed, set the `force_tools_upgrade` to true so new version of BMCTL is downloaded
+
+# gsutil ls -al gs://config-management-release/released/
+# Anthos Config Management
+acm_version: "1.8.1"
+
+# Force Upgrade of tools (typically used when updating the ABM version above)
+force_tools_upgrade: false
+
+# SCM (GitLab, GitHub access token)
+scm_token_user: "{{ lookup('env', 'SCM_TOKEN_USER') }}"
+scm_token_token: "{{ lookup('env', 'SCM_TOKEN_TOKEN') }}"
+
+#Secret name for longhorn to take backups of volumes and send to cloud storage bucket
+volume_backup_secret_name: gcp-cloud-storage-backup-secret
+
+# All of the Service Accounts used in this solution
+service_accounts: [
+  {
+    name: abm-gcr-agent,
+    keyfile: abm-gcr-agent-creds.json,
+    description: "ABM GCR Agent Account",
+    roles: [
+      "roles/storage.objectViewer"
+    ]
+  },
+  {
+    name: abm-gke-connect-agent,
+    keyfile: abm-gke-connect-agent-creds.json,
+    description: "ABM GKE Connect Agent Service Account",
+    roles: [
+      "roles/gkehub.connect"
+    ]
+  },
+  {
+    name: abm-gke-register-agent,
+    keyfile: abm-gke-register-agent-creds.json,
+    description: "ABM GKE Connect Register Account",
+    roles: [
+      "roles/gkehub.admin"
+    ]
+  },
+  {
+    name: abm-cloud-operations-agent,
+    keyfile: abm-cloud-operations-agent-creds.json,
+    description: "ABM Cloud Operations Service Account",
+    roles: [
+      "roles/logging.logWriter",
+      "roles/monitoring.metricWriter",
+      "roles/stackdriver.resourceMetadata.writer",
+      "roles/monitoring.dashboardEditor"
+    ]
+  },
+  {
+    name: external-secrets-k8s,
+    keyfile: external-secrets-k8s-creds.json,
+    description: "External Secrets Service Account",
+    roles: [
+      "roles/secretmanager.secretAccessor",
+      "roles/secretmanager.viewer"
+    ]
+  },
+  {
+    name: longhorn-cloud-storage,
+    keyfile: longhorn-cloud-storage-creds.json,
+    description: "Longhorn taking volume backups on cloud stoarge ",
+    roles: [
+      "roles/storage.objectAdmin"
+    ]
+  },
+  {
+    name: gateway-connect-agent,
+    keyfile: gateway-connect-agent-creds.json,
+    description: "Agent used for Gateway Connect",
+    roles: [
+      "roles/gkehub.gatewayAdmin",
+      "roles/gkehub.viewer"
+    ]
+  }
+]
+
+# git_creds_gcp_secret_name is the secret created to hold the Git PAT info corresponding to that Namespace Repo
+# franchise_name, franchise_number aren't used
+# Stores: not used now, secrets are created for all franchises in GCP Secrets Manager, ExternalSecrets are controlled in the root-repo for each franchise
+#      Associations of franchise/store -> cluster is done at the inventory level on "acm_cluster_name" (an unique name across the cluster space)
+
+## All this does is create the git-creds for the different ExternalSecrets used in Namespace Repos
+franchises: [
+  {
+    franchise_number: "123", # DEPRECATED
+    git_creds_gcp_secret_name: "global-lab-git-creds", # Secret to access the namespace repo containing the franchise's information
+    franchise_name: "Global McD", # DEPRECATED
+    stores: [
+      "edge-2" # store-usa-123-1
+    ]
+  },
+  {
+    franchise_name: "Chicago McD",
+    franchise_number: "234",
+    git_creds_gcp_secret_name: "northam-lab-git-creds",
+    stores: [
+      "edge-1" # store-usa-234-3
+    ]
+  }
+]

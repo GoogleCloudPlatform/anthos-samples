@@ -73,8 +73,7 @@ resource "aws_subnet" "public" {
   availability_zone       = var.subnet_availability_zones[count.index]
   map_public_ip_on_launch = true
   tags = {
-    Name                              = "${local.vpc_name}-public-${var.subnet_availability_zones[count.index]}",
-    "kubernetes.io/role/internal-elb" = "1"
+    Name = "${local.vpc_name}-public-${var.subnet_availability_zones[count.index]}"
   }
 }
 
@@ -98,7 +97,7 @@ resource "aws_route_table" "public" {
   vpc_id = aws_vpc.this.id
 
   tags = {
-    Name = "${local.vpc_name}-public-[count.index]"
+    Name = "${local.vpc_name}-public-${count.index}"
   }
 }
 
@@ -148,7 +147,7 @@ resource "aws_route_table" "private" {
   count  = local.az_count
   vpc_id = aws_vpc.this.id
   tags = {
-    Name = "${local.vpc_name}-private{[count.index]}"
+    Name = "${local.vpc_name}-private-${count.index}"
   }
 }
 

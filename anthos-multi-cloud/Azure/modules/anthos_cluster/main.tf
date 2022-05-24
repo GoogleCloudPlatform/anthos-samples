@@ -48,8 +48,12 @@ resource "google_container_azure_cluster" "this" {
   name              = var.anthos_prefix
   resource_group_id = var.resource_group_id
   authorization {
-    admin_users {
-      username = var.admin_user
+    dynamic "admin_users" {
+      for_each = var.admin_users
+
+      content {
+        username = admin_users.value
+      }
     }
   }
   control_plane {
@@ -58,7 +62,7 @@ resource "google_container_azure_cluster" "this" {
       "client" : "Terraform"
     }
     version = var.cluster_version
-    vm_size = "Standard_DS2_v2"
+    vm_size = var.control_plane_instance_type
     main_volume {
       size_gib = 8
     }

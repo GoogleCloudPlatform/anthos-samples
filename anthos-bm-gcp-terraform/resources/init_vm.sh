@@ -42,7 +42,6 @@ function __main__ () {
 
   __install_deps__
   __setup_vxlan__
-  __disable_apparmour__
   __setup_admin_host__
 
   echo "[+] Successfully completed initialization of host $HOSTNAME"
@@ -111,25 +110,6 @@ function __update_bridge_entries__ () {
 }
 
 ##############################################################################
-# Disable apparmour service on the host. Anthos clusters on bare metal does
-# not support apparmor
-##############################################################################
-function __disable_apparmour__ () {
-  echo "Stopping apparmor system service"
-  systemctl stop apparmor.service
-  __check_exit_status__ $? \
-    "[+] Successfully stopped apparmor service" \
-    "[-] Failed to stop apparmor service. Check for failures on [systemctl stop apparmor.service] in ~/$LOG_FILE"
-
-  systemctl disable apparmor.service
-  __check_exit_status__ $? \
-    "[+] Successfully disabled apparmor service" \
-    "[-] Failed to disable apparmor service. Check for failures on [systemctl disable apparmor.service] in ~/$LOG_FILE"
-
-  __print_separator__
-}
-
-##############################################################################
 # Configure the admin host with additional tools required to provision and
 # manage the Anthos cluster. This is only executed inside the admin host.
 ##############################################################################
@@ -178,7 +158,7 @@ function __setup_kubctl__ () {
 ##############################################################################
 function __setup_bmctl__ () {
   mkdir baremetal && cd baremetal || return
-  gsutil cp gs://anthos-baremetal-release/bmctl/1.11.0/linux-amd64/bmctl .
+  gsutil cp gs://anthos-baremetal-release/bmctl/1.11.1/linux-amd64/bmctl .
   chmod a+x bmctl
   mv bmctl /usr/local/sbin/
   __check_exit_status__ $? \

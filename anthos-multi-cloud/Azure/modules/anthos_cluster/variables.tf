@@ -22,11 +22,14 @@ variable "azure_region" {
 }
 variable "resource_group_id" {
 }
-variable "admin_user" {
+variable "admin_users" {
+  type = list(string)
 }
 variable "cluster_version" {
 }
 variable "node_pool_instance_type" {
+}
+variable "control_plane_instance_type" {
 }
 variable "subnet_id" {
 }

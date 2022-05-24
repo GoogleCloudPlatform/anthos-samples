@@ -1,0 +1,24 @@
+#!/bin/bash
+
+VERBOSE=$1
+
+if [[ ! -z "${VERBOSE}" ]]; then
+    echo "Checking CDI Node status..."
+fi
+
+# names of nodes with spaces
+LINES=$(kubectl get nodes --selector "cpumanager notin (true)" -o jsonpath="{.items[*].metadata.name }" )
+
+for LINE in ${LINES[@]}; do
+    if [[ ! -z "${LINE}" ]]; then
+        NODE="${LINE}"
+        kubectl label node ${NODE} cpumanager=true --overwrite=true
+        if [[ ! -z "${VERBOSE}" ]]; then
+            echo "${NODE} is has been tagged"
+        fi
+    else
+        if [[ ! -z "${VERBOSE}" ]]; then
+            echo "No changes needed"
+        fi
+    fi
+done
