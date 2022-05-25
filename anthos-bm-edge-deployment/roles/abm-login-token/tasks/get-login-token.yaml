@@ -17,7 +17,20 @@
 - name: "Get login token for console"
   shell: |
     set -o pipefail
-    export SECRET_NAME=$(kubectl get serviceaccount console-cluster-reader -o jsonpath='{$.secrets[0].name}' -n default)
+    export SECRET_NAME=console-cluster-reader-token
+    kubectl apply -f - << __EOF__
+    apiVersion: v1
+    kind: Secret
+    metadata:
+      name: "${SECRET_NAME}"
+      annotations:
+        kubernetes.io/service-account.name: console-cluster-reader
+    type: kubernetes.io/service-account-token
+    __EOF__
+    until [[ $(kubectl get -o=jsonpath="{.data.token}" "secret/${SECRET_NAME}") ]]; do
+      echo "waiting for token..." >&2;
+      sleep 1;
+    done
     export KSA_TOKEN=$(kubectl get secret ${SECRET_NAME} -o jsonpath='{$.data.token}' -n default | base64 --decode)
     export TOKEN_NAME="{{ cluster_name }}-k8s-token"
     echo $KSA_TOKEN
