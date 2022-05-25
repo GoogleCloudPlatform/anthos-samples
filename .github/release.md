@@ -54,7 +54,7 @@ For example **v0.4.4** of the CFT [uses Terraform version 1.1.7](https://github.
 If we want our samples to use this version of the CFT then we have to update
 references to the CFT docker image in our repository to point to the version
 set for [DOCKER_TAG_VERSION_DEVELOPER_TOOLS](https://github.com/GoogleCloudPlatform/cloud-foundation-toolkit/blob/v0.4.4/infra/build/Makefile#L35); which is
-**1.4.13** in this example. The palces where you will have to update this
+**1.4.13** in this example. The places where you will have to update this
 version are:
 - [Makefile](/Makefile#L23)
 - [int.cloudbuild.yaml](/build/int.cloudbuild.yaml#L67)
