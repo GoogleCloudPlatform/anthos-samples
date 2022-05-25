@@ -69,22 +69,23 @@ module "gcp_data" {
 }
 
 module "anthos_cluster" {
-  source                  = "./modules/anthos_cluster"
-  azure_region            = var.azure_region
-  location                = var.gcp_location
-  cluster_version         = coalesce(var.cluster_version, module.gcp_data.latest_version)
-  admin_user              = var.admin_user
-  anthos_prefix           = local.name_prefix
-  resource_group_id       = module.cluster_rg.resource_group_id
-  subnet_id               = module.cluster_vnet.subnet_id
-  ssh_public_key          = tls_private_key.anthos_ssh_key.public_key_openssh
-  project_number          = module.gcp_data.project_number
-  virtual_network_id      = module.cluster_vnet.vnet_id
-  tenant_id               = module.aad_app.tenant_id
-  node_pool_instance_type = var.node_pool_instance_type
-  application_id          = module.aad_app.aad_app_id
-  application_object_id   = module.aad_app.aad_app_obj_id
-  fleet_project           = "projects/${module.gcp_data.project_number}"
+  source                      = "./modules/anthos_cluster"
+  azure_region                = var.azure_region
+  location                    = var.gcp_location
+  cluster_version             = coalesce(var.cluster_version, module.gcp_data.latest_version)
+  admin_users                 = var.admin_users
+  anthos_prefix               = local.name_prefix
+  resource_group_id           = module.cluster_rg.resource_group_id
+  subnet_id                   = module.cluster_vnet.subnet_id
+  ssh_public_key              = tls_private_key.anthos_ssh_key.public_key_openssh
+  project_number              = module.gcp_data.project_number
+  virtual_network_id          = module.cluster_vnet.vnet_id
+  tenant_id                   = module.aad_app.tenant_id
+  control_plane_instance_type = var.control_plane_instance_type
+  node_pool_instance_type     = var.node_pool_instance_type
+  application_id              = module.aad_app.aad_app_id
+  application_object_id       = module.aad_app.aad_app_obj_id
+  fleet_project               = "projects/${module.gcp_data.project_number}"
   depends_on = [
     module.aad_app, module.cluster_rg, module.cluster_vnet
   ]
