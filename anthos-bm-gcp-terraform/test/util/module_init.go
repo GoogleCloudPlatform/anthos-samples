@@ -34,6 +34,7 @@ type InitVariables struct {
 	InitLogsFile           *Variable `json:"init_logs"`
 	InitScriptPath         *Variable `json:"init_script"`
 	ClusterYamlPath        *Variable `json:"cluster_yaml_path"`
+	NfsYamlPath            *Variable `json:"nfs_yaml_path"`
 	ResourcesPath          *Variable `json:"resources_path"`
 	CredentialsFile        *Variable `json:"credentials_file"`
 	InitCheckScript        *Variable `json:"init_check_script"`

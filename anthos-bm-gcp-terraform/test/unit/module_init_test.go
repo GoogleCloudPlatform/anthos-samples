@@ -47,6 +47,7 @@ func TestUnit_InitModule(goTester *testing.T) {
 	initLogs := "test_init_log_file.log"
 	initVarsFile := "../test/../path/../init_vars_file.var"
 	clusterYamlPath := "../test/../path/../test_cluster.yaml"
+	nfsYamlPath := "../test/../path/../test_nfs-csi.yaml"
 	pubKeyPathTemplate := "../test/../path/../test_pub_key-%s.pub"
 	privKeyPathTemplate := "../test/../path/../test_pub_key-%s.priv"
 
@@ -65,6 +66,7 @@ func TestUnit_InitModule(goTester *testing.T) {
 		"init_logs":              initLogs,
 		"init_vars_file":         initVarsFile,
 		"cluster_yaml_path":      clusterYamlPath,
+		"nfs_yaml_path":          nfsYamlPath,
 		"pub_key_path_template":  pubKeyPathTemplate,
 		"priv_key_path_template": privKeyPathTemplate,
 	}
@@ -257,6 +259,14 @@ func TestUnit_InitModule_DefaultValues(goTester *testing.T) {
 		"../../resources/.cluster1.yaml",
 		initModulePlan.Variables.ClusterYamlPath.Value,
 		"Variable does not match in plan: cluster_yaml_path.",
+	)
+
+	// verify input variable nfs_yaml_path in plan matches default value
+	assert.Equal(
+		goTester,
+		"../../resources/.nfs-csi.yaml",
+		initModulePlan.Variables.NfsYamlPath.Value,
+		"Variable does not match in plan: nfs_yaml_path.",
 	)
 
 	// verify input variable pub_key_path_template in plan matches default value

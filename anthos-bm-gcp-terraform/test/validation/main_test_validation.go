@@ -39,7 +39,7 @@ func ValidateRootResources(
 	for idx, rootResource := range terraformPlan.PlannedValues.RootModule.Resources {
 		assert.Contains(
 			goTester,
-			[]string{"local_file", "google_compute_firewall"},
+			[]string{"local_file", "google_compute_firewall", "null_resource"},
 			rootResource.Type,
 			fmt.Sprintf("Invalid resource type for planned_values.root_module.resources[%d]", idx),
 		)
@@ -48,8 +48,14 @@ func ValidateRootResources(
 			continue // nothing to check
 		}
 
+		if rootResource.Type == "null_resource" {
+			continue // nothing to check
+		}
+
 		if rootResource.Name == "cluster_yaml_bundledlb" {
 			ValidateYaml(goTester, instanceCountMapInTest, rootResource, projectID, abmClusterID)
+		} else if rootResource.Name == "nfs_yaml" {
+			ValidateNfsYaml(goTester, rootResource)
 		} else {
 			vmHostnames[rootResource.Values.Index] = nil
 			envVarFilenames[rootResource.Values.FileName] = nil
@@ -63,6 +69,66 @@ func ValidateRootResources(
 		}
 	}
 	return vmHostnames, envVarFilenames
+}
+
+// ValidateNfsYaml validates if the generated nfs-csi yaml file
+// has the expected values.
+func ValidateNfsYaml(
+	goTester *testing.T, rootResource util.TFResource) {
+
+	validRsourceKinds := []string{"StorageClass"}
+	fileContents := rootResource.Values.Content
+	fileReader := bytes.NewReader([]byte(fileContents))
+	decodedYaml := yaml.NewDecoder(fileReader)
+	for {
+		newNfsYamlDefinition := new(util.NfsYaml)
+		err := decodedYaml.Decode(&newNfsYamlDefinition)
+		if errors.Is(err, io.EOF) {
+			break
+		}
+		util.LogError(err, "Failed to decode nfs-csi_yaml definiton")
+		if newNfsYamlDefinition.Kind == nil {
+			// there could be one definition without a resource kind;
+			// this holds just path defniitions to key files
+			continue
+		}
+		assert.Contains(
+			goTester,
+			validRsourceKinds,
+			*newNfsYamlDefinition.Kind,
+			"Invalid resource kind in the nfs-csi_yaml file",
+		)
+		assert.NotNil(
+			goTester,
+			newNfsYamlDefinition.Provisioner,
+			"Resource kind StorageClass is excpected to have a provisioner definition in the nfs-csi_yaml file",
+		)
+		assert.NotNil(
+			goTester,
+			newNfsYamlDefinition.Parameters.Server,
+			"Resource kind StorageClass is excpected to have a parameters.server definition in the nfs-csi_yaml file",
+		)
+		assert.NotNil(
+			goTester,
+			newNfsYamlDefinition.Parameters.Share,
+			"Resource kind StorageClass is excpected to have a parameters.share definition in the nfs-csi_yaml file",
+		)
+		assert.NotNil(
+			goTester,
+			newNfsYamlDefinition.Reclaimpolicy,
+			"Resource kind StorageClass is excpected to have a reclaimPolicy definition in the nfs-csi_yaml file",
+		)
+		assert.NotNil(
+			goTester,
+			newNfsYamlDefinition.Volumebindingmode,
+			"Resource kind StorageClass is excpected to have a volumeBindingMode definition in the nfs-csi_yaml file",
+		)
+		assert.NotNil(
+			goTester,
+			newNfsYamlDefinition.Mountoptions,
+			"Resource kind StorageClass is excpected to have a mountOptions definition in the nfs-csi_yaml file",
+		)
+	}
 }
 
 // ValidateYaml validates if the generated Anthos bare metal cluster yaml file
