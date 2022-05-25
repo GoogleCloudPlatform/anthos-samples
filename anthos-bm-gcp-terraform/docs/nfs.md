@@ -1,87 +1,64 @@
 ## NFS Shared Storage
 
-An optional NFS server can be provisioned to provide shared storage to the **Anthos on bare metal** cluster.  In the standard [Quick Starter](quickstart.md) method, commands are provided to install the NFS Container Storage Interface (CSI) driver, in the [All in one install](one_click_install.md) or [Manual LB install](manuallb_install.md) methods this is done automatically.
+An optional NFS server can be provisioned to provide shared storage to the **Anthos on bare metal** cluster. If you follow the standard [Quick Starter](quickstart.md) guide, then the commands required to install the [**NFS Container Storage Interface (CSI)** driver](https://kubernetes.io/docs/concepts/storage/volumes/#nfs) are provided as part of the Terraform output. If you followed one of [All in one install](one_click_install.md) or [Manual LB install](manuallb_install.md) guides then everything is setup automatically.
 
 ---
 ### Sections
   - [Prerequisites](#prerequisites)
-  - [NFS setup in default install mode](#default-install)
-  - [NFS setup in All-In-One / ManualLB mode](#all-in-one-or-manual-lb-install)
+  - [Steps](#steps)
   - [Cleanup](#cleanup)
 ---
 ### Prerequisites
 - This guide has the [same pre-requisites as the quickstart guide](/anthos-bm-gcp-terraform/README.md#pre-requisites).
+---
 
-### Default install
+### Steps
 
-1. Follow the standard [Quick starter](quickstart.md) except additionally add the following variable to your `terraform.tfvars` file.
-```sh
-# terraform.tfvars file
-...
-nfs_server = true
-...
-```
+1. Follow any of the guides *([Quick starter](quickstart.md), [All in one install](one_click_install.md) or [Manual LB install](manuallb_install.md))* with one additional variable added to the `terraform.tfvars` file.
 
-2. Once the terraform installation completes, you should see extra steps _(in addition to the common ones from the Quick starter)_, showing you how to install the `NFS Driver` into your cluster.
-SSH into your **admin workstation** and ensure that the `KUBECONFIG` environment variable is set to the path of your Anthos on bare metal cluster context file.
-```sh
-# download the NFS CSI driver installation script and run it
-# the script configures your cluster to support the NFS storage
-curl -skSL https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/v3.1.0/deploy/install-driver.sh | bash -s v3.1.0 --
-# create a new StorageClass for NFS storage
-kubectl apply -f $HOME/nfs-csi.yaml
-```
+    ```sh
+    # terraform.tfvars file
+    ...
+    nfs_server = true
+    ...
+    ```
+2. The [All in one install](one_click_install.md) and [Manual LB install](manuallb_install.md) guides will automatically setup everything required for the NFS storage class to be available.
 
-3. Verify the available storage classes
-```sh
-kubectl get storageclass
+    However, for the **[Quick starter](quickstart.md)** mode installation, you will see some additional steps _(in addition to the common ones from the     Quick starter)_, printed out as part of the *Terraform output*. Run those commands from inside your admin-workstation to install the `NFS Driver`       into your cluster.
 
-# expected output should include
-NAME            PROVISIONER                    RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
-nfs-csi         nfs.csi.k8s.io                 Delete          Immediate              false                  5m
-```
+    SSH into your **admin workstation** and ensure that the `KUBECONFIG` environment variable is set to the path of your Anthos on bare metal cluster       context file.
+    ```sh
+    # example output for the Quick starter installation with 'nfs_server = true'
+
+    ################################################################################
+    #     Configure the cluster to utilize NFS for PVs with the NFS-CSI driver     #
+    ################################################################################
+    > export KUBECONFIG=bmctl-workspace/cluster1/cluster1-kubeconfig && \
+      curl -skSL https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/v3.1.0/deploy/install-driver.sh | bash -s v3.1.0 -- && \
+      kubectl apply -f nfs-csi.yaml
+
+    ################################################################################
+    ```
+
+3. Verify the availability of the NFS storage classes
+    ```sh
+    kubectl get storageclass
+    ```
+    ```sh
+    # expected output should include
+    NAME            PROVISIONER                    RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
+    nfs-csi         nfs.csi.k8s.io                 Delete          Immediate              false                  5m
+    ```
 
 4. The `nfs-csi` storage class can now be utilized for your `PersistantVolumeClaims`.
-```sh
-# example for a DataVolume
-...
-spec:
-  pvc:
-    storageClassName: nfs-csi
-...
-```
-
-### All in one or Manual LB install
-
-1. Follow the [All in one install](one_click_install.md) or [Manual LB install](manuallb_install.md) guides except additionally add the following variable to your `terraform.tfvars` file.
-```sh
-# terraform.tfvars file
-...
-nfs_server = true
-...
-```
-
-With `nfs_server` set to `true`, the *All in one* and *Manual LB install* modes automatically configure everything required for the `NFS CSI`.
-
-2. Once the cluster is fully deployed, verify the available storage classes
-```sh
-kubectl get storageclass
-
-# expected output should include
-NAME            PROVISIONER                    RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
-nfs-csi         nfs.csi.k8s.io                 Delete          Immediate              false                  5m
-```
-
-3. The `nfs-csi` storage class can now be utilized for your `PersistantVolumeClaims`.
-```sh
-# example for a DataVolume
-...
-spec:
-  pvc:
-    storageClassName: nfs-csi
-...
-```
-
+    ```sh
+    # example for a DataVolume
+    ...
+    spec:
+      pvc:
+        storageClassName: nfs-csi
+    ...
+    ```
 ---
 ### Cleanup
 
