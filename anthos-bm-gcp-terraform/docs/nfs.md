@@ -22,14 +22,14 @@ An optional NFS server can be provisioned to provide shared storage to the **Ant
     nfs_server = true
     ...
     ```
-2. The [All in one install](one_click_install.md) and [Manual LB install](manuallb_install.md) guides will automatically setup everything required for the NFS storage class to be available. 
+2. The [All in one install](one_click_install.md) and [Manual LB install](manuallb_install.md) guides will automatically setup everything required for the NFS storage class to be available.
 
-    However, for the **[Quick starter](quickstart.md)** mode installation, you will see some additional steps _(in addition to the common ones from the     Quick starter)_, printed out as part of the *Terraform output*. Run those commands from inside your admin-workstation to install the `NFS Driver`       into your cluster.  
+    However, for the **[Quick starter](quickstart.md)** mode installation, you will see some additional steps _(in addition to the common ones from the     Quick starter)_, printed out as part of the *Terraform output*. Run those commands from inside your admin-workstation to install the `NFS Driver`       into your cluster.
 
     SSH into your **admin workstation** and ensure that the `KUBECONFIG` environment variable is set to the path of your Anthos on bare metal cluster       context file.
     ```sh
     # example output for the Quick starter installation with 'nfs_server = true'
-    
+
     ################################################################################
     #     Configure the cluster to utilize NFS for PVs with the NFS-CSI driver     #
     ################################################################################
