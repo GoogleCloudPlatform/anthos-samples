@@ -35,3 +35,27 @@ a release pull-request:
 
 Once you have verified the above, you can go ahead and merge the release
 pull-request 🚀
+
+---
+### Updating the cloud-foundation-toolkit image version
+
+We use the [GoogleCloudPlatform/cloud-foundation-toolkit (CFT)](https://github.com/GoogleCloudPlatform/cloud-foundation-toolkit) for out integration tests. Thus, the versions of tools
+used during our integration tests are reliant on the versions installed inside
+the docker image of the cloud-foundation-toolkit
+[we reference in our test suite](/Makefile#L23).
+
+Thus, we update tools we rely on _(e.g. Terraform)_ based on the latest
+supported versions in the _GoogleCloudPlatform/cloud-foundation-toolkit_. We can
+check what are the versions supported by the CFT by looking at the
+[infra/build/Makefile](https://github.com/GoogleCloudPlatform/cloud-foundation-toolkit/blob/v0.4.4/infra/build/Makefile) in the CFT repository
+**under the release version tag of interest**.
+
+For example **v0.4.4** of the CFT [uses Terraform version 1.1.7](https://github.com/GoogleCloudPlatform/cloud-foundation-toolkit/blob/v0.4.4/infra/build/Makefile#L16).
+If we want our samples to use this version of the CFT then we have to update
+references to the CFT docker image in our repository to point to the version
+set for [DOCKER_TAG_VERSION_DEVELOPER_TOOLS](https://github.com/GoogleCloudPlatform/cloud-foundation-toolkit/blob/v0.4.4/infra/build/Makefile#L35); which is
+**1.4.13** in this example. The palces where you will have to update this
+version are:
+- [Makefile](/Makefile#L23)
+- [int.cloudbuild.yaml](/build/int.cloudbuild.yaml#L67)
+- [lint.cloudbuild.yaml](/build/lint.cloudbuild.yaml#L27)
