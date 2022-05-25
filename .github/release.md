@@ -9,10 +9,10 @@ Releases for this repo are managed by [release-please](https://github.com/google
 
 Releases are automatically triggered by the release-please bot based on commit
 messages and pull-request titles. Read the information on the
-[release-please github repository](https://github.com/googleapis/release-please#how-should-i-write-my-commits) for information on how it is
-decided what type of release to be triggered. A release for this repository
-basically means that we **tag** the latest state of the **main** branch with the
-release version.
+[release-please github repository](https://github.com/googleapis/release-please#how-should-i-write-my-commits) for details on how the type of
+release is decided by the bot. A release for this repository basically means
+that we **tag** the latest state of the **main** branch with the release
+version.
 
 Whenever it is time for a release, release-please will trigger a release
 pull-request. See this [**example pull-request**](https://github.com/GoogleCloudPlatform/anthos-samples/pull/302). Few things to check before merging
