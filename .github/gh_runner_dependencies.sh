@@ -47,6 +47,8 @@ tfenv install 1.0.1
 tfenv install 1.0.6
 tfenv install 1.1.3
 tfenv use 1.1.3
+tfenv use 1.2
+tfenv use 1.3
 
 # install the golint binary
 go install golang.org/x/lint/golint@latest
