@@ -18,6 +18,7 @@
 DIR=$(pwd)
 INSTALL_MODE=$(cut -d "=" -f2- <<< "$(grep < init.vars INSTALL_MODE)")
 CLUSTER_ID=$(cut -d "=" -f2- <<< "$(grep < init.vars CLUSTER_ID)")
+NFS_SERVER=$(cut -d "=" -f2- <<< "$(grep < init.vars NFS_SERVER)")
 
 # run the initialization checks
 "$DIR"/run_initialization_checks.sh
@@ -41,6 +42,19 @@ echo "[+] Anthos on bare metal installation complete!"
 echo "[+] Run [export KUBECONFIG=$KUBECONFIG_PATH] to set the kubeconfig"
 echo "[+] Run the [$DIR/login.sh] script to generate a token that you can use to login to the cluster from the Google Cloud Console"
 echo ""
+
+# Configure NFS is enabled
+if [ "$NFS_SERVER" == "true" ]; then
+  # Install NFS CSI Driver
+  KUBECONFIG="$KUBECONFIG_PATH" bash -c 'curl -skSL https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/v3.1.0/deploy/install-driver.sh | bash -s v3.1.0 --'
+  # Configure nfs-csi storageClass
+  kubectl --kubeconfig "$KUBECONFIG_PATH" apply -f "$DIR"/nfs-csi.yaml
+
+  echo ""
+  echo "[+] Configuring NFS Container Storage Interface complete!"
+  echo "[+] You may utilize with [storageClassName: nfs-csi]"
+  echo ""
+fi
 
 # if the install mode is not 'manuallb' then skip the steps that follow
 if [ "$INSTALL_MODE" = "install" ]; then

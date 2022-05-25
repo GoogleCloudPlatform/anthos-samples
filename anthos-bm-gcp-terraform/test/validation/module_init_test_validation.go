@@ -121,6 +121,14 @@ func ValidateVariables(goTester *testing.T, tfPlan *util.InitModulePlan) {
 	)
 	util.ExitIf(hasVar, false)
 
+	// verify plan has nfs_yaml_path input variable
+	hasVar = assert.NotNil(
+		goTester,
+		tfPlan.Variables.NfsYamlPath,
+		"Variable not found in plan: nfs_yaml_path",
+	)
+	util.ExitIf(hasVar, false)
+
 	// verify plan has pub_key_path_template input variable
 	hasVar = assert.NotNil(
 		goTester,
@@ -237,6 +245,14 @@ func ValidateVariableValues(goTester *testing.T, initModulePlan *util.InitModule
 		"Variable does not match in plan: cluster_yaml_path.",
 	)
 
+	// verify input variable nfs_yaml_path in plan matches
+	assert.Equal(
+		goTester,
+		(*vars)["nfs_yaml_path"],
+		initModulePlan.Variables.NfsYamlPath.Value,
+		"Variable does not match in plan: nfs_yaml_path.",
+	)
+
 	// verify input variable pub_key_path_template in plan matches
 	assert.Equal(
 		goTester,
@@ -258,8 +274,8 @@ func ValidateVariableValues(goTester *testing.T, initModulePlan *util.InitModule
 // in the terraform plan for the `init` module.
 func ValidatePlanConfigurations(goTester *testing.T, initModulePlan *util.InitModulePlan) {
 	for rIdx, configResource := range initModulePlan.Configuration.RootModule.Resources {
-		if configResource.Type != "null_resource" {
-			// we just want to check the configs for the null resource
+		if configResource.Name != "exec_init_script" {
+			// we just want to check the configs for exec_init_script
 			continue
 		}
 
@@ -286,7 +302,7 @@ func ValidatePlanConfigurations(goTester *testing.T, initModulePlan *util.InitMo
 
 		assert.Equal(
 			goTester,
-			6,
+			7,
 			fileProvisioners,
 			fmt.Sprintf("Unexpected number of file provisioners under configuration.root_module.resources[%d].provisioners", rIdx),
 		)
