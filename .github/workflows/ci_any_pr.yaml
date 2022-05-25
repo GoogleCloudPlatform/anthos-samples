@@ -33,7 +33,6 @@ jobs:
       - name: Terraform Checkstyle
         timeout-minutes: 20
         run: |
-          tfenv install 1.1.9
           tfenv use 1.1.9
           terraform fmt -recursive -check -diff ./
       - name: Golang Checkstyle
@@ -73,7 +72,6 @@ jobs:
         run: |
           echo "Terraform validating: $SAMPLE_DIR"
           cd $SAMPLE_DIR
-          tfenv install 1.1.9
           tfenv use 1.1.9
           terraform init -backend=false
           terraform validate -json .
