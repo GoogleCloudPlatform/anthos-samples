@@ -89,7 +89,7 @@ resource "google_compute_backend_service" "lb-backend" {
 
 resource "google_compute_url_map" "ingress-lb-urlmap" {
   count           = var.type == "ingresslb" ? 1 : 0
-  name            = "abm-ingress-lb-urlmap"
+  name            = "${var.name_prefix}-ingress-lb-urlmap"
   project         = var.project
   default_service = google_compute_backend_service.lb-backend.id
 }

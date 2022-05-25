@@ -42,8 +42,8 @@ locals {
   init_check_script                   = "${var.resources_path}/run_initialization_checks.sh"
   install_abm_script                  = "${var.resources_path}/install_abm.sh"
   login_script                        = "${var.resources_path}/login.sh"
+  firewall_rule_name                  = "${var.abm_cluster_id}-allow-lb-traffic-rule"
   nfs_yaml_file                       = "${var.resources_path}/.temp/.nfs-csi.yaml"
-  firewall_rule_name                  = "abm-allow-lb-traffic-rule"
   firewall_rule_ports                 = [6444, 443]
   firewall_rule_port_str              = join(",", [for port in local.firewall_rule_ports : "tcp:${port}"])
   vm_hostnames_str                    = join("|", local.vm_hostnames)
@@ -191,8 +191,8 @@ module "configure_controlplane_lb" {
   project               = var.project_id
   region                = var.region
   zone                  = var.zone
-  name_prefix           = "abm-cp"
-  ip_name               = "abm-cp-public-ip"
+  name_prefix           = "${var.abm_cluster_id}-cp"
+  ip_name               = "${var.abm_cluster_id}-cp-public-ip"
   health_check_path     = "/readyz"
   health_check_port     = 6444
   backend_protocol      = "TCP"
@@ -218,8 +218,8 @@ module "configure_ingress_lb" {
   project               = var.project_id
   region                = var.region
   zone                  = var.zone
-  name_prefix           = "abm-ing"
-  ip_name               = "abm-ing-public-ip"
+  name_prefix           = "${var.abm_cluster_id}-ing"
+  ip_name               = "${var.abm_cluster_id}-ing-public-ip"
   backend_protocol      = "HTTP"
   forwarding_rule_ports = [80]
 }
