@@ -1,6 +1,6 @@
 ## NFS Shared Storage
 
-An optional NFS server can be provisioned to provide shared storage to the **Anthos on bare metal** cluster. If you follow the standard [Quick Starter](quickstart.md) guide, then the commands required to install the **NFS Container Storage Interface (CSI)** driver are provided as part of the Terraform output. If you followed one of [All in one install](one_click_install.md) or [Manual LB install](manuallb_install.md) guides then everything is setup automatically.
+An optional NFS server can be provisioned to provide shared storage to the **Anthos on bare metal** cluster. If you follow the standard [Quick Starter](quickstart.md) guide, then the commands required to install the [**NFS Container Storage Interface (CSI)** driver](https://kubernetes.io/docs/concepts/storage/volumes/#nfs) are provided as part of the Terraform output. If you followed one of [All in one install](one_click_install.md) or [Manual LB install](manuallb_install.md) guides then everything is setup automatically.
 
 ---
 ### Sections
