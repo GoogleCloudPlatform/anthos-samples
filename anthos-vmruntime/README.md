@@ -141,7 +141,7 @@ Available Commands:
 ---
 ###  Create a new VM in the Anthos on bare metal cluster
 
-Here we use an already created and [publicly hosted `qcow2` image](https://storage.googleapis.com/abm-vm-images).
+Here we use an already created and [publicly hosted `qcow2` image](https://storage.googleapis.com/pos-vm-images/pos-vm.qcow2).
 This image was created based off of a GCE VM. Before the image was created the
 [Point-of-Sale](https://github.com/GoogleCloudPlatform/point-of-sale) sample
 application was installed inside the GCE VM. Further, a `systemd` service was
