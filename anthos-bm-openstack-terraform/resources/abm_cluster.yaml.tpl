@@ -51,7 +51,7 @@ spec:
     lvpShare:
       numPVUnderSharedPath: 5
       path: /mnt/localpv-share
-      storageClassName: standard
+      storageClassName: local-shared
   nodeAccess:
     loginUser: abm
 

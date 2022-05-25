@@ -158,7 +158,6 @@ create the VM using `kubectl apply -f pos-vm.yaml`.
 ```sh
 kubectl virt create vm pos-vm \
 --boot-disk-size=80Gi \
---boot-disk-storage-class=standard \
 --cpu=2 \
 --image=https://storage.googleapis.com/abm-vm-images/ubuntu-2004-pos.qcow2 \
 --memory=4Gi
