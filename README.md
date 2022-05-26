@@ -17,3 +17,7 @@ This repository contains code samples for [Anthos](https://cloud.google.com/anth
 
 #### Contributing to existing samples
 - Check for the section titled **'Contributing'** in the README specfic for that sample for details.
+
+---
+### Releases
+Please read the [Release Guidelines](/.github/release.md) document for details on how releases are managed for this repository.
