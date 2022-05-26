@@ -151,7 +151,7 @@ directory.
 
 The following command uses the `virtctl` plugin of the `kubectl` CLI.
 Alternatively, you can also create the VM using **KRM** definitions in a yaml.
-The [pos-vm.yaml](/pos-vm.yaml) is another way of expressing the creation of a
+The [/anthos-vmruntime/pos-vm.yaml](/pos-vm.yaml) is another way of expressing the creation of a
 VM. Thus, you can also copy this yaml definition into the admin workstation and
 create the VM using `kubectl apply -f pos-vm.yaml`.
 
@@ -335,7 +335,7 @@ into the `VirtualMachine` before the VM is booted up. Creation of a
 
 The [installation guide](/anthos-bm-gcp-terraform/docs/manuallb_install.md)
 based on which the Anthos on bare metal cluster was setup, automatically creates
-an [`Ingress` resource named `pos-ingress`](https://github.com/GoogleCloudPlatform/anthos-samples/blob/kubevirt-guide/anthos-bm-gcp-terraform/resources/manifests/pos-ingress.yaml).
+an [`Ingress` resource named `pos-ingress`](/anthos-bm-gcp-terraform/resources/manifests/pos-ingress.yaml).
 This resource routes the traffic from the public IP address of the Ingress
 loadbalancer to the _api server service_ of the Point Of Sale sample application.
 
