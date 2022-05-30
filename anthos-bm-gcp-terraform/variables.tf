@@ -161,7 +161,8 @@ variable "secondary_apis" {
     "iam.googleapis.com",
     "compute.googleapis.com",
     "anthosaudit.googleapis.com",
-    "opsconfigmonitoring.googleapis.com"
+    "opsconfigmonitoring.googleapis.com",
+    "file.googleapis.com"
   ]
 }
 
@@ -195,6 +196,12 @@ variable "mode" {
     condition     = contains(["setup", "install", "manuallb"], var.mode)
     error_message = "Allowed execution modes are: setup, install, manuallb."
   }
+}
+
+variable "nfs_server" {
+  description = "Provision a Google Filestore instance for NFS shared storage"
+  type        = bool
+  default     = false
 }
 
 # [START anthosbaremetal_node_prefix]

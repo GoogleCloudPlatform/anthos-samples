@@ -42,8 +42,9 @@ resource "google_compute_network_endpoint" "lb-network-endpoint" {
 }
 
 resource "google_compute_health_check" "lb-health-check" {
-  name    = "${var.name_prefix}-lb-health-check"
-  project = var.project
+  name              = "${var.name_prefix}-lb-health-check"
+  project           = var.project
+  healthy_threshold = 1
 
   dynamic "tcp_health_check" {
     for_each = var.type == "ingresslb" ? [1] : []
@@ -88,7 +89,7 @@ resource "google_compute_backend_service" "lb-backend" {
 
 resource "google_compute_url_map" "ingress-lb-urlmap" {
   count           = var.type == "ingresslb" ? 1 : 0
-  name            = "abm-ingress-lb-urlmap"
+  name            = "${var.name_prefix}-ingress-lb-urlmap"
   project         = var.project
   default_service = google_compute_backend_service.lb-backend.id
 }

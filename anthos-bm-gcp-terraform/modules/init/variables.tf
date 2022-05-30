@@ -95,6 +95,12 @@ variable "cluster_yaml_path" {
   default     = "../../resources/.cluster1.yaml"
 }
 
+variable "nfs_yaml_path" {
+  description = "Path to the NFS YAML configuration file for the Anthos cluster"
+  type        = string
+  default     = "../../resources/.nfs-csi.yaml"
+}
+
 variable "pub_key_path_template" {
   description = "Template denoting the path where the public key is to be stored"
   type        = string
@@ -105,4 +111,10 @@ variable "priv_key_path_template" {
   description = "Template denoting the path where the private key is to be stored"
   type        = string
   default     = "../../resources/.ssh-key-%s.priv"
+}
+
+variable "module_depends_on" {
+  description = "List of modules or resources this module depends on."
+  type        = list(any)
+  default     = []
 }
