@@ -12,3 +12,4 @@ FIREWALL_PORTS=${firewallPorts}
 INGRESS_NEG=${ingressNeg}
 INGRESS_LB_IP=${ingressLbIp}
 INSTALL_MODE=${installMode}
+NFS_SERVER=${nfsServer}

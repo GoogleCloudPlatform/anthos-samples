@@ -141,7 +141,7 @@ Available Commands:
 ---
 ###  Create a new VM in the Anthos on bare metal cluster
 
-Here we use an already created and [publicly hosted `qcow2` image](https://storage.googleapis.com/abm-vm-images).
+Here we use an already created and [publicly hosted `qcow2` image](https://storage.googleapis.com/pos-vm-images/pos-vm.qcow2).
 This image was created based off of a GCE VM. Before the image was created the
 [Point-of-Sale](https://github.com/GoogleCloudPlatform/point-of-sale) sample
 application was installed inside the GCE VM. Further, a `systemd` service was
@@ -151,17 +151,16 @@ directory.
 
 The following command uses the `virtctl` plugin of the `kubectl` CLI.
 Alternatively, you can also create the VM using **KRM** definitions in a yaml.
-The [pos-vm.yaml](/pos-vm.yaml) is another way of expressing the creation of a
+The [/anthos-vmruntime/pos-vm.yaml](/pos-vm.yaml) is another way of expressing the creation of a
 VM. Thus, you can also copy this yaml definition into the admin workstation and
 create the VM using `kubectl apply -f pos-vm.yaml`.
 
 ```sh
 kubectl virt create vm pos-vm \
 --boot-disk-size=80Gi \
---boot-disk-storage-class=standard \
+--memory=4Gi \
 --cpu=2 \
---image=https://storage.googleapis.com/abm-vm-images/ubuntu-2004-pos.qcow2 \
---memory=4Gi
+--image=https://storage.googleapis.com/pos-vm-images/pos-vm.qcow2
 ```
 
 ```sh
@@ -336,7 +335,7 @@ into the `VirtualMachine` before the VM is booted up. Creation of a
 
 The [installation guide](/anthos-bm-gcp-terraform/docs/manuallb_install.md)
 based on which the Anthos on bare metal cluster was setup, automatically creates
-an [`Ingress` resource named `pos-ingress`](https://github.com/GoogleCloudPlatform/anthos-samples/blob/kubevirt-guide/anthos-bm-gcp-terraform/resources/manifests/pos-ingress.yaml).
+an [`Ingress` resource named `pos-ingress`](/anthos-bm-gcp-terraform/resources/manifests/pos-ingress.yaml).
 This resource routes the traffic from the public IP address of the Ingress
 loadbalancer to the _api server service_ of the Point Of Sale sample application.
 

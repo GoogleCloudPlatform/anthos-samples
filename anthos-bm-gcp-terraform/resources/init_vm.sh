@@ -28,6 +28,7 @@ HOSTNAMES=$(cut -d "=" -f2- <<< "$(grep < init.vars HOSTNAMES)")
 VM_INTERNAL_IPS=$(cut -d "=" -f2- <<< "$(grep < init.vars VM_INTERNAL_IPS)")
 LOG_FILE=$(cut -d "=" -f2- <<< "$(grep < init.vars LOG_FILE)")
 DEFAULT_IFACE=$(ip link | awk -F: '$0 !~ "lo|vir|wl|^[^0-9]"{print $2;getline}' | xargs)
+NFS_SERVER=$(cut -d "=" -f2- <<< "$(grep < init.vars NFS_SERVER)")
 
 DATE=$(date)
 HOSTNAME=$(hostname)
@@ -52,7 +53,11 @@ function __main__ () {
 ##############################################################################
 function __install_deps__ () {
   apt-get -qq update
-  apt-get -qq install -y jq
+  if [ "$NFS_SERVER" == "true" ]; then
+    apt-get -qq install -y jq nfs-common
+  else
+    apt-get -qq install -y jq
+  fi
 
   __check_exit_status__ $? \
     "[+] Successfully installed dependencies" \

@@ -35,13 +35,15 @@ locals {
   init_script_vars_file_path_template = "${var.resources_path}/.temp/%s/init.vars"
   cluster_yaml_file                   = "${var.resources_path}/.temp/.${var.abm_cluster_id}.yaml"
   cluster_yaml_template_file          = "${var.resources_path}/templates/anthos_gce_cluster.tpl"
+  nfs_yaml_template_file              = "${var.resources_path}/templates/nfs-csi.tpl"
   cluster_yaml_manuallb_template_file = "${var.resources_path}/templates/manuallb_cluster.tpl"
   init_script_vars_file               = "${var.resources_path}/templates/init.vars.tpl"
   init_script                         = "${var.resources_path}/init_vm.sh"
   init_check_script                   = "${var.resources_path}/run_initialization_checks.sh"
   install_abm_script                  = "${var.resources_path}/install_abm.sh"
   login_script                        = "${var.resources_path}/login.sh"
-  firewall_rule_name                  = "abm-allow-lb-traffic-rule"
+  firewall_rule_name                  = "${var.abm_cluster_id}-allow-lb-traffic-rule"
+  nfs_yaml_file                       = "${var.resources_path}/.temp/.nfs-csi.yaml"
   firewall_rule_ports                 = [6444, 443]
   firewall_rule_port_str              = join(",", [for port in local.firewall_rule_ports : "tcp:${port}"])
   vm_hostnames_str                    = join("|", local.vm_hostnames)
@@ -189,8 +191,8 @@ module "configure_controlplane_lb" {
   project               = var.project_id
   region                = var.region
   zone                  = var.zone
-  name_prefix           = "abm-cp"
-  ip_name               = "abm-cp-public-ip"
+  name_prefix           = "${var.abm_cluster_id}-cp"
+  ip_name               = "${var.abm_cluster_id}-cp-public-ip"
   health_check_path     = "/readyz"
   health_check_port     = 6444
   backend_protocol      = "TCP"
@@ -216,8 +218,8 @@ module "configure_ingress_lb" {
   project               = var.project_id
   region                = var.region
   zone                  = var.zone
-  name_prefix           = "abm-ing"
-  ip_name               = "abm-ing-public-ip"
+  name_prefix           = "${var.abm_cluster_id}-ing"
+  ip_name               = "${var.abm_cluster_id}-ing-public-ip"
   backend_protocol      = "HTTP"
   forwarding_rule_ports = [80]
 }
@@ -277,6 +279,41 @@ resource "local_file" "cluster_yaml_manuallb" {
   })
 }
 
+resource "google_filestore_instance" "cluster-abm-nfs" {
+  count = var.nfs_server ? 1 : 0
+  depends_on = [
+    module.enable_google_apis_primary,
+    module.enable_google_apis_secondary
+  ]
+  name     = "${substr(var.abm_cluster_id, 0, min(12, length(var.abm_cluster_id)))}-nfs"
+  location = var.zone
+  tier     = "STANDARD"
+
+  file_shares {
+    capacity_gb = 1024
+    name        = "${var.abm_cluster_id}_fs"
+  }
+
+  networks {
+    network = var.network
+    modes   = ["MODE_IPV4"]
+  }
+}
+
+// Generate the Anthos bare metal nfs yaml file using the template.
+// This file is only used when the `nfs_server` variable is set to true.
+resource "local_file" "nfs_yaml" {
+  depends_on = [
+    module.controlplane_vm_hosts,
+    module.worker_vm_hosts
+  ]
+  filename = local.nfs_yaml_file
+  content = templatefile(local.nfs_yaml_template_file, {
+    nfs_server = var.nfs_server ? google_filestore_instance.cluster-abm-nfs[0].networks[0].ip_addresses[0] : ""
+    nfs_share  = var.nfs_server ? google_filestore_instance.cluster-abm-nfs[0].file_shares[0].name : ""
+  })
+}
+
 resource "local_file" "init_args_file" {
   depends_on = [
     module.controlplane_vm_hosts,
@@ -299,11 +336,16 @@ resource "local_file" "init_args_file" {
     installMode      = var.mode
     ingressNeg       = var.mode == "manuallb" ? module.configure_ingress_lb[0].neg_name : ""
     ingressLbIp      = var.mode == "manuallb" ? module.configure_ingress_lb[0].public_ip : ""
+    nfsServer        = var.nfs_server
   })
 }
 
 module "init_hosts" {
-  source                 = "./modules/init"
+  source = "./modules/init"
+  module_depends_on = [
+    local_file.init_args_file[each.key],
+    local_file.nfs_yaml
+  ]
   for_each               = toset(local.vm_hostnames)
   project_id             = var.project_id
   zone                   = var.zone
@@ -321,6 +363,7 @@ module "init_hosts" {
   priv_key_path_template = local.private_key_file_path_template
   init_vars_file         = format(local.init_script_vars_file_path_template, each.value)
   cluster_yaml_path      = local.cluster_yaml_file
+  nfs_yaml_path          = local.nfs_yaml_file
 }
 
 module "install_abm" {
@@ -337,9 +380,10 @@ module "install_abm" {
 }
 
 module "gke_hub_membership" {
-  source   = "terraform-google-modules/gcloud/google"
-  version  = "~>3.1.1"
-  platform = "linux"
-  # Delete the hub membership created by 'bmctl create cluster'
-  destroy_cmd_body = "container hub memberships delete --quiet --project ${var.project_id} ${var.abm_cluster_id} --verbosity=none || true"
+  source                = "terraform-google-modules/gcloud/google"
+  version               = "~>3.1.1"
+  platform              = "linux"
+  create_cmd_entrypoint = "echo"
+  create_cmd_body       = "GKE hub membership is created by bmctl create cluster"
+  destroy_cmd_body      = "container hub memberships delete --quiet --project ${var.project_id} ${var.abm_cluster_id} --verbosity=none || true"
 }

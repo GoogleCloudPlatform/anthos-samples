@@ -152,6 +152,7 @@ func TestUnit_MainScript(goTester *testing.T) {
 	rootResourceCount :=
 		numberOfHostsForInitialization +
 			1 + // 1 for the cluster_yaml created from template
+			1 + // 1 for the nfs_yaml created from template
 			1 // 1 for google_compute_firewall resource
 
 	assert.Len(
@@ -431,6 +432,7 @@ func TestUnit_MainScript_ValidateDefaults(goTester *testing.T) {
 		"compute.googleapis.com",
 		"anthosaudit.googleapis.com",
 		"opsconfigmonitoring.googleapis.com",
+		"file.googleapis.com",
 	}
 
 	assert.Len(

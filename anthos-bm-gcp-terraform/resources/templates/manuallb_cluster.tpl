@@ -52,7 +52,7 @@ spec:
     lvpShare:
       numPVUnderSharedPath: 5
       path: /mnt/localpv-share
-      storageClassName: standard
+      storageClassName: local-shared
 ---
 apiVersion: baremetal.cluster.gke.io/v1
 kind: NodePool
