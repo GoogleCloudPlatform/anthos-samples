@@ -56,7 +56,7 @@ resource "aws_kms_alias" "control_plane_main_volume_encryption_kms_key_alias" {
 
 resource "aws_kms_key" "control_plane_root_volume_encryption_kms_key" {
   description = "${var.anthos_prefix} AWS Control Plane Root Volume Encryption KMS Key"
-  policy = data.aws_iam_policy_document.root_volume_encryption_policy_document.json
+  policy      = data.aws_iam_policy_document.root_volume_encryption_policy_document.json
 }
 
 resource "aws_kms_alias" "control_plane_root_volume_encryption_kms_key_alias" {
@@ -119,7 +119,7 @@ data "aws_iam_policy_document" "root_volume_encryption_policy_document" {
   }
   // Allow access by root account.
   statement {
-    effect = "Allow"
+    effect  = "Allow"
     actions = ["kms:*"]
     principals {
       type        = "AWS"
@@ -140,7 +140,7 @@ resource "aws_kms_alias" "node_pool_config_encryption_kms_key_alias" {
 
 resource "aws_kms_key" "node_pool_root_volume_encryption_kms_key" {
   description = "${var.anthos_prefix} AWS Node Pool Root Volume Encryption KMS Key"
-  policy = data.aws_iam_policy_document.root_volume_encryption_policy_document.json
+  policy      = data.aws_iam_policy_document.root_volume_encryption_policy_document.json
 }
 
 resource "aws_kms_alias" "node_pool_root_volume_encryption_kms_key_alias" {
