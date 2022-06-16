@@ -55,8 +55,6 @@ data "aws_iam_policy_document" "api_policy_document" {
   statement {
     effect = "Allow"
     actions = [
-      "kms:Encrypt",
-      "kms:DescribeKey",
       "iam:CreateServiceLinkedRole",
       "iam:PassRole",
       "elasticloadbalancing:DescribeTargetHealth",
@@ -106,6 +104,36 @@ data "aws_iam_policy_document" "api_policy_document" {
       "autoscaling:CreateAutoScalingGroup"
     ]
     resources = ["*"]
+  }
+  statement {
+    effect = "Allow"
+    actions = [
+      "kms:DescribeKey",
+    ]
+    resources = [
+      "arn:aws:kms:*:*:key/*",
+    ]
+  }
+  statement {
+    effect = "Allow"
+    actions = [
+      "kms:Encrypt",
+    ]
+    resources = [var.cp_config_kms_arn]
+  }
+  statement {
+    effect = "Allow"
+    actions = [
+      "kms:Encrypt",
+    ]
+    resources = [var.np_config_kms_arn]
+  }
+  statement {
+    effect = "Allow"
+    actions = [
+      "kms:GenerateDataKeyWithoutPlaintext",
+    ]
+    resources = [var.cp_main_volume_kms_arn]
   }
 }
 resource "aws_iam_policy" "api_policy" {
@@ -215,10 +243,29 @@ data "aws_iam_policy_document" "cp_policy_document" {
   statement {
     effect = "Allow"
     actions = [
+      "kms:Decrypt",
       "kms:Encrypt",
-      "kms:Decrypt"
     ]
     resources = [var.db_kms_arn]
+  }
+  statement {
+    effect = "Allow"
+    actions = [
+      "kms:Decrypt",
+    ]
+    resources = [var.cp_config_kms_arn]
+  }
+  statement {
+    effect = "Allow"
+    actions = [
+      "kms:CreateGrant",
+    ]
+    resources = [var.cp_main_volume_kms_arn]
+    condition {
+      test     = "Bool"
+      variable = "kms:GrantIsForAWSResource"
+      values   = [true]
+    }
   }
 }
 resource "aws_iam_policy" "cp_policy" {
@@ -262,20 +309,9 @@ data "aws_iam_policy_document" "np_policy_document" {
   statement {
     effect = "Allow"
     actions = [
-      "autoscaling:DescribeAutoScalingGroups",
-      "ec2:AttachNetworkInterface",
-      "ec2:DescribeInstances",
-      "ec2:DescribeTags",
+      "kms:Decrypt",
     ]
-    resources = ["*"]
-  }
-  statement {
-    effect = "Allow"
-    actions = [
-      "kms:Encrypt",
-      "kms:Decrypt"
-    ]
-    resources = [var.db_kms_arn]
+    resources = [var.np_config_kms_arn]
   }
 }
 resource "aws_iam_policy" "np_policy" {

@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.11.0](https://github.com/GoogleCloudPlatform/anthos-samples/compare/v0.10.0...v0.11.0) (2022-06-14)
+
+
+### Features
+
+* add [anthos-bm-gcp-terraform] multiple instantiations ([#297](https://github.com/GoogleCloudPlatform/anthos-samples/issues/297)) ([3f29be8](https://github.com/GoogleCloudPlatform/anthos-samples/commit/3f29be818d9aa995e2fc64c3db10f4440ca65a0d))
+* add NFS option [anthos-bm-gcp-terraform] ([#258](https://github.com/GoogleCloudPlatform/anthos-samples/issues/258)) ([51af41a](https://github.com/GoogleCloudPlatform/anthos-samples/commit/51af41a243f6b7423d5568db774580944004fe24))
+
+
+### Bug Fixes
+
+* Changed storageclass name ([#309](https://github.com/GoogleCloudPlatform/anthos-samples/issues/309)) ([28fd5e0](https://github.com/GoogleCloudPlatform/anthos-samples/commit/28fd5e0bd686c5f4acb1268283f44774a9c27d0f))
+* **deps:** update module github.com/gruntwork-io/terratest to v0.40.10 ([#305](https://github.com/GoogleCloudPlatform/anthos-samples/issues/305)) ([faa6918](https://github.com/GoogleCloudPlatform/anthos-samples/commit/faa69189b85ebf81d58f2d80964a920f134d0dc6))
+* **deps:** update module github.com/gruntwork-io/terratest to v0.40.12 ([#324](https://github.com/GoogleCloudPlatform/anthos-samples/issues/324)) ([c952daa](https://github.com/GoogleCloudPlatform/anthos-samples/commit/c952daa191c09c2cff1ca87eb0f897d693334397))
+* **deps:** update module github.com/gruntwork-io/terratest to v0.40.13 ([#325](https://github.com/GoogleCloudPlatform/anthos-samples/issues/325)) ([d6e944e](https://github.com/GoogleCloudPlatform/anthos-samples/commit/d6e944e77b209afce304b4afb0d2d6f02417faaf))
+* **deps:** update module github.com/gruntwork-io/terratest to v0.40.16 ([#327](https://github.com/GoogleCloudPlatform/anthos-samples/issues/327)) ([4c11f41](https://github.com/GoogleCloudPlatform/anthos-samples/commit/4c11f41a9be8bf52e5671891f6167008527a51e0))
+* **deps:** update module github.com/stretchr/testify to v1.7.2 ([#326](https://github.com/GoogleCloudPlatform/anthos-samples/issues/326)) ([355c68c](https://github.com/GoogleCloudPlatform/anthos-samples/commit/355c68cf78fb385c1785439c96f25ee29bc5184e))
+* **deps:** update module gopkg.in/yaml.v3 to v3.0.0 ([#316](https://github.com/GoogleCloudPlatform/anthos-samples/issues/316)) ([99cdcc8](https://github.com/GoogleCloudPlatform/anthos-samples/commit/99cdcc841b90a90f964d4cd05fa2f54fc48c2b87))
+* **deps:** update module gopkg.in/yaml.v3 to v3.0.1 ([#323](https://github.com/GoogleCloudPlatform/anthos-samples/issues/323)) ([5aa960e](https://github.com/GoogleCloudPlatform/anthos-samples/commit/5aa960e2ae2b82bf3c81c07436c81ef2bcfc04f8))
+* use correct method of obtaining secret-based service account token ([#307](https://github.com/GoogleCloudPlatform/anthos-samples/issues/307)) ([ded8655](https://github.com/GoogleCloudPlatform/anthos-samples/commit/ded865513ca55cf102e8ec09c039cb7fee061028))
+
 ## [0.10.0](https://github.com/GoogleCloudPlatform/anthos-samples/compare/v0.9.0...v0.10.0) (2022-05-14)
 
 
