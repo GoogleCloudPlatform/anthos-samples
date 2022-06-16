@@ -18,3 +18,8 @@ variable "anthos_prefix" {
   description = "anthos name prefix"
   type        = string
 }
+
+variable "aws_region" {
+  description = "AWS Region to use for KMS"
+  type        = string
+}
