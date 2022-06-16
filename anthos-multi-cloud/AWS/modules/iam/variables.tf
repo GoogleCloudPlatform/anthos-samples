@@ -28,3 +28,18 @@ variable "db_kms_arn" {
   description = "DB KMS ARN"
   type        = string
 }
+
+variable "cp_main_volume_kms_arn" {
+  description = "Control Plane Main Volume KMS ARN"
+  type        = string
+}
+
+variable "cp_config_kms_arn" {
+  description = "Control Plane Configuration KMS ARN"
+  type        = string
+}
+
+variable "np_config_kms_arn" {
+  description = "Node Pool Configuration KMS ARN"
+  type        = string
+}
