@@ -42,7 +42,7 @@ resource "google_container_aws_cluster" "this" {
     }
   }
   control_plane {
-    iam_instance_profile = var.iam_instance_profile
+    iam_instance_profile = var.control_plane_iam_instance_profile
     instance_type        = var.control_plane_instance_type
     subnet_ids           = var.subnet_ids
     tags = {
@@ -53,7 +53,7 @@ resource "google_container_aws_cluster" "this" {
       role_arn = var.role_arn
     }
     config_encryption {
-      kms_key_arn = var.database_encryption_kms_key_arn
+      kms_key_arn = var.control_plane_config_encryption_kms_key_arn
     }
     database_encryption {
       kms_key_arn = var.database_encryption_kms_key_arn
@@ -62,13 +62,13 @@ resource "google_container_aws_cluster" "this" {
       size_gib    = 30
       volume_type = "GP3"
       iops        = 3000
-      kms_key_arn = var.volume_kms_key_arn
+      kms_key_arn = var.control_plane_main_volume_encryption_kms_key_arn
     }
     root_volume {
       size_gib    = 30
       volume_type = "GP3"
       iops        = 3000
-      kms_key_arn = var.volume_kms_key_arn
+      kms_key_arn = var.control_plane_root_volume_encryption_kms_key_arn
     }
   }
   networking {
@@ -100,15 +100,15 @@ resource "google_container_aws_node_pool" "this" {
   }
   config {
     config_encryption {
-      kms_key_arn = var.database_encryption_kms_key_arn
+      kms_key_arn = var.node_pool_config_encryption_kms_key_arn
     }
     instance_type        = var.node_pool_instance_type
-    iam_instance_profile = var.iam_instance_profile
+    iam_instance_profile = var.node_pool_iam_instance_profile
     root_volume {
       size_gib    = 30
       volume_type = "GP3"
       iops        = 3000
-      kms_key_arn = var.volume_kms_key_arn
+      kms_key_arn = var.node_pool_root_volume_encryption_kms_key_arn
     }
     tags = {
       "Name" : "${var.anthos_prefix}-nodepool"
