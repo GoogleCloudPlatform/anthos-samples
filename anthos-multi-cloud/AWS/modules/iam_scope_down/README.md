@@ -18,7 +18,7 @@ module "iam" {
 }
 ```
 
-### Create you cluster and node pool with the tag key-value pair
+### Create your cluster and node pool with the tag key-value pair
 * Create two new variable in modules/anthos-cluster/variables.tf
   ```
   variable "access_control_tag_key" {
