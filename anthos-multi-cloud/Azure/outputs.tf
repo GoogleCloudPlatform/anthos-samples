@@ -34,5 +34,5 @@ output "cluster_resource_group" {
 
 output "message" {
   description = "Connect Instructions"
-  value       = "To connect to your cluster issue the command:\n gcloud container hub memberships get-credentials ${local.name_prefix}"
+  value       = "To connect to your cluster issue the command:\n gcloud container azure clusters get-credentials ${local.name_prefix}"
 }
