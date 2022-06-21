@@ -20,6 +20,6 @@ output "cluster_name" {
 }
 output "message" {
   description = "Connect Instructions"
-  value       = "To connect to your cluster issue the command: gcloud container hub memberships get-credentials ${local.name_prefix}"
+  value       = "To connect to your cluster issue the command: gcloud container aws clusters get-credentials ${local.name_prefix}"
 
 }

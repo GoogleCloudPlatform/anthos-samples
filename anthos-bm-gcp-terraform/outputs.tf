@@ -32,9 +32,22 @@ output "admin_vm_ssh" {
     "  sudo bmctl create config -c ${var.abm_cluster_id} && \\",
     "  sudo cp ~/${var.abm_cluster_id}.yaml bmctl-workspace/${var.abm_cluster_id} && \\",
     "  sudo bmctl create cluster -c ${var.abm_cluster_id}",
-    "",
+    local.nfs_instructions,
     "################################################################################",
   ])
+}
+
+locals {
+  nfs_instructions = var.nfs_server ? join("\n", [
+    "",
+    "################################################################################",
+    "#     Configure the cluster to utilize NFS for PVs with the NFS-CSI driver     #",
+    "################################################################################",
+    "> export KUBECONFIG=bmctl-workspace/${var.abm_cluster_id}/${var.abm_cluster_id}-kubeconfig && \\",
+    "  curl -skSL https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/v3.1.0/deploy/install-driver.sh | bash -s v3.1.0 -- && \\",
+    "  kubectl apply -f nfs-csi.yaml",
+    "",
+  ]) : ""
 }
 
 output "installation_check" {
