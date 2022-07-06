@@ -212,7 +212,7 @@ spec:
     image: gcr.io/anthos-baremetal-release/nettest:v0.2.0__linux_amd64
     imagePullPolicy: IfNotPresent
     command: ["/nettest"]
-    args: ["-v=0", "-alsologtostderr", "-engine_config=/cfg/engine.yaml"]
+    args: ["-v=2", "-alsologtostderr", "-engine_config=/cfg/engine.yaml"]
     ports:
     - name: http
       containerPort: 8999
