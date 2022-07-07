@@ -111,7 +111,7 @@ gcloud components update
  1. Login to the Cluster
 
    ``` bash
-   gcloud container hub memberships get-credentials [cluster name]
+   gcloud container aws clusters get-credentials [cluster name]
    kubectl get nodes
    ```
 ## Extra: Connect Anthos Configuration Management

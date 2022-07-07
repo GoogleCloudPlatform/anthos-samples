@@ -124,7 +124,7 @@ After the cluster has been installed it will show up in the [Kubernetes Engine p
  1. Login to the Cluster
 
    ```bash
-   gcloud container hub memberships get-credentials [cluster name]
+   gcloud container azure clusters get-credentials [cluster name]
    kubectl get nodes
    ```
 ## Extra: Connect Anthos Configuration Management

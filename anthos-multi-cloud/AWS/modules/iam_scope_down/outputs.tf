@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-variable "anthos_prefix" {
-  description = "anthos name prefix"
-  type        = string
+output "api_role_arn" {
+  description = "ARN of the actuated IAM role resource"
+  value       = aws_iam_role.api_role.arn
 }
 
-variable "aws_region" {
-  description = "AWS Region to use for KMS"
-  type        = string
+output "cp_instance_profile_id" {
+  description = "IAM instance profile of controlplane"
+  value       = aws_iam_instance_profile.cp_instance_profile.id
+}
+
+output "np_instance_profile_id" {
+  description = "IAM instance profile of nodepool"
+  value       = aws_iam_instance_profile.np_instance_profile.id
 }

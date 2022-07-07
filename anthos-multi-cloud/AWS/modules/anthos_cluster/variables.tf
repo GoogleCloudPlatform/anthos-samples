@@ -20,9 +20,9 @@ variable "aws_region" {
 }
 variable "cluster_version" {
 }
-variable "database_encryption_kms_key_arn" {
+variable "control_plane_iam_instance_profile" {
 }
-variable "iam_instance_profile" {
+variable "node_pool_iam_instance_profile" {
 }
 variable "pod_address_cidr_blocks" {
   default = ["10.2.0.0/16"]
@@ -37,8 +37,17 @@ variable "vpc_id" {
 }
 variable "subnet_ids" {
 }
-variable "volume_kms_key_arn" {
-  default = null
+variable "database_encryption_kms_key_arn" {
+}
+variable "control_plane_config_encryption_kms_key_arn" {
+}
+variable "control_plane_root_volume_encryption_kms_key_arn" {
+}
+variable "control_plane_main_volume_encryption_kms_key_arn" {
+}
+variable "node_pool_config_encryption_kms_key_arn" {
+}
+variable "node_pool_root_volume_encryption_kms_key_arn" {
 }
 variable "role_arn" {
 }

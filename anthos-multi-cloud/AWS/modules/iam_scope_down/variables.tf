@@ -24,6 +24,16 @@ variable "anthos_prefix" {
   type        = string
 }
 
+variable "access_control_tag_key" {
+  description = "The tag key that applies to IAM role policies to control access to AWS resources"
+  type        = string
+}
+
+variable "access_control_tag_value" {
+  description = "The tag value that applies to IAM role policies to control access to AWS resources"
+  type        = string
+}
+
 variable "db_kms_arn" {
   description = "DB KMS ARN"
   type        = string

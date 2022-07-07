@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.11.2](https://github.com/GoogleCloudPlatform/anthos-samples/compare/v0.11.1...v0.11.2) (2022-06-20)
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/stretchr/testify to v1.7.3 ([#333](https://github.com/GoogleCloudPlatform/anthos-samples/issues/333)) ([1353145](https://github.com/GoogleCloudPlatform/anthos-samples/commit/13531456546818954961a2eb81d179dbb114d477))
+
+## [0.11.1](https://github.com/GoogleCloudPlatform/anthos-samples/compare/v0.11.0...v0.11.1) (2022-06-17)
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/gruntwork-io/terratest to v0.40.17 ([#328](https://github.com/GoogleCloudPlatform/anthos-samples/issues/328)) ([dd16e1c](https://github.com/GoogleCloudPlatform/anthos-samples/commit/dd16e1c45cb1aa909dc5931ecb443855618736ed))
+
 ## [0.11.0](https://github.com/GoogleCloudPlatform/anthos-samples/compare/v0.10.0...v0.11.0) (2022-06-14)
 
 
