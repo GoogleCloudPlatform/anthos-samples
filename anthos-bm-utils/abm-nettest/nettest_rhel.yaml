@@ -151,6 +151,45 @@ data:
           google.com:
             url:
               endpoint: www.google.com
+          anthos.googleapis.com:
+            url:
+              endpoint: anthos.googleapis.com
+          anthosaudit.googleapis.com:
+            url:
+              endpoint: anthosaudit.googleapis.com
+          anthosgke.googleapis.com:
+            url:
+              endpoint: anthosgke.googleapis.com
+          cloudresourcemanager.googleapis.com:
+            url:
+              endpoint: cloudresourcemanager.googleapis.com
+          container.googleapis.com:
+            url:
+              endpoint: container.googleapis.com
+          gkeconnect.googleapis.com:
+            url:
+              endpoint: gkeconnect.googleapis.com
+          gkehub.googleapis.com:
+            url:
+              endpoint: gkehub.googleapis.com
+          iam.googleapis.com:
+            url:
+              endpoint: iam.googleapis.com
+          logging.googleapis.com:
+            url:
+              endpoint: logging.googleapis.com
+          monitoring.googleapis.com:
+            url:
+              endpoint: monitoring.googleapis.com
+          opsconfigmonitoring.googleapis.com:
+            url:
+              endpoint: opsconfigmonitoring.googleapis.com
+          serviceusage.googleapis.com:
+            url:
+              endpoint: serviceusage.googleapis.com
+          stackdriver.googleapis.com:
+            url:
+              endpoint: stackdriver.googleapis.com
           service:
             service:
               namespace: nettest
@@ -212,7 +251,7 @@ spec:
     image: gcr.io/anthos-baremetal-release/nettest:v0.2.0__linux_amd64
     imagePullPolicy: IfNotPresent
     command: ["/nettest"]
-    args: ["-v=0", "-alsologtostderr", "-engine_config=/cfg/engine.yaml"]
+    args: ["-v=2", "-alsologtostderr", "-engine_config=/cfg/engine.yaml"]
     ports:
     - name: http
       containerPort: 8999
