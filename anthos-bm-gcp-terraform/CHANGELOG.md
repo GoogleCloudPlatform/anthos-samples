@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.3](https://github.com/GoogleCloudPlatform/anthos-samples/compare/v0.11.2...v0.11.3) (2022-07-21)
+
+
+### Bug Fixes
+
+* replaced cluster-1 with variable ([#341](https://github.com/GoogleCloudPlatform/anthos-samples/issues/341)) ([8d02c0e](https://github.com/GoogleCloudPlatform/anthos-samples/commit/8d02c0e0747641cdfd5433f813d93bd4550410aa))
+
 ## [0.11.2](https://github.com/GoogleCloudPlatform/anthos-samples/compare/v0.11.1...v0.11.2) (2022-06-20)
 
 
