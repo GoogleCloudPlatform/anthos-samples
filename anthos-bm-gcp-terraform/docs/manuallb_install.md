@@ -241,7 +241,7 @@ To verify your deployment, complete the following steps:
     gcloud compute scp \
         --project=${PROJECT} \
         --zone=${ZONE} \
-        tfadmin@cluster1-abm-ws0-001:${KUBECONFIG_PATH_IN_ADMIN_VM} \
+        tfadmin@${CLUSTER_ID}-abm-ws0-001:${KUBECONFIG_PATH_IN_ADMIN_VM} \
         ${KUBECONFIG_PATH_IN_LOCAL_WORKSTATION}
     ```
 
