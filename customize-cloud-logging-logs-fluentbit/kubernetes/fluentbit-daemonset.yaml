@@ -40,7 +40,7 @@ spec:
         - --ksa_namespace=logging-system
         - --token_audience=[PROJECT_ID].svc.id.goog
         - --gcp_project_id=[PROJECT_ID]
-        - --gcp_sts_audience=identitynamespace:[PROJECT_ID].svc.id.goog://gkemulticloud.googleapis.com/projects/169086134706/locations/us-east4/awsClusters/[CLUSTER_NAME]
+        - --gcp_sts_audience=identitynamespace:[PROJECT_ID].svc.id.goog://gkemulticloud.googleapis.com/projects/[PROJECT_NUMBER]/locations/us-east4/awsClusters/[CLUSTER_NAME]
       - name: fluentbit-gke-user
         image: gcr.io/gke-multi-cloud-release/fluent-bit:v1.8.12-gke.2
         imagePullPolicy: IfNotPresent
