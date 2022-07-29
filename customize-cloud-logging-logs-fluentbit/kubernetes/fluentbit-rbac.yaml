@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: fluentbit-user
+  namespace: logging-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: fluentbit-user
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - nodes
+  - pods
+  - namespaces
+  verbs:
+  - watch
+  - get
+  - list
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: fluentbit-user
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: fluentbit-user
+subjects:
+- kind: ServiceAccount
+  name: fluentbit-user
+  namespace: logging-system
+---
+# The token minter sidecar needs permission to create a token for
+# logging-system/fluentbit-user
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  namespace: logging-system
+  name: user-telemetry-agent
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: fluentbit-token-minter
+  namespace: logging-system
+rules:
+- apiGroups:
+  - ''
+  resources:
+  - serviceaccounts/token
+  resourceNames:
+  - user-telemetry-agent
+  verbs:
+  - create
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: fluentbit-token-minter
+  namespace: logging-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: fluentbit-token-minter
+subjects:
+- kind: ServiceAccount
+  name: fluentbit-user
+  namespace: logging-system
