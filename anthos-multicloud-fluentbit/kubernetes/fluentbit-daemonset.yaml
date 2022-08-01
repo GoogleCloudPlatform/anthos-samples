@@ -1,0 +1,102 @@
+# Log Forwarder (Fluent Bit) DaemonSet to tail log files.
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: fluentbit-user
+  namespace: logging-system
+  labels:
+    k8s-app: fluentbit-user
+spec:
+  selector:
+    matchLabels:
+      k8s-app: fluentbit-user
+  template:
+    metadata:
+      labels:
+        k8s-app: fluentbit-user
+    spec:
+      nodeSelector:
+        kubernetes.io/os: linux
+      containers:
+      - name: gcp-token-minter
+        image: us.gcr.io/gke-multi-cloud-release/gke-addon-sidecar:gke_multicloud.gke_multicloud_images_20220317_1445_RC00
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: HTTPS_PROXY
+          valueFrom:
+            secretKeyRef:
+              key: HTTPS_PROXY
+              name: proxy-config
+        - name: NO_PROXY
+          valueFrom:
+            secretKeyRef:
+              key: NO_PROXY
+              name: proxy-config
+        command:
+        - /app/cloud/kubernetes/multicloud/addonsidecar/gke_addon_sidecar
+        - run-metadata-server
+        - --http_server=localhost:29681
+        - --ksa_name=user-telemetry-agent
+        - --ksa_namespace=logging-system
+        - --token_audience=${PROJECT_ID}.svc.id.goog
+        - --gcp_project_id=${PROJECT_ID}
+        - --gcp_sts_audience=identitynamespace:${PROJECT_ID}.svc.id.goog://gkemulticloud.googleapis.com/projects/${PROJECT_NUMBER}/locations/${REGION}/${CLUSTER_TYPE}/${CLUSTER_NAME}
+      - name: fluentbit-gke-user
+        image: gcr.io/gke-multi-cloud-release/fluent-bit:v1.8.12-gke.2
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 29020
+        resources:
+          requests:
+            cpu: 50m
+            memory: 50Mi
+          limits:
+            memory: 250Mi
+        env:
+        - name: METADATA_SERVER
+          value: http://127.0.0.1:29681
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: spec.nodeName
+        - name: HTTP_PROXY
+          valueFrom:
+            secretKeyRef:
+              key: HTTPS_PROXY
+              name: proxy-config
+        - name: HTTPS_PROXY
+          valueFrom:
+            secretKeyRef:
+              key: HTTPS_PROXY
+              name: proxy-config
+        - name: NO_PROXY
+          valueFrom:
+            secretKeyRef:
+              key: NO_PROXY
+              name: proxy-config
+        volumeMounts:
+        - name: varlog
+          mountPath: /var/log
+        - name: fluentbit-user-config
+          mountPath: /fluent-bit/etc/
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      serviceAccountName: fluentbit-user
+      terminationGracePeriodSeconds: 60
+      tolerations:
+      - operator: "Exists"
+        effect: "NoExecute"
+      - operator: "Exists"
+        effect: "NoSchedule"
+      volumes:
+      - name: varlog
+        hostPath:
+          path: /var/log
+      - name: fluentbit-user-config
+        configMap:
+          name: fluentbit-user-config
+  updateStrategy:
+    rollingUpdate:
+      maxUnavailable: 1
+    type: RollingUpdate
