@@ -103,12 +103,14 @@ data:
         Merge_Log_Key       log_processed
         K8S-Logging.Parser  On
         K8S-Logging.Exclude Off
-    [FILTER]
-        Name                lua
-        Match               k8s_application.*
-        # lua script to redact sensitive data in log messages
-        script              replace_info.lua
-        call                replace_sensitive_info
+    ### Sample log scrubbing filters
+    # [FILTER]
+    #     Name                lua
+    #     Match               k8s_application.*
+    #     # lua script to redact sensitive data in log messages
+    #     script              replace_info.lua
+    #     call                replace_sensitive_info
+    ### End sample log scrubbing filters
   output-stackdriver.conf: |
     [OUTPUT]
         # https://docs.fluentbit.io/manual/pipeline/outputs/stackdriver
