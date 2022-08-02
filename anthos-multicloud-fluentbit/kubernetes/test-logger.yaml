@@ -14,4 +14,6 @@ spec:
     spec:
       containers:
         - name: test-logger
-          image: gcr.io/${PROJECT_ID}/test-logger
+          image: ${REGION}-docker.pkg.dev/${PROJECT_ID}/test-logger-repo/test-logger:v1
+      imagePullSecrets:
+      - name: ${SECRET_NAME}
