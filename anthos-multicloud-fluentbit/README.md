@@ -2,7 +2,7 @@
 
 This repository contains files that can be used to deploy a Fluent Bit
 DaemonSet on an Anthos Multi-Cloud cluster. The Fluent Bit DaemonSet
-customizes Cloud Logging logs for Anthos clusters on AWS and Anthos Clusters
+customizes Cloud Logging logs for Anthos clusters on AWS and Anthos clusters
 on Azure. The repository also contains files used to build a `test-logger`
 sample application.
 
