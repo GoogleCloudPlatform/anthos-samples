@@ -1,6 +1,6 @@
-gcp_project_id = "awestlake"
+gcp_project_id = "projectId"
 #add up to 10 GCP Ids for cluster admin via connect gateway
-admin_users = ["awestlake@google.com"]
+admin_users = ["user1@domain.com", "user2@domain.com"]
 name_prefix = "azure-cluster"
 /* supported instance types
 https://cloud.google.com/anthos/clusters/docs/multi-cloud/azure/reference/supported-vms
