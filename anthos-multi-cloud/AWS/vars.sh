@@ -1,0 +1,21 @@
+export CLUSTER_NAME=aws-cluster-qa
+export PROJECT_ID=awestlake
+export GCP_LOCATION=us-east4
+export AWS_REGION=us-east-1
+export VPC_ID=vpc-0231cd59f0b1bd57e
+export SUBNET_IDS=subnet-0a70c3d4fb9b90703,subnet-060778dbe196d56cc,subnet-06d34f741c6e989ef
+export CLUSTER_VERSION=1.22.8-gke.2100
+export CONFIG_ENCRYPTION_KMS_KEY_ARN=arn:aws:kms:us-east-1:507099386010:key/044b4261-8981-490d-a5cd-6d7f09f54345
+export DATABASE_ENCRYPTION_KMS_KEY_ARN=arn:aws:kms:us-east-1:507099386010:key/044b4261-8981-490d-a5cd-6d7f09f54345
+export CP_IAM_ROLE_ARN=arn:aws:iam::507099386010:role/aws-cluster-qa-anthos-api-role
+export CP_IAM_INSTANCE_PROFILE=aws-cluster-qa-anthos-cp-instance-profile
+export SERVICE_ADDRESS_CIDR_BLOCKS=10.1.0.0/16
+export NODE_POOL_IAM_INSTANCE_PROFILE=aws-cluster-qa-anthos-np-instance-profile
+export NODE_POOL_INSTANCE_TYPE=t3.medium
+export NODE_POOL_CONFIG_ENCRYPTION_KEY=arn:aws:kms:us-east-1:507099386010:key/10118b42-d101-40d4-a3b5-036d08dc1d0d
+export NODE_POOL_ROOT_ENCRYPTION_KEY=arn:aws:kms:us-east-1:507099386010:key/c75c50ef-6f8d-4802-9a81-ebc5b42b1fc5
+#export NODE_POOL_SUBNET=
+#pod_address_cidr_blocks="10.2.0.0/16"
+#service_address_cidr_blocks="10.1.0.0/16"
+#SSH_KEY_PAIR_NAME=
+
