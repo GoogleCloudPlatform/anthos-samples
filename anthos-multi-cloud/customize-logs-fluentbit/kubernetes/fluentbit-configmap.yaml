@@ -37,7 +37,6 @@ data:
         Tag                k8s_application.<namespace_name>.<pod_name>.<container_name>
         Tag_Regex          var.log.containers.(?<pod_name>[a-z0-9](?:[-a-z0-9]*[a-z0-9])?(?:\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)_(?<namespace_name>[^_]+)_(?<container_name>.+)-(?<docker_id>[a-z0-9]{64})\.log$
         Path               /var/log/containers/*.log
-        Exclude_Path       *_kube-system_*.log,*_gke-connect_*.log,*_gke-system_*.log
         DB                 /var/log/fluent-bit-user-k8s-container-application.db
         Buffer_Chunk_Size  512KB
         Buffer_Max_Size    2MB
