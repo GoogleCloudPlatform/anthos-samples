@@ -203,7 +203,7 @@ data:
             endpoint:
               namespace: nettest
               name: echoserver-non-hostnetwork
-          vms:
+          nodes:
             endpoint:
               namespace: nettest
               name: echoserver-hostnetwork
