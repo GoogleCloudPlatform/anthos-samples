@@ -20,15 +20,15 @@
 # double underscores denote functions defined in this script.
 ##############################################################################
 
-ZONE=$(cut -d "=" -f2- <<< "$(grep < init.vars ZONE)")
-IS_ADMIN_VM=$(cut -d "=" -f2- <<< "$(grep < init.vars IS_ADMIN_VM)")
-VXLAN_IP_ADDRESS=$(cut -d "=" -f2- <<< "$(grep < init.vars VXLAN_IP_ADDRESS)")
-SERVICE_ACCOUNT=$(cut -d "=" -f2- <<< "$(grep < init.vars SERVICE_ACCOUNT)")
-HOSTNAMES=$(cut -d "=" -f2- <<< "$(grep < init.vars HOSTNAMES)")
-VM_INTERNAL_IPS=$(cut -d "=" -f2- <<< "$(grep < init.vars VM_INTERNAL_IPS)")
-LOG_FILE=$(cut -d "=" -f2- <<< "$(grep < init.vars LOG_FILE)")
-DEFAULT_IFACE=$(ip link | awk -F: '$0 !~ "lo|vir|wl|^[^0-9]"{print $2;getline}' | xargs)
-NFS_SERVER=$(cut -d "=" -f2- <<< "$(grep < init.vars NFS_SERVER)")
+ZONE=$(cut -d "=" -f2- <<<"$(grep <init.vars ZONE)")
+IS_ADMIN_VM=$(cut -d "=" -f2- <<<"$(grep <init.vars IS_ADMIN_VM)")
+VXLAN_IP_ADDRESS=$(cut -d "=" -f2- <<<"$(grep <init.vars VXLAN_IP_ADDRESS)")
+SERVICE_ACCOUNT=$(cut -d "=" -f2- <<<"$(grep <init.vars SERVICE_ACCOUNT)")
+HOSTNAMES=$(cut -d "=" -f2- <<<"$(grep <init.vars HOSTNAMES)")
+VM_INTERNAL_IPS=$(cut -d "=" -f2- <<<"$(grep <init.vars VM_INTERNAL_IPS)")
+LOG_FILE=$(cut -d "=" -f2- <<<"$(grep <init.vars LOG_FILE)")
+DEFAULT_IFACE=$(ip link | awk -F: '$0 !~ "lo|vir|wl|^[^0-9]"{print $2;getline}' | head -1 | xargs)
+NFS_SERVER=$(cut -d "=" -f2- <<<"$(grep <init.vars NFS_SERVER)")
 
 DATE=$(date)
 HOSTNAME=$(hostname)
@@ -37,7 +37,7 @@ HOSTNAME=$(hostname)
 # Entrypoint to the startup_script. Runs all the necessary steps to configure
 # the host; also ensures admin specific setup is done for admin hosts
 ##############################################################################
-function __main__ () {
+function __main__() {
   echo "[$DATE] Init script running for host $HOSTNAME"
   __print_separator__
 
@@ -51,7 +51,7 @@ function __main__ () {
 ##############################################################################
 # Install some basic dependencies required for the setup
 ##############################################################################
-function __install_deps__ () {
+function __install_deps__() {
   apt-get -qq update
   if [ "$NFS_SERVER" == "true" ]; then
     apt-get -qq install -y jq nfs-common
@@ -69,7 +69,7 @@ function __install_deps__ () {
 # Setup a new network device for the overlay vxlan network connecting all the
 # hosts in the cluster. This adds this host to an L2 overlay network
 ##############################################################################
-function __setup_vxlan__ () {
+function __setup_vxlan__() {
   echo "Setting up ip address [$VXLAN_IP_ADDRESS/24] for net device vxlan0"
   ip link add vxlan0 type vxlan id 42 dev "$DEFAULT_IFACE" dstport 0
   __check_exit_status__ $? \
@@ -96,12 +96,11 @@ function __setup_vxlan__ () {
 # the hosts in the cluster. The bridge entries are populated using the VPC
 # internal IPs of the hosts in the cluster.
 ##############################################################################
-function __update_bridge_entries__ () {
+function __update_bridge_entries__() {
   current_ip=$(ip --json a show dev "$DEFAULT_IFACE" | jq '.[0].addr_info[0].local' -r)
 
   echo "Cluster VM IPs retreived => $VM_INTERNAL_IPS"
-  for ip in ${VM_INTERNAL_IPS//|/ }
-  do
+  for ip in ${VM_INTERNAL_IPS//|/ }; do
     if [ "$ip" != "$current_ip" ]; then
       bridge fdb append to 00:00:00:00:00:00 dst "$ip" dev vxlan0
       __check_exit_status__ $? \
@@ -118,13 +117,10 @@ function __update_bridge_entries__ () {
 # Configure the admin host with additional tools required to provision and
 # manage the Anthos cluster. This is only executed inside the admin host.
 ##############################################################################
-function __setup_admin_host__ () {
+function __setup_admin_host__() {
   if [ "$IS_ADMIN_VM" == "true" ]; then
     echo "Configuring admin workstation for host $HOSTNAME."
     __setup_service_account__
-    __setup_kubctl__
-    __setup_bmctl__
-    __setup_docker__
     __setup_ssh_access__
   else
     echo "Host $HOSTNAME is not an admin workstation."
@@ -134,7 +130,7 @@ function __setup_admin_host__ () {
 ##############################################################################
 # Download the service account key in order to configure the Anthos cluster
 ##############################################################################
-function __setup_service_account__ () {
+function __setup_service_account__() {
   PROJECT_ID=$(gcloud config get-value project)
   gcloud iam service-accounts keys create /root/bm-gcr.json --iam-account="${SERVICE_ACCOUNT}"@"${PROJECT_ID}".iam.gserviceaccount.com
   __check_exit_status__ $? \
@@ -145,62 +141,17 @@ function __setup_service_account__ () {
 }
 
 ##############################################################################
-# Install the kubectl CLI for interaction with the cluster
-##############################################################################
-function __setup_kubctl__ () {
-  curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
-  chmod +x kubectl
-  mv kubectl /usr/local/sbin/
-  __check_exit_status__ $? \
-    "[+] Successfully installed kubectl" \
-    "[-] Failed to install kubectl. Check for failures on downloading or moving kubctl to /usr/local/sbin/ in ~/$LOG_FILE"
-
-  __print_separator__
-}
-
-##############################################################################
-# Install the bmctl CLI for managing the Anthos cluster
-##############################################################################
-function __setup_bmctl__ () {
-  mkdir baremetal && cd baremetal || return
-  gsutil cp gs://anthos-baremetal-release/bmctl/1.11.1/linux-amd64/bmctl .
-  chmod a+x bmctl
-  mv bmctl /usr/local/sbin/
-  __check_exit_status__ $? \
-    "[+] Successfully installed bmctl" \
-    "[-] Failed to install bmctl. Check for failures on downloading or moving bmctl to /usr/local/sbin/ in ~/$LOG_FILE"
-
-  __print_separator__
-}
-
-##############################################################################
-# Install docker
-##############################################################################
-function __setup_docker__ () {
-  cd ~ || return
-  echo "Installing docker"
-  curl -fsSL https://get.docker.com -o get-docker.sh
-  sh get-docker.sh
-  __check_exit_status__ $? \
-    "[+] Successfully installed docker" \
-    "[-] Failed to install docker. Check for failures on downloading or execution of [get-docker.sh] in ~/$LOG_FILE"
-
-  __print_separator__
-}
-
-##############################################################################
 # Setup SSH access from the admin host to all the other hosts in the cluster.
 # The gcloud CLI is used here update the SSH key information on the hosts.
 ##############################################################################
-function __setup_ssh_access__ () {
+function __setup_ssh_access__() {
   ssh-keygen -t rsa -N "" -f "$HOME"/.ssh/id_rsa
   __check_exit_status__ $? \
     "[+] Successfully generated SSH key pair" \
     "[-] Failed to generate SSH key pair. Check for failures on [ssh-keygen] in ~/$LOG_FILE"
 
-  sed "s/ssh-rsa/$USER:ssh-rsa/" ~/.ssh/id_rsa.pub > ssh-metadata
-  for hostname in ${HOSTNAMES//|/ }
-  do
+  sed "s/ssh-rsa/$USER:ssh-rsa/" ~/.ssh/id_rsa.pub >ssh-metadata
+  for hostname in ${HOSTNAMES//|/ }; do
     gcloud compute instances add-metadata "$hostname" --zone "${ZONE}" --metadata-from-file ssh-keys=ssh-metadata
     __check_exit_status__ $? \
       "[+] Successfully copied ssh-key to host [$hostname]" \
@@ -209,13 +160,12 @@ function __setup_ssh_access__ () {
   __print_separator__
 }
 
-function __check_exit_status__ () {
+function __check_exit_status__() {
   EXIT_CODE=$1
   SUCCESS_MSG=$2
   FAILURE_MSG=$3
 
-  if [ "$EXIT_CODE" -eq 0 ]
-  then
+  if [ "$EXIT_CODE" -eq 0 ]; then
     echo "$SUCCESS_MSG"
   else
     echo "$FAILURE_MSG" >&2
@@ -223,7 +173,7 @@ function __check_exit_status__ () {
   fi
 }
 
-function __print_separator__ () {
+function __print_separator__() {
   echo "------------------------------------------------------------------------------"
 }
 
