@@ -1,6 +1,6 @@
 module github.com/GoogleCloudPlatform/anthos-samples/anthos-bm-gcp-terraform
 
-go 1.16
+go 1.19
 
 require (
 	github.com/corpix/uarand v0.1.1 // indirect
