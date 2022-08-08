@@ -33,7 +33,7 @@ spec:
     spec:
       containers:
       - name: echoserver
-        image: gcr.io/google_containers/echoserver:1.4
+        image: gcr.io/anthos-baremetal-release/simplehttpserver:v0.3.1__linux_amd64
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
@@ -59,7 +59,7 @@ spec:
       hostNetwork: true
       containers:
       - name: echoserver
-        image: gcr.io/google_containers/echoserver:1.4
+        image: gcr.io/anthos-baremetal-release/simplehttpserver:v0.3.1__linux_amd64
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
@@ -169,7 +169,7 @@ data:
               namespace: nettest
               name: echoserver-hostnetwork
     - createCloudprobers:
-        cloudproberImage: gcr.io/anthos-baremetal-release/cloudprober:release-0.11.6-gke.5
+        cloudproberImage: gcr.io/anthos-baremetal-release/cloudprober:release-0.11.7-gke.28
         probeFromCPNodes: true
     - waitFor:
         duration: 5m
@@ -209,7 +209,7 @@ metadata:
 spec:
   containers:
   - name: nettest
-    image: gcr.io/anthos-baremetal-release/nettest:v0.2.0__linux_amd64
+    image: gcr.io/anthos-baremetal-release/nettest:v0.3.1__linux_amd64
     imagePullPolicy: IfNotPresent
     command: ["/nettest"]
     args: ["-v=2", "-alsologtostderr", "-engine_config=/cfg/engine.yaml"]
