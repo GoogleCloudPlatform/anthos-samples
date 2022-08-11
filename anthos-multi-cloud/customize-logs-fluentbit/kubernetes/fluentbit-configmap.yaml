@@ -169,4 +169,3 @@ data:
         Regex       ^(?<severity>\w)(?<time>\d{4} [^\s]*)\s+(?<pid>\d+)\s+(?<source_file>[^ \]]+)\:(?<source_line>\d+)\]\s(?<message>.*)$
         Time_Key    time
         Time_Format %m%d %H:%M:%S.%L%z
-        
