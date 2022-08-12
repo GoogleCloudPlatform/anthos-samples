@@ -31,7 +31,7 @@ var logStatements = [4]string{
 	"Processing credit card 1234 5678 9012 3456",
 	"Users email is john.doe@example.com"}
 
-//Convert a string to an int, but consume any error and use the default instead.
+// Convert a string to an int, but consume any error and use the default instead.
 func convertToInt(s string, def int) int {
 	var result, err = strconv.Atoi(s)
 	fmt.Println(result)
@@ -42,12 +42,12 @@ func convertToInt(s string, def int) int {
 	return result
 }
 
-//Get a random log statement
+// Get a random log statement
 func getLogInfo() string {
 	return logStatements[rand.Intn(4)]
 }
 
-//Output the log statement
+// Output the log statement
 func logInfo(header string) {
 	fmt.Println(header + getLogInfo())
 }
@@ -59,6 +59,7 @@ func startLogEvents(timeInterval int, header string) {
 		logInfo(header)
 	}
 }
+
 func main() {
 	rand.Seed(time.Now().UTC().UnixNano())
 	// Take the log interval and logging header from the environment
