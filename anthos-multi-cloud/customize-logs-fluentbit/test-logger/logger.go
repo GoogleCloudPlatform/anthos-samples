@@ -26,7 +26,7 @@ import (
 )
 
 var logStatements = [4]string{
-	"error happened with social security number 111-22-3333",
+	"Error happened with social security number 111-22-3333",
 	"Something happened..with social 222-33-4444",
 	"Processing credit card 1234 5678 9012 3456",
 	"Users email is john.doe@example.com"}
@@ -34,11 +34,11 @@ var logStatements = [4]string{
 // Convert a string to an int, but consume any error and use the default instead.
 func convertToInt(s string, def int) int {
 	var result, err = strconv.Atoi(s)
-	fmt.Println(result)
 	if err != nil {
 		fmt.Println(err)
 		result = def
 	}
+	fmt.Println(result)
 	return result
 }
 
