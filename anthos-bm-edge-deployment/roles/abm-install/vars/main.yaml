@@ -1,17 +1,3 @@
-# Copyright 2021 Google LLC
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#      http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 ---
 # vars file for abm-install
 
@@ -21,6 +7,10 @@ abm_workspace_folder: "{{ abm_install_folder }}/bmctl-workspace"
 
 # Match with Google-Tools (by convention, not required, but good idea)
 remote_gsa_key: "/var/keys"
+
+# Edge API
+edge_api_enabled: false
+edge_api_location: us-central1 # same as cloud-ops region {{ google_region }}, but hard-coded as API is only in us-central1
 
 kubeconfig_shared_root: "/var/kubeconfig"
 kubeconfig_shared_location: "{{ kubeconfig_shared_root }}/kubeconfig"
@@ -32,6 +22,8 @@ abm_install_user: "el-gato"
 install_type: standalone
 multi_network_enabled: true
 enable_application_logging: true
+dataplane_v2: false # primarily vSphere installs
+enable_mcc_network: "{{ network_gateway_mcc }}"
 
 # Skip preflight checks?
 skip_preflight: false
@@ -46,6 +38,3 @@ local_share_pvc_mount: "/opt/localpv-share" # Default value
 
 # Cluster runtime
 container_runtime: "containerd" # docker or containerd
-
-# Secret used for Longhorn
-longhorn_secret_name: "longhorn-cloud-storage-hmac"
