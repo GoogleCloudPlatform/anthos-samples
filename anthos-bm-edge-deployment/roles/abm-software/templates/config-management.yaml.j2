@@ -7,8 +7,9 @@ spec:
   # Unique across all clusters using the same ConfigSync repo. Name is used in Cluster Selectors
   clusterName: {{ acm_cluster_name }}
   enableMultiRepo: true
+  preventDrift: false # enable admission hook
   policyController:
-    enabled: false
+    enabled: true
     # exemptableNamespaces: ["default"]
     logDeniesEnabled: true
     templateLibraryInstalled: false
