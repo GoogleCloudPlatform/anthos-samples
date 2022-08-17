@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,25 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 ---
 
-# This playbook is ONLY used to clean/reset logging when ABM fills logs and starts to evacuate pods due to space concerns
-# This is going to be fixed with ABM 1.9+ where control on how large the logs can get will be configurable
-
-- hosts: workers
+- hosts: all
   become: true
   become_user: root
+  gather_facts: false
+  pre_tasks:
+  - name: Decrypt SSH key
+    include_role:
+      name: decrypt-ssh-key
+  - name: Gathering Facts
+    setup: {}
   roles:
-    - reset-logs
-  vars: []
-  tags:
-  - hardware
-
-- hosts: cloud_type_abm
-  become: true
-  become_user: root
-  roles:
-    - reset-logs
-  vars: []
-  tags:
-  - cloud
+    - validate
