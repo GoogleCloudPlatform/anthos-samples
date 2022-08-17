@@ -244,9 +244,9 @@ ansible-playbook all-full-install.yaml -i inventory
 ...
 ...
 PLAY RECAP ********************************************************************************************************
-cnuc-1                     : ok=136  changed=106  unreachable=0    failed=0    skipped=33   rescued=0    ignored=8
-cnuc-2                     : ok=86   changed=67   unreachable=0    failed=0    skipped=71   rescued=0    ignored=2
-cnuc-3                     : ok=86   changed=67   unreachable=0    failed=0    skipped=71   rescued=0    ignored=2
+cnuc-1                     : ok=206  changed=157  unreachable=0    failed=0    skipped=47   rescued=0    ignored=12
+cnuc-2                     : ok=129  changed=100  unreachable=0    failed=0    skipped=107  rescued=0    ignored=2
+cnuc-3                     : ok=129  changed=100  unreachable=0    failed=0    skipped=107  rescued=0    ignored=2
 ```
 
 ---
