@@ -6,4 +6,4 @@ Checkout the different folders here for a Terraform based quickstart for setting
 
 - [Run GKE on AWS](/anthos-multi-cloud/AWS)
 - [Run GKE on Azure](/anthos-multi-cloud/Azure)
-
+- [Customize logs Fluent Bit](https://github.com/anthos-multi-cloud/customize-logs-fluentbit): This directory contains files to deploy a Fluent Bit DaemonSet on an Anthos Multi-Cloud cluster.
