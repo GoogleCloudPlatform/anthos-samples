@@ -21,12 +21,20 @@
 
 #### TODO: gcloud compute config-ssh  (on the host computer after GCEs are setup?)
 
+## Get directory this script was run from. gce-helpers.vars is in the same directory.
+## -- is used in case the directory name starts with a -
+PREFIX_DIR=$(dirname -- "$0")
+WORKDIR=$(pwd)
+source ${PREFIX_DIR}/gce-helper.vars
+
 # Defaults
 GCE_COUNT=1
 CLUSTER_START_INDEX=1
 unset PREEMPTIBLE_OPTION
+SSH_PUB_KEY_LOCATION="${WORKDIR}/build-artifacts/consumer-edge-machine.pub" # default
 
-while getopts 'c:p:s:tz:k::': option
+
+while getopts 'c:p:k:s:tz:': option
 do
     # #*= allows for c=1 and strips out the c= in addition to -c 1
     case "${option}" in
@@ -36,15 +44,8 @@ do
         s) CLUSTER_START_INDEX="${OPTARG#*=}";;
         t) PREEMPTIBLE_OPTION="--preemptible";;
         z) ZONE="${OPTARG#*=}";;
-        *) ;;
     esac
 done
-
-## Get directory this script was run from. gce-helpers.vars is in the same directory.
-## -- is used in case the directory name starts with a -
-PREFIX_DIR=$(dirname -- "$0")
-# shellcheck source=./gce-helper.vars
-source "${PREFIX_DIR}/gce-helper.vars"
 
 usage()
 {
@@ -56,12 +57,24 @@ usage()
         [ -t ]
         [ -z ZONE ]"
     echo "-c: Number of instances to create. Defaults to 1. Example: -c 1"
-    echo "-k: SSH public key location. Defaults to '${HOME}/.ssh/cnucs-cloud.pub'. Creates the key if it doesn't exist."
+    echo "-k: SSH public key location. Defaults to './build-artifacts/consumer-edge-machine.pub'. Creates the key if it doesn't exist."
     echo "-p: project ID. Can be set with PROJECT_ID environment variable. Defaults to gcloud config if not set."
     echo "-s: Starting index. Defaults to 1. Example: -s 10."
     echo "-t: Use temporary preemptible instances."
     echo "-z: Zone. Can be set with ZONE environment variable. Defaults to gcloud config zone if not set."
     exit 2
+}
+
+
+###
+###  Create and/or store public key used in ansible provisioning (ie, the "host" box)
+###
+function store_public_key_secret() {
+    SSH_KEY_LOC=$1
+    # Create SSH key if it doesn't exist
+    create_ssh_key "${SSH_KEY_LOC}"
+
+    create_secret "${SSH_KEY_SECRET_KEY}" "${SSH_KEY_LOC}" "true" # create the secret from a file
 }
 
 ERROR=0
@@ -115,8 +128,6 @@ if [[ -z "${CLUSTER_START_INDEX}" || ! "${CLUSTER_START_INDEX}" =~ ^[0-9]+$ || "
     ERROR=1
 fi
 
-# SSH_PUB_KEY_LOCATION is handled in gce-helper.vars
-
 if [[ "${ERROR}" -eq 1 ]]; then
     usage
     exit 1
@@ -127,7 +138,7 @@ echo "PROJECT_ID: ${PROJECT_ID}"
 echo "START_INDEX: ${CLUSTER_START_INDEX}"
 echo "ZONE: ${ZONE}"
 
-if [[ -n "$PREEMPTIBLE_OPTION" ]]; then
+if [[ ! -z "$PREEMPTIBLE_OPTION" ]]; then
     echo "NOTE: USING PREEMPTIBLE MACHINE. The GCE will be up at most 24h and will need to be re-created and re-provisioned. This option keeps the costs of testing/trying ABM Retail Edge to a minimum"
 fi
 
@@ -144,20 +155,55 @@ echo "Final Cluster Count = $CLUSTER_COUNT"
 #####   MAIN   ################
 ###############################
 
+# enable any services needed
+gcloud services enable \
+    servicemanagement.googleapis.com \
+    anthos.googleapis.com \
+    cloudbuild.googleapis.com \
+    cloudresourcemanager.googleapis.com \
+    serviceusage.googleapis.com \
+    compute.googleapis.com \
+    secretmanager.googleapis.com
+
+# Setup firewalls for GCE VXLAN (only needed by cloud-version) #TODO: Modify this to use tags on the GCE instances
+
+# Look for any firewall rules with "vxlan" in them (see below for vxlan fireall entries...this works for both rules)
+FIREWALLS=$(gcloud compute firewall-rules list --filter=name=vxlan --format="value(name)")
+if [[ -z "${FIREWALLS}" ]]; then
+    gcloud compute firewall-rules create vxlan-egress \
+        --allow all \
+        --direction=EGRESS \
+        --network=${NETWORK} \
+        --priority=900
+
+    gcloud compute firewall-rules create vxlan-ingress \
+        --allow all \
+        --direction=INGRESS \
+        --network=${NETWORK} \
+        --priority=900 \
+        --source-ranges="10.0.0.0/8"
+fi
+
+# setup default compute to view secrets and GCS buckets
+PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID --format="value(projectNumber)")
+echo "Adding roles/secretmanager.secretAccessor and roles/storage.objectViewer to default compute service account..."
+
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
+    --role="roles/secretmanager.secretAccessor" --no-user-output-enabled
+
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
+    --role="roles/storage.objectViewer" --no-user-output-enabled
+
 # Create init script bucket for GCE instances to use
 setup_init_bucket
 
+# Create backup bucket for volume backups
+setup_init_bucket ${BACKUP_BUCKET_NAME} ${PROJECT_ID}
+
+# Copy the init script to bucket for GCE startup
 copy_init_script
-
-# enable any services needed
-gcloud services enable secretmanager.googleapis.com
-
-# setup default compute to view secrets
-PROJECT_NUMBER=$(gcloud projects describe "$PROJECT_ID" --format="value(projectNumber)")
-echo "Adding roles/secretmanager.secretAccessor to default compute service account..."
-gcloud projects add-iam-policy-binding "$PROJECT_ID" \
-    --member="serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
-    --role="roles/secretmanager.secretAccessor" --no-user-output-enabled
 
 # Store the SSH pub key as a secret
 store_public_key_secret "${SSH_PUB_KEY_LOCATION}"

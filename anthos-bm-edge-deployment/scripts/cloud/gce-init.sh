@@ -119,7 +119,8 @@ chmod 400 "/home/${ANSIBLE_USER}/.ssh/config"
 chmod 400 ~/.ssh/config
 
 # Verify VXLAN IP works
-if ! ping -c 3 "${VXLANIP}"; then
+ping -c 3 ${VXLANIP}
+if [[ $? -gt 0 ]]; then
     echo "Cannot ping the vxlan IP address"
     exit 1
 fi
