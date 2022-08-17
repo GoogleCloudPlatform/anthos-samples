@@ -1,0 +1,180 @@
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+- name: Verify IP address resolves
+  debug:
+    msg: "{{ cluster_name }} is {{ control_plane_ip }}"
+  tags:
+  - verify
+
+- name: Verify there is a ROOT_REPO_URL variable
+  debug:
+    var: acm_root_repo
+  tags:
+  - verify
+
+- name: Fail if local PROJECT_ID ENV is not defined
+  assert:
+    that:
+      - google_project_id != ""
+    fail_msg: "The local environment variable 'PROJECT_ID' needs to be defined for the target Google Project ID"
+  tags:
+  - verify
+
+- name: Fail if local REGION ENV is not defined
+  assert:
+    that:
+      - google_region != ""
+    fail_msg: "The local environment variable 'REGION' needs to be defined for the target Google Project default region"
+  tags:
+  - verify
+
+- name: Fail if local ZONE ENV is not defined
+  assert:
+    that:
+      - google_zone != ""
+    fail_msg: "The local environment variable 'ZONE' needs to be defined for the target Google Project default zone"
+  tags:
+  - verify
+
+- name: Fail if local LOCAL_GSA_FILE ENV is not defined
+  assert:
+    that:
+      - local_gsa_key != ""
+    fail_msg: "The local environment variable 'LOCAL_GSA_FILE' needs to be set to the local filesystem GSA JSON key"
+  tags:
+  - verify
+
+- name: Fail if local SCM_TOKEN_USER ENV is not defined
+  assert:
+    that:
+      - scm_token_user != ""
+    fail_msg: "The local environment variable 'SCM_TOKEN_USER' needs to be set to the SCM user name"
+  tags:
+  - verify
+
+- name: Fail if local SCM_TOKEN_TOKEN ENV is not defined
+  assert:
+    that:
+      - scm_token_token != ""
+    fail_msg: "The local environment variable 'SCM_TOKEN_TOKEN' needs to be set to the secret value for the SCM PAT"
+  tags:
+  - verify
+
+- name: Set Anthos Network Gateway to True if IPs have length
+  set_fact:
+    "network_gateway_group": True
+  when: ang_floating_ips | length > 0
+  tags:
+  - verify
+  - anthos-network-gateway
+
+- name: Set Anthos Network Gateway False if NO IPs have been defined
+  set_fact:
+    "network_gateway_group": False
+  when: ang_floating_ips | length == 0
+  tags:
+  - verify
+  - anthos-network-gateway
+
+- name: Anthos Network IS Enabled
+  run_once: true
+  debug:
+    msg: "Network Gateway Group Enabled?  {{ network_gateway_group }}"
+  when: network_gateway_group == True
+  tags:
+  - verify
+  - anthos-network-gateway
+
+- name: List Anthos Gateway Network IPs
+  run_once: true
+  debug:
+    msg: "IP: {{ item }}, {{ network_gateway_group }}"
+  loop: "{{ ang_floating_ips }}"
+  when: network_gateway_group == True
+  tags:
+  - verify
+  - anthos-network-gateway
+
+- name: Ensure at least 120GB on primary disk
+  shell: |
+    export PRIMARY_DISK=$(df -BG / | awk '{if (NR!=1) print $2}' | tr -d 'G')
+    if [ "$PRIMARY_DISK" -lt 120 ]; then
+      echo "ERROR: $PRIMARY_DISK is less than required 120GB"
+      exit 1
+    fi
+  failed_when: disk_check.rc > 0
+  changed_when: disk_check.rc != 0
+  register: disk_check
+  tags:
+  - verify
+
+- name: show oidc status
+  debug:
+    var: enable_oidc
+  tags:
+  - oidc
+
+- name: Validate OIDC varaibles are set if OIDC is enabled
+  run_once: true
+  assert:
+    that:
+    - oidc_client_id != ""
+    - oidc_client_secret != ""
+    - oidc_user != ""
+    fail_msg: "OIDC is enabled, but the local environment variables are not set. Please configure OIDC and ENV vars before provisioning or disable 'enable_oidc' variable in all.yaml settings"
+  when:
+  - enable_oidc == true
+  tags:
+  - verify
+  - oidc
+
+- name: Installed output
+  debug:
+    msg:
+    - "----- IMPORTANT VARIABLES ----"
+    - ""
+    - "Root-Repo: {{ acm_root_repo }}"
+    - "ABM Version: {{ abm_version }}"
+    - "ACM Version: {{ acm_version }}"
+    - ""
+    - "-------------------------"
+    - ""
+    - "Google Project: {{ google_project_id }}"
+    - "Google Region/Zone {{ google_region }}/{{ google_zone }}"
+    - ""
+    - "-------------------------"
+    - ""
+    - "SCM PAT User: {{ scm_token_user }}"
+    - "SCM PAT Token: {{ scm_token_token[:5] }}*******"
+    - ""
+    - "-------------------------"
+    - ""
+    - "Storage provider: {{ storage_provider }}"
+    - "Storage provider root: {{ storage_provider_roots | join(',') }}"
+    - ""
+
+  when: "(primary_cluster_machine is defined) and (primary_cluster_machine == true)"
+  tags:
+  - verify
+  - print-install-variables
+
+- name: Give time to read variables (Hit <ctrl>+c to cancel now if incorrect)
+  run_once: true
+  wait_for:
+    timeout: 3
+  tags:
+  - verify
+  - print-install-variables

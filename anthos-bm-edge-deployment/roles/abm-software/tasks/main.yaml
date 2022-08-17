@@ -1,0 +1,202 @@
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- name: Post-Install--Fail if number of available hosts != in-play count
+  fail:
+    msg: "Failure caused by expected {{ ansible_play_hosts_all|length }} hosts but have {{ ansible_play_hosts|length }}. Check failures above to see what issue happened."
+  when: (ansible_play_hosts_all|length) != (ansible_play_hosts|length)
+  tags:
+  - verify
+
+#
+# Install ACM
+#
+- name: Fail if local SCM_TOKEN_USER ENV is not defined
+  assert:
+    that:
+      - scm_token_user != ""
+    fail_msg: "The local environment variable 'SCM_TOKEN_USER' needs to be defined for the target Google Project ID"
+  when: "(primary_cluster_machine is defined) and (primary_cluster_machine == true)"
+  tags:
+  - verify
+
+- name: Fail if local SCM_TOKEN_TOKEN ENV is not defined
+  assert:
+    that:
+      - scm_token_token != ""
+    fail_msg: "The local environment variable 'SCM_TOKEN_TOKEN' needs to be defined for the target Google Project ID"
+  when: "(primary_cluster_machine is defined) and (primary_cluster_machine == true)"
+  tags:
+  - verify
+
+- name: Create cluster snapshot
+  include: create-snapshot.yaml
+  when:
+    - (primary_cluster_machine is defined)
+    - (primary_cluster_machine == true)
+  tags:
+  - cluster-snapshot
+
+- name: Remove taint from master node
+  command:
+    cmd: kubectl taint nodes {{ cluster_name }} node-role.kubernetes.io/master:NoSchedule-
+  when: "(primary_cluster_machine is defined) and (primary_cluster_machine == true)"
+  environment:
+    KUBECONFIG: "{{ kubeconfig_shared_location }}"
+  ignore_errors: yes
+  tags:
+  - abm-software
+  - abm-config
+
+- name: Folder for VMRUntime configuration
+  file:
+    path: '{{ vmruntime_config_path }}'
+    state: directory
+    mode: '0755'
+  when: "(primary_cluster_machine is defined) and (primary_cluster_machine == true)"
+  tags:
+  - abm-software
+  - vmruntime
+
+- name: Copy VMRuntime for install
+  template:
+    src: vmruntime-config.yaml.j2
+    dest: "{{ vmruntime_config_path }}/vmruntime.yaml"
+  when:
+    - (primary_cluster_machine is defined)
+    - (primary_cluster_machine == true)
+  tags:
+  - abm-software
+  - vmruntime
+
+- name: "Install VMRuntime"
+  shell: |
+      kubectl apply -f {{ vmruntime_config_path }}/vmruntime.yaml
+      # Allow for the API to register the API
+      sleep 5s
+  args:
+    executable: /bin/bash
+  environment:
+    KUBECONFIG: "{{ kubeconfig_shared_location }}"
+  when:
+    - (primary_cluster_machine is defined)
+    - (primary_cluster_machine == true)
+  retries: 3
+  register: result
+  until: result.rc == 0
+  tags:
+  - abm-software
+  - vmruntime
+
+- name: Folder for ACM configurations
+  file:
+    path: '{{ acm_config_files }}'
+    state: directory
+    mode: '0755'
+  when: "(primary_cluster_machine is defined) and (primary_cluster_machine == true)"
+  tags:
+  - abm-software
+  - abm-config
+
+### Add External Secrets
+- name: Setup External Secrets
+  include: external-secrets.yaml
+  vars:
+    kubeconfig: "{{ kubeconfig_shared_location }}"
+  tags:
+  - external-secrets-install
+  - abm-software
+
+###  Setup & install Longhorn if settings
+- name: Setup Longhorn
+  include: csi-longhorn.yaml
+  vars:
+    kubeconfig: "{{ kubeconfig_shared_location }}"
+  when: storage_provider == "longhorn"
+  tags:
+  - longhorn
+  - storage-setup
+
+### Anthos Network Gateway
+- name: "Install Anthos Config Management (ACM)"
+  include: acm-install.yaml
+  tags:
+  - acm-config-management-install
+  - acm-config-management
+
+### Anthos Network Gateway
+- name: "Install Anthos Network Gateway"
+  include: network-gateway-group.yaml
+  when: network_gateway_group_install == true
+  tags:
+  - ang-install
+
+- name: "Add CPU Monitor KubeVirt service files"
+  include: cpumonitor-service.yaml
+  tags:
+  - cpu-monitor
+  - cdi
+
+################# Setup secrets for git-creds and namespace repos per each franchise
+
+- name: "Create git-cred secrets in GCP Secret Manager"
+  run_once: true # only need to run on one machine, create all of the secets
+  shell: |
+    EXISTS=$(gcloud secrets list --filter="{{ item.git_creds_gcp_secret_name }}" --format="value(name)" --project="{{ google_project_id }}")
+    if [ -z "${EXISTS}" ]]; then
+      gcloud secrets create {{ item.git_creds_gcp_secret_name }} --replication-policy="automatic" --project="{{ google_project_id }}"
+      echo "ADDED"
+    fi
+  register: out
+  changed_when: '"ADDED" in out.stdout_lines'
+  environment:
+    PATH: "{{ tools_base_path }}/google-cloud-sdk/bin:{{ ansible_env.PATH }}"
+  loop: "{{ franchises }}"
+  when:
+    - (primary_cluster_machine is defined)
+    - (primary_cluster_machine == true)
+  tags:
+  - abm-software
+  - enable-acm
+  - post-acm
+
+- name: "Add new version to git-cred franchise secret in GCP Secret Manager IF no current or active versions exists"
+  run_once: true # only need to run on one machine, create all of the secets
+  shell: |
+    EXISTS=$(gcloud secrets versions list {{ item.git_creds_gcp_secret_name }} --filter="state=enabled" --format="value(name)"  --project="{{ google_project_id }}")
+    if [ -z "${EXISTS}" ]; then
+      echo -n "{\"token\"{{':'}} \"{{ scm_token_token }}\", \"username\"{{':'}} \"{{ scm_token_user }}\"}" | gcloud secrets versions add {{ item.git_creds_gcp_secret_name }} --project="{{ google_project_id }}" --data-file=-
+      echo "ADDED"
+    fi
+  register: out
+  changed_when: '"ADDED" in out.stdout_lines'
+  loop: "{{ franchises }}"
+  when:
+    - (primary_cluster_machine is defined)
+    - (primary_cluster_machine == true)
+  environment:
+    PATH: "{{ tools_base_path }}/google-cloud-sdk/bin:{{ ansible_env.PATH }}"
+  tags:
+  - abm-software
+  - enable-acm
+  - post-acm
+
+- name: Setup OIDC in cluster
+  include: setup-oidc.yaml
+  when:
+  - enable_oidc == true
+  tags:
+  - abm-software
+  - oidc
+  - post-acm

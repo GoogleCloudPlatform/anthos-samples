@@ -1,0 +1,21 @@
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Value used to set cron-job for gcloud update to be performed
+gcloud_update_cron_value: "00 02 * * 3" # Wednesday 02:00am (default)
+gcloud_update_log: "/var/log/gcloud-udpate-script.log"
+
+# Variables for apt update (host OS patching)
+automatic_update_update_time: "02:15" # Every 2:15am -- TODO: Pull this in some other method for updates (like query an agent on the machine)
+automatic_update_upgrade_time: "02:30"

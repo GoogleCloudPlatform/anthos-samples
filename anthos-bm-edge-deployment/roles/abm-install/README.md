@@ -15,7 +15,7 @@ pip install dnspython
 Role Variables
 --------------
 
-See `vars/main.yaml` for information
+See `vars/main.yml` for information
 
 Tags
 --------------

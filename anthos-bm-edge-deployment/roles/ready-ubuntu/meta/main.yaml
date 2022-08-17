@@ -1,16 +1,36 @@
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 galaxy_info:
-  author: Mike Ensor
-  description: This role will install an Anthos Bare Metal instance into a target system (VM or bare metal)
-  company: Google
+  author: your name
+  description: your role description
+  company: your company (optional)
 
   # If the issue tracker for your role is not on github, uncomment the
   # next line and provide a value
-  issue_tracker_url: https://gitlab.com/mike-ensor/abm-consumer-edge-ansible/-/tree/main/roles/abm-install
+  # issue_tracker_url: http://example.com/issue/tracker
 
   # Choose a valid license ID from https://spdx.org - some suggested licenses:
-  license: Apache-2.0
+  # - BSD-3-Clause (default)
+  # - MIT
+  # - GPL-2.0-or-later
+  # - GPL-3.0-only
+  # - Apache-2.0
+  # - CC-BY-4.0
+  license: license (GPL-2.0-or-later, MIT, etc)
 
-  min_ansible_version: 2.10
+  min_ansible_version: 2.1
 
   # If this a Container Enabled role, provide the minimum Ansible Container version.
   # min_ansible_container_version:
@@ -42,11 +62,5 @@ galaxy_info:
     #       Maximum 20 tags per role.
 
 dependencies: []
-  # - { role: tire }
-  #### Second option
-  # - src: https://my.scm.com/my-ansible-roles/role2.git
-  #   scm: git
-  #   version: master
-  #   name: role2
   # List your role dependencies here, one per line. Be sure to remove the '[]' above,
   # if you add dependencies to this list.

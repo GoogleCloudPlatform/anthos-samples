@@ -1,0 +1,13 @@
+## Variables set at time of provisioning based on provisioning run
+
+# Name of the cluster
+cluster_name: "{{ cluster_name }}"
+# Used for logging/metrics
+machine_label: "{{ machine_label }}"
+# This machine's IP address
+machine_ip: "{{ control_plane_ip }}"
+
+# GitHub or GitLab Read-only User Token (authentication to private repos)
+scm_token_user: "{{ scm_token_user }}"
+# GitHub or GitLab Read-only Token Value (authentication to private repos)
+scm_token_token: "{{ scm_token_token }}"

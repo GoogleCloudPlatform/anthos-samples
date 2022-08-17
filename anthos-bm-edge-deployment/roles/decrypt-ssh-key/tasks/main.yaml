@@ -1,0 +1,57 @@
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- name: Add decrypted key to ssh-agent
+  run_once: true
+  become: false
+  delegate_to: localhost
+  shell:
+    cmd: "eval `ssh-agent`" # this may fail, might need different commands
+  # when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Decrypt SSH private key
+  become: false
+  delegate_to: localhost
+  shell:
+    cmd: |
+      gcloud kms decrypt \
+        --project={{ google_project_id }} \
+        --ciphertext-file={{ ansible_ssh_key_file_encrypted }} \
+        --plaintext-file=- \
+        --location={{ google_kms.location }} \
+        --keyring={{ google_kms.keyring_name }} \
+        --key={{ google_kms.key_name }}
+  register: ssh_private_key_decrypted
+  when:
+    - primary_cluster_machine is defined
+    - primary_cluster_machine == True
+
+- name: Extract decrypted key
+  become: false
+  delegate_to: localhost
+  set_fact:
+    ssh_private_key_decrypted: "{{ ssh_private_key_decrypted.stdout }}"
+  when:
+    - primary_cluster_machine is defined
+    - primary_cluster_machine == True
+
+- name: Add decrypted key to ssh-agent
+  become: false
+  delegate_to: localhost
+  command:
+    cmd: "echo -e \"{{ ssh_private_key_decrypted }}\" | ssh-add -t {{ ansible_ssh_key_timeout }} -"
+  register: tmp_output
+  when:
+    - primary_cluster_machine is defined
+    - primary_cluster_machine == True

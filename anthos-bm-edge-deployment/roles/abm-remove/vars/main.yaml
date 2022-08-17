@@ -1,0 +1,22 @@
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+kubeconfig_shared_root: "/var/kubeconfig"
+kubeconfig_shared_location: "{{ kubeconfig_shared_root }}/kubeconfig"
+
+abm_install_folder: "/var/abm-install"
+abm_workspace_folder: "{{ abm_install_folder }}/bmctl-workspace"
+
+acm_config_files: "/var/acm-configs"

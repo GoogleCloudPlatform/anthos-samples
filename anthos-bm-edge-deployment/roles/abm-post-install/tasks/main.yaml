@@ -1,0 +1,101 @@
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# These are post-installation steps that address defects/bugs or are needed after the system has been fully setup
+
+### Add Kube PS1
+- name: "Add Kube PS1 to all known users"
+  include: add-kube-ps1.yml
+  become: true
+  tags:
+  - abm-post-install
+  - kube-ps1
+
+### Create the base directory for dashboard configs
+- name: Create dashboard config directory
+  become: true
+  file:
+    path: "{{ dashboard_config_base }}"
+    state: directory
+    mode: '0755'
+  tags:
+  - abm-post-install
+  - dashboard-install
+
+- name: Decide which monitoring dashboards to install
+  set_fact:
+    monitoring_dashboard_type: "{{ 'cloud' if (is_cloud_resource == true ) else 'edge' }}"
+  tags:
+  - abm-post-install
+  - dashboard-install
+  - one-time
+
+# ### Copy dashbaord files to remote
+- name: Copy dashboard files to remote
+  become: true
+  register: dashboards
+  template:
+    src: "{{ item }}"
+    dest: "{{ dashboard_config_base }}"
+  with_fileglob:
+    - "monitoring-dashboard/{{ monitoring_dashboard_type }}/*.json"
+  tags:
+  - abm-post-install
+  - dashboard-install
+
+# ### Add custom monitoring dashboards to GCP project
+# - name: Add custom monitoring dashboards to GCP Project
+#   run_once: true
+#   shell: |  # TODO: Add a check to see if the dashboard already exists
+#     gcloud --project "{{ google_project_id }}" monitoring dashboards create --config-from-file "{{ item.dest }}"
+#   loop: "{{ dashboards.results }}"
+#   when:
+#     - (primary_cluster_machine is defined)
+#     - (primary_cluster_machine == true)
+#   tags:
+#   - abm-post-install
+#   - dashboard-install
+
+### Setup CDI cpumanager flag for nodes
+- name: "Add CDI required cpumanager label for nodes"
+  include: create-cdi-node-label.yaml
+  tags:
+  - abm-post-install
+  - cdi-install
+  - cdi-node-hack
+
+### Install Auditd
+- name: "Setup Auditd service"
+  include: setup-auditd.yml
+  tags:
+  - abm-post-install
+  - observability-setup
+
+ ### Install Obeservability agents
+- name: "Setup Obeservability Agents on Physical"
+  include: setup-google-observability.yml
+  when: install_observability == true and (is_cloud_resource is undefined or is_cloud_resource == false)
+  tags:
+  - abm-post-install
+  - observability-setup
+
+- name: "Run ExternalSecrets store post ACM install"
+  command:
+    cmd: "kubectl apply -f {{ external_secrets_files }}/external-secrets-store.yaml"
+  ignore_errors: yes
+  environment:
+    KUBECONFIG: "{{ kubeconfig_shared_location }}"
+  when:
+    - (primary_cluster_machine is defined)
+    - (primary_cluster_machine == true)

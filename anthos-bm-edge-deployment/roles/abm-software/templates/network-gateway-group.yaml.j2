@@ -1,0 +1,10 @@
+kind: NetworkGatewayGroup
+apiVersion: networking.gke.io/v1
+metadata:
+  name: default
+  namespace: kube-system
+spec:
+  floatingIPs:
+  {% for range in ang_floating_ips %}
+  - {{ range }}
+  {% endfor %}
