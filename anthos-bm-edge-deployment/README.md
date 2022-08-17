@@ -135,7 +135,7 @@ gcloud kms encrypt \
 
 #### 2.3) Generate the environment configuration file `.envrc` and source it
 Once created inspect the `.envrc` file to ensure that the environment variables
-have been replaced with the correct values you intend to use.
+have been replaced with the correct values.
 
 ```sh
 envsubst < templates/envrc-template.sh > .envrc
@@ -209,7 +209,7 @@ Starting the docker container. You will need to run the following 2 commands (cu
 Thank you for using the quick helper script!
 (you are now inside the Docker shell)
 ```
-At this point you must be inside the docket container that was created based off
+At this point you must be inside the docker container that was created based off
 of the image built earlier. You will trigger the ansible installation from
 inside this container.
 
