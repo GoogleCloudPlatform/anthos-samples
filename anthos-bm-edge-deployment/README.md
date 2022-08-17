@@ -71,9 +71,6 @@ export PROJECT_ID="<YOUR_GCP_PROJECT_ID>"
 export REGION="us-central1"
 export ZONE="us-central1-a"
 
-# path to which the Google Service Account key file will be downloaded to
-export LOCAL_GSA_FILE="$(pwd)/remote-gsa-key.json"
-
 # port on the GCE instance we will use to setup the nginx proxy to allow traffic into the AnthosBareMetal cluster
 export PROXY_PORT="8082"
 
@@ -113,81 +110,66 @@ gcloud config set compute/zone "${ZONE}"
 # when asked "Create a new key for GSA? [y/N]" type "y" and press
 ./scripts/create-primary-gsa.sh
 ```
+This script will create the JSON key file for the new Google Service Account at
+`./build-artifacts/consumer-edge-gsa.json`. It also sets up KMS keyring and key
+for SSH private key encryption.
+
 ---
 
 ### 2. Provision the GCE instances
-#### 2.1) Configure SSH keys and create the GCE instances where Anthos BareMetal will be installed
 
-> **Note:** _This step can take upto ***2 minutes*** to complete for a setup with $MACHINE_COUNT=3_
+#### 2.1) Create SSH keypair for communication between provisioning machine and target machines
+```sh
+ssh-keygen -N '' -o -a 100 -t ed25519 -f ./build-artifacts/consumer-edge-machine
+```
+
+#### 2.2) Encrypt the SSH private key using Cloud KMS
+```sh
+gcloud kms encrypt \
+  --key gdc-ssh-key \
+  --keyring gdc-ce-keyring \
+  --location global \
+  --plaintext-file build-artifacts/consumer-edge-machine \
+  --ciphertext-file build-artifacts/consumer-edge-machine.encrypted
+```
+
+#### 2.3) Generate the environment configuration file `.envrc`
+Once created inspect the `.envrc` file to ensure that the environment variables
+have been replaced with the correct values you intend to use.
 
 ```sh
-# just press the return key when asked for a passphrase for the SSH key (i.e. empty string)
-./scripts/cloud/easy-install.sh
+envsubst < templates/envrc-template.sh > .envrc
 ```
-> **Note:** This script updates your `/etc/hosts` file with the IP addresses of
-> the created GCE VMs. Thus, it will prompt you to provide the **password** to
-> your local workstation
 
-#### 2.2) Test SSH connectivity to the GCE instances
+#### 2.4) Source the `.envrc` file
 ```sh
-# If the checks fail the first time with errors like "sh: connect to host cnuc-1 port 22: Connection refused"
-# then wait a few seconds and retry
-for i in `seq $MACHINE_COUNT`; do
-  HOSTNAME="cnuc-$i"
-  ssh abm-admin@${HOSTNAME} 'ping -c 3 google.com'
-done
+source .envrc
 ```
-```sh
-# -----------------------------------------------------#
-#                   Expected Output                    #
-# -----------------------------------------------------#
-PING google.com (74.125.124.113) 56(84) bytes of data.
-64 bytes from jp-in-f113.1e100.net (74.125.124.113): icmp_seq=1 ttl=115 time=1.10 ms
-64 bytes from jp-in-f113.1e100.net (74.125.124.113): icmp_seq=2 ttl=115 time=1.10 ms
-64 bytes from jp-in-f113.1e100.net (74.125.124.113): icmp_seq=3 ttl=115 time=0.886 ms
 
---- google.com ping statistics ---
-3 packets transmitted, 3 received, 0% packet loss, time 2003ms
-rtt min/avg/max/mdev = 0.886/1.028/1.102/0.100 ms
-PING google.com (108.177.112.139) 56(84) bytes of data.
-...
-...
-...
+#### 2.5) Create the GCE instances where Anthos BareMetal will be installed
+The output of this command will be stored in `./build-artifacts/gce-info`. It
+includes information about the public IP addresses of the GCE VMs and how to SSH
+into them. You can refer to this file later to find the necessary information.
+```sh
+./scripts/cloud/create-cloud-gce-baseline.sh -c "$MACHINE_COUNT" | tee ./build-artifacts/gce-info
 ```
+
+> **Note:** _This step can take upto ***2 minutes*** to complete for a setup
+> with $MACHINE_COUNT=3_
+
 ---
 
 ### 3. Install Anthos BareMetal with ansible
-#### 3.1) Generate Ansible inventory file from template and verify setup
+
+This phase involves the creation of the docker image for installation,
+generating the ansible inventory configuration settings and running the ansible
+scripts that installs Anthos on bare metal into the GCE VMs.
+
+#### 3.1) Create a docker image that will be used
+You can find more information about the steps involved in creating the image
+in the [docker-build](docker-build) directory.
 ```sh
-envsubst < templates/inventory-cloud-example.yaml > inventory/gcp.yaml
-./scripts/verify-pre-installation.sh
-./scripts/health-check.sh
-```
-```sh
-# -----------------------------------------------------#
-#                   Expected Output                    #
-# -----------------------------------------------------#
-cnuc-1 | SUCCESS => {"ansible_facts": {"discovered_interpreter_python": "/usr/bin/python3"},"changed": false,"ping": "pong"}
-cnuc-2 | SUCCESS => {"ansible_facts": {"discovered_interpreter_python": "/usr/bin/python3"},"changed": false,"ping": "pong"}
-cnuc-3 | SUCCESS => {"ansible_facts": {"discovered_interpreter_python": "/usr/bin/python3"},"changed": false,"ping": "pong"}
-
-
-SUCCESS!!
-
-Proceed!!
-```
-
-#### 3.2) Run the Ansible playbook for installing Anthos Bare Metal on the GCE instances
-
-> **Note:** _This step can take upto **35 minutes** to complete for a setup with $MACHINE_COUNT=3_
-> - ***Pre-install configuration of the GCE instances:*** ~10 minutes</br>
-> - ***Installing Anthos BareMetal:*** ~20 minutes</br>
-> - ***Post-install configuration of the GCE instances:*** ~5 minutes
-
-```sh
-# this will configure the GCE instances with all the necessary tools, install Anthos BareMetal, install Anthos
-# Config Management and configure it to sync with the configs at $ROOT_REPO_URL/anthos-bm-edge-deployment/acm-config-sink
-ansible-playbook -i inventory cloud-full-install.yaml
+gcloud builds submit --config docker-build/cloudbuild.yaml docker-build/
 ```
 ```sh
 # -----------------------------------------------------#
@@ -195,11 +177,46 @@ ansible-playbook -i inventory cloud-full-install.yaml
 # -----------------------------------------------------#
 ...
 ...
-PLAY RECAP ********************************************************************************************************
-cnuc-1                     : ok=136  changed=106  unreachable=0    failed=0    skipped=33   rescued=0    ignored=8
-cnuc-2                     : ok=86   changed=67   unreachable=0    failed=0    skipped=71   rescued=0    ignored=2
-cnuc-3                     : ok=86   changed=67   unreachable=0    failed=0    skipped=71   rescued=0    ignored=2
+latest: digest: sha256:99ded20d221a0b2bcd8edf3372c8b1f85d6c1737988b240dd28ea1291f8b151a size: 4498
+DONE
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ID                                    CREATE_TIME                DURATION  SOURCE                                                                                         IMAGES                                                  STATUS
+2238baa2-1f41-440e-a157-c65900b7666b  2022-08-17T19:28:57+00:00  6M53S     gs://my_project_cloudbuild/source/1660764535.808019-69238d8c870044f0b4b2bde77a16111d.tgz  gcr.io/my_project/consumer-edge-install (+1 more)  SUCCESS
 ```
+
+#### 3.2) Generate the Ansible “inventory” file from template
+```sh
+envsubst < templates/inventory-cloud-example.yaml > inventory/gcp.yml
+```
+
+#### 3.3) Run the script that creates the docker container for installation
+```sh
+./install.sh
+```
+```sh
+# -----------------------------------------------------#
+#                   Expected Output                    #
+# -----------------------------------------------------#
+...
+...
+Check the values above and if correct, do you want to proceed? (y/N): y
+Starting the installation
+Pulling docker install image...
+
+==============================
+Starting the docker container. You will need to run the following 2 commands (cut-copy-paste)
+==============================
+1: ./scripts/health-check.sh
+2: ansible-playbook all-full-install.yml -i inventory
+3: Type 'exit' to exit the Docker shell after installation
+==============================
+Thank you for using the quick helper script!
+(you are now inside the Docker shell)
+```
+At this point you must be inside the docket container that was created based off
+of the image built earlier. You will trigger the ansible installation from
+inside this container.
+
 ---
 ### 4. Log in to the ABM kubernetes cluster in the Google Cloud console
 #### 4.1) Copy the utility script into the admin GCE instance and generate a token
