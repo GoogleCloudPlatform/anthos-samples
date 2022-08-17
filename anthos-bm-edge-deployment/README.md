@@ -33,18 +33,14 @@ _(including instructions for installing in an [Intel NUC](https://www.intel.com/
 ### Prerequisites
 
 - Make sure you have the following already installed in your workstation
-  - **[Python](https://www.python.org/)** [>=2.7]
-  - The following Python modules _(you can use the equivalent of `pip2` for `Python3`)_
-    - **ansible** _(install with `pip2 install ansible`)_
-    - **dnspython** _(install with `pip2 install dnspython`)_
-    - **requests** _(install with `pip2 install requests`)_
-    - **google-auth** _(install with `pip2 install google-auth`)_
-  - **[Ansible CLI tool](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)**
+  - **[Docker](https://www.docker.com/get-started/)**
   - **[Google Cloud SDK](https://cloud.google.com/sdk/docs/install#linux)** (aka: gcloud)
   - **envsubst** CLI tool _(usually already installed in *nix based OSes)_
-  - **[skaffold](https://skaffold.dev/docs/install/)** [>=1.30.0] _(Optional)_
-  - **[maven](https://maven.apache.org/install.html)** [>=3.6.3] _(Optional)_
-  - **[Java](https://www.oracle.com/java/technologies/downloads/#java11)** [11.*] _(Optional)_
+
+- _**Optional**_
+  - **[skaffold](https://skaffold.dev/docs/install/)** [>=1.30.0]
+  - **[maven](https://maven.apache.org/install.html)** [>=3.6.3]
+  - **[Java](https://www.oracle.com/java/technologies/downloads/#java11)** [11.*]
 
 > _**Note:** The prerequisites marked as _(Optional)_ are only required if you
 > want to modify the source for the [Point-Of-Sales](https://github.com/GoogleCloudPlatform/point-of-sale)

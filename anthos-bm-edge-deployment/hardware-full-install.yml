@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,10 +14,20 @@
 
 ---
 
-# Used as a simple entry to install ABM on ALL inventory
-
-- name: Install ABM on hardware inventory
-  import_playbook: hardware-full-install.yml
-
-- name: Install ABM on cloud inventory
-  import_playbook: cloud-full-install.yml
+# Installs Anthos Bare Metal on all inventory
+- hosts: workers
+  become: true
+  become_user: root
+  roles:
+    - validate
+    - google-tools
+    - update-automation
+    - ready-ubuntu
+    - setup-kvm
+    - abm-install
+    - abm-software
+    - abm-post-install
+    - abm-login-token
+  vars: []
+  tags:
+    - hardware
