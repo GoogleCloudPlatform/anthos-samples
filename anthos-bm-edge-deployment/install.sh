@@ -110,7 +110,7 @@ else
 fi
 
 # Check for GCP Inventory
-if [[ ! -f "./inventory/gcp.yml" ]]; then
+if [[ ! -f "./inventory/gcp.yaml" ]]; then
     pretty_print "WARNING: GCP Inventory file was not found. IF using GCE instances, this file MUST be setup and working." "WARN"
 else
     pretty_print "PASS: GCP Inventory file found"
@@ -214,7 +214,7 @@ if [[ "${proceed}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
     pretty_print "Starting the docker container. You will need to run the following 2 commands (cut-copy-paste)"
     pretty_print "=============================="
     pretty_print "1: ./scripts/health-check.sh"
-    pretty_print "2: ansible-playbook all-full-install.yml -i inventory"
+    pretty_print "2: ansible-playbook all-full-install.yaml -i inventory"
     pretty_print "3: Type 'exit' to exit the Docker shell after installation"
     pretty_print "=============================="
     pretty_print "Thank you for using the quick helper script!"

@@ -133,20 +133,16 @@ gcloud kms encrypt \
   --ciphertext-file build-artifacts/consumer-edge-machine.encrypted
 ```
 
-#### 2.3) Generate the environment configuration file `.envrc`
+#### 2.3) Generate the environment configuration file `.envrc` and source it
 Once created inspect the `.envrc` file to ensure that the environment variables
 have been replaced with the correct values you intend to use.
 
 ```sh
 envsubst < templates/envrc-template.sh > .envrc
-```
-
-#### 2.4) Source the `.envrc` file
-```sh
 source .envrc
 ```
 
-#### 2.5) Create the GCE instances where Anthos BareMetal will be installed
+#### 2.4) Create the GCE instances where Anthos BareMetal will be installed
 The output of this command will be stored in `./build-artifacts/gce-info`. It
 includes information about the public IP addresses of the GCE VMs and how to SSH
 into them. You can refer to this file later to find the necessary information.
@@ -159,7 +155,7 @@ into them. You can refer to this file later to find the necessary information.
 
 ---
 
-### 3. Install Anthos BareMetal with ansible
+### 3. Install Anthos on bare metal with ansible
 
 This phase involves the creation of the docker image for installation,
 generating the ansible inventory configuration settings and running the ansible
@@ -186,7 +182,7 @@ ID                                    CREATE_TIME                DURATION  SOURC
 
 #### 3.2) Generate the Ansible “inventory” file from template
 ```sh
-envsubst < templates/inventory-cloud-example.yaml > inventory/gcp.yml
+envsubst < templates/inventory-cloud-example.yaml > inventory/gcp.yaml
 ```
 
 #### 3.3) Run the script that creates the docker container for installation
@@ -207,7 +203,7 @@ Pulling docker install image...
 Starting the docker container. You will need to run the following 2 commands (cut-copy-paste)
 ==============================
 1: ./scripts/health-check.sh
-2: ansible-playbook all-full-install.yml -i inventory
+2: ansible-playbook all-full-install.yaml -i inventory
 3: Type 'exit' to exit the Docker shell after installation
 ==============================
 Thank you for using the quick helper script!
@@ -216,6 +212,42 @@ Thank you for using the quick helper script!
 At this point you must be inside the docket container that was created based off
 of the image built earlier. You will trigger the ansible installation from
 inside this container.
+
+#### 3.4) Verify access to the GCE VMs
+```sh
+./scripts/health-check.sh
+```
+```sh
+# -----------------------------------------------------#
+#                   Expected Output                    #
+# -----------------------------------------------------#
+cnuc-2 | SUCCESS => {"ansible_facts": {"discovered_interpreter_python": "/usr/bin/python3"},"changed": false,"ping": "pong"}
+cnuc-3 | SUCCESS => {"ansible_facts": {"discovered_interpreter_python": "/usr/bin/python3"},"changed": false,"ping": "pong"}
+cnuc-1 | SUCCESS => {"ansible_facts": {"discovered_interpreter_python": "/usr/bin/python3"},"changed": false,"ping": "pong"}
+```
+
+#### 3.5) Run the Ansible playbook for installing Anthos Bare Metal on the GCE instances
+> **Note:** _This step can take upto **35 minutes** to complete for a setup with $MACHINE_COUNT=3_
+> - ***Pre-install configuration of the GCE instances:*** ~10 minutes</br>
+> - ***Installing Anthos BareMetal:*** ~20 minutes</br>
+> - ***Post-install configuration of the GCE instances:*** ~5 minutes
+
+```sh
+# this will configure the GCE instances with all the necessary tools, install Anthos BareMetal, install Anthos
+# Config Management and configure it to sync with the configs at $ROOT_REPO_URL/anthos-bm-edge-deployment/acm-config-sink
+ansible-playbook all-full-install.yaml -i inventory
+```
+```sh
+# -----------------------------------------------------#
+#                   Expected Output                    #
+# -----------------------------------------------------#
+...
+...
+PLAY RECAP ********************************************************************************************************
+cnuc-1                     : ok=136  changed=106  unreachable=0    failed=0    skipped=33   rescued=0    ignored=8
+cnuc-2                     : ok=86   changed=67   unreachable=0    failed=0    skipped=71   rescued=0    ignored=2
+cnuc-3                     : ok=86   changed=67   unreachable=0    failed=0    skipped=71   rescued=0    ignored=2
+```
 
 ---
 ### 4. Log in to the ABM kubernetes cluster in the Google Cloud console

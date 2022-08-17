@@ -100,7 +100,7 @@ else
 	echo "Found exsiting container: $CONTAINER_URL"
 fi
 source .envrc
-envsubst < templates/inventory-cloud-example.yaml > inventory/gcp.yml
+envsubst < templates/inventory-cloud-example.yaml > inventory/gcp.yaml
 ##Ready to run ./install.sh
 echo "Ready to run !!!"
 echo "Execute 'source .envrc; ./install.sh'"

@@ -269,7 +269,7 @@
 
 ### Setup kubeconfig for all clusters
   - name: "Share kubeconfig with others in cluster"
-    include: share-kubeconfig.yml
+    include: share-kubeconfig.yaml
     tags:
     - abm-post-install
     - abm-install

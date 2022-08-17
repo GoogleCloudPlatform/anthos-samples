@@ -59,7 +59,7 @@
 
 # Check for ACM Operator
 - name: "Test for config-management operator presence"
-  include: kubectl-presence.yml
+  include: kubectl-presence.yaml
   vars:
     name: "config-management"
     type: "configmanagements.configmanagement.gke.io"
@@ -102,7 +102,7 @@
   - acm-config-management
 
 - name: "Test for config-management"
-  include: kubectl-presence.yml
+  include: kubectl-presence.yaml
   vars:
     name: "config-management"
     type: "configmanagements.configmanagement.gke.io"
@@ -146,7 +146,7 @@
   - acm-root-repo
 
 - name: "Test for Root Repo secret"
-  include: kubectl-presence.yml
+  include: kubectl-presence.yaml
   vars:
     name: "{{ root_repository_git_secret_name }}"
     type: "secrets"
@@ -175,7 +175,7 @@
   - acm-root-repo
 
 - name: "Test for Root Repo installed"
-  include: kubectl-presence.yml
+  include: kubectl-presence.yaml
   vars:
     name: "root-sync"
     type: "RootSync"

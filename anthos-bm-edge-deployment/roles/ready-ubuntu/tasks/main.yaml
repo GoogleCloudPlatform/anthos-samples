@@ -121,7 +121,7 @@
 ## TODO: This does not allow for multiple cnucs to be setup at one time
 ## TODO: This also does not skip non cnucs
 - name: "SSH Key access to other nodes"
-  include: setup-ssh-pub-key-access.yml
+  include: setup-ssh-pub-key-access.yaml
   tags:
   - abm-install
   - abm-ssh
@@ -146,13 +146,13 @@
   - docker
 
 - name: "Setup docker on host machine"
-  include: setup-docker-apt.yml
+  include: setup-docker-apt.yaml
   when: ( docker_version.stdout == "" or docker_version.stdout is version('20.9.0', '<') )
   tags:
   - docker
 
 - name: "Setup VLAN Interfaces on Physical Hosts"
-  include: setup-vlan-interfaces.yml
+  include: setup-vlan-interfaces.yaml
   when:
   - (setup_vlan == true) and (is_cloud_resource is undefined or is_cloud_resource == false)
   tags:

@@ -17,7 +17,7 @@
 # Used as a simple entry to install ABM on ALL inventory
 
 - name: Install ABM on hardware inventory
-  import_playbook: hardware-full-install.yml
+  import_playbook: hardware-full-install.yaml
 
 - name: Install ABM on cloud inventory
-  import_playbook: cloud-full-install.yml
+  import_playbook: cloud-full-install.yaml

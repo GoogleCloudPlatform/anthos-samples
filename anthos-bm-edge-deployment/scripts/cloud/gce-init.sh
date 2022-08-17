@@ -41,7 +41,7 @@ useradd -m -s /bin/bash -g users "${ANSIBLE_USER}"
 echo "${ANSIBLE_USER}  ALL=(ALL) NOPASSWD:ALL" | sudo tee "/etc/sudoers.d/${ANSIBLE_USER}"
 
 # 2. Copy/place/setup a authorized_keys from a GCP Secret under that user and under root
-gcloud secrets versions access latest --secret="${PROVISION_KEY_PUB_KEY}" > /tmp/install-pub-key.pub
+gcloud secrets versions access latest --secret="${SSH_KEY_SECRET_KEY}" > /tmp/install-pub-key.pub
 
 # 3. Setup a common password for root (or setup user to be sudoer)
 mkdir -p "/home/${ANSIBLE_USER}/.ssh"

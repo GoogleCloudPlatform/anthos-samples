@@ -13,7 +13,7 @@
 # limitations under the License.
 
 - name: "Test for Root Repo Ready"
-  include: kubectl-presence.yml
+  include: kubectl-presence.yaml
   vars:
     name: "root-reconciler"
     type: "deployment"
@@ -27,7 +27,7 @@
   - login-token
 
 - name: Display login token for server
-  include: get-login-token.yml
+  include: get-login-token.yaml
   when:
     - (primary_cluster_machine is defined)
     - (primary_cluster_machine == true)
