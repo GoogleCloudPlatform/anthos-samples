@@ -254,10 +254,10 @@ cnuc-3                     : ok=86   changed=67   unreachable=0    failed=0    s
 #### 4.1) Copy the utility script into the admin GCE instance and generate a token
 ```sh
 # Copy the utility scripts into the admin node of the cluster
-scp -i ~/.ssh/cnucs-cloud scripts/cloud/cnuc-k8s-login-setup.sh abm-admin@cnuc-1:
+scp -F ./build-artifacts/ssh-config scripts/cloud/cnuc-k8s-login-setup.sh abm-admin@cnuc-1:
 
 # SSH into the admin node of the cluster
-ssh -i ~/.ssh/cnucs-cloud abm-admin@cnuc-1
+ssh -F ./build-artifacts/ssh-config abm-admin@cnuc-1
 
 # execute the script and copy token that is printed out
 ./cnuc-k8s-login-setup.sh
