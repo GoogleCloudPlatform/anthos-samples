@@ -1,0 +1,49 @@
+
+# Name of the cluster
+cluster_name: "lenovo-1"
+# Used for logging/metrics
+machine_label: "lenovo-1"
+# Indicates that this is the primary machine in the cluster (only important for provisioning)
+primary_cluster_machine: true
+# Name of the "store" per the ACM repo
+acm_cluster_name: "{{ lookup('env', 'CLUSTER_ACM_NAME') | default('lenovo-1', True) }}"
+# This machine's IP
+control_plane_ip: "10.223.65.231"
+# The other IPs in the cluster
+control_plane_ips: [
+  "10.223.65.231",
+  "10.223.65.232",
+  "10.223.65.233"
+]
+# KubeAPI IP address
+control_plane_vip: "10.223.65.234"
+# Ingress (k8s) address, must be in LoadBalancer pool below
+ingress_vip: "10.223.65.235"
+# Load balancers created in this range
+load_balancer_pool_cidr: [
+  "10.223.65.235-10.223.65.244" # 3 IPs for LB + 1 Ingress
+]
+
+###
+###  ANG & VPN Details
+###
+network_gateway_group_install: true
+# Install MultiClusterConfig (needed for VPN)
+network_gateway_mcc: true
+# Egress IP
+egress_cluster_ip: "104.232.227.245" # `curl ifconfig.me`
+# Floating IP addresses for Network Gateway Group
+ang_floating_ips: [
+  "10.223.65.245",
+  "10.223.65.246"
+]
+# IP addresses of the VPN Gateways
+vpn_gateway_ips: [
+  "35.242.0.156",
+  "35.220.0.24"
+]
+# IKE secret
+ike_key_secret_value: "12345"
+
+# Install observability using Legacy agents (override)
+install_observability: false # skip observability on install

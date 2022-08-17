@@ -18,4 +18,13 @@ cluster_name: "edge-1"
 machine_label: "edge-3"
 
 # This machine's IP address
-control_plane_ip: "10.200.0.4"
+control_plane_ip: "192.168.3.12"
+
+# Ansible Pull Authenticaiton String
+ansible_pull_authentication_string: "{{scm_token_user}}:{{scm_token_token}}@"
+
+# Ansible Pull repo for Remote Execution
+ansible_pull_remote_execute_repo: "https://{{ ansible_pull_authentication_string | default('', true) }}gitlab.com/gcp-solutions-public/retail-edge/remote-command-repo.git"
+
+# Ansible pull repo to manage simplified drift
+ansible_pull_drift_repo: "https://{{ ansible_pull_authentication_string | default('', true) }}gitlab.com/gcp-solutions-public/retail-edge/drift-repo.git"

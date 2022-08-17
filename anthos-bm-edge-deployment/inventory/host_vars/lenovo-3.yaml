@@ -1,0 +1,7 @@
+# Name of the cluster
+cluster_name: "lenovo-1"
+# Used for logging/metrics
+machine_label: "lenovo-3"
+
+# This machine's IP address
+control_plane_ip: "10.223.65.233"

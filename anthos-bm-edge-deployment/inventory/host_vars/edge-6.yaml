@@ -18,4 +18,4 @@ cluster_name: "edge-4"
 machine_label: "edge-6"
 
 # This machine's IP address
-control_plane_ip: "10.200.0.4"
+control_plane_ip: "10.120.5.232"

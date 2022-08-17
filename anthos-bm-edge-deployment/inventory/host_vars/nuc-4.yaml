@@ -15,11 +15,11 @@
 # Name of the cluster
 cluster_name: "nuc-4"
 # Used for logging/metrics
-machine_label: "{{ cluster_name }}"
+machine_label: "nuc-4"
 # Indicates that this is the primary machine in the cluster (only important for provisioning)
 primary_cluster_machine: true
 # Name of the "store" per the ACM repo
-acm_cluster_name: "{{ cluster_name }}"
+acm_cluster_name: "{{ lookup('env', 'CLUSTER_ACM_NAME') | default('nuc-4', True) }}"
 # This machine's IP
 control_plane_ip: "192.168.1.14"
 # The other IPs in the cluster
@@ -35,4 +35,9 @@ ingress_vip: "192.168.1.141"
 # Load balancers created in this range
 load_balancer_pool_cidr: [
   "192.168.1.141-192.168.1.149"
+]
+# Floating IP addresses for Network Gateway Group (don't conflict with other IPs)
+ang_floating_ips: [
+  "192.168.1.20",
+  "192.168.1.21"
 ]
