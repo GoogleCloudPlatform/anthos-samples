@@ -12,9 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Variables associated with the physical NUC installation inventory
-ansible_user: abm-admin
-
 # automation setting for this is not a cloud resource
 is_cloud_resource: false
 
