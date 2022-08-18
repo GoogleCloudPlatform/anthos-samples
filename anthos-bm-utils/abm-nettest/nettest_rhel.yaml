@@ -33,7 +33,7 @@ spec:
     spec:
       containers:
       - name: echoserver
-        image: gcr.io/anthos-baremetal-release/simplehttpserver:v0.3.1__linux_amd64
+        image: gcr.io/anthos-baremetal-release/simplehttpserver:v0.3.2__linux_amd64
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
@@ -59,7 +59,7 @@ spec:
       hostNetwork: true
       containers:
       - name: echoserver
-        image: gcr.io/anthos-baremetal-release/simplehttpserver:v0.3.1__linux_amd64
+        image: gcr.io/anthos-baremetal-release/simplehttpserver:v0.3.2__linux_amd64
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
@@ -203,7 +203,7 @@ data:
             endpoint:
               namespace: nettest
               name: echoserver-non-hostnetwork
-        nodes:
+          nodes:
             endpoint:
               namespace: nettest
               name: echoserver-hostnetwork
@@ -248,7 +248,7 @@ metadata:
 spec:
   containers:
   - name: nettest
-    image: gcr.io/anthos-baremetal-release/nettest:v0.3.1__linux_amd64
+    image: gcr.io/anthos-baremetal-release/nettest:v0.3.2__linux_amd64
     imagePullPolicy: IfNotPresent
     command: ["/nettest"]
     args: ["-v=2", "-alsologtostderr", "-engine_config=/cfg/engine.yaml"]
