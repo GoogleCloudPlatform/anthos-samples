@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC2059
 # Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -54,16 +55,16 @@ function pretty_print() {
 
     case "$LEVEL" in
         "ERROR")
-            echo -e "$(printf "%s%s%s" "${ERROR}" "${MSG}" "$ENDCOLOR")"
+            echo -e "$(printf "${ERROR}${MSG}$ENDCOLOR")"
             ;;
         "WARN")
-            echo -e "$(printf "%s%s%s" "${WARN}" "${MSG}" "$ENDCOLOR")"
+            echo -e "$(printf "${WARN}${MSG}$ENDCOLOR")"
             ;;
         "INFO")
-            echo -e "$(printf "%s%s%s" "${INFO}" "${MSG}" "$ENDCOLOR")"
+            echo -e "$(printf "${INFO}${MSG}$ENDCOLOR")"
             ;;
         "DEBUG")
-            echo -e "$(printf "%s%s%s" "${DEBUG}" "${MSG}" "$ENDCOLOR")"
+            echo -e "$(printf "${DEBUG}${MSG}$ENDCOLOR")"
             ;;
         *)
             echo "NO MATCH"
