@@ -27,7 +27,7 @@ fi
 # For now this means we will require that the user login via gcloud auth login
 # This check will bail if a gserviceaccount is found in use
 GSERVICEACCOUNT=$(gcloud auth list --format=json | grep -B 1 ACTIVE | grep gserviceaccount)
-if [[ ! -z "${GSERVICEACCOUNT}" ]]; then
+if [[ -n "${GSERVICEACCOUNT}" ]]; then
 	echo "Please login as an admin user account using the following command -- 'gcloud auth login --no-launch-browser'"
 	echo "Copy/Paste the link into a browser where you are authenticated with admin level permissions for the project!!"
 	exit 1
@@ -49,20 +49,21 @@ sudo apt update
 sudo apt -y install docker-ce docker-ce-cli containerd.io
 sudo apt -y install jq -y
 sudo apt -y install unzip direnv
-sudo usermod -aG docker $(whoami)
+sudo usermod -aG docker "$(whoami)"
 sudo chmod 666 /var/run/docker.sock
 echo "Finished Docker setup..."
-#mv algsa-key.json creds-gcp.json
-##Instal GS
-#yes Y | gcloud secrets create gcs-auth-secret
-#gcloud secrets versions add gcs-auth-secret --data-file="creds-gcp.json"
+# mv algsa-key.json creds-gcp.json
+## Install GS
+# yes Y | gcloud secrets create gcs-auth-secret
+# gcloud secrets versions add gcs-auth-secret --data-file="creds-gcp.json"
 
 echo "Adding direnv hook to bask & allowing direnv for the current direction"
-echo 'eval "$(direnv hook bash)"' >> ~/.bashrc
+echo "eval $(direnv hook bash)" >> ~/.bashrc
 direnv allow
+# shellcheck disable=SC1090
 source ~/.bashrc
 
-##Begin setting up to run  ./install
+## Begin setting up to run  ./install
 if [[ ! -f "./build-artifacts/consumer-edge-machine" ]]; then
 	echo "Creating SSH keys consumer-edge-machine"
 	ssh-keygen -o -a 100 -t ed25519 -f ./build-artifacts/consumer-edge-machine -N ''
@@ -70,7 +71,9 @@ else
 	echo "Found existing ./build-artifacts/consumer-edge-machine, skipping creation"
 fi
 
-export QL_PROJECT_ID=$(gcloud config get-value project 2> /dev/null)
+PID=$(gcloud config get-value project 2> /dev/null)
+export QL_PROJECT_ID=$PID
+
 if [[ -z "${QL_PROJECT_ID}" ]]; then
         echo "Project ID not configured for gcloud. Please set project with 'gcloud config set project <project-id>'"
         exit 1
@@ -79,15 +82,17 @@ if [[ -z "${QL_PROJECT_ID}" ]]; then
 fi
 export QL_ROOT_REPO="https://gitlab.com/gcp-solutions-public/retail-edge/root-repo-edge-workshop"
 
-echo "##Running gcloud config set project $QL_PROJECT_ID"
-gcloud config set project $QL_PROJECT_ID
-echo "##Running yes Y | gcloud auth configure-docker"
+echo "## Running gcloud config set project $QL_PROJECT_ID"
+gcloud config set project "$QL_PROJECT_ID"
+echo "## Running yes Y | gcloud auth configure-docker"
 yes Y | gcloud auth configure-docker
 
 
 envsubst < templates/envrc-template.sh > .envrc
 sed -i "s/PROJECT_ID=.*/PROJECT_ID=\"$QL_PROJECT_ID\"/g" .envrc
 #sed -i "s,ROOT_REPO_URL=.*,ROOT_REPO_URL=\"$QL_ROOT_REPO\",g" .envrc
+
+# shellcheck disable=SC1091
 source .envrc
 
 yes Y | ./scripts/create-primary-gsa.sh
@@ -100,21 +105,26 @@ if [[ ! -f "./build-artifacts/consumer-edge-machine.encrypted" ]]; then
 else
  	echo "Found existing ./build-artifacts/consumer-edge-machine.encrypted, skipping creation"
 fi
+
 # Create the 3 cnuc VMs
+# shellcheck disable=SC1091
 source .envrc
 ./scripts/cloud/create-cloud-gce-baseline.sh -c 3
 
-export CONTAINER_URL=$(gcloud container images list --repository=gcr.io/$PROJECT_ID --format="value(name)" --filter="name~consumer-edge-install")
+C_URL=$(gcloud container images list --repository=gcr.io/"$PROJECT_ID" --format="value(name)" --filter="name~consumer-edge-install")
+export CONTAINER_URL=$C_URL
 if [[ -z "$CONTAINER_URL" ]]; then
-	cd docker-build
+	cd docker-build || exit
 	echo "Starting Cloud Build Install Container!"
 	gcloud builds submit --config cloudbuild.yaml .
 	cd ..
 else
 	echo "Found exsiting container: $CONTAINER_URL"
 fi
+
+# shellcheck disable=SC1091
 source .envrc
 envsubst < templates/inventory-cloud-example.yaml > inventory/gcp.yaml
-##Ready to run ./install.sh
+## Ready to run ./install.sh
 echo "Ready to run !!!"
 echo "Execute 'source .envrc; ./install.sh'"

@@ -45,18 +45,18 @@ if [[ -z "${EXISTS}" ]]; then
   gcloud iam service-accounts create ${GSA_NAME} \
     --description="GSA used on each Target machine to make gcloud commands" \
     --display-name="target-machine-gsa" \
-    --project ${PROJECT_ID}
+    --project "${PROJECT_ID}"
 else
   if [[ "${EXISTS}" =~ .*"disabled".* ]]; then
     # Found GSA is disabled, enable
-    gcloud iam service-accounts enable ${GSA_EMAIL} --project ${PROJECT_ID}
+    gcloud iam service-accounts enable "${GSA_EMAIL}" --project "${PROJECT_ID}"
   fi
   # otherwise, no need to do anything
 fi
 
 # FIXME: These are not specific to GSA creation, but necessary for project
 # setup (future, this will all be terraform)
-gcloud services enable --project ${PROJECT_ID} \
+gcloud services enable --project "${PROJECT_ID}" \
   cloudkms.googleapis.com \
   compute.googleapis.com \
   containerregistry.googleapis.com \
@@ -107,9 +107,9 @@ declare -a ROLES=(
   "roles/storage.objectViewer"
 )
 
-for role in ${ROLES[@]}; do
+for role in "${ROLES[@]}"; do
   echo "Adding ${role}"
-  gcloud projects add-iam-policy-binding ${PROJECT_ID} \
+  gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
     --member="serviceAccount:${GSA_EMAIL}" \
     --role="${role}" \
     --no-user-output-enabled
@@ -122,8 +122,8 @@ echo -e "\n====================\n"
 read -r -p "Create a new key for GSA? [y/N] " response
 if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
   gcloud iam service-accounts keys create ${KEY_LOCATION} \
-    --iam-account=${GSA_EMAIL} \
-    --project ${PROJECT_ID}
+    --iam-account="${GSA_EMAIL}" \
+    --project "${PROJECT_ID}"
 
   # reducing OS visibility to read-only for current user
   chmod 400 ${KEY_LOCATION}

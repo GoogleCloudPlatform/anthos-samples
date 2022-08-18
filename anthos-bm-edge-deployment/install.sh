@@ -54,16 +54,16 @@ function pretty_print() {
 
     case "$LEVEL" in
         "ERROR")
-            echo -e $(printf "${ERROR}${MSG}$ENDCOLOR")
+            echo -e "$(printf "%s%s%s" "${ERROR}" "${MSG}" "$ENDCOLOR")"
             ;;
         "WARN")
-            echo -e $(printf "${WARN}${MSG}$ENDCOLOR")
+            echo -e "$(printf "%s%s%s" "${WARN}" "${MSG}" "$ENDCOLOR")"
             ;;
         "INFO")
-            echo -e $(printf "${INFO}${MSG}$ENDCOLOR")
+            echo -e "$(printf "%s%s%s" "${INFO}" "${MSG}" "$ENDCOLOR")"
             ;;
         "DEBUG")
-            echo -e $(printf "${DEBUG}${MSG}$ENDCOLOR")
+            echo -e "$(printf "%s%s%s" "${DEBUG}" "${MSG}" "$ENDCOLOR")"
             ;;
         *)
             echo "NO MATCH"
@@ -146,7 +146,7 @@ else
 fi
 
 # Check for GCR docker credentials helper
-HAS_GCR=$(cat ${HOME}/.docker/config.json | grep "gcloud")
+HAS_GCR=$(grep "gcloud" "${HOME}/.docker/config.json")
 
 if [[ -z "${HAS_GCR}" ]]; then
     pretty_print "Authorizing docker for gcr.io"
@@ -207,18 +207,16 @@ if [[ "${ERROR}" -eq 1 ]]; then
 fi
 
 echo ""
-read -p "Check the values above and if correct, do you want to proceed? (y/N): " proceed
+read -rp "Check the values above and if correct, do you want to proceed? (y/N): " proceed
 
 if [[ "${proceed}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
 
     pretty_print "Starting the installation"
-
     pretty_print "Pulling docker install image..."
+    docker pull "gcr.io/${PROJECT_ID}/consumer-edge-install:latest"
+    RETURN=$?
 
-
-    RESULT=$(docker pull gcr.io/${PROJECT_ID}/consumer-edge-install:latest)
-
-    if [[ $? -gt 0 ]]; then
+    if [[ $RETURN -gt 0 ]]; then
         pretty_print "ERROR: Cannot pull Consumer Edge Install image"
         exit 1
     fi
@@ -236,9 +234,10 @@ if [[ "${proceed}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
     pretty_print " "
 
     # Running docker image
-    docker run -e PROJECT_ID="${PROJECT_ID}" -v "$(pwd):/var/consumer-edge-install:ro" -it gcr.io/${PROJECT_ID}/consumer-edge-install:latest
+    docker run -e PROJECT_ID="${PROJECT_ID}" -v "$(pwd):/var/consumer-edge-install:ro" -it "gcr.io/${PROJECT_ID}/consumer-edge-install:latest"
+    RETURN=$?
 
-    if [[ $? -gt 0 ]]; then
+    if [[ $RETURN -gt 0 ]]; then
         pretty_print "ERROR: Docker container cannot open."
         exit 1
     fi

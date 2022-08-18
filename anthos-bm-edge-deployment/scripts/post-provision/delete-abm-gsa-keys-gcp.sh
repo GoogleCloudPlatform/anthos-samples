@@ -20,7 +20,7 @@
 ### This should ONLY be used when you know the explicit reason why you're doing this
 ###
 
-read -p "This is a destructive operation meant for advanced users only. Proceed? (any character other than 'Y' will exit): " response
+read -rp "This is a destructive operation meant for advanced users only. Proceed? (any character other than 'Y' will exit): " response
 
 if [ "$response" != "Y" ]; then
     echo 'Canceling...'
@@ -39,16 +39,16 @@ GSAs=(
 
 for GSA in "${GSAs[@]}"
 do
-    KEYS=( $(gcloud iam service-accounts keys list --iam-account=$GSA --format="value(name)" --managed-by="user" --project="${PROJECT_ID}") )
+    KEYS=( "$(gcloud iam service-accounts keys list --iam-account="$GSA" --format="value(name)" --managed-by="user" --project="${PROJECT_ID}")" )
     echo "Removing ${#KEYS[@]} keys for: $GSA"
     for KEY in "${KEYS[@]}"
     do
-        gcloud iam service-accounts keys delete $KEY --iam-account=$GSA --quiet --project="${PROJECT_ID}"
+        gcloud iam service-accounts keys delete "$KEY" --iam-account="$GSA" --quiet --project="${PROJECT_ID}"
     done
     # # Remove the Secret Manager version (disable it)
     GSA_SECRET_KEY_NAME="${GSA%%@*}"
 
-    SECRET_VERSIONS=( $(gcloud secrets versions list ${GSA_SECRET_KEY_NAME} --format="value(name)" --filter=state=enabled) )
+    SECRET_VERSIONS=( "$(gcloud secrets versions list "${GSA_SECRET_KEY_NAME}" --format="value(name)" --filter=state=enabled)" )
     for SECRET_VERSION in "${SECRET_VERSIONS[@]}"
     do
         gcloud secrets versions disable "${SECRET_VERSION}" --secret="${GSA_SECRET_KEY_NAME}"

@@ -25,7 +25,7 @@
 ## -- is used in case the directory name starts with a -
 PREFIX_DIR=$(dirname -- "$0")
 WORKDIR=$(pwd)
-source ${PREFIX_DIR}/gce-helper.vars
+source "${PREFIX_DIR}"/gce-helper.vars
 
 # Defaults
 GCE_COUNT=1
@@ -44,6 +44,7 @@ do
         s) CLUSTER_START_INDEX="${OPTARG#*=}";;
         t) PREEMPTIBLE_OPTION="--preemptible";;
         z) ZONE="${OPTARG#*=}";;
+        *) usage;;
     esac
 done
 
@@ -130,7 +131,6 @@ fi
 
 if [[ "${ERROR}" -eq 1 ]]; then
     usage
-    exit 1
 fi
 
 echo "GCE_COUNT: ${GCE_COUNT}"
@@ -138,7 +138,7 @@ echo "PROJECT_ID: ${PROJECT_ID}"
 echo "START_INDEX: ${CLUSTER_START_INDEX}"
 echo "ZONE: ${ZONE}"
 
-if [[ ! -z "$PREEMPTIBLE_OPTION" ]]; then
+if [[ -n "$PREEMPTIBLE_OPTION" ]]; then
     echo "NOTE: USING PREEMPTIBLE MACHINE. The GCE will be up at most 24h and will need to be re-created and re-provisioned. This option keeps the costs of testing/trying ABM Retail Edge to a minimum"
 fi
 
@@ -173,26 +173,26 @@ if [[ -z "${FIREWALLS}" ]]; then
     gcloud compute firewall-rules create vxlan-egress \
         --allow all \
         --direction=EGRESS \
-        --network=${NETWORK} \
+        --network="${NETWORK}" \
         --priority=900
 
     gcloud compute firewall-rules create vxlan-ingress \
         --allow all \
         --direction=INGRESS \
-        --network=${NETWORK} \
+        --network="${NETWORK}" \
         --priority=900 \
         --source-ranges="10.0.0.0/8"
 fi
 
 # setup default compute to view secrets and GCS buckets
-PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID --format="value(projectNumber)")
+PROJECT_NUMBER=$(gcloud projects describe "$PROJECT_ID" --format="value(projectNumber)")
 echo "Adding roles/secretmanager.secretAccessor and roles/storage.objectViewer to default compute service account..."
 
-gcloud projects add-iam-policy-binding $PROJECT_ID \
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
     --member="serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
     --role="roles/secretmanager.secretAccessor" --no-user-output-enabled
 
-gcloud projects add-iam-policy-binding $PROJECT_ID \
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
     --member="serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
     --role="roles/storage.objectViewer" --no-user-output-enabled
 
@@ -200,7 +200,7 @@ gcloud projects add-iam-policy-binding $PROJECT_ID \
 setup_init_bucket
 
 # Create backup bucket for volume backups
-setup_init_bucket ${BACKUP_BUCKET_NAME} ${PROJECT_ID}
+setup_init_bucket "${BACKUP_BUCKET_NAME}" "${PROJECT_ID}"
 
 # Copy the init script to bucket for GCE startup
 copy_init_script

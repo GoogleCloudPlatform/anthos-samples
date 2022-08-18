@@ -26,6 +26,7 @@
 
 # Use the path to this script to determine the path to gce-helper.vars
 PREFIX_DIR=$(dirname -- "$0")
+# shellcheck disable=SC1091
 source "${PREFIX_DIR}/cloud/gce-helper.vars"
 
 if [[ ! -f "./build-artifacts/consumer-edge-machine.pub" ]]; then
@@ -35,7 +36,7 @@ fi
 
 SSH_KEY="./build-artifacts/consumer-edge-machine.pub"
 
-if [[ ! -z $1 ]]; then
+if [[ -n $1 ]]; then
     # any parameter passed will trigger ONLY the /etc/hosts format for cnucs
     display_ip_host_format
 else

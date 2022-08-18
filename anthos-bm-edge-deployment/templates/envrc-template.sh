@@ -1,3 +1,4 @@
+#!/bin/bash
 # Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,7 +15,8 @@
 
 
 # GSA Key used for provisioning (result of running ./scripts/create-primary-gsa.sh)
-export LOCAL_GSA_FILE=$(pwd)/build-artifacts/consumer-edge-gsa.json
+LOCAL_GSA_FILE=$(pwd)/build-artifacts/consumer-edge-gsa.json
+export LOCAL_GSA_FILE
 # GCP Project ID
 export PROJECT_ID="$PROJECT_ID"
 # Bucket to store cluster snapshot information

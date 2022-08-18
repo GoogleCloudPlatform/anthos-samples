@@ -14,7 +14,8 @@
 # limitations under the License.
 
 # Use gcloud to pull active project Id
-export PROJECT_ID=$(gcloud projects list --format=json | jq -r ".[0] .projectId")
+PROJECT_ID=$(gcloud projects list --format=json | jq -r ".[0] .projectId")
+export PROJECT_ID
 export ZONE="us-west1-b"
 
 read -p "Is the GCP Zone $ZONE acceptable for deployment? (Y/N) " -n 1 -r
@@ -28,13 +29,13 @@ fi
 gcloud config set compute/zone $ZONE
 
 # Disable Policies without Constraints
-gcloud beta resource-manager org-policies disable-enforce compute.requireShieldedVm --project=$PROJECT_ID
-gcloud beta resource-manager org-policies disable-enforce compute.requireOsLogin --project=$PROJECT_ID
-gcloud beta resource-manager org-policies disable-enforce iam.disableServiceAccountKeyCreation --project=$PROJECT_ID
-gcloud beta resource-manager org-policies disable-enforce iam.disableServiceAccountKeyUpload --project=$PROJECT_ID
-gcloud beta resource-manager org-policies disable-enforce iam.disableServiceAccountCreation --project=$PROJECT_ID
-gcloud beta resource-manager org-policies disable-enforce iam.automaticIamGrantsForDefaultServiceAccounts --project=$PROJECT_ID
-gcloud beta resource-manager org-policies disable-enforce compute.disableNestedVirtualization --project=$PROJECT_ID
+gcloud beta resource-manager org-policies disable-enforce compute.requireShieldedVm --project="$PROJECT_ID"
+gcloud beta resource-manager org-policies disable-enforce compute.requireOsLogin --project="$PROJECT_ID"
+gcloud beta resource-manager org-policies disable-enforce iam.disableServiceAccountKeyCreation --project="$PROJECT_ID"
+gcloud beta resource-manager org-policies disable-enforce iam.disableServiceAccountKeyUpload --project="$PROJECT_ID"
+gcloud beta resource-manager org-policies disable-enforce iam.disableServiceAccountCreation --project="$PROJECT_ID"
+gcloud beta resource-manager org-policies disable-enforce iam.automaticIamGrantsForDefaultServiceAccounts --project="$PROJECT_ID"
+gcloud beta resource-manager org-policies disable-enforce compute.disableNestedVirtualization --project="$PROJECT_ID"
 
 # now loop and fix policies with  constraints in Argolis 
 # Inner Loop - Loop Through Policies with Constraints
@@ -52,7 +53,7 @@ constraint: $policy
 listPolicy:
  allValues: ALLOW
 EOF
-    gcloud resource-manager org-policies set-policy new_policy.yaml --project=$PROJECT_ID
+    gcloud resource-manager org-policies set-policy new_policy.yaml --project="$PROJECT_ID"
 done
 
 # make "default" network check to see if it doesnt exist
@@ -87,7 +88,7 @@ do
 	# Above outpues "name1 name2 name3"
 	IFS="|" read -r -a array <<< "$fw_rule"
 	echo "gcloud compute firewall-rules create ${array[0]} --allow ${array[1]}"
-	gcloud compute firewall-rules create ${array[0]} --allow ${array[1]}
+	gcloud compute firewall-rules create "${array[0]}" --allow "${array[1]}"
 done
 
 # Loop to implement 10.0.0.0/8 FW rules for internal access
@@ -97,7 +98,7 @@ do
 	# Above outpues "name1 name2 name3"
 	IFS="|" read -r -a array <<< "$fw_rule"
 	echo "gcloud compute firewall-rules create ${array[0]} --allow ${array[1]} --source-ranges='10.0.0.0/8'"
-	gcloud compute firewall-rules create ${array[0]} --allow ${array[1]} --source-ranges="10.0.0.0/8"
+	gcloud compute firewall-rules create "${array[0]}" --allow "${array[1]}" --source-ranges="10.0.0.0/8"
 done
 
 
@@ -110,7 +111,7 @@ gcloud compute instances create bastion-1 --machine-type=e2-medium \
     --zone="${ZONE}" \
     --network-interface=network-tier=PREMIUM,subnet=default --metadata=enable-oslogin=true \
     --provisioning-model=STANDARD --scopes=https://www.googleapis.com/auth/cloud-platform \
-    --create-disk=mode=rw,size=40,type=projects/${PROJECT_ID}/zones/${ZONE}/diskTypes/pd-balanced \
+    --create-disk=mode=rw,size=40,type=projects/"${PROJECT_ID}"/zones/"${ZONE}"/diskTypes/pd-balanced \
     --no-shielded-secure-boot --shielded-vtpm --shielded-integrity-monitoring \
     --reservation-affinity=any --provisioning-model=SPOT
 
