@@ -68,10 +68,5 @@ sudo mkdir -p /var/local/gh-runner
 echo "All dependencies have been installed."
 echo "You have to download the Service Account key into this host, store it under /var/local/gh-runner and give it 444 permissions"
 echo "
-  > gcloud auth login
-  > gcloud iam service-accounts keys create sa-key.json --iam-account=gh-actions-anthos-samples-sa@anthos-gke-samples-ci.iam.gserviceaccount.com
-  > sudo mv ./sa-key.json /var/local/gh-runner/
-  > sudo chmod 444 /var/local/gh-runner/sa-key.json
-  > sudo bash -c 'echo export GOOGLE_APPLICATION_CREDENTIALS=/var/local/gh-runner/sa-key.json > /var/local/gh-runner/env_vars'
-  > sudo bash -c 'echo export GOOGLE_CLOUD_PROJECT=anthos-gke-samples-ci >> /var/local/gh-runner/env_vars'
+  > sudo bash -c 'echo export GOOGLE_CLOUD_PROJECT=anthos-gke-samples-ci > /var/local/gh-runner/env_vars'
 "

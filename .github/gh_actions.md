@@ -6,7 +6,11 @@ The actions runners for this repository are hosted in the `anthos-gke-samples-ci
 - The runner VMs should:
   - be at least n1-standard-4
   - have atleast 50GB persistent disk
-  - use custom service account with only `read` permissions to the `Compute Engine API`
+  - use the `Compute Engine default service account` with `Set access to each API` option;
+    only change the permissions under **Compute Engine** to **Read Only**, leave
+    the rest as is
+
+    ![Service Account setup for GitHub actions runner](action-runner-sa.png)
 
 - Once the VM for the runner is created
   - SSH into new VM through Google Cloud Console
