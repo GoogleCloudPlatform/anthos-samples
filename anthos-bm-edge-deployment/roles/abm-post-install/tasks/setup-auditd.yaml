@@ -26,7 +26,7 @@
 - name: Copy base auditd rules
   become: yes
   template:
-    src: audit.rules.tf
+    src: audit.rules.tml
     dest: "/etc/audit/rules.d/audit.rules"
     owner: root
     group: root
@@ -39,7 +39,7 @@
 - name: Copy times auditd rules
   become: yes
   template:
-    src: audit_times.rules.tf
+    src: audit_times.rules.tml
     dest: "/etc/audit/rules.d/times.rules"
     owner: root
     group: root
@@ -52,7 +52,7 @@
 - name: Copy system_locale auditd rules
   become: yes
   template:
-    src: audit_system_locale.rules.tf
+    src: audit_system_locale.rules.tml
     dest: "/etc/audit/rules.d/system_locale.rules"
     owner: root
     group: root
@@ -65,7 +65,7 @@
 - name: Copy identity auditd rules
   become: yes
   template:
-    src: audit_identity.rules.tf
+    src: audit_identity.rules.tml
     dest: "/etc/audit/rules.d/identity.rules"
     owner: root
     group: root
@@ -78,7 +78,7 @@
 - name: Copy logins auditd rules
   become: yes
   template:
-    src: audit_logins.rules.tf
+    src: audit_logins.rules.tml
     dest: "/etc/audit/rules.d/logins.rules"
     owner: root
     group: root
@@ -91,7 +91,7 @@
 - name: Copy permissions auditd rules
   become: yes
   template:
-    src: audit_permissions.rules.tf
+    src: audit_permissions.rules.tml
     dest: "/etc/audit/rules.d/permissions.rules"
     owner: root
     group: root
@@ -104,7 +104,7 @@
 - name: Copy file_change auditd rules
   become: yes
   template:
-    src: audit_file_change.rules.tf
+    src: audit_file_change.rules.tml
     dest: "/etc/audit/rules.d/file_change.rules"
     owner: root
     group: root
@@ -117,7 +117,7 @@
 - name: Copy scope auditd rules
   become: yes
   template:
-    src: audit_scope.rules.tf
+    src: audit_scope.rules.tml
     dest: "/etc/audit/rules.d/scope.rules"
     owner: root
     group: root
@@ -130,7 +130,7 @@
 - name: Copy sudo auditd rules
   become: yes
   template:
-    src: audit_sudo.rules.tf
+    src: audit_sudo.rules.tml
     dest: "/etc/audit/rules.d/sudo.rules"
     owner: root
     group: root
@@ -143,7 +143,7 @@
 - name: Copy modules auditd rules
   become: yes
   template:
-    src: audit_modules.rules.tf
+    src: audit_modules.rules.tml
     dest: "/etc/audit/rules.d/modules.rules"
     owner: root
     group: root
