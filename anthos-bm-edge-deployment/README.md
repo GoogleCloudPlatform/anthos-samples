@@ -231,6 +231,7 @@ cnuc-1 | SUCCESS => {"ansible_facts": {"discovered_interpreter_python": "/usr/bi
 This script will configure the GCE instances with all the necessary tools,
 install Anthos BareMetal, install Anthos Config Management and configure it to
 sync with the configs at `$ROOT_REPO_URL/anthos-bm-edge-deployment/acm-config-sink`.
+Upon completion you will see the `Login Token` for the cluster printed on screen.
 
 > **Note:** _This step can take upto **35 minutes** to complete for a setup with $MACHINE_COUNT=3_
 > - ***Pre-install configuration of the GCE instances:*** ~10 minutes</br>
@@ -238,7 +239,7 @@ sync with the configs at `$ROOT_REPO_URL/anthos-bm-edge-deployment/acm-config-si
 > - ***Post-install configuration of the GCE instances:*** ~5 minutes
 
 ```sh
-ansible-playbook all-full-install.yaml -i inventory
+ansible-playbook all-full-install.yaml -i inventory | tee ./build-artifacts/ansible-run.log
 ```
 ```sh
 # -----------------------------------------------------#
@@ -246,10 +247,25 @@ ansible-playbook all-full-install.yaml -i inventory
 # -----------------------------------------------------#
 ...
 ...
-PLAY RECAP ********************************************************************************************************
-cnuc-1                     : ok=206  changed=157  unreachable=0    failed=0    skipped=47   rescued=0    ignored=12
-cnuc-2                     : ok=129  changed=100  unreachable=0    failed=0    skipped=107  rescued=0    ignored=2
-cnuc-3                     : ok=129  changed=100  unreachable=0    failed=0    skipped=107  rescued=0    ignored=2
+TASK [abm-login-token : Display login token] **********************************************************************************************************************************************************************************************************************************************************************************************************************
+ok: [cnuc-1] => {
+    "msg": "eyJhbGciOiJSUzI1NiIsImtpZCI6Imk2X3duZ3BzckQyWmszb09sZHFMN0FoWU9mV1kzOWNGZzMyb0x2WlMyalkifQ.ey
+mljZS1hY2NvdW50LnVpZCI6IjQwYWQxNDk2LWM2MzEtNDhiNi05YmUxLWY5YzgwODJjYzgzOSIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYW
+iZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6ImVkZ2Etc2EtdG9rZW4tc2R4MmQiLCJrdWJlcm5ldGVzLmlvL3Nl
+cnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoiZWRnYS1zYSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2Vyd
+4CwanGlof6s-fbu8IUy1_bTgCminylNKb3VudC5uYW1lIjoiZWRnYS1zYSIsImt1YmVybmV0ZXuaP-hDEKURb5O6IxulTXWH6dxYxg66x
+Njb3VudDpkZWZhdWx0OmVkZ2Etc2EifQ.IXqXwX5pg9RIyNHJZTM6cBKTEWOMfQ4IQQa398f0qwuYlSe12CA1l6P8TInf0S1aood7NJWx
+xe-5ojRvcG8pdOuINq2yHyQ5hM7K7R4h2qRwUznRwuzOp_eXC0z0Yg7VVXCkaqnUR1_NzK7qSu4LJcuLzkCYkFdSnvKIQABHSvfvZMrJP
+Jlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJkZWZhdWx0Iiwia3V
+MgyLOd9FJyhZgjbf-a-3cbDci5YABEzioJlHVnV8GOX_q-MnIagA9-t1KpHA"
+}
+skipping: [cnuc-2]
+skipping: [cnuc-3]
+
+PLAY RECAP ********************************************************************************************************************************************************************************************************************************************************************************************************************************************************
+cnuc-1                     : ok=205  changed=156  unreachable=0    failed=0    skipped=48   rescued=0    ignored=12
+cnuc-2                     : ok=128  changed=99   unreachable=0    failed=0    skipped=108  rescued=0    ignored=2
+cnuc-3                     : ok=128  changed=99   unreachable=0    failed=0    skipped=108  rescued=0    ignored=2
 ```
 
 ---
@@ -269,91 +285,20 @@ cluster gets `Synced` with the configuration inside the
 and [`console-cluster-reader-sa.yaml`](./acm-config-sink/namespaces/default/console-cluster-reader-sa.yaml)
 files inside the `acm-config-sink` directory describe what these resources are.
 
-You must run the following steps from inside the docker container that is
-created in the [earlier step](#33-run-the-script-that-creates-the-docker-container-for-installation).
-If you have exited the container, then run `./install.sh` again to enter into it.
+As a last step, the ansible script generates the `Secret` that holds the token.
+The `Login Token` for the cluster you created will be printed on screen once the
+ansible script from the [previous step](#35-run-the-ansible-playbook-for-installing-anthos-bare-metal-on-the-gce-instances)
+completes. If you don't have access to the console output anymore, check the log
+file at `./build-artifacts/ansible-run.log` to get your token. You may also run
+the following ansible playbook to fetch the token again.
 
-#### 4.1) Verify Anthos Config Management Sync
-
-```sh
-# SSH into the admin node of the cluster
-ssh -F ./build-artifacts/ssh-config abm-admin@cnuc-1
-
-# execute the following command from inside the cnuc-1 node
-nomos status
-```
-```sh
-# -----------------------------------------------------#
-#                   Expected Output                    #
-# -----------------------------------------------------#
-Connecting to clusters...
-
-*cnuc-1-admin@cnuc-1
-  --------------------
-  <root>:root-sync   https://github.com/Shabirmean/anthos-samples/anthos-bm-edge-deployment/acm-config-sink@main
-  SYNCED             f46e7d226d3d7f9e5d0b7f068d818a186508f50f
-  Managed resources:
-     NAMESPACE   NAME                                                                    STATUS    SOURCEHASH
-                 clusterrole.rbac.authorization.k8s.io/cloud-console-reader              Current   f46e7d2
-                 clusterrolebinding.rbac.authorization.k8s.io/cloud-console-reader       Current   f46e7d2
-                 clusterrolebinding.rbac.authorization.k8s.io/cluster-admin              Current   f46e7d2
-                 clusterrolebinding.rbac.authorization.k8s.io/console-view-rolebinding   Current   f46e7d2
-                 namespace/default                                                       Current   f46e7d2
-                 namespace/pos                                                           Current   f46e7d2
-     default     serviceaccount/console-cluster-reader                                   Current   f46e7d2
-     pos         configmap/service-configs                                               Current   f46e7d2
-     pos         deployment.apps/api-server                                              Current   f46e7d2
-     pos         deployment.apps/inventory                                               Current   f46e7d2
-     pos         deployment.apps/payments                                                Current   f46e7d2
-     pos         service/api-server-lb                                                   Current   f46e7d2
-     pos         service/api-server-svc                                                  Current   f46e7d2
-     pos         service/inventory-svc                                                   Current   f46e7d2
-     pos         service/payments-svc                                                    Current   f46e7d2
-```
-
-The `ClusterRole`, `3 ClusterRoleBindings` and `ServiceAccount` indicate that
-the necessary resources have been created. Now `exit` out of the ssh session
-in the `cnuc-1` node.
-
-#### 4.2) Run the ansible playbook for generating the login token
 ```sh
 ansible-playbook all-get-login-tokens.yaml -i inventory
 ```
-```sh
-# -----------------------------------------------------#
-#                   Expected Output                    #
-# -----------------------------------------------------#
-...
-...
-TASK [abm-login-token : Get login token for console] ***********************************************************************************************************************************************************
-skipping: [cnuc-2]
-skipping: [cnuc-3]
-ok: [cnuc-1]
 
-TASK [abm-login-token : Display login token] *******************************************************************************************************************************************************************
-ok: [cnuc-1] => {
-    "msg": "eyJhbGciOiJSUzI1NiIsImtpZCI6Imk2X3duZ3BzckQyWmszb09sZHFMN0FoWU9mV1kzOWNGZzMyb0x2WlMyalkifQ.ey
-mljZS1hY2NvdW50LnVpZCI6IjQwYWQxNDk2LWM2MzEtNDhiNi05YmUxLWY5YzgwODJjYzgzOSIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYW
-iZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6ImVkZ2Etc2EtdG9rZW4tc2R4MmQiLCJrdWJlcm5ldGVzLmlvL3Nl
-cnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoiZWRnYS1zYSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2Vyd
-4CwanGlof6s-fbu8IUy1_bTgCminylNKb3VudC5uYW1lIjoiZWRnYS1zYSIsImt1YmVybmV0ZXuaP-hDEKURb5O6IxulTXWH6dxYxg66x
-Njb3VudDpkZWZhdWx0OmVkZ2Etc2EifQ.IXqXwX5pg9RIyNHJZTM6cBKTEWOMfQ4IQQa398f0qwuYlSe12CA1l6P8TInf0S1aood7NJWx
-xe-5ojRvcG8pdOuINq2yHyQ5hM7K7R4h2qRwUznRwuzOp_eXC0z0Yg7VVXCkaqnUR1_NzK7qSu4LJcuLzkCYkFdSnvKIQABHSvfvZMrJP
-Jlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJkZWZhdWx0Iiwia3V
-MgyLOd9FJyhZgjbf-a-3cbDci5YABEzioJlHVnV8GOX_q-MnIagA9-t1KpHA"
-}
-skipping: [cnuc-2]
-skipping: [cnuc-3]
-
-PLAY RECAP *****************************************************************************************************************************************************************************************************
-cnuc-1                     : ok=5    changed=1    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
-cnuc-2                     : ok=1    changed=0    unreachable=0    failed=0    skipped=5    rescued=0    ignored=0
-cnuc-3                     : ok=1    changed=0    unreachable=0    failed=0    skipped=5    rescued=0    ignored=0
-```
-
-Once you have run the above steps, copy the `Token` that is printed out and login
-to the kubernetes cluster from the [`Kubernetes clusters`](https://console.cloud.google.com/kubernetes/list/overview) page in the Google Cloud
-console.
+Once you have copied the token, login to the kubernetes cluster from the
+[`Kubernetes clusters`](https://console.cloud.google.com/kubernetes/list/overview)
+page in the Google Cloud console.
 
 <p align="center">
   <img src="docs/images/login-k8s.png">
