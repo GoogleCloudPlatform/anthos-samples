@@ -266,8 +266,8 @@ cluster gets `Synced` with the configuration inside the
 and [`console-cluster-reader-sa.yaml`](./acm-config-sink/namespaces/default/console-cluster-reader-sa.yaml)
 files inside the `acm-config-sink` directory describe what these resources are.
 
-You must be running the following steps from inside the docker container that
-is created in the [earlier step](#33-run-the-script-that-creates-the-docker-container-for-installation).
+You must run the following steps from inside the docker container that is
+created in the [earlier step](#33-run-the-script-that-creates-the-docker-container-for-installation).
 If you have exited the container, then run `./install.sh` again to enter into it.
 
 #### 4.1) Verify Anthos Config Management Sync
