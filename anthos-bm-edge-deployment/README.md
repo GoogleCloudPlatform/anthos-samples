@@ -260,10 +260,10 @@ using the `Login Token` mechanism.
 The Kubernetes resources required to generate the login token will already be
 created inside the new Anthos on bare metal cluster. This is done when the
 cluster gets `Synced` with the configuration inside the
-[`acm-config-sink`](/acm-config-sink) directory through
+[`acm-config-sink`](./acm-config-sink) directory through
 **Anthos Config Management**. The
-[`cloud-console-reader.yaml`](/acm-config-sink/cluster/cloud-console-reader.yaml)
-and [`console-cluster-reader-sa.yaml`](/acm-config-sink/namespaces/default/console-cluster-reader-sa.yaml)
+[`cloud-console-reader.yaml`](./acm-config-sink/cluster/cloud-console-reader.yaml)
+and [`console-cluster-reader-sa.yaml`](./acm-config-sink/namespaces/default/console-cluster-reader-sa.yaml)
 files inside the `acm-config-sink` directory describe what these resources are.
 
 You must be running the following steps from inside the docker container that
@@ -360,7 +360,7 @@ console.
   <img src="docs/images/login-k8s-token.png">
 </p>
 
-Verify that the cluster has `synced` with the [configurations from this repository](/acm-config-sink)
+Verify that the cluster has `synced` with the [configurations from this repository](./acm-config-sink)
 using [**Anthos Config Management**](https://console.cloud.google.com/anthos/config_management)
 <p align="center">
   <img src="docs/images/acm-sync.png">
