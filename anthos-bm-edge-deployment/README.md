@@ -365,13 +365,18 @@ sudo systemctl status nginx
 ```sh
 # exit out of the admin instance
 exit
+
+# exit out of the docker container used for installation
+exit
 ```
 ---
 
 ### 6. Access the Point of Sale application
 #### 6.1) Get the external IP address of the admin GCE instance and access the UI of the **Point of Sales** application
 
-> **Note:** _The following commands are run in your local workstations. If you are still inside the admin GCE instance via SSH, then type **exit** to end the SSH session_
+> **Note:** _The following commands are run in your local workstations. If you
+> are still inside the admin GCE instance via SSH or the Docker container used
+> for the installation, then type **exit** to get back to your local shell._
 
 ```sh
 EXTERNAL_IP=$(gcloud compute instances list --project ${PROJECT_ID} --filter="name:cnuc-1" --format="get(networkInterfaces[0].accessConfigs[0].natIP)")
