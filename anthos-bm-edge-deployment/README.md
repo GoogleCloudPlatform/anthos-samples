@@ -247,7 +247,7 @@ ansible-playbook all-full-install.yaml -i inventory | tee ./build-artifacts/ansi
 # -----------------------------------------------------#
 ...
 ...
-TASK [abm-login-token : Display login token] **********************************************************************************************************************************************************************************************************************************************************************************************************************
+TASK [abm-login-token : Display login token] **************************************************************************
 ok: [cnuc-1] => {
     "msg": "eyJhbGciOiJSUzI1NiIsImtpZCI6Imk2X3duZ3BzckQyWmszb09sZHFMN0FoWU9mV1kzOWNGZzMyb0x2WlMyalkifQ.ey
 mljZS1hY2NvdW50LnVpZCI6IjQwYWQxNDk2LWM2MzEtNDhiNi05YmUxLWY5YzgwODJjYzgzOSIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYW
@@ -262,7 +262,7 @@ MgyLOd9FJyhZgjbf-a-3cbDci5YABEzioJlHVnV8GOX_q-MnIagA9-t1KpHA"
 skipping: [cnuc-2]
 skipping: [cnuc-3]
 
-PLAY RECAP ********************************************************************************************************************************************************************************************************************************************************************************************************************************************************
+PLAY RECAP ***********************************************************************************************************
 cnuc-1                     : ok=205  changed=156  unreachable=0    failed=0    skipped=48   rescued=0    ignored=12
 cnuc-2                     : ok=128  changed=99   unreachable=0    failed=0    skipped=108  rescued=0    ignored=2
 cnuc-3                     : ok=128  changed=99   unreachable=0    failed=0    skipped=108  rescued=0    ignored=2
