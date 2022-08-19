@@ -128,7 +128,7 @@ fi
 
 # setup nginx to enable public access of the pods running inside the Anthos Bare
 # Metal user-cluster
-IS_CLUSTER_FIRST=$(gcloud compute instances list --filter='tags:public-ingress AND tags:public-egress' | grep -c "${MACHINE_NAME}")
+IS_CLUSTER_FIRST=$(gcloud compute instances list --filter='tags:edge' | grep -c "${MACHINE_NAME}")
 if [[ "${IS_CLUSTER_FIRST}" != 1 ]]; then
     echo "Skipping nginx installation..."
     exit 0
