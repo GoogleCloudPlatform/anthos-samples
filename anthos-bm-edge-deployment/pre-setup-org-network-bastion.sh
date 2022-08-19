@@ -37,12 +37,12 @@ gcloud beta resource-manager org-policies disable-enforce iam.disableServiceAcco
 gcloud beta resource-manager org-policies disable-enforce iam.automaticIamGrantsForDefaultServiceAccounts --project="$PROJECT_ID"
 gcloud beta resource-manager org-policies disable-enforce compute.disableNestedVirtualization --project="$PROJECT_ID"
 
-# now loop and fix policies with  constraints in Argolis 
+# now loop and fix policies with  constraints in Argolis
 # Inner Loop - Loop Through Policies with Constraints
 declare -a policies=("constraints/compute.trustedImageProjects"
  "constraints/compute.vmExternalIpAccess"
  "constraints/compute.restrictSharedVpcSubnetworks"
- "constraints/compute.restrictSharedVpcHostProjects" 
+ "constraints/compute.restrictSharedVpcHostProjects"
  "constraints/compute.restrictVpcPeering"
  "constraints/compute.vmCanIpForward")
 
