@@ -26,7 +26,7 @@
 
 # Use the path to this script to determine the path to gce-helper.vars
 PREFIX_DIR=$(dirname -- "$0")
-# shellcheck disable=SC1091
+# shellcheck disable=SC1090,SC1091
 source "${PREFIX_DIR}/cloud/gce-helper.vars"
 
 if [[ ! -f "./build-artifacts/consumer-edge-machine.pub" ]]; then

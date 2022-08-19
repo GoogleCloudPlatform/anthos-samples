@@ -14,6 +14,6 @@
 # limitations under the License.
 
 
-if [[ -x "$(command -v gcloud)"]]; then
+if [[ -x "$(command -v gcloud)" ]]; then
     gcloud components update --quiet
 fi

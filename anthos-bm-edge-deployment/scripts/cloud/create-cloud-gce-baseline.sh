@@ -25,6 +25,7 @@
 ## -- is used in case the directory name starts with a -
 PREFIX_DIR=$(dirname -- "$0")
 WORKDIR=$(pwd)
+# shellcheck disable=SC1090
 source "${PREFIX_DIR}"/gce-helper.vars
 
 # Defaults

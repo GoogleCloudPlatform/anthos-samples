@@ -227,14 +227,17 @@ cnuc-1 | SUCCESS => {"ansible_facts": {"discovered_interpreter_python": "/usr/bi
 ```
 
 #### 3.5) Run the Ansible playbook for installing Anthos Bare Metal on the GCE instances
+
+This script will configure the GCE instances with all the necessary tools,
+install Anthos BareMetal, install Anthos Config Management and configure it to
+sync with the configs at `$ROOT_REPO_URL/anthos-bm-edge-deployment/acm-config-sink`.
+
 > **Note:** _This step can take upto **35 minutes** to complete for a setup with $MACHINE_COUNT=3_
 > - ***Pre-install configuration of the GCE instances:*** ~10 minutes</br>
 > - ***Installing Anthos BareMetal:*** ~20 minutes</br>
 > - ***Post-install configuration of the GCE instances:*** ~5 minutes
 
 ```sh
-# this will configure the GCE instances with all the necessary tools, install Anthos BareMetal, install Anthos
-# Config Management and configure it to sync with the configs at $ROOT_REPO_URL/anthos-bm-edge-deployment/acm-config-sink
 ansible-playbook all-full-install.yaml -i inventory
 ```
 ```sh
