@@ -251,16 +251,70 @@ cnuc-3                     : ok=129  changed=100  unreachable=0    failed=0    s
 
 ---
 ### 4. Log in to the ABM kubernetes cluster in the Google Cloud console
-#### 4.1) Copy the utility script into the admin GCE instance and generate a token
-```sh
-# Copy the utility scripts into the admin node of the cluster
-scp -F ./build-artifacts/ssh-config scripts/cloud/cnuc-k8s-login-setup.sh abm-admin@cnuc-1:
 
+To be able to see logs and other information about the cluster in the Google
+Cloud Platform console, you have to `Login` to the cluster using one of the
+different means available. In this section we show how to login to the cluster
+using the `Login Token` mechanism.
+
+The Kubernetes resources required to generate the login token will already be
+created inside the new Anthos on bare metal cluster. This is done when the
+cluster gets `Synced` with the configuration inside the
+[`acm-config-sink`](/acm-config-sink) directory through
+**Anthos Config Management**. The
+[`cloud-console-reader.yaml`](/acm-config-sink/cluster/cloud-console-reader.yaml)
+and [`console-cluster-reader-sa.yaml`](/acm-config-sink/namespaces/default/console-cluster-reader-sa.yaml)
+files inside the `acm-config-sink` directory describe what these resources are.
+
+You must be running the following steps from inside the docker container that
+is created in the [earlier step](#33-run-the-script-that-creates-the-docker-container-for-installation).
+If you have exited the container, then run `./install.sh` again to enter into it.
+
+#### 4.1) Verify Anthos Config Management Sync
+
+```sh
 # SSH into the admin node of the cluster
 ssh -F ./build-artifacts/ssh-config abm-admin@cnuc-1
 
-# execute the script and copy token that is printed out
-./cnuc-k8s-login-setup.sh
+# execute the following command from inside the cnuc-1 node
+nomos status
+```
+```sh
+# -----------------------------------------------------#
+#                   Expected Output                    #
+# -----------------------------------------------------#
+Connecting to clusters...
+
+*cnuc-1-admin@cnuc-1
+  --------------------
+  <root>:root-sync   https://github.com/Shabirmean/anthos-samples/anthos-bm-edge-deployment/acm-config-sink@main
+  SYNCED             f46e7d226d3d7f9e5d0b7f068d818a186508f50f
+  Managed resources:
+     NAMESPACE   NAME                                                                    STATUS    SOURCEHASH
+                 clusterrole.rbac.authorization.k8s.io/cloud-console-reader              Current   f46e7d2
+                 clusterrolebinding.rbac.authorization.k8s.io/cloud-console-reader       Current   f46e7d2
+                 clusterrolebinding.rbac.authorization.k8s.io/cluster-admin              Current   f46e7d2
+                 clusterrolebinding.rbac.authorization.k8s.io/console-view-rolebinding   Current   f46e7d2
+                 namespace/default                                                       Current   f46e7d2
+                 namespace/pos                                                           Current   f46e7d2
+     default     serviceaccount/console-cluster-reader                                   Current   f46e7d2
+     pos         configmap/service-configs                                               Current   f46e7d2
+     pos         deployment.apps/api-server                                              Current   f46e7d2
+     pos         deployment.apps/inventory                                               Current   f46e7d2
+     pos         deployment.apps/payments                                                Current   f46e7d2
+     pos         service/api-server-lb                                                   Current   f46e7d2
+     pos         service/api-server-svc                                                  Current   f46e7d2
+     pos         service/inventory-svc                                                   Current   f46e7d2
+     pos         service/payments-svc                                                    Current   f46e7d2
+```
+
+The `ClusterRole`, `3 ClusterRoleBindings` and `ServiceAccount` indicate that
+the necessary resources have been created. Now `exit` out of the ssh session
+in the `cnuc-1` node.
+
+#### 4.2) Run the ansible playbook for generating the login token
+```sh
+ansible-playbook all-get-login-tokens.yaml -i inventory
 ```
 ```sh
 # -----------------------------------------------------#
@@ -268,10 +322,14 @@ ssh -F ./build-artifacts/ssh-config abm-admin@cnuc-1
 # -----------------------------------------------------#
 ...
 ...
-# Retrieving Kubernetes Service Account Token
+TASK [abm-login-token : Get login token for console] ***********************************************************************************************************************************************************
+skipping: [cnuc-2]
+skipping: [cnuc-3]
+ok: [cnuc-1]
 
-🚀 ------------------------------TOKEN-------------------------------- 🚀
-eyJhbGciOiJSUzI1NiIsImtpZCI6Imk2X3duZ3BzckQyWmszb09sZHFMN0FoWU9mV1kzOWNGZzMyb0x2WlMyalkifQ.eyJpc3MiOiJrdW
+TASK [abm-login-token : Display login token] *******************************************************************************************************************************************************************
+ok: [cnuc-1] => {
+    "msg": "eyJhbGciOiJSUzI1NiIsImtpZCI6Imk2X3duZ3BzckQyWmszb09sZHFMN0FoWU9mV1kzOWNGZzMyb0x2WlMyalkifQ.ey
 mljZS1hY2NvdW50LnVpZCI6IjQwYWQxNDk2LWM2MzEtNDhiNi05YmUxLWY5YzgwODJjYzgzOSIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYW
 iZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6ImVkZ2Etc2EtdG9rZW4tc2R4MmQiLCJrdWJlcm5ldGVzLmlvL3Nl
 cnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoiZWRnYS1zYSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2Vyd
@@ -279,8 +337,15 @@ cnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoiZWRnYS1zYSIsImt1YmVybmV0ZXMuaW8v
 Njb3VudDpkZWZhdWx0OmVkZ2Etc2EifQ.IXqXwX5pg9RIyNHJZTM6cBKTEWOMfQ4IQQa398f0qwuYlSe12CA1l6P8TInf0S1aood7NJWx
 xe-5ojRvcG8pdOuINq2yHyQ5hM7K7R4h2qRwUznRwuzOp_eXC0z0Yg7VVXCkaqnUR1_NzK7qSu4LJcuLzkCYkFdSnvKIQABHSvfvZMrJP
 Jlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJkZWZhdWx0Iiwia3V
-MgyLOd9FJyhZgjbf-a-3cbDci5YABEzioJlHVnV8GOX_q-MnIagA9-t1KpHA
-🚀 ------------------------------------------------------------------- 🚀
+MgyLOd9FJyhZgjbf-a-3cbDci5YABEzioJlHVnV8GOX_q-MnIagA9-t1KpHA"
+}
+skipping: [cnuc-2]
+skipping: [cnuc-3]
+
+PLAY RECAP *****************************************************************************************************************************************************************************************************
+cnuc-1                     : ok=5    changed=1    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
+cnuc-2                     : ok=1    changed=0    unreachable=0    failed=0    skipped=5    rescued=0    ignored=0
+cnuc-3                     : ok=1    changed=0    unreachable=0    failed=0    skipped=5    rescued=0    ignored=0
 ```
 
 Once you have run the above steps, copy the `Token` that is printed out and login
