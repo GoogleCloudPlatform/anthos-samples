@@ -374,6 +374,9 @@ using [**Anthos Config Management**](https://console.cloud.google.com/anthos/con
 > **Note:** _The following commands are run inside the admin GCE instance (**cnuc-1**). You must already be SSH'ed into it from the previous steps_
 
 ```sh
+# SSH into the admin node of the cluster
+ssh -F ./build-artifacts/ssh-config abm-admin@cnuc-1
+
 # get the IP address of the LoadBalancer type kubernetes service
 ABM_INTERNAL_IP=$(kubectl get services api-server-lb -n pos | awk '{print $4}' | tail -n 1)
 
