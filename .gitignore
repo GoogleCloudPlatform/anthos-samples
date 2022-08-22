@@ -15,6 +15,7 @@ cleanup.sh
 .env*
 .temp/
 
+.vscode
 *.err
 credentials_file.json
 .kitchen
