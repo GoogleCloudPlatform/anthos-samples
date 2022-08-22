@@ -155,11 +155,11 @@ into them. You can refer to this file later to find the necessary information.
 
 ---
 
-### 3. Install Anthos on bare metal with ansible
+### 3. Install Anthos on Bare Metal with ansible
 
 This phase involves the creation of the docker image for installation,
 generating the ansible inventory configuration settings and running the ansible
-scripts that installs Anthos on bare metal into the GCE VMs.
+scripts that installs Anthos on Bare Metal into the GCE VMs.
 
 #### 3.1) Create a docker image that will be used
 You can find more information about the steps involved in creating the image
@@ -277,7 +277,7 @@ different means available. In this section we show how to login to the cluster
 using the `Login Token` mechanism.
 
 The Kubernetes resources required to generate the login token will already be
-created inside the new Anthos on bare metal cluster. This is done when the
+created inside the new Anthos on Bare Metal cluster. This is done when the
 cluster gets `Synced` with the configuration inside the
 [`acm-config-sink`](./acm-config-sink) directory through
 **Anthos Config Management**. The
