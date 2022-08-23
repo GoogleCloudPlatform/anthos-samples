@@ -12,7 +12,7 @@ There are two deployment types: Hardware and Cloud. Both deployment types can co
 > **Cloud** - Scripts and Playbooks designed to be deployed into GCE Virtual Machines.
 * In this project, all cloud machines will have "cnuc" as a prefix for hostname and variable names.
 
-## TL;DR (Quick Star)
+## TL;DR (Quick Start)
 
 If you do not plan on contributing or changing the codebase or you do not have the ability to install the developer dependencies, the recommended approach is to use the [docker installation](docs/DOCKER_INSTALL.md).
 

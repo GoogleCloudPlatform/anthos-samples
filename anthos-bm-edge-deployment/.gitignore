@@ -9,8 +9,6 @@ tmp/
 # Newrelic agent log
 newrelic_agent.log
 
-# test
-
 # Folder to hold build-artifacts needed for Docker install (maybe all)
 # keep the .gitkeep file, but ignore everything else
 build-artifacts/*
@@ -46,35 +44,15 @@ roles/test-*/
 k8s/overlays/**/configuration/*-hydrated.conf
 k8s/overlays/**/configuration/secrets/*.json
 
-### VS Code ###
-.vscode/
-
-### IntelliJ ###
-.idea/
-
 ### Ansible ###
 ansible.cfg
 
 ## test files
 scripts/cloud/test.sh
-
-### Python
-.python-version
-.pytest_cache
-__pycache__
-*.data
-
-## Mac
-.DS_Store
-
-# Terraform Compiled files
-*.tfstate
-*.tfstate.backup
 service-account-key.json
 
 # Module directory
 .terraform/
-terraform.tfvars
 tfplan
 
 *.crt
