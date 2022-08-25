@@ -130,10 +130,6 @@ module "instance_template" {
   metadata = {
     enable-oslogin = "false"
   }
-  service_account = {
-    email  = var.gce_vm_service_account
-    scopes = var.access_scopes # --scopes cloud-platform
-  }
   gpu = !local.gpu_enabled ? null : {
     type  = var.gpu.type
     count = var.gpu.count
