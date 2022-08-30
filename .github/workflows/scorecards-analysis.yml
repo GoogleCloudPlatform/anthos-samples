@@ -41,7 +41,7 @@ jobs:
           persist-credentials: false
 
       - name: "Run analysis"
-        uses: ossf/scorecard-action@dd5015aaf9688596b0e6d11e7f24fff566aa366b
+        uses: ossf/scorecard-action@3cb9305b9b8f0a6a1a082f9242662854e2715955
         with:
           results_file: results.sarif
           results_format: sarif
