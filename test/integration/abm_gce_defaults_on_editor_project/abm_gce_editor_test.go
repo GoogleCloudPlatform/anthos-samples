@@ -55,7 +55,7 @@ func TestABMEditor(t *testing.T) {
 		assert.NotContains(abmInstall, "[-]", "gce setup for abm installation should not have any failed stages")
 
 		bmctl := runSSHCmd(t, projectID, "root@cluster1-abm-ws0-001", "bmctl version")
-		assert.Contains(bmctl, "bmctl version: 1.11.1", "bmctl version should be 1.11.1")
+		assert.Contains(bmctl, "bmctl version: 1.12.0", "bmctl version should be 1.12.0")
 
 		docker := runSSHCmd(t, projectID, "root@cluster1-abm-ws0-001", "docker version")
 		dockerExpectedOP := []string{"Client: Docker Engine", "Server: Docker Engine", "API version", "Version", "linux/amd64"}
@@ -69,7 +69,7 @@ func TestABMEditor(t *testing.T) {
 		clusterConfigCreatedMsg := "Created config: bmctl-workspace/cluster1/cluster1.yaml"
 		bootstrapClusterOKMsg := "Creating bootstrap cluster... OK"
 		depInstallOKMsg := "Installing dependency components... OK"
-		kubeConfigCreatedMsg := "kubeconfig of created cluster is at bmctl-workspace/cluster1/cluster1-kubeconfig"
+		kubeConfigCreatedMsg := "kubeconfig of cluster being created is present at bmctl-workspace/cluster1/cluster1-kubeconfig"
 		clusterReadyOKMsg := "Waiting for cluster to become ready OK"
 		nodePoolOKMsg := "Waiting for node pools to become ready OK"
 		deleteBootstrapClusterOKMsg := "Deleting bootstrap cluster... OK"
