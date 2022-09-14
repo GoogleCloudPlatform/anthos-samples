@@ -69,7 +69,7 @@ func TestABMEditor(t *testing.T) {
 		clusterConfigCreatedMsg := "Created config: bmctl-workspace/cluster1/cluster1.yaml"
 		bootstrapClusterOKMsg := "Creating bootstrap cluster... OK"
 		depInstallOKMsg := "Installing dependency components... OK"
-		kubeConfigCreatedMsg := "kubeconfig of created cluster is at bmctl-workspace/cluster1/cluster1-kubeconfig"
+		kubeConfigCreatedMsg := "kubeconfig of cluster being created is present at bmctl-workspace/cluster1/cluster1-kubeconfig"
 		clusterReadyOKMsg := "Waiting for cluster to become ready OK"
 		nodePoolOKMsg := "Waiting for node pools to become ready OK"
 		deleteBootstrapClusterOKMsg := "Deleting bootstrap cluster... OK"
