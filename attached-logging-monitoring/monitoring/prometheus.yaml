@@ -160,6 +160,8 @@ spec:
         fsGroup: 2000
         runAsUser: 1000
         runAsNonRoot: true
+      nodeSelector:
+        kubernetes.io/os: linux
       containers:
       - name: prometheus-server
         image: prom/prometheus:v2.18.1
