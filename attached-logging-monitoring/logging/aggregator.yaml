@@ -153,6 +153,8 @@ spec:
         managed-by: stackdriver
     spec:
       serviceAccountName: stackdriver-log-aggregator
+      nodeSelector:
+        kubernetes.io/os: linux
       containers:
       - name: stackdriver-log-aggregator
         image: gcr.io/stackdriver-agents/stackdriver-logging-agent:1.8.4
