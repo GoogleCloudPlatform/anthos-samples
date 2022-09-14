@@ -76,6 +76,8 @@ spec:
         app: stackdriver-log-forwarder
         managed-by: stackdriver
     spec:
+      nodeSelector:
+        kubernetes.io/os: linux
       containers:
       - name: stackdriver-log-forwarder
         image: fluent/fluent-bit:1.6.4
