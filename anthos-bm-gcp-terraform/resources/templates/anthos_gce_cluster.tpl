@@ -57,6 +57,12 @@ spec:
       numPVUnderSharedPath: 5
       path: /mnt/localpv-share
       storageClassName: local-shared
+  nodeConfig:
+    containerRuntime: containerd
+  clusterSecurity:
+    authorization:
+      clusterAdmin:
+        gcpAccounts: [${google_account}]
 ---
 apiVersion: baremetal.cluster.gke.io/v1
 kind: NodePool

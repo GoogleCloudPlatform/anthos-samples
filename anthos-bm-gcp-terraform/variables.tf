@@ -178,6 +178,12 @@ variable "gce_vm_service_account" {
   default     = ""
 }
 
+variable "connect_agent_account" {
+  description = "GCP account email address to use with Connect Agent for logging into the cluster using Google Cloud identity."
+  type        = string
+  default     = ""
+}
+
 variable "mode" {
   description = <<EOF
     Indication of the execution mode. By default the terraform execution will end
