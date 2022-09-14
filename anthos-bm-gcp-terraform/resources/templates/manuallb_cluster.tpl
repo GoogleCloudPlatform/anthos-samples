@@ -58,7 +58,7 @@ spec:
   clusterSecurity:
     authorization:
       clusterAdmin:
-        gcpAccounts: [${google_account}]
+        gcpAccounts: [%{ for acc in google_accounts ~} ${acc} %{ endfor }]
 ---
 apiVersion: baremetal.cluster.gke.io/v1
 kind: NodePool
