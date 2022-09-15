@@ -179,13 +179,9 @@ variable "gce_vm_service_account" {
 }
 
 variable "connect_agent_accounts" {
-  description = "GCP account email address to use with Connect Agent for logging into the cluster using Google Cloud identity."
-  type        = [string]
-  default     = ""
-  validation {
-    condition     = !contains([for email in var.connect_agent_accounts : can(regex("^*@*$", email))], "false")
-    error_message = "Allowed execution modes are: setup, install, manuallb."
-  }
+  description = "GCP account email addresses to use with Connect Agent for logging into the cluster using Google Cloud Identity."
+  type        = list(string)
+  default     = []
 }
 
 variable "mode" {
