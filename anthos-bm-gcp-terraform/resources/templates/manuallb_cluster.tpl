@@ -58,7 +58,7 @@ spec:
   clusterSecurity:
     authorization:
       clusterAdmin:
-        gcpAccounts: [%{ for idx, acc in google_accounts ~} %{ if idx == 0 }${acc}%{ else }, ${acc}%{ endif }%{ endfor }]
+        gcpAccounts: [%{ for idx, acc in gcp_accounts ~} %{ if idx == 0 }${acc}%{ else }, ${acc}%{ endif }%{ endfor }]
 ---
 apiVersion: baremetal.cluster.gke.io/v1
 kind: NodePool

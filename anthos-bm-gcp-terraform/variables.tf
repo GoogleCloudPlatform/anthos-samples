@@ -178,8 +178,8 @@ variable "gce_vm_service_account" {
   default     = ""
 }
 
-variable "connect_agent_accounts" {
-  description = "GCP account email addresses to use with Connect Agent for logging into the cluster using Google Cloud Identity."
+variable "gcp_login_accounts" {
+  description = "GCP account email addresses that must be allowed to login to the cluster using Google Cloud Identity."
   type        = list(string)
   default     = []
 }
