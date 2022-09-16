@@ -1,6 +1,6 @@
 ## Logging into the Anthos bare metal cluster
 
-Upon successful installation the Anthos bare metal cluster would be already **registered**
+Upon successful installation, the Anthos bare metal cluster would be already **registered**
 in Google Cloud. By **logging in** to the registered cluster, you can view and interact with
 cluster resources _(like Pods, Services etc)_ via the Google Cloud Platform (GCP) UI.
 
@@ -13,7 +13,7 @@ cluster resources _(like Pods, Services etc)_ via the Google Cloud Platform (GCP
   </em>
 </p>
 
-The [Logging in to a cluster from the Cloud Console](https://cloud.google.com/anthos/multicluster-management/console/logging-in/) guide describes various ways in which you can login to a
+The [Logging in to a cluster from the Cloud Console](https://cloud.google.com/anthos/multicluster-management/console/logging-in/) guide describes various ways in which you can log in to a
 registered cluster in GCP. Here, we explain two of those login approaches:
   - [Login with Kubernetes Service Account Token](#login-with-kubernetes-service-account-token)
   - [Login with Google Cloud Identity](#login-with-google-cloud-identity)
@@ -136,7 +136,7 @@ spec:
 Once the cluster has been created, navigate to the clusters list page in Google
 Cloud Console and select `Login` in the dropdown that appears by clicking the
 verticle-ellipsis icon on the specific cluster's row. From the pop-up that
-appears select `Use your Google identity to log-in` and click `Login`. This will
+appears, select `Use your Google identity to log-in` and click `Login`. This will
 take you through the usual Google login flow. Use any of the GCP accounts you
 included in the cluster configuration above to complete the flow. Upon
 successful completion you will see a **green checkmark** next to the cluster to
@@ -147,7 +147,7 @@ indicate that you have logged in.
 
 To configure an existing cluster to allow GCP accounts for `Login` you must
 first create Kubernetes `Roles` and `RoleBindings` against the GCP accounts you
-want to use. First make sure you are in the admin workstation and have the
+want to use. First, make sure you are in the admin workstation and have the
 `KUBECONFIG` environment variable pointing to the correct cluster's
 configuration.
 
