@@ -13,9 +13,12 @@ cluster resources _(like Pods, Services etc)_ via the Google Cloud Platform (GCP
   </em>
 </p>
 
-The [Logging in to a cluster from the Cloud Console](https://cloud.google.com/anthos/multicluster-management/console/logging-in/) guide describes various ways in which you
-can login to a registered cluster in GCP. Here, we show how you can login by using a
-**Kubernetes Service Account Token**.
+The [Logging in to a cluster from the Cloud Console](https://cloud.google.com/anthos/multicluster-management/console/logging-in/) guide describes various ways in which you can login to a registered cluster in GCP.
+Here, we show how you two different login approaches.
+  - [Login with Kubernetes Service Account Token](#login-with-kubernetes-service-account-token)
+  - [Login with Google Cloud Identity](#login-with-google-cloud-identity)
+---
+### Login with Kubernetes Service Account Token
 
 Once you have completed the Anthos on bare metal installation by following either
 the [quickstart](quickstart.md) or [all in one install](one_click_install.md) guide,
@@ -82,3 +85,135 @@ You can copy this token and use it to login via the Cloud Console.
     (click image to enlarge)
   </em>
 </p>
+
+---
+
+### Login with Google Cloud Identity
+
+Instead of creating a Kubernetes Service Account Token, you can use the email
+identity associated with your Google Cloud Platform account to `Login` to the
+cluster. There are two scenarios for using this method:
+
+  - [Configure a new cluster for Google Cloud Identity Login](#configure-a-new-cluster-for-google-cloud-identity-login)
+  - [Configure an existing cluster for Google Cloud Identity Login](#configure-an-existing-cluster-for-google-cloud-identity-login)
+
+---
+#### Configure a new cluster for Google Cloud Identity Login
+A new cluster can be configured to allow `Login` using GCP Accounts by
+setting the `spec.clusterSecurity.authorization.clusterAdmin.gcpAccounts`
+field in the cluster configuration. This field accepts a list of GCP Accounts
+that must be allowed to `Login` to the cluster. Upon creation of the cluster
+you should be able to `Login` using any of the provided GCP Accounts. If using
+the terraform script from this repository then you can simply set the
+[`gcp_login_accounts`](/anthos-bm-gcp-terraform/variables.tf#181) variable
+
+```sh
+apiVersion: baremetal.cluster.gke.io/v1
+kind: Cluster
+metadata:
+  name: cluster1
+  namespace: cluster1-ns
+spec:
+  ...
+  ...
+  ...
+  ...
+  clusterSecurity:
+    authorization:
+      clusterAdmin:
+        gcpAccounts: [foo@gmail.com, bar@gmail.com, bazz@google.com]
+```
+Once the cluster has been created, navigate to the clusters list page in Google
+Cloud Console and select `Login` in the dropdown that appears by clicking the
+verticle-ellipsis icon on the specific cluster's row. From the pop-up that
+appears select `Use your Google identity to log-in` and click `Login`. This will
+take you through the usual Google login flow. Use any of the GCP accounts you
+included in the cluster configuration above to complete the flow. Upon
+successful completion you will see a **green checkmark** next to the cluster to
+indicate that you have logged in.
+
+<p align="center">
+  <img src="images/gcp_account_login.png">
+  <em>
+    </br>
+    (click image to enlarge)
+  </em>
+</p>
+
+---
+#### Configure an existing cluster for Google Cloud Identity Login
+
+To configure an existing cluster to allow GCP Accounts for `Login` you must
+first create Kubernetes `Roles` and `RoleBindings` against the GCP Accounts you
+want to use. First make sure you are in the admin workstation and have the
+`KUBECONFIG` environment variable pointing to the correct cluster's
+configuration.
+
+SSH into the admin workstation VM
+```sh
+gcloud compute ssh tfadmin@cluster1-abm-ws0-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
+```
+
+Ensure that the `KUBECONFIG` environment variable is set
+```sh
+export KUBECONFIG=$HOME/bmctl-workspace/$CLUSTER_ID/$CLUSTER_ID-kubeconfig
+```
+
+Next, create the following `Roles` and `RoleBindings` for **each** GCP Account
+you want to allow logging-in to the cluster.
+
+```sh
+export GCP_ACCOUNT=<YOU_GCP_ACCOUNT> # foo-bar@gmail.com
+```
+```sh
+cat <<EOF > /tmp/impersonate.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: gateway-impersonate
+rules:
+- apiGroups:
+  - ""
+  resourceNames:
+  - ${GCP_ACCOUNT}
+  resources:
+  - users
+  verbs:
+  - impersonate
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: gateway-impersonate
+roleRef:
+  kind: ClusterRole
+  name: gateway-impersonate
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: ServiceAccount
+  name: connect-agent-sa
+  namespace: gke-connect
+EOF
+# Apply impersonation policy to the cluster.
+kubectl apply -f /tmp/impersonate.yaml
+```
+```sh
+cat <<EOF > /tmp/admin-permission.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: gateway-cluster-admin
+subjects:
+- kind: User
+  name: ${GCP_ACCOUNT}
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
+EOF
+# Apply permission policy to the cluster.
+kubectl apply -f /tmp/admin-permission.yaml
+```
+Now you can `Login` to the cluster from the Google Cloud Console using
+the `Use your Google identity to log-in` option. During the usual Google login
+flow use the `GCP_ACCOUNT` you used above.
