@@ -156,77 +156,55 @@ indicate that you have logged in.
 ---
 #### Configure an existing cluster for Google Cloud Identity Login
 
-To configure an existing cluster to allow GCP accounts for `Login` you must
-first create Kubernetes `Roles` and `RoleBindings` against the GCP accounts you
-want to use. First, make sure you are in the admin workstation and have the
+First, make sure you are in the admin workstation and have the
 `KUBECONFIG` environment variable pointing to the correct cluster's
-configuration.
+configuration. The following steps assume that you created the Anthos on bare
+metal cluster using the [Terraform script](quickstart.md) from this repository.
 
-SSH into the admin workstation VM
-```sh
-gcloud compute ssh tfadmin@cluster1-abm-ws0-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
-```
+1. SSH into the admin workstation VM:
+    ```sh
+    gcloud compute ssh tfadmin@cluster1-abm-ws0-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
+    ```
 
-Ensure that the `KUBECONFIG` environment variable is set
-```sh
-export KUBECONFIG=$HOME/bmctl-workspace/$CLUSTER_ID/$CLUSTER_ID-kubeconfig
-```
+1. Ensure that the `KUBECONFIG` environment variable is set:
+    ```sh
+    export CLUSTER_ID=cluster1
+    export KUBECONFIG=$HOME/bmctl-workspace/$CLUSTER_ID/$CLUSTER_ID-kubeconfig
+    ```
 
-Next, create the following `Roles` and `RoleBindings` for **each** GCP account
-you want to allow logging-in to the cluster.
+1. Next edit the cluster configuration file to add the GCP accounts that must be
+allowed to `Login` to the cluster.
+    ```sh
+    vim $HOME/bmctl-workspace/$CLUSTER_ID/$CLUSTER_ID.yaml
+    ```
+    ```sh
+    apiVersion: baremetal.cluster.gke.io/v1
+    kind: Cluster
+    metadata:
+      name: cluster1
+      namespace: cluster1-ns
+    spec:
+      ...
+      ...
+      ...
+      ...
+      clusterSecurity:
+        authorization:
+          clusterAdmin:
+            # update this section to add the GCP accounts
+            gcpAccounts: [foo@gmail.com, bar@gmail.com, bazz@google.com]
+    ```
 
-```sh
-export GCP_ACCOUNT=<YOU_GCP_ACCOUNT> # foo-bar@gmail.com
-```
-```sh
-cat <<EOF > /tmp/impersonate.yaml
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  name: gateway-impersonate
-rules:
-- apiGroups:
-  - ""
-  resourceNames:
-  - ${GCP_ACCOUNT}
-  resources:
-  - users
-  verbs:
-  - impersonate
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: gateway-impersonate
-roleRef:
-  kind: ClusterRole
-  name: gateway-impersonate
-  apiGroup: rbac.authorization.k8s.io
-subjects:
-- kind: ServiceAccount
-  name: connect-agent-sa
-  namespace: gke-connect
-EOF
-# Apply impersonation policy to the cluster.
-kubectl apply -f /tmp/impersonate.yaml
-```
-```sh
-cat <<EOF > /tmp/admin-permission.yaml
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: gateway-cluster-admin
-subjects:
-- kind: User
-  name: ${GCP_ACCOUNT}
-roleRef:
-  kind: ClusterRole
-  name: cluster-admin
-  apiGroup: rbac.authorization.k8s.io
-EOF
-# Apply permission policy to the cluster.
-kubectl apply -f /tmp/admin-permission.yaml
-```
+1. Finally, update the cluster against the modified cluster configuration file:
+    ```sh
+    bmctl update cluster -c $CLUSTER_ID --kubeconfig=$KUBECONFIG
+    ```
+    ```sh
+    # expected output
+    Please check the logs at bmctl-workspace/cluster1/log/update-cluster-20220916-225829/update-cluster.log
+    [2022-09-16 22:58:37+0000] Deleting bootstrap cluster...
+    ```
+
 Now you can `Login` to the cluster from the Google Cloud Console using
 the `Use your Google identity to log-in` option. During the usual Google login
 flow use the `GCP_ACCOUNT` you used above.
