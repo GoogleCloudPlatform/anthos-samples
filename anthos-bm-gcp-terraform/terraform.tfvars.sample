@@ -10,7 +10,7 @@ instance_count                = {
                                   "controlplane" : 3
                                   "worker" : 2
                                 }
-#gcp_login_accounts           = "<GCP_ACCOUNT_EMAIL_TO_USE_FOR_CLUSTER_LOGIN>"
+#gcp_login_accounts           = ["<GCP_ACCOUNT_EMAIL_TO_USE_FOR_CLUSTER_LOGIN>"]
 #gce_vm_service_account       = "<GCE_SERVICE_ACCOUNT_WITH_iam.serviceAccountKeyAdmin_PERMISSION>"
 #nfs_server                   = true
 #gpu                          = {

@@ -95,6 +95,14 @@ identity associated with your Google Cloud Platform account to `Login` to the
 cluster.
 
 <p align="center">
+  <img src="images/login.png">
+  <em>
+    </br>
+    (click image to enlarge)
+  </em>
+</p>
+
+<p align="center">
   <img src="images/gcp_account_login.png" width="600">
   <em>
     </br>
