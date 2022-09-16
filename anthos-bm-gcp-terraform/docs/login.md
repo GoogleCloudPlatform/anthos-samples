@@ -120,10 +120,11 @@ A new cluster can be configured to allow `Login` using GCP accounts by
 setting the `spec.clusterSecurity.authorization.clusterAdmin.gcpAccounts`
 field in the cluster configuration. This field accepts a list of GCP accounts
 that must be allowed to `Login` to the cluster. Upon creation of the cluster
-you should be able to `Login` using any of the provided GCP accounts. When using
-the Terraform script from this repository to create your clusters, you can
-simply set the [`gcp_login_accounts`](/anthos-bm-gcp-terraform/variables.tf#L181)
-variable with a list of GCP accounts.
+you should be able to `Login` using any of the provided GCP accounts.
+
+> **Note:** When using the [Terraform script](quickstart.md) from this
+> repository to create your clusters, you can simply set the
+> [`gcp_login_accounts`](/anthos-bm-gcp-terraform/variables.tf#L181) variable with a list of GCP accounts.
 
 ```sh
 apiVersion: baremetal.cluster.gke.io/v1
