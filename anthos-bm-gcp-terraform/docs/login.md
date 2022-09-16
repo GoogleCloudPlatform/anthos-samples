@@ -13,8 +13,8 @@ cluster resources _(like Pods, Services etc)_ via the Google Cloud Platform (GCP
   </em>
 </p>
 
-The [Logging in to a cluster from the Cloud Console](https://cloud.google.com/anthos/multicluster-management/console/logging-in/) guide describes various ways in which you can login to a registered cluster in GCP.
-Here, we show how you two different login approaches.
+The [Logging in to a cluster from the Cloud Console](https://cloud.google.com/anthos/multicluster-management/console/logging-in/) guide describes various ways in which you can login to a
+registered cluster in GCP. Here, we explain two of those login approaches:
   - [Login with Kubernetes Service Account Token](#login-with-kubernetes-service-account-token)
   - [Login with Google Cloud Identity](#login-with-google-cloud-identity)
 ---
@@ -97,6 +97,14 @@ cluster. There are two scenarios for using this method:
   - [Configure a new cluster for Google Cloud Identity Login](#configure-a-new-cluster-for-google-cloud-identity-login)
   - [Configure an existing cluster for Google Cloud Identity Login](#configure-an-existing-cluster-for-google-cloud-identity-login)
 
+<p align="center">
+  <img src="images/gcp_account_login.png">
+  <em>
+    </br>
+    (click image to enlarge)
+  </em>
+</p>
+
 ---
 #### Configure a new cluster for Google Cloud Identity Login
 A new cluster can be configured to allow `Login` using GCP Accounts by
@@ -131,14 +139,6 @@ take you through the usual Google login flow. Use any of the GCP accounts you
 included in the cluster configuration above to complete the flow. Upon
 successful completion you will see a **green checkmark** next to the cluster to
 indicate that you have logged in.
-
-<p align="center">
-  <img src="images/gcp_account_login.png">
-  <em>
-    </br>
-    (click image to enlarge)
-  </em>
-</p>
 
 ---
 #### Configure an existing cluster for Google Cloud Identity Login
