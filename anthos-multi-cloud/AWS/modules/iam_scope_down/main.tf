@@ -644,6 +644,7 @@ data "aws_iam_policy_document" "cp_ec2_policy_document" {
     effect = "Allow"
     actions = [
       "ec2:DescribeAccountAttributes",
+      "ec2:DescribeAvailabilityZones",
       "ec2:DescribeDhcpOptions",
       "ec2:DescribeInstances",
       "ec2:DescribeInstanceTypes",
@@ -903,6 +904,41 @@ resource "aws_iam_role_policy" "cp_elasticloadbalancing_policy" {
   name   = "${var.anthos_prefix}-anthos-cp-elasticloadbalancing-policy"
   role   = aws_iam_role.cp_role.id
   policy = data.aws_iam_policy_document.cp_elasticloadbalancing_policy_document.json
+}
+
+data "aws_iam_policy_document" "cp_elasticfilesystem_policy_document" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "elasticfilesystem:DescribeAccessPoints",
+      "elasticfilesystem:DescribeFileSystems",
+      "elasticfilesystem:DescribeMountTargets",
+    ]
+    resources = ["*"]
+  }
+  statement {
+    effect = "Allow"
+    actions = [
+      "elasticfilesystem:CreateAccessPoint",
+    ]
+    resources = [
+      "arn:aws:elasticfilesystem:*:*:file-system/*",
+    ]
+  }
+  statement {
+    effect = "Allow"
+    actions = [
+      "elasticfilesystem:DeleteAccessPoint",
+    ]
+    resources = [
+      "arn:aws:elasticfilesystem:*:*:access-point/*",
+    ]
+  }
+}
+resource "aws_iam_role_policy" "cp_elasticfilesystem_policy" {
+  name   = "${var.anthos_prefix}-anthos-cp-elasticfilesystem-policy"
+  role   = aws_iam_role.cp_role.id
+  policy = data.aws_iam_policy_document.cp_elasticfilesystem_policy_document.json
 }
 
 data "aws_iam_policy_document" "cp_kms_policy_document" {
