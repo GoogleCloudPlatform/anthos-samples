@@ -54,7 +54,7 @@ resource "local_file" "temp_ssh_priv_key_file" {
 
 module "gcloud_add_ssh_key_metadata" {
   source                   = "terraform-google-modules/gcloud/google"
-  version                  = "3.1.1"
+  version                  = "3.1.2"
   platform                 = "linux"
   service_account_key_file = var.credentials_file
   module_depends_on = [
