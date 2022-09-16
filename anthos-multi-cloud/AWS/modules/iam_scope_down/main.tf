@@ -112,8 +112,10 @@ data "aws_iam_policy_document" "api_ec2_policy_document" {
       "ec2:DescribeAccountAttributes",
       "ec2:DescribeInternetGateways",
       "ec2:DescribeKeyPairs",
+      "ec2:DescribeLaunchTemplates",
       "ec2:DescribeNetworkInterfaces",
       "ec2:DescribeSecurityGroups",
+      "ec2:DescribeSecurityGroupRules",
       "ec2:DescribeSubnets",
       "ec2:DescribeVpcs",
       "ec2:GetConsoleOutput",
@@ -155,6 +157,7 @@ data "aws_iam_policy_document" "api_ec2_policy_document" {
       "ec2:DeleteSecurityGroup",
       "ec2:RevokeSecurityGroupEgress",
       "ec2:RevokeSecurityGroupIngress",
+      "ec2:DeleteTags",
     ]
     resources = [
       "arn:aws:ec2:*:*:security-group/*",
@@ -182,6 +185,21 @@ data "aws_iam_policy_document" "api_ec2_policy_document" {
       values   = [var.access_control_tag_value]
     }
   }
+  statement {
+    effect = "Allow"
+    actions = [
+      "ec2:CreateTags",
+      "ec2:DeleteTags",
+    ]
+    resources = [
+      "arn:aws:ec2:*:*:security-group-rule/*",
+    ]
+    condition {
+      test     = "StringEquals"
+      variable = "aws:ResourceTag/${var.access_control_tag_key}"
+      values   = [var.access_control_tag_value]
+    }
+  }
   // Allow creating launch templates with a specific tag.
   statement {
     effect = "Allow"
@@ -202,7 +220,9 @@ data "aws_iam_policy_document" "api_ec2_policy_document" {
   statement {
     effect = "Allow"
     actions = [
+      "ec2:CreateTags",
       "ec2:DeleteLaunchTemplate",
+      "ec2:DeleteTags",
     ]
     resources = [
       "arn:aws:ec2:*:*:launch-template/*",
@@ -267,6 +287,8 @@ data "aws_iam_policy_document" "api_ec2_policy_document" {
   statement {
     effect = "Allow"
     actions = [
+      "ec2:CreateTags",
+      "ec2:DeleteTags",
       "ec2:DeleteVolume",
     ]
     resources = [
@@ -323,12 +345,30 @@ data "aws_iam_policy_document" "api_ec2_policy_document" {
   statement {
     effect = "Allow"
     actions = [
+      "ec2:CreateTags",
       "ec2:DeleteNetworkInterface",
+      "ec2:DeleteTags",
       "ec2:ModifyNetworkInterfaceAttribute",
     ]
     resources = [
       "arn:aws:ec2:*:*:network-interface/*",
       "arn:aws:ec2:*:*:security-group/*",
+    ]
+    condition {
+      test     = "StringEquals"
+      variable = "aws:ResourceTag/${var.access_control_tag_key}"
+      values   = [var.access_control_tag_value]
+    }
+  }
+  // Allow modifying instances that we created.
+  statement {
+    effect = "Allow"
+    actions = [
+      "ec2:CreateTags",
+      "ec2:DeleteTags",
+    ]
+    resources = [
+      "arn:aws:ec2:*:*:instance/*",
     ]
     condition {
       test     = "StringEquals"
@@ -410,6 +450,7 @@ data "aws_iam_policy_document" "api_elasticloadbalancing_policy_document" {
   statement {
     effect = "Allow"
     actions = [
+      "elasticloadbalancing:AddTags",
       "elasticloadbalancing:CreateTargetGroup",
     ]
     resources = [
@@ -421,12 +462,13 @@ data "aws_iam_policy_document" "api_elasticloadbalancing_policy_document" {
       values   = [var.access_control_tag_value]
     }
   }
-  // Allow modifying and deleting target groups with a specific tag.
   statement {
     effect = "Allow"
     actions = [
+      "elasticloadbalancing:AddTags",
       "elasticloadbalancing:DeleteTargetGroup",
       "elasticloadbalancing:ModifyTargetGroupAttributes",
+      "elasticloadbalancing:RemoveTags",
     ]
     resources = [
       "arn:aws:elasticloadbalancing:*:*:targetgroup/gke-*",
@@ -437,14 +479,15 @@ data "aws_iam_policy_document" "api_elasticloadbalancing_policy_document" {
       values   = [var.access_control_tag_value]
     }
   }
-  // Allow creating load balancers and listeners with a specific tag.
   statement {
     effect = "Allow"
     actions = [
+      "elasticloadbalancing:AddTags",
       "elasticloadbalancing:CreateListener",
       "elasticloadbalancing:CreateLoadBalancer",
     ]
     resources = [
+      "arn:aws:elasticloadbalancing:*:*:listener/net/gke-*",
       "arn:aws:elasticloadbalancing:*:*:loadbalancer/net/gke-*",
     ]
     condition {
@@ -453,12 +496,13 @@ data "aws_iam_policy_document" "api_elasticloadbalancing_policy_document" {
       values   = [var.access_control_tag_value]
     }
   }
-  // Allow deleting load balancers and listeners that we created.
   statement {
     effect = "Allow"
     actions = [
+      "elasticloadbalancing:AddTags",
       "elasticloadbalancing:DeleteListener",
       "elasticloadbalancing:DeleteLoadBalancer",
+      "elasticloadbalancing:RemoveTags",
     ]
     resources = [
       "arn:aws:elasticloadbalancing:*:*:listener/net/gke-*",
