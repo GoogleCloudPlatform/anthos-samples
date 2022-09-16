@@ -124,7 +124,10 @@ you should be able to `Login` using any of the provided GCP accounts.
 
 > **Note:** When using the [Terraform script](quickstart.md) from this
 > repository to create your clusters, you can simply set the
-> [`gcp_login_accounts`](/anthos-bm-gcp-terraform/variables.tf#L181) variable with a list of GCP accounts.
+> [`gcp_login_accounts`](/anthos-bm-gcp-terraform/variables.tf#L181) variable
+> with a list of GCP accounts. This will automatically fill in the
+> [template configuration file](/anthos-bm-gcp-terraform/resources/templates/anthos_gce_cluster.tpl#L60-L63)
+> when the script runs.
 
 ```sh
 apiVersion: baremetal.cluster.gke.io/v1
