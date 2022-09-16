@@ -156,10 +156,10 @@ indicate that you have logged in.
 ---
 #### Configure an existing cluster for Google Cloud Identity Login
 
-First, make sure you are in the admin workstation and have the
-`KUBECONFIG` environment variable pointing to the correct cluster's
-configuration. The following steps assume that you created the Anthos on bare
-metal cluster using the [Terraform script](quickstart.md) from this repository.
+The following steps assume that you created the Anthos on bare metal cluster
+using the [Terraform script](quickstart.md) from this repository. First, make
+sure you are in the admin workstation and have the `KUBECONFIG` environment
+variable pointing to the correct cluster's configuration.
 
 1. SSH into the admin workstation VM:
     ```sh
