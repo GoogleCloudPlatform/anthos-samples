@@ -92,18 +92,19 @@ You can copy this token and use it to login via the Cloud Console.
 
 Instead of creating a Kubernetes Service Account Token, you can use the email
 identity associated with your Google Cloud Platform account to `Login` to the
-cluster. There are two scenarios for using this method:
-
-  - [Configure a new cluster for Google Cloud Identity Login](#configure-a-new-cluster-for-google-cloud-identity-login)
-  - [Configure an existing cluster for Google Cloud Identity Login](#configure-an-existing-cluster-for-google-cloud-identity-login)
+cluster.
 
 <p align="center">
-  <img src="images/gcp_account_login.png">
+  <img src="images/gcp_account_login.png" width="600">
   <em>
     </br>
     (click image to enlarge)
   </em>
 </p>
+
+There are two scenarios for using this method:
+  - [Configure a new cluster for Google Cloud Identity Login](#configure-a-new-cluster-for-google-cloud-identity-login)
+  - [Configure an existing cluster for Google Cloud Identity Login](#configure-an-existing-cluster-for-google-cloud-identity-login)
 
 ---
 #### Configure a new cluster for Google Cloud Identity Login
