@@ -108,14 +108,14 @@ There are two scenarios for using this method:
 
 ---
 #### Configure a new cluster for Google Cloud Identity Login
-A new cluster can be configured to allow `Login` using GCP Accounts by
+A new cluster can be configured to allow `Login` using GCP accounts by
 setting the `spec.clusterSecurity.authorization.clusterAdmin.gcpAccounts`
-field in the cluster configuration. This field accepts a list of GCP Accounts
+field in the cluster configuration. This field accepts a list of GCP accounts
 that must be allowed to `Login` to the cluster. Upon creation of the cluster
-you should be able to `Login` using any of the provided GCP Accounts. If using
-the Terraform script from this repository then you can simply set the
-[`gcp_login_accounts`](/anthos-bm-gcp-terraform/variables.tf#L181) variable with
-a list of GCP Accounts.
+you should be able to `Login` using any of the provided GCP accounts. When using
+the Terraform script from this repository to create your clusters, you can
+simply set the [`gcp_login_accounts`](/anthos-bm-gcp-terraform/variables.tf#L181)
+variable with a list of GCP accounts.
 
 ```sh
 apiVersion: baremetal.cluster.gke.io/v1
@@ -145,8 +145,8 @@ indicate that you have logged in.
 ---
 #### Configure an existing cluster for Google Cloud Identity Login
 
-To configure an existing cluster to allow GCP Accounts for `Login` you must
-first create Kubernetes `Roles` and `RoleBindings` against the GCP Accounts you
+To configure an existing cluster to allow GCP accounts for `Login` you must
+first create Kubernetes `Roles` and `RoleBindings` against the GCP accounts you
 want to use. First make sure you are in the admin workstation and have the
 `KUBECONFIG` environment variable pointing to the correct cluster's
 configuration.
@@ -161,7 +161,7 @@ Ensure that the `KUBECONFIG` environment variable is set
 export KUBECONFIG=$HOME/bmctl-workspace/$CLUSTER_ID/$CLUSTER_ID-kubeconfig
 ```
 
-Next, create the following `Roles` and `RoleBindings` for **each** GCP Account
+Next, create the following `Roles` and `RoleBindings` for **each** GCP account
 you want to allow logging-in to the cluster.
 
 ```sh
