@@ -1,3 +1,0 @@
-constraint: constraints/compute.vmCanIpForward
-listPolicy:
- allValues: ALLOW

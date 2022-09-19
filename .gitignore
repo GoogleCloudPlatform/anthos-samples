@@ -28,3 +28,7 @@ new_header_check.log
 admin-openrc.sh
 
 abm-sa-temp.json
+
+# APIGee samples specific ignores
+new_policy.yaml
+anthos-bm-owner.json
