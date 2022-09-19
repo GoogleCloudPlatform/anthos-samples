@@ -15,7 +15,7 @@
  */
 
 
- variable "project_id" {
+variable "project_id" {
   description = "Unique identifer of the Google Cloud Project that is to be used"
   type        = string
 }
