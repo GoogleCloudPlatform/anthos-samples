@@ -1,6 +1,7 @@
 #!/bin/bash
 
-export project=$(gcloud config get-value project)
+project=$(gcloud config get-value project)
+export  project
 
 enable_services() {
 	gcloud services enable \
@@ -10,11 +11,11 @@ enable_services() {
 }
 
 apply_constraints() {
-	gcloud beta resource-manager org-policies disable-enforce compute.requireShieldedVm --project=${project}
-	gcloud beta resource-manager org-policies disable-enforce compute.requireOsLogin --project=${project}
-	gcloud beta resource-manager org-policies disable-enforce iam.disableServiceAccountCreation --project=${project}
-	gcloud beta resource-manager org-policies disable-enforce iam.disableServiceAccountKeyCreation --project=${project}
-	gcloud beta resource-manager org-policies disable-enforce compute.skipDefaultNetworkCreation --project=${project}
+	gcloud beta resource-manager org-policies disable-enforce compute.requireShieldedVm --project="${project}"
+	gcloud beta resource-manager org-policies disable-enforce compute.requireOsLogin --project="${project}"
+	gcloud beta resource-manager org-policies disable-enforce iam.disableServiceAccountCreation --project="${project}"
+	gcloud beta resource-manager org-policies disable-enforce iam.disableServiceAccountKeyCreation --project="${project}"
+	gcloud beta resource-manager org-policies disable-enforce compute.skipDefaultNetworkCreation --project="${project}"
 
 	declare -a policies=("constraints/compute.trustedImageProjects"
 		"constraints/compute.vmExternalIpAccess"
@@ -39,7 +40,7 @@ EOF
 
 create_network() {
 	echo "Creating default Network"
-	gcloud compute networks create default --project=$project --subnet-mode=auto --mtu=1460 --bgp-routing-mode=regional
+	gcloud compute networks create default --project="${project}" --subnet-mode=auto --mtu=1460 --bgp-routing-mode=regional
 	echo "default Network is Created"
 }
 
@@ -56,8 +57,8 @@ apply_firewall_policies() {
 create_owner_service_account() {
 	echo "Creating Owner Service Account"
 	gcloud iam service-accounts create baremetal-owner
-	gcloud iam service-accounts keys create anthos-bm-owner.json --iam-account=baremetal-owner@${project}.iam.gserviceaccount.com
-	gcloud projects add-iam-policy-binding ${project} --member=serviceAccount:baremetal-owner@${project}.iam.gserviceaccount.com --role=roles/owner
+	gcloud iam service-accounts keys create anthos-bm-owner.json --iam-account=baremetal-owner@"${project}".iam.gserviceaccount.com
+	gcloud projects add-iam-policy-binding "${project}" --member=serviceAccount:baremetal-owner@"${project}".iam.gserviceaccount.com --role=roles/owner
 	gcloud auth activate-service-account --key-file anthos-bm-owner.json
 
 }
