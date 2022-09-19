@@ -27,7 +27,7 @@ locals {
 
 output "admin_vm_ssh" {
   description = "Run the following command to provision the anthos cluster."
-  value = join("\n", [
+  value = var.mode != "setup" ? null : join("\n", [
     module.install_abm_on_gce.admin_vm_ssh,
     local.install_apigee_instructions
   ])
@@ -35,7 +35,7 @@ output "admin_vm_ssh" {
 
 output "installation_check" {
   description = "Run the following command to check the Anthos bare metal installation status."
-  value = join("\n", [
+  value = var.mode == "setup" ? null : join("\n", [
     module.install_abm_on_gce.installation_check,
     local.install_apigee_instructions
   ])
