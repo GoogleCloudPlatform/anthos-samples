@@ -100,10 +100,10 @@ using `kubectl apply -f vmruntime.yaml`.
 
 Validate that the `VMRuntime` is enabled.
 ```sh
-kubectl describe vmruntime vmruntime | grep Ready
+kubectl wait --for=jsonpath='{.status.ready}'=true --timeout=300s vmruntime vmruntime
 
 # expected output
-  Ready:                       true
+vmruntime.vm.cluster.gke.io/vmruntime condition met
 ```
 ---
 ###  Install the [`virtctl`](https://kubevirt.io/user-guide/operations/virtctl_client_tool/) plugin for `kubectl`
@@ -159,33 +159,42 @@ create the VM using `kubectl apply -f pos-vm.yaml`.
 kubectl virt create vm pos-vm \
 --boot-disk-size=80Gi \
 --memory=4Gi \
---cpu=2 \
+--vcpus=2 \
 --image=https://storage.googleapis.com/pos-vm-images/pos-vm.qcow2
 ```
 
 ```sh
 # expected output
-Constructing yaml for vm "pos-vm":
-Deployment yaml for vm "pos-vm" is saved to pos-vm.yaml.
-Apply yaml for vm "pos-vm"
-Creating boot DataVolume "pos-vm-boot-dv"
-Creating gvm "pos-vm"
+Constructing manifest for vm "pos-vm":
+Manifest for vm "pos-vm" is saved to /home/tfadmin/google-virtctl/pos-vm.yaml
+Applying manifest for vm "pos-vm"
+Created gvm "pos-vm"
 ```
 > **Note:** After you run `kubectl virt create vm pos-vm`, the CLI would have
 > created a yaml file named after the vm (`pos-vm.yaml`). You can inspect it to
-> see the definiton of the `VirtualMachine` and `DataVolume`.
+> see the definiton of the `VirtualMachine` and `VirtualMachineDisk`.
 
 ---
 ### Check the VM creation status
 
-Creation of the VM requires two resources to be created: `DataVolume` and
-`VirtualMachine`. `DataVolume` is the _persistent disk_ where the contents of
-the **VM image** is imported into and is made bootable from. `VirtualMachine` is
-the **VM template** created based off of the image. The `DataVolume` is mounted
-into the `VirtualMachine` before the VM is booted up. Creation of a
-`VirtualMachine`, automatically triggers the creation of a
-`VirtualMachineInstance` resource which represents a _RUNNING_ instance of a VM.
+Creation of the VM requires two resources to be created: `VirtualMachineDisk` and
+`VirtualMachine`. `VirtualMachineDisk` is the _persistent disk_ where the
+contents of the **VM image** is imported into and is made bootable from.
+`VirtualMachine` is the **VM template** created based off of the image. The
+`VirtualMachineDisk` is mounted into the `VirtualMachine` before the VM is
+booted up. Creation of a `VirtualMachine`, automatically triggers the creation
+of a `VirtualMachineInstance` resource which represents a _RUNNING_ instance of
+a VM.
 
+- Check the status of the `VirtualMachineDisk`.
+    ```sh
+    kubectl get VirtualMachineDisk
+    ```
+    ```sh
+    # expected output
+    NAME               AGE
+    pos-vm-boot-dv     8s
+    ```
 - Check the status of the `DataVolume`.
     ```sh
     # you can use dv and datavolume interchangeably
@@ -256,10 +265,10 @@ into the `VirtualMachine` before the VM is booted up. Creation of a
     NAME      AGE     PHASE     IP              NODENAME                      READY
     pos-vm    40m     Running   192.168.3.250   kubevirt-cluster-abm-w1-001   True
     ```
-- You may also use the `vm.cluster.gke.io/v1alpha1` API to get a concatanated
+- You may also use the `vm.cluster.gke.io/v1` API to get a concatenated
   update of the two resources above.
     ```sh
-    k get gvm
+    kubectl get gvm
 
     NAME      STATUS    AGE     IP
     pos-vm    Running   40m     192.168.3.250

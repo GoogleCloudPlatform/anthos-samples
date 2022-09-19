@@ -13,59 +13,36 @@
 # limitations under the License.
 
 # [START anthosbaremetal_anthos_vmruntime_pos_vm_datavolume_pos_vm_boot_dv]
-apiVersion: cdi.kubevirt.io/v1beta1
-kind: DataVolume
+apiVersion: vm.cluster.gke.io/v1
+kind: VirtualMachineDisk
 metadata:
-  creationTimestamp: null
   name: pos-vm-boot-dv
   namespace: default
 spec:
-  pvc:
-    accessModes:
-    - ReadWriteOnce
-    resources:
-      requests:
-        storage: 80Gi
-    storageClassName: local-shared
+  size: 80Gi
   source:
     http:
       url: https://storage.googleapis.com/pos-vm-images/pos-vm.qcow2
 # [END anthosbaremetal_anthos_vmruntime_pos_vm_datavolume_pos_vm_boot_dv]
 ---
 # [START anthosbaremetal_anthos_vmruntime_pos_vm_virtualmachine_pos_vm]
-apiVersion: vm.cluster.gke.io/v1alpha1
+apiVersion: vm.cluster.gke.io/v1
 kind: VirtualMachine
 metadata:
-  creationTimestamp: null
   name: pos-vm
   namespace: default
 spec:
-  compute: {}
-  disks: null
+  compute:
+    cpu:
+      vcpus: 2
+    memory:
+      capacity: 4Gi
+  disks:
+  - boot: true
+    driver: virtio
+    virtualMachineDiskName: pos-vm-boot-dv
   interfaces:
   - name: eth0
+    default: true
     networkName: pod-network
-  virtSpec:
-    template:
-      metadata:
-        creationTimestamp: null
-        labels:
-          kubevirt.io/vm: pos-vm
-      spec:
-        domain:
-          cpu:
-            cores: 2
-          devices:
-            disks:
-            - bootOrder: 1
-              disk:
-                bus: virtio
-              name: pos-vm-boot-dv
-          resources:
-            requests:
-              memory: 4Gi
-        volumes:
-        - dataVolume:
-            name: pos-vm-boot-dv
-          name: pos-vm-boot-dv
 # [END anthosbaremetal_anthos_vmruntime_pos_vm_virtualmachine_pos_vm]
