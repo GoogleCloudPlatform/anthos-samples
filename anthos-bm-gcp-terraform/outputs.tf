@@ -80,3 +80,19 @@ output "ingress_ip" {
   EOF
   value       = var.mode == "manuallb" ? "Public IP of the ingress service loadbalancer: ${module.configure_ingress_lb[0].public_ip}\n" : null
 }
+
+output "admin_workstation_ip" {
+  description = <<EOF
+    This is the IP address of your admin workstation. You may access the Anthos
+    on bare metal cluster by accessing this IP address.
+  EOF
+  value       = var.as_sub_module ? local.admin_vm_hostnames[0] : null
+}
+
+output "admin_workstation_ssh_key" {
+  description = <<EOF
+    This is the local file path for the SSH key of the admin workstation. You
+    may use this to SSH into the admin workstation.
+  EOF
+  value       = var.as_sub_module ? format(local.private_key_file_path_template, local.admin_vm_hostnames[0]) : null
+}
