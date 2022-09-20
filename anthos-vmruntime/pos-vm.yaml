@@ -23,6 +23,7 @@ spec:
   source:
     http:
       url: https://storage.googleapis.com/pos-vm-images/pos-vm.qcow2
+  storageClassName: local-shared
 # [END anthosbaremetal_anthos_vmruntime_pos_vm_datavolume_pos_vm_boot_dv]
 ---
 # [START anthosbaremetal_anthos_vmruntime_pos_vm_virtualmachine_pos_vm]
