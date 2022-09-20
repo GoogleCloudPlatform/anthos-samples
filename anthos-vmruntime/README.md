@@ -178,13 +178,18 @@ Created gvm "pos-vm"
 ### Check the VM creation status
 
 Creation of the VM requires two resources to be created: `VirtualMachineDisk` and
-`VirtualMachine`. `VirtualMachineDisk` is the _persistent disk_ where the
-contents of the **VM image** is imported into and is made bootable from.
-`VirtualMachine` is the **VM template** created based off of the image. The
-`VirtualMachineDisk` is mounted into the `VirtualMachine` before the VM is
-booted up. Creation of a `VirtualMachine`, automatically triggers the creation
-of a `VirtualMachineInstance` resource which represents a _RUNNING_ instance of
-a VM.
+`VirtualMachine`. 
+
+- `VirtualMachineDisk` is the _persistent disk_ where the contents of the
+**VM image** is imported into and is made bootable from. The `VirtualMachineDisk`
+wraps around the `DataVolume` resource which can be used to monitor progress
+of the import.
+
+- `VirtualMachine` is the **VM template** created based off of the image. 
+Creation of a `VirtualMachine`, automatically triggers the creation of a
+`VirtualMachineInstance` resource which represents a _RUNNING_ instance of
+a VM. The `VirtualMachineDisk` is mounted into the `VirtualMachine` before the VM is
+booted up. 
 
 - Check the status of the `VirtualMachineDisk`.
     ```sh
