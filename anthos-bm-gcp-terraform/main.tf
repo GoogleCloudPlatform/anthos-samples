@@ -254,6 +254,7 @@ resource "local_file" "cluster_yaml_bundledlb" {
   content = templatefile(local.cluster_yaml_template_file, {
     clusterId       = var.abm_cluster_id,
     projectId       = var.project_id,
+    gcp_accounts    = var.gcp_login_accounts,
     controlPlaneIps = local.controlplane_vxlan_ips,
     workerNodeIps   = local.worker_vxlan_ips
   })
@@ -272,6 +273,7 @@ resource "local_file" "cluster_yaml_manuallb" {
   content = templatefile(local.cluster_yaml_manuallb_template_file, {
     clusterId       = var.abm_cluster_id,
     projectId       = var.project_id,
+    gcp_accounts    = var.gcp_login_accounts,
     controlPlaneIps = local.controlplane_internal_ips,
     workerNodeIps   = local.worker_internal_ips,
     controlPlaneVIP = module.configure_controlplane_lb[0].public_ip,

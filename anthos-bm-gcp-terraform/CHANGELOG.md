@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.12.1](https://github.com/GoogleCloudPlatform/anthos-samples/compare/v0.12.0...v0.12.1) (2022-09-16)
+
+
+### Miscellaneous Chores
+
+* release 0.12.1 ([#407](https://github.com/GoogleCloudPlatform/anthos-samples/issues/407)) ([5431e83](https://github.com/GoogleCloudPlatform/anthos-samples/commit/5431e836afe5f2aaf23f174f85e15d7e580ebc78))
+
+## [0.12.0](https://github.com/GoogleCloudPlatform/anthos-samples/compare/v0.11.4...v0.12.0) (2022-09-14)
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/gruntwork-io/terratest to v0.40.20 ([#367](https://github.com/GoogleCloudPlatform/anthos-samples/issues/367)) ([eb0856a](https://github.com/GoogleCloudPlatform/anthos-samples/commit/eb0856a86f5f3358c453457dfda38a95ed52067e))
+
+
+### Miscellaneous Chores
+
+* release 0.12.0 ([93946ee](https://github.com/GoogleCloudPlatform/anthos-samples/commit/93946eef93f7ed5170d2144c3fd4a63b274d9efa))
+
 ## [0.11.4](https://github.com/GoogleCloudPlatform/anthos-samples/compare/v0.11.3...v0.11.4) (2022-08-12)
 
 

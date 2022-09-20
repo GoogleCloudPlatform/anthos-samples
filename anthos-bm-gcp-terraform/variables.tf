@@ -178,6 +178,12 @@ variable "gce_vm_service_account" {
   default     = ""
 }
 
+variable "gcp_login_accounts" {
+  description = "GCP account email addresses that must be allowed to login to the cluster using Google Cloud Identity."
+  type        = list(string)
+  default     = []
+}
+
 variable "mode" {
   description = <<EOF
     Indication of the execution mode. By default the terraform execution will end
