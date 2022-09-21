@@ -24,6 +24,7 @@ ZONE=$(cut -d "=" -f2- <<< "$(grep < init.vars ZONE)")
 IS_ADMIN_VM=$(cut -d "=" -f2- <<< "$(grep < init.vars IS_ADMIN_VM)")
 VXLAN_IP_ADDRESS=$(cut -d "=" -f2- <<< "$(grep < init.vars VXLAN_IP_ADDRESS)")
 SERVICE_ACCOUNT=$(cut -d "=" -f2- <<< "$(grep < init.vars SERVICE_ACCOUNT)")
+TERRAFORM_SA_PATH=$(cut -d "=" -f2- <<< "$(grep < init.vars TERRAFORM_SA_PATH)")
 HOSTNAMES=$(cut -d "=" -f2- <<< "$(grep < init.vars HOSTNAMES)")
 VM_INTERNAL_IPS=$(cut -d "=" -f2- <<< "$(grep < init.vars VM_INTERNAL_IPS)")
 LOG_FILE=$(cut -d "=" -f2- <<< "$(grep < init.vars LOG_FILE)")
@@ -40,6 +41,9 @@ HOSTNAME=$(hostname)
 function __main__ () {
   echo "[$DATE] Init script running for host $HOSTNAME"
   __print_separator__
+
+  # ensure the correct service account is being set
+  gcloud auth activate-service-account --key-file "$TERRAFORM_SA_PATH"
 
   __install_deps__
   __setup_vxlan__

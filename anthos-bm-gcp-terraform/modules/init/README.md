@@ -21,11 +21,23 @@ terraform-docs markdown table \
 ```
 
 <!-- BEGIN_TF_DOCS -->
+## Requirements
+
+No requirements.
+
+## Providers
+
+| Name | Version |
+|------|---------|
+| <a name="provider_local"></a> [local](#provider\_local) | n/a |
+| <a name="provider_null"></a> [null](#provider\_null) | n/a |
+| <a name="provider_tls"></a> [tls](#provider\_tls) | n/a |
+
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_gcloud_add_ssh_key_metadata"></a> [gcloud\_add\_ssh\_key\_metadata](#module\_gcloud\_add\_ssh\_key\_metadata) | terraform-google-modules/gcloud/google | 3.1.1 |
+| <a name="module_gcloud_add_ssh_key_metadata"></a> [gcloud\_add\_ssh\_key\_metadata](#module\_gcloud\_add\_ssh\_key\_metadata) | terraform-google-modules/gcloud/google | 3.1.2 |
 
 ## Resources
 
@@ -34,6 +46,7 @@ terraform-docs markdown table \
 | [local_file.temp_ssh_priv_key_file](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [local_file.temp_ssh_pub_key_file](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [null_resource.exec_init_script](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
+| [null_resource.module_depends_on](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [tls_private_key.ssh_key_pair](https://registry.terraform.io/providers/hashicorp/tls/latest/docs/resources/private_key) | resource |
 
 ## Inputs
@@ -56,6 +69,7 @@ terraform-docs markdown table \
 | <a name="input_pub_key_path_template"></a> [pub\_key\_path\_template](#input\_pub\_key\_path\_template) | Template denoting the path where the public key is to be stored | `string` | `"../../resources/.ssh-key-%s.pub"` | no |
 | <a name="input_publicIp"></a> [publicIp](#input\_publicIp) | Publicly accessible IP address of the target VM | `string` | n/a | yes |
 | <a name="input_resources_path"></a> [resources\_path](#input\_resources\_path) | Path to the resources folder with the template files | `string` | n/a | yes |
+| <a name="input_terraform_sa_path"></a> [terraform\_sa\_path](#input\_terraform\_sa\_path) | Path inside the VMs to which the service account used for the Terraform run<br>    must be copied to. This Service Account is used for various actions when<br>    initializing the VM and installing Anthos on bare metal | `string` | n/a | yes |
 | <a name="input_username"></a> [username](#input\_username) | The name of the user to be created to execute the init script | `string` | `"tfadmin"` | no |
 | <a name="input_zone"></a> [zone](#input\_zone) | Google Cloud Zone where the target VM is in | `string` | `"us-central1-a"` | no |
 
