@@ -153,7 +153,7 @@ directory.
 
 The following command uses the `virtctl` plugin of the `kubectl` CLI.
 Alternatively, you can also create the VM using **KRM** definitions in a yaml.
-The [/anthos-vmruntime/pos-vm.yaml](/pos-vm.yaml) is another way of expressing the creation of a
+The [/anthos-vmruntime/pos-vm.yaml](pos-vm.yaml) is another way of expressing the creation of a
 VM. Thus, you can also copy this yaml definition into the admin workstation and
 create the VM using `kubectl apply -f pos-vm.yaml`.
 
