@@ -19,7 +19,7 @@ metadata:
   name: api-server-svc
 spec:
   selector:
-    vm.cluster.gke.io/vm-name: pos-vm
+    kubevirt/vm: pos-vm
   ports:
   - protocol: TCP
     port: 8080
