@@ -30,8 +30,8 @@ terraform-docs markdown table \
 
 | Name | Version |
 |------|---------|
-| <a name="provider_google"></a> [google](#provider\_google) | >= 3.68.0 |
-| <a name="provider_local"></a> [local](#provider\_local) | n/a |
+| <a name="provider_google"></a> [google](#provider\_google) | 4.36.0 |
+| <a name="provider_local"></a> [local](#provider\_local) | 2.2.3 |
 
 ## Modules
 
@@ -47,7 +47,7 @@ terraform-docs markdown table \
 | <a name="module_gke_hub_membership"></a> [gke\_hub\_membership](#module\_gke\_hub\_membership) | terraform-google-modules/gcloud/google | ~>3.1.1 |
 | <a name="module_init_hosts"></a> [init\_hosts](#module\_init\_hosts) | ./modules/init | n/a |
 | <a name="module_install_abm"></a> [install\_abm](#module\_install\_abm) | ./modules/install | n/a |
-| <a name="module_instance_template"></a> [instance\_template](#module\_instance\_template) | terraform-google-modules/vm/google//modules/instance_template | ~> 7.7.0 |
+| <a name="module_instance_template"></a> [instance\_template](#module\_instance\_template) | terraform-google-modules/vm/google//modules/instance_template | ~> 7.8.0 |
 | <a name="module_worker_vm_hosts"></a> [worker\_vm\_hosts](#module\_worker\_vm\_hosts) | ./modules/vm | n/a |
 
 ## Resources
@@ -70,6 +70,7 @@ terraform-docs markdown table \
 | <a name="input_anthos_service_account_name"></a> [anthos\_service\_account\_name](#input\_anthos\_service\_account\_name) | Name given to the Service account that will be used by the Anthos cluster components | `string` | `"baremetal-gcr"` | no |
 | <a name="input_boot_disk_size"></a> [boot\_disk\_size](#input\_boot\_disk\_size) | Size of the primary boot disk to be attached to the Compute Engine VMs in GBs | `number` | `200` | no |
 | <a name="input_boot_disk_type"></a> [boot\_disk\_type](#input\_boot\_disk\_type) | Type of the boot disk to be attached to the Compute Engine VMs | `string` | `"pd-ssd"` | no |
+| <a name="input_connect_agent_account"></a> [connect\_agent\_account](#input\_connect\_agent\_account) | GCP account email address to use with Connect Agent for logging into the cluster using Google Cloud identity. | `string` | `""` | no |
 | <a name="input_credentials_file"></a> [credentials\_file](#input\_credentials\_file) | Path to the Google Cloud Service Account key file.<br>    This is the key that will be used to authenticate the provider with the Cloud APIs | `string` | n/a | yes |
 | <a name="input_enable_nested_virtualization"></a> [enable\_nested\_virtualization](#input\_enable\_nested\_virtualization) | Enable nested virtualization on the Compute Engine VMs are to be scheduled | `string` | `"true"` | no |
 | <a name="input_gce_vm_service_account"></a> [gce\_vm\_service\_account](#input\_gce\_vm\_service\_account) | Service Account to use for GCE instances | `string` | `""` | no |

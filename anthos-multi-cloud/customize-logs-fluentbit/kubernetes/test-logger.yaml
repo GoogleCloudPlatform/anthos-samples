@@ -12,16 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# [START anthosbaremetal_anthos_vmruntime_pos_service_service_api_server_svc]
-apiVersion: v1
-kind: Service
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: api-server-svc
+  name: test-logger
 spec:
+  replicas: 3
   selector:
-    kubevirt/vm: pos-vm
-  ports:
-  - protocol: TCP
-    port: 8080
-    targetPort: 8081
-# [END anthosbaremetal_anthos_vmruntime_pos_service_service_api_server_svc]
+    matchLabels:
+      component: test-logger
+  template:
+    metadata:
+      labels:
+        component: test-logger
+    spec:
+      containers:
+        - name: test-logger
+          image: ${REGION}-docker.pkg.dev/${PROJECT_ID}/test-logger-repo/test-logger:v1
+      imagePullSecrets:
+      - name: ${SECRET_NAME}

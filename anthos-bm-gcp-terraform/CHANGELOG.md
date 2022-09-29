@@ -1,5 +1,41 @@
 # Changelog
 
+## [0.12.2](https://github.com/GoogleCloudPlatform/anthos-samples/compare/v0.12.1...v0.12.2) (2022-09-23)
+
+
+### Features
+
+* enable google login via cluster configuration ([#409](https://github.com/GoogleCloudPlatform/anthos-samples/issues/409)) ([51b0ffd](https://github.com/GoogleCloudPlatform/anthos-samples/commit/51b0ffd0db66ea2701211c52c074be4a53705119))
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/gruntwork-io/terratest to v0.40.22 ([#406](https://github.com/GoogleCloudPlatform/anthos-samples/issues/406)) ([d59bcb5](https://github.com/GoogleCloudPlatform/anthos-samples/commit/d59bcb5ca73f54843b09e8e429cd47971fb40ec9))
+
+
+### Miscellaneous Chores
+
+* release 0.12.2 ([e515604](https://github.com/GoogleCloudPlatform/anthos-samples/commit/e51560466a8359bac292475eab34824d49738e7d))
+
+## [0.12.1](https://github.com/GoogleCloudPlatform/anthos-samples/compare/v0.12.0...v0.12.1) (2022-09-16)
+
+
+### Miscellaneous Chores
+
+* release 0.12.1 ([#407](https://github.com/GoogleCloudPlatform/anthos-samples/issues/407)) ([5431e83](https://github.com/GoogleCloudPlatform/anthos-samples/commit/5431e836afe5f2aaf23f174f85e15d7e580ebc78))
+
+## [0.12.0](https://github.com/GoogleCloudPlatform/anthos-samples/compare/v0.11.4...v0.12.0) (2022-09-14)
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/gruntwork-io/terratest to v0.40.20 ([#367](https://github.com/GoogleCloudPlatform/anthos-samples/issues/367)) ([eb0856a](https://github.com/GoogleCloudPlatform/anthos-samples/commit/eb0856a86f5f3358c453457dfda38a95ed52067e))
+
+
+### Miscellaneous Chores
+
+* release 0.12.0 ([93946ee](https://github.com/GoogleCloudPlatform/anthos-samples/commit/93946eef93f7ed5170d2144c3fd4a63b274d9efa))
+
 ## [0.11.4](https://github.com/GoogleCloudPlatform/anthos-samples/compare/v0.11.3...v0.11.4) (2022-08-12)
 
 
