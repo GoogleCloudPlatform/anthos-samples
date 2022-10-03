@@ -43,3 +43,5 @@ admin-openrc.sh
 .pytest_cache
 __pycache__
 *.data
+
+abm-sa-temp.json
