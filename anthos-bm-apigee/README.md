@@ -38,13 +38,15 @@ This repository shows you how to install Apigee Hybrid on Anthos Cluster on bare
 
 - Default Network with default Firewall policies 
 
-      The installation requires a network with name as default. If default network creation is enabled for the organization, the project will get them inherited. In case the  Skip default network creation is Enforced, you can create a new VPC network with name default in auto mode. 
-      ![Default Network](docs/images/default_network.png)
+The installation requires a network with name as default. If default network creation is enabled for the organization, the project will get them inherited. In case the  Skip default network creation is Enforced, you can create a new VPC network with name default in auto mode.
+![Default Network](docs/images/default_network.png)
 
 - Quota Check 
 
 The demo Apigee instance requires 4 VMs with n1-standard-8 machine type. Please ensure there are enough quota set for CPU,Memory, IP Addresses for the region you are hosting the project.
 
+ 
+      
 
 - **Sample Prerequisite script is also provided unnder resources folder as ./resources/run_prerequisite.sh**
 
