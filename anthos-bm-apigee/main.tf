@@ -37,8 +37,8 @@ module "install_abm_on_gce" {
   abm_cluster_id         = "apigee-cluster"
   machine_type           = "n1-standard-8"
   instance_count = {
-    "controlplane" : 3
-    "worker" : 2
+    "controlplane" : 1
+    "worker" : 3
   }
   secondary_apis = [
     "anthos.googleapis.com",

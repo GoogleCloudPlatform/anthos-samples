@@ -4,3 +4,4 @@ zone                          = "<GOOGLE_CLOUD_ZONE_TO_USE>"
 credentials_file              = "<PATH_TO_GOOGLE_CLOUD_SERVICE_ACCOUNT_FILE>"
 #gcp_login_accounts           = ["<GCP_ACCOUNT_1>", <GCP_ACCOUNT_2>, <GCP_ACCOUNT_3>]
 username                      = tfadmin
+#gce_vm_service_account        = "<GCP VM Service Account>"

@@ -72,6 +72,7 @@ create_owner_service_account() {
 	gcloud iam service-accounts create baremetal-owner
 	gcloud iam service-accounts keys create anthos-bm-owner.json --iam-account=baremetal-owner@"${project}".iam.gserviceaccount.com
 	gcloud projects add-iam-policy-binding "${project}" --member=serviceAccount:baremetal-owner@"${project}".iam.gserviceaccount.com --role=roles/owner
+	gcloud projects add-iam-policy-binding "${project}" --member=serviceAccount:baremetal-owner@"${project}".iam.gserviceaccount.com --role=roles/apigee.admin
 	gcloud auth activate-service-account --key-file anthos-bm-owner.json
 }
 
