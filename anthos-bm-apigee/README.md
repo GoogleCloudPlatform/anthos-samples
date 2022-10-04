@@ -15,7 +15,7 @@ This repository shows you how to install Apigee Hybrid on Anthos Cluster on bare
 
 - Enable Compute Engine API Services and Apigee API Services.
 
-- Ensure that the default Compute Engine developer account has Editor and Project IAM Admin role. You can also create a new service account for the compute engine with Editor and Project IAM Admin Role. 
+- Ensure that the default Compute Engine developer account has Editor role. You can also create a new service account for the compute engine with Editor and specify the service account name in terraform variables . 
 
 - A [Service Account](https://cloud.google.com/iam/docs/creating-managing-service-accounts) in the project that satisfies **one** of the following requirements and its **[key file downloaded](docs/create_sa_key.md)** to the workstation:
     - The Service Account has `Owner` permissions
