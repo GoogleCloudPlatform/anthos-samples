@@ -27,7 +27,7 @@ wait_for_active() {
 }
 
 create_workspace() {
-	export KUBECONFIG=$PWD/bmctl-workspace/apigee-hybrid/apigee-hybrid-kubeconfig
+	export KUBECONFIG=$PWD/bmctl-workspace/apigee-cluster/apigee-cluster-kubeconfig
 	echo "export KUBECONFIG=$KUBECONFIG" >>~/.bashrc
 	echo "export KUBECONFIG=$KUBECONFIG" >>/home/tfadmin/.bashrc
 	mkdir apigee_workspace
@@ -246,8 +246,8 @@ prepare_overrides_files() {
 	yq -i '.metrics.serviceAccountPath = env(SVC_ACCOUNT)' overrides.yaml
 	yq -i '.connectAgent.serviceAccountPath = env(SVC_ACCOUNT)' overrides.yaml
 	yq -i '.watcher.serviceAccountPath = env(SVC_ACCOUNT)' overrides.yaml
-	yq e '{"udca" : {"serviceAccountPath" : env(SVC_ACCOUNT)}}' overrides.yaml > tempfile && mv tempfile overrides.yaml
-	yq e '{"logger" : {"serviceAccountPath" : env(SVC_ACCOUNT)}}' overrides.yaml > tempfile && mv tempfile overrides.yaml
+	yq e '{"udca" : {"serviceAccountPath" : env(SVC_ACCOUNT)}}' overrides.yaml > tempfile && cat tempfile >> overrides.yaml
+	yq e '{"logger" : {"serviceAccountPath" : env(SVC_ACCOUNT)}}' overrides.yaml > tempfile && cat tempfile >>  overrides.yaml
 
 }
 
