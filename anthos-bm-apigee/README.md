@@ -39,7 +39,6 @@ This repository shows you how to install Apigee Hybrid on Anthos Cluster on bare
 - Default Network with default Firewall policies 
 
       The installation requires a network with name as default. If default network creation is enabled for the organization, the project will get them inherited. In case the  Skip default network creation is Enforced, you can create a new VPC network with name default in auto mode. 
-
       ![Default Network](docs/images/default_network.png)
 
 - Quota Check 
