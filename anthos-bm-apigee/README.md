@@ -15,6 +15,8 @@ This repository shows you how to install Apigee Hybrid on Anthos Cluster on bare
 
 - Enable Compute Engine API Services and Apigee API Services.
 
+- Ensure that the default Compute Engine developer account has Editor and Project IAM Admin role. You can also create a new service account for the compute engine with Editor and Project IAM Admin Role. 
+
 - A [Service Account](https://cloud.google.com/iam/docs/creating-managing-service-accounts) in the project that satisfies **one** of the following requirements and its **[key file downloaded](docs/create_sa_key.md)** to the workstation:
     - The Service Account has `Owner` permissions
     - The Service Account has both `Editor` and `Project IAM Admin` permissions
@@ -62,8 +64,6 @@ The [Quick starter](docs/quickstart.md) guide sets up the following infrastructu
 - [Terraform Module Information _(includes variables definitions)_](docs/variables.md)
 - [Quick starter guide](docs/quickstart.md):
     - The terraform script sets up the GCE VM environment. The output of the script prints out the commands to follow to install **Anthos on bare metal** in the provisioned GCE VMs.
-- [All in one install](docs/one_click_install.md):
-    - The terraform script sets up the GCE VM environment and also triggers the **Anthos on bare metal** installation on the provisioned GCE VMs. The output of the script prints out the commands to SSH into the *admin workstation VM* and monitor the Anthos on bare metal installation process.
 
 
 ---
