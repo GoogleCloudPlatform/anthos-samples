@@ -8,30 +8,32 @@ export PROJECT_ID=$(gcloud config get-value project)
 gcloud iam service-accounts create baremetal-owner
 gcloud iam service-accounts keys create anthos-bm-owner.json --iam-account=baremetal-owner@$PROJECT_ID.iam.gserviceaccount.com
 gcloud projects add-iam-policy-binding $PROJECT_ID --member=serviceAccount:baremetal-owner@$PROJECT_ID.iam.gserviceaccount.com --role=roles/owner
+gcloud projects add-iam-policy-binding $PROJECT_ID --member=serviceAccount:baremetal-owner@$PROJECT_ID.iam.gserviceaccount.com --role=roles/apigee.admin
 gcloud auth activate-service-account --key-file anthos-bm-owner.json
 ```
 
 2. Clone this repo into the workstation from where the rest of this guide will be followed
 3. Update the `terraform.tfvars.sample` file to include variables specific to your environment
 ```
-project_id                = "<GOOGLE_CLOUD_PROJECT_ID>"
-region                    = "<GOOGLE_CLOUD_REGION_TO_USE>"
-zone                      = "<GOOGLE_CLOUD_ZONE_TO_USE>"
-credentials_file          = "<PATH_TO_GOOGLE_CLOUD_SERVICE_ACCOUNT_FILE>"
-admin_vm_service_account  = "<SERVICE ACCOUNT EMAIL WITH OWNER PERMISSION>"
-#mode                     = "install"
+project_id                    = "<GOOGLE_CLOUD_PROJECT_ID>"
+region                        = "<GOOGLE_CLOUD_REGION_TO_USE>"
+zone                          = "<GOOGLE_CLOUD_ZONE_TO_USE>"
+credentials_file              = "<PATH_TO_GOOGLE_CLOUD_SERVICE_ACCOUNT_FILE>"
+#gcp_login_accounts           = ["<GCP_ACCOUNT_1>", <GCP_ACCOUNT_2>, <GCP_ACCOUNT_3>]
+username                      = tfadmin
+#gce_vm_service_account        = "<GCP VM Service Account>"
 ```
-Uncomment the mode to make installation in auto mode. More about that in section [here](./one_click_install.md).
+Uncomment the gce_vm_service_account if you are using custom compute engine service account
 
 An example of these configuration looks like this below:
 
 ```
-project_id                     = "anthos-bm-example4"
+project_id                     = "anthos-bm-example1"
 region                         = "us-central1"
 zone                           = "us-central1-a"
 credentials_file               = "anthos-bm-owner.json"
-admin_vm_service_account       = "baremetal-owner@anthos-bm-example4.iam.gserviceaccount.com"
-mode                           = "install"
+username                      = tfadmin
+#gce_vm_service_account        = "apigee-admin-ws@anthos-bm-example1.iam.gserviceaccount.com"
 ```
 
 4. Rename the `variables` file to default name used by Terraform for the `variables` file:
@@ -77,6 +79,9 @@ sudo ./run_initialization_checks.sh && \
 sudo bmctl create config -c apigee-hybrid && \
 sudo cp ~/apigee-hybrid.yaml bmctl-workspace/apigee-hybrid && \
 sudo bmctl create cluster -c apigee-hybrid && \
+```
+
+```
 ./install_apigee.sh
 ```
 ---
@@ -529,7 +534,6 @@ apigee-hybrid-abm-cp1-001   Ready    master   17m   v1.18.6-gke.6600
 apigee-hybrid-abm-w1-001    Ready    <none>   14m   v1.18.6-gke.6600
 apigee-hybrid-abm-w2-001    Ready    <none>   14m   v1.18.6-gke.6600
 apigee-hybrid-abm-w3-001    Ready    <none>   14m   v1.18.6-gke.6600
-apigee-hybrid-abm-w4-001    Ready    <none>   14m   v1.18.6-gke.6600
 ```
 
 
