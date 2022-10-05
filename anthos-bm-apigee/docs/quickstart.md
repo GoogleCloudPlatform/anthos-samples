@@ -583,7 +583,7 @@ You can cleanup the cluster setup in two ways:
  ```
 
 #### 4. Clean Temporary files
-- Clean temporary files 
+- Clean temporary files
 ```sh
     rm -fr ./resources/.temp
     rm -fr terraform.tfstate

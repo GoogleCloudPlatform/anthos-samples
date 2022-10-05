@@ -20,7 +20,7 @@ wait_for_active() {
 		status=$(gcloud alpha apigee operations describe "$operations_id" --format=json | jq -r .response.state)
 		while [ "$status" != "ACTIVE" ]; do
 			sleep 30
-			echo "Checking Operations : $operations_id" 
+			echo "Checking Operations : $operations_id"
 			status=$(gcloud alpha apigee operations describe "$operations_id" --format=json | jq -r .response.state)
 		done
 	fi
