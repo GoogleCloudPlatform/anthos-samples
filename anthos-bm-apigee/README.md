@@ -1,8 +1,7 @@
 
 ## Apigee Hybrid on Anthos Baremetal on Google Compute Engine VMs with Terraform
 
-This repository shows you how to install Apigee Hybrid on Anthos Cluster on bare metal running on Compute Engine. For more details please refer to ../anthos-bm-gcp-terraform
-
+This repository is a sample Apigee Hybrid installation on Anthos Cluster on bare metal running on GCE Virtual Machine. This also assumes that Apigee organization name is same as the GCP Project Id. The installation will also create a trial Apigee Edge organization with same name as project id if  Apigee Organization is not available.
 
 ### Pre-requisites
 
