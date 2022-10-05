@@ -18,12 +18,12 @@ data:
     create-default-disk-labeled-nodes:
     default-data-path: /customer
     replica-soft-anti-affinity:
-    replica-auto-balance:
     storage-over-provisioning-percentage:
     storage-minimal-available-percentage:
-    upgrade-checker:
+    upgrade-checker: false
     default-replica-count:
     default-data-locality: best-effort
+    guaranteed-engine-cpu:
     default-longhorn-static-storage-class:
     backupstore-poll-interval:
     taint-toleration:
@@ -46,4 +46,4 @@ data:
     backing-image-cleanup-wait-interval:
     guaranteed-engine-manager-cpu:
     guaranteed-replica-manager-cpu:
-    #volume-attachment-recovery-policy: immediate
+    # orphan-auto-deletion:

@@ -17,6 +17,13 @@
 
 # This playbook is used to run post-installation of the solution, typically for bug fixes and little changes
 - hosts: all
+  gather_facts: false
+  pre_tasks:
+  - name: Decrypt SSH key
+    include_role:
+      name: decrypt-ssh-key
+  - name: Gathering Facts
+    setup: {}
   roles:
     - abm-post-install
   vars:

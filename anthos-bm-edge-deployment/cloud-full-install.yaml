@@ -22,7 +22,7 @@
   roles:
     - validate
     - google-tools
-    - update
+    - update-automation
     - ready-ubuntu
     - setup-kvm
     - abm-install

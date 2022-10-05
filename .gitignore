@@ -1,12 +1,17 @@
 .DS_Store
+
+# Terraform Compiled files
 terraform.tfvars
 terraform.tfstate.backup
 terraform.tfstate**
 .terraform.tfstate*
 .terraform.lock.hcl
 **.terraform*
-plan
+*.tfstate
+*.tfstate.backup
 *.tfplan
+
+plan
 plan.json
 cleanup.sh
 .*.yaml
@@ -26,6 +31,18 @@ files.log
 legacy_headder_check.log
 new_header_check.log
 admin-openrc.sh
+
+### VS Code ###
+.vscode/
+
+### IntelliJ ###
+.idea/
+
+### Python
+.python-version
+.pytest_cache
+__pycache__
+*.data
 
 abm-sa-temp.json
 bm-gcr.json
