@@ -23,7 +23,7 @@ locals {
     "roles/editor",
     "roles/resourcemanager.projectIamAdmin"
   ]
-  apis_to_be_activated = ["gkeconnect.googleapis.com,serviceusage.googleapis.com"]
+  apis_to_be_activated = ["gkeconnect.googleapis.com","serviceusage.googleapis.com"]
 }
 
 resource "random_id" "random_project_id_suffix" {
