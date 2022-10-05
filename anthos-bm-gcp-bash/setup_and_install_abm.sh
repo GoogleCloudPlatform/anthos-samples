@@ -211,7 +211,7 @@ printf "✅ Successfully set up SSH access from admin workstation to cluster nod
 # initiate Anthos on bare metal installation from the admin workstation
 printf "🔄 Installing Anthos on bare metal...\n"
 # [START anthos_bm_gcp_bash_install_abm]
-gcloud compute ssh root@$VM_WS --zone "${ZONE}" << EOF
+gcloud compute ssh root@$VM_WS --zone "${ZONE}" <<EOF
 set -x
 export PROJECT_ID=$(gcloud config get-value project)
 export clusterid=cluster-1
