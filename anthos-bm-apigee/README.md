@@ -58,7 +58,7 @@ The demo Apigee instance requires 4 VMs with n1-standard-8 machine type. Please 
 
 The [Quick starter](docs/quickstart.md) guide sets up the following infrastructure in Google Cloud using Compute Engine VMs. The diagram assumes that the none of the default values for the [variables](variables.tf) were changed other than the ones mentioned in the quick starter.
 
-![Bare metal infrastructure on Google Cloud using Compute Engine VMs](docs/images/abm_gcp_infra.svg)
+![Bare metal infrastructure on Google Cloud using Compute Engine VMs](docs/images/abm_gcp_infra.png)
 
 ---
 ## Getting started
