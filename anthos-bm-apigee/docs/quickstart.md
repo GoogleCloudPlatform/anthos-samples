@@ -70,15 +70,15 @@ After the Terraform execution completes you are ready to deploy an Anthos cluste
 
 1. SSH into the admin host
 ```sh
-gcloud compute ssh tfadmin@apigee-hybrid-abm-ws0-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
+gcloud compute ssh tfadmin@apigee-cluster-abm-ws0-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
 ```
 
 2. Install the Anthos cluster on the provisioned Compute Engine VM based bare metal infrastructure
 ```sh
 sudo ./run_initialization_checks.sh && \
-sudo bmctl create config -c apigee-hybrid && \
-sudo cp ~/apigee-hybrid.yaml bmctl-workspace/apigee-hybrid && \
-sudo bmctl create cluster -c apigee-hybrid && \
+sudo bmctl create config -c apigee-cluster && \
+sudo cp ~/apigee-cluster.yaml bmctl-workspace/apigee-cluster && \
+sudo bmctl create cluster -c apigee-cluster && \
 ```
 
 ```
@@ -91,7 +91,7 @@ Running the commands from the Terraform output starts setting up a new Anthos cl
 > **Note:** The logs for checks on node initialization has been left out. They appear before the following logs from Anthos setup
 
 ```sh
-Created config: bmctl-workspace/apigee-hybrid/apigee-hybrid.yaml
+Created config: bmctl-workspace/apigee-cluster/apigee-cluster.yaml
 Creating bootstrap cluster... OK
 Installing dependency components... OK
 Waiting for preflight check job to finish... OK
@@ -107,8 +107,8 @@ Flushing logs... OK
 Applying resources for new cluster
 Waiting for cluster to become ready OK
 Writing kubeconfig file
-kubeconfig of created cluster is at bmctl-workspace/apigee-hybrid/apigee-hybrid-kubeconfig, please run
-kubectl --kubeconfig bmctl-workspace/apigee-hybrid/apigee-hybrid-kubeconfig get nodes
+kubeconfig of created cluster is at bmctl-workspace/apigee-cluster/apigee-cluster-kubeconfig, please run
+kubectl --kubeconfig bmctl-workspace/apigee-cluster/apigee-cluster-kubeconfig get nodes
 to get cluster node status.
 Please restrict access to this file as it contains authentication credentials of your cluster.
 Waiting for node pools to become ready OK
@@ -175,7 +175,7 @@ set 30 field(s) of setter "gcloud.core.project" to value "anthos-bm-example5"
 asm/
 set 2 field(s) of setter "gcloud.project.projectNumber" to value "739559844142"
 asm/
-set 20 field(s) of setter "gcloud.container.cluster" to value "apigee-hybrid"
+set 20 field(s) of setter "gcloud.container.cluster" to value "apigee-cluster"
 asm/
 set 20 field(s) of setter "gcloud.compute.location" to value "global"
 asm/
@@ -189,7 +189,7 @@ set 5 field(s) of setter "gcloud.project.environProjectNumber" to value "7395598
 asm/
 set 5 field(s) of setter "anthos.servicemesh.hubTrustDomain" to value "anthos-bm-example5.svc.id.goog"
 asm/
-set 2 field(s) of setter "anthos.servicemesh.hub-idp-url" to value "https://gkehub.googleapis.com/projects/anthos-bm-example5/locations/global/memberships/apigee-hybrid"
+set 2 field(s) of setter "anthos.servicemesh.hub-idp-url" to value "https://gkehub.googleapis.com/projects/anthos-bm-example5/locations/global/memberships/apigee-cluster"
 
 - Processing resources for Istio core.
 ✔ Istio core installed
@@ -505,7 +505,7 @@ Checking Apigee Containers ...
 Checking Apigee Containers ...
 Apigee is Ready
 Anthos on bare metal installation complete!
-Run [export KUBECONFIG=/home/tfadmin/bmctl-workspace/apigee-hybrid/apigee-hybrid-kubeconfig] to set the kubeconfig
+Run [export KUBECONFIG=/home/tfadmin/bmctl-workspace/apigee-cluster/apigee-cluster-kubeconfig] to set the kubeconfig
 Run the [/home/tfadmin/login.sh] script to generate a token that you can use to login to the cluster from the Google Cloud Console
 ```
 
@@ -517,12 +517,12 @@ You can find your cluster's `kubeconfig` file on the admin machine in the `bmctl
 1. SSH into the admin host _(if you are not already inside it)_:
 ```sh
 # You can copy the command from the output of Terraform run from the previous step
-gcloud compute ssh tfadmin@apigee-hybrid-abm-ws0-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
+gcloud compute ssh tfadmin@apigee-cluster-abm-ws0-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
 ```
 
 2. Set the `KUBECONFIG` environment variable with the path to the cluster's configuration file to run `kubectl` commands on the cluster.
 ```sh
-export CLUSTER_ID=apigee-hybrid
+export CLUSTER_ID=apigee-cluster
 export KUBECONFIG=$HOME/bmctl-workspace/$CLUSTER_ID/$CLUSTER_ID-kubeconfig
 kubectl get nodes
 ```
@@ -530,10 +530,10 @@ kubectl get nodes
 You should see the nodes of the cluster printed, _similar_ to the output below:
 ```sh
 NAME          STATUS   ROLES    AGE   VERSION
-apigee-hybrid-abm-cp1-001   Ready    master   17m   v1.18.6-gke.6600
-apigee-hybrid-abm-w1-001    Ready    <none>   14m   v1.18.6-gke.6600
-apigee-hybrid-abm-w2-001    Ready    <none>   14m   v1.18.6-gke.6600
-apigee-hybrid-abm-w3-001    Ready    <none>   14m   v1.18.6-gke.6600
+apigee-cluster-abm-cp1-001   Ready    master   17m   v1.18.6-gke.6600
+apigee-cluster-abm-w1-001    Ready    <none>   14m   v1.18.6-gke.6600
+apigee-cluster-abm-w2-001    Ready    <none>   14m   v1.18.6-gke.6600
+apigee-cluster-abm-w3-001    Ready    <none>   14m   v1.18.6-gke.6600
 ```
 
 
@@ -555,10 +555,10 @@ You can cleanup the cluster setup in two ways:
 - First deregister the cluster before deleting all the resources created by Terraform
   ```sh
   # SSH into the admin host
-  gcloud compute ssh tfadmin@apigee-hybrid-abm-ws0-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
+  gcloud compute ssh tfadmin@apigee-cluster-abm-ws0-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
 
   # Reset the cluster
-  export CLUSTER_ID=apigee-hybrid
+  export CLUSTER_ID=apigee-cluster
   export KUBECONFIG=$HOME/bmctl-workspace/$CLUSTER_ID/$CLUSTER_ID-kubeconfig
   sudo bmctl reset --cluster $CLUSTER_ID
 
