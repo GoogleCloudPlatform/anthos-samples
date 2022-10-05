@@ -22,8 +22,8 @@ This repository shows you how to install Apigee Hybrid on Anthos Cluster on bare
 - A [Service Account](https://cloud.google.com/iam/docs/creating-managing-service-accounts) in the project that satisfies **one** of the following requirements and its **[key file downloaded](docs/create_sa_key.md)** to the workstation:
     - The Service Account has `Owner` and `Apigee Organization Administrator` permissions
     - The Service Account has both `Editor`, `Project IAM Admin` and `Apigee Organization Administrator` permissions
-The scripts to create service account and key creation is also mentioned in Quickstart module. 
-- Organizational Policy Constraints 
+The scripts to create service account and key creation is also mentioned in Quickstart module.
+- Organizational Policy Constraints
       Follwowing list of Policy needs to be enabled for the organizations. If these are not enabled at Organizations, please consider them for the project.
 
       |  Policy Name                                 | Constraint Name                                   | Effective Polciy |
