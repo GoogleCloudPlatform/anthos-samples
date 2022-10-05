@@ -2,6 +2,7 @@
 
 ### Setup the bare metal infrastructure
 
+
 1. Create a Service Aaccount with Owner Role and download the key file. Activate the Service Account. If you have executed ./resources/run_prerequisite.sh , verify that you have the key file downloaded and service account is created with right permission.
 ```
 export PROJECT_ID=$(gcloud config get-value project)
