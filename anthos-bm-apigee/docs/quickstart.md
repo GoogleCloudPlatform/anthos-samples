@@ -581,6 +581,7 @@ You can cleanup the cluster setup in two ways:
  ```sh
      gcloud alpha apigee organizations delete <YOUR_PROJECT>
  ```
+
 #### 4. Clean Temporary files
 - Clean temporary files 
 ```sh
