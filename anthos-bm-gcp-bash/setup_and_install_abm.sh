@@ -13,15 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#shellcheck disable=SC2155
-
-# set the environment variables for GCP Project and Zone
-printf "🔄 Configuring Google Cloud Project and Zone...\n"
-# [START anthos_bm_gcp_bash_setenv]
-export PROJECT_ID=$(gcloud config get-value project)
-export ZONE=us-central1-a
-# [END anthos_bm_gcp_bash_setenv]
-printf "✅ Successfully configured Google Cloud Project and Zone.\n\n"
+printf "✅ Using Project [$PROJECT_ID] and Zone [$ZONE].\n\n"
 
 # create the GCP Service Account to be used by Anthos on bare metal
 printf "🔄 Creating Service Account and Service Account key...\n"
@@ -119,7 +111,7 @@ do
               --boot-disk-size 200G \
               --boot-disk-type pd-ssd \
               --can-ip-forward \
-              --network default \
+              --network abm-network \
               --tags http-server,https-server \
               --min-cpu-platform "Intel Haswell" \
               --scopes cloud-platform \
@@ -172,14 +164,6 @@ EOF
 done
 # [END anthos_bm_gcp_bash_add_vxlan]
 printf "✅ Successfully setup VxLAN in the GCE VMs.\n\n"
-
-# disable AppArmor service (only required for version < 1.8.2)
-printf "🔄 Disabling AppAmor system service...\n"
-# [START anthos_bm_gcp_bash_disable_apparmor]
-systemctl stop apparmor.service
-systemctl disable apparmor.service
-# [END anthos_bm_gcp_bash_disable_apparmor]
-printf "✅ Successfully disabled the AppArmor system service.\n\n"
 
 # install the necessary tools inside the VMs
 printf "🔄 Setting up admin workstation...\n"

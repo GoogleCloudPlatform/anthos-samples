@@ -20,15 +20,29 @@ explanation of all the steps included in this script.
 - The gcloud CLI must be [authenticated to Google Cloud and be configured to use
   the Google Cloud Project](https://cloud.google.com/sdk/gcloud/reference/init) you intend to use
 ---
+### Quickstart
 
-1. Clone this repo into the workstation from where the rest of this guide will be followed
+The steps inside the script is written with the assumption that you are working
+with a Google Cloud Project that has most of the default settings. This is to
+keep the different customizations to a minimal and allow for anyone to start at
+this baseline and make changes as required. Based on the popularity of certain
+variations, information about them are explained in the [FAQ](#faq) section.
+
+1. Clone this repo into the workstation from where the rest of this guide will
+   be followed.
 
     ```sh
     git clone https://github.com/GoogleCloudPlatform/anthos-samples
     cd anthos-bm-gcp-bash
     ```
 
-2. Clone this repo into the workstation from where the rest of this guide will be followed
+1. Setup environment variables.
+    ```sh
+    export PROJECT_ID=<GCP_PROJECT_TO_USE>
+    export ZONE=<GCP_ZONE_TO_USE>
+    ```
+
+2. Run the installation script.
 
     ```sh
     bash setup_and_install_abm.sh
@@ -43,7 +57,7 @@ explanation of all the steps included in this script.
     🔄 Installing Anthos on bare metal...
     Your active configuration is: [shabir-shell-check2]
     Pseudo-terminal will not be allocated because stdin is not a terminal.
-    Enter passphrase for key '/Users/shabirmean/.ssh/google_compute_engine': 
+    Enter passphrase for key '/Users/shabirmean/.ssh/google_compute_engine':
     Welcome to Ubuntu 20.04.5 LTS (GNU/Linux 5.15.0-1018-gcp x86_64)
 
     * Documentation:  https://help.ubuntu.com
@@ -95,7 +109,7 @@ explanation of all the steps included in this script.
     [2022-10-04 19:13:53+0000] Applying resources for new cluster
     [2022-10-04 19:13:53+0000] Waiting for cluster kubeconfig to become ready OK
     [2022-10-04 19:17:03+0000] Writing kubeconfig file
-    [2022-10-04 19:17:03+0000] kubeconfig of cluster being created is present at bmctl-workspace/cluster-1/cluster-1-kubeconfig 
+    [2022-10-04 19:17:03+0000] kubeconfig of cluster being created is present at bmctl-workspace/cluster-1/cluster-1-kubeconfig
     [2022-10-04 19:17:03+0000] Please restrict access to this file as it contains authentication credentials of your cluster.
     [2022-10-04 19:17:03+0000] Waiting for cluster to become ready OK
     [2022-10-04 19:23:43+0000] Please run
@@ -108,4 +122,56 @@ explanation of all the steps included in this script.
     [2022-10-04 19:26:40+0000] Flushing logs... OK
     [2022-10-04 19:26:40+0000] Deleting bootstrap cluster... OK
     ✅ Installation complete. Please check the logs for any errors!!!
+    ```
+---
+## FAQ
+
+The following are a list of variations with which the script can be used to
+deploy Anthos on bare metal in Compute Engine VMs.
+
+---
+
+#### Using a network other than the `default`
+
+If you want to use a network other than the `default` network then you will have
+to do the following changes:
+
+1. Ensure that `TCP`, `UDP` and `SSH` traffic is allowed on the network of your
+   choice.
+   ```sh
+   gcloud compute firewall-rules create abm-allow-internal \
+        --project=$PROJECT_ID \
+        --network=<YOUR_VPC_NETWORK> \
+        --direction=INGRESS \
+        --action=ALLOW \
+        --rules=tcp:0-65535,udp:0-65535,icmp \
+        --source-ranges=10.128.0.0/9 \
+        --priority=65534
+   ```
+   ```sh
+   gcloud compute firewall-rules create abm-allow-ssh \
+        --project=$PROJECT_ID \
+        --network=<YOUR_VPC_NETWORK> \
+        --direction=INGRESS \
+        --action=ALLOW \
+        --rules=tcp:22 \
+        --source-ranges=0.0.0.0/0 \
+        --priority=65534
+   ```
+
+2. Update the command for creating Compute Engine VMs in the
+   [setup_and_install_abm](./setup_and_install_abm.sh) script to use the network
+   of your choice instead of `default`.
+
+    ```sh
+    ...
+    ...
+        --zone=${ZONE} \
+        --boot-disk-size 200G \
+        --boot-disk-type pd-ssd \
+        --can-ip-forward \
+        --network <YOUR_VPC_NETWORK> \
+    ...
+    ...
+    ...
     ```
