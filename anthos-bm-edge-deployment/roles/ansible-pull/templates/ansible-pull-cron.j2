@@ -1,0 +1,7 @@
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+HOME={{ ansible_pull_workdir }}
+
+{% if ansible_pull_remote_execute_repo is defined and ansible_pull_remote_execute_repo != "" %}{{ ansible_pull_remote_execute_cron }}  root    /usr/local/bin/ansible-pull {{ ansible_pull_cmd_flags }} -U {{ ansible_pull_remote_execute_repo }} -i /var/ansible-pull/inventory >> {{ ansible_pull_remote_execution_log }}{% endif %}
+
+{% if ansible_pull_drift_repo is defined and ansible_pull_drift_repo != "" %}{{ ansible_pull_drift_cron }}    root    /usr/local/bin/ansible-pull -U {{ ansible_pull_drift_repo }} -i /var/ansible-pull/inventory >> {{ ansible_pull_drift_log }}{% endif %}

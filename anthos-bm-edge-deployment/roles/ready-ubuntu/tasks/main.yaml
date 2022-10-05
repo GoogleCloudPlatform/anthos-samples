@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,10 +19,19 @@
 - name: Fail if not running on Ubuntu 18.04 or 20.04
   fail:
     msg: "This playbook can only run on Ubuntu 18.04 or 20.04. Using {{ ansible_distribution }}:{{ ansible_distribution_version }}"
-  when: ansible_distribution != "Ubuntu" or (ansible_distribution_version != '18.04' and ansible_distribution_version != '20.04')
+  when: (ansible_distribution != "Ubuntu") or (ansible_distribution_version != '18.04' and ansible_distribution_version != '20.04')
   tags:
-  - verify
+  - verify-os
 
+- name: Get kernel version
+  command: 'uname -r'
+  register: uname_result
+
+- name: Save kernel verson to a variable
+  set_fact:
+    uname_r: '{{ uname_result.stdout }}'
+
+# TODO Audit this list of dependencies and split into "development" and "production" (not everything is needed for production)
 - name: Install dependencies used in provisioning
   apt:
     pkg:
@@ -36,6 +45,12 @@
     - software-properties-common
     - network-manager
     - vlan
+    - logrotate
+    - unattended-upgrades
+    - apt-listchanges
+    - nfs-common
+    # This is needed for Robin
+    - linux-modules-extra-{{ uname_r }}
     state: present
     update_cache: yes
   tags:
@@ -68,7 +83,6 @@
     msg: "{{ ufw.stdout }}"
   tags:
   - remove
-  - debug
 
 ## Create the user that builds and communicates across cluster machines
 - name: Create a user for ABM Control
@@ -112,15 +126,6 @@
   - abm-install
   - abm-ssh
 
-## TODO: Take this out after the official fix has been committed
-- name: Setup kernel in response to b/192342102
-  template:
-    src: 24-nf_conntrack_max.conf.j2
-    dest: "/etc/sysctl.d/24-nf_conntrack_max.conf"
-  tags:
-  - temp-fix
-  - ubuntu-setup
-
 # Copy over the vxlan status verify script
 - name: Copy VXLAN status script
   template:
@@ -145,3 +150,64 @@
   when: ( docker_version.stdout == "" or docker_version.stdout is version('20.9.0', '<') )
   tags:
   - docker
+
+- name: "Setup VLAN Interfaces on Physical Hosts"
+  include: setup-vlan-interfaces.yaml
+  when:
+  - (setup_vlan == true) and (is_cloud_resource is undefined or is_cloud_resource == false)
+  tags:
+  - vlan-setup
+
+- name: ensure logrotate is in /etc/cron.hourly
+  file:
+    src: /etc/cron.daily/logrotate
+    dest: /etc/cron.hourly/logrotate
+    state: link
+    force: yes
+    mode: 0755 # the file needs to be excutable
+  tags:
+  - logrotate-setup
+  - ubuntu-setup
+
+- name: ensure logrotate is in /etc/cron.hourly
+  file:
+    src: /etc/cron.daily/logrotate
+    dest: /etc/cron.hourly/logrotate
+    state: link
+    force: yes
+    mode: 0755 # the file needs to be excutable
+  tags:
+  - logrotate-setup
+  - ubuntu-setup
+
+- name: check hourly logrotate status
+  shell: |
+    IS_HOURLY=$(run-parts --test /etc/cron.hourly)
+    TEST_FOR="/etc/cron.hourly/logrotate"
+    if [[ "${IS_HOURLY}" != *"${TEST_FOR}"* ]]; then
+      exit 1 # Fail if hourly is not setup
+    fi
+  register: hourly_check
+  failed_when: hourly_check.rc != 0
+  changed_when: False
+  tags:
+  - logrotate-setup
+  - ubuntu-setup
+
+#### Install kernel module for Robin
+- name: Generate modules.dep
+  command: depmod -a
+  tags:
+  - robin
+
+- name: Load tcm_loop kernel module
+  modprobe:
+    name: tcm_loop
+    state: present
+  tags:
+  - robin
+
+- name: Check if tcm_loop kernel module is loaded
+  shell: "lsmod | grep tcm"
+  register: tcm_exists
+  failed_when: tcm_exists.rc != 0

@@ -1,0 +1,48 @@
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Archive old snapshots
+
+- name: Buckets List initialization
+  set_fact:
+    buckets: []
+
+- name: Get a list of current snapshots
+  ignore_errors: true
+  command:
+    cmd: "gsutil ls -p {{ google_project_id }} gs://{{ snapshot_gcs_bucket_base }}/{{ cluster_name }}/*.tar.gz"
+  register: snapshot_list
+  when:
+    - primary_cluster_machine is defined
+    - primary_cluster_machine == True
+
+
+- name: split bucket information
+  set_fact:
+    buckets: "{{ buckets + [ item | regex_search('^(gs:)\/\/([a-z-]*)\/([a-z0-9-]+)\/([a-z0-9-.TZ]+)', '\\2', '\\3', '\\4') ] }}"
+  with_items:
+  - "{{ snapshot_list.stdout_lines }}"
+  when:
+    - snapshot_list.rc == 0 # only on success (there are items)
+    - primary_cluster_machine is defined
+    - primary_cluster_machine == True
+
+- name: Archive snapshots to archive folder
+  command:
+    cmd: "gsutil mv gs://{{ item[0] }}/{{ item[1] }}/{{ item[2] }} gs://{{ item[0] }}/{{ item[1] }}/archive/{{ item[2] }}"
+  with_items:
+  - "{{ buckets }}"
+  when:
+    - primary_cluster_machine is defined
+    - primary_cluster_machine == True

@@ -1,3 +1,5 @@
+#jinja2: lstrip_blocks: "True", trim_blocks: "True"
+
 # root-sync.yaml
 apiVersion: configsync.gke.io/v1alpha1
 kind: RootSync
@@ -11,5 +13,11 @@ spec:
     branch: "{{ root_repository_branch }}"
     dir: "{{ root_repository_policy_dir }}"
     auth: "{{ root_repository_git_auth_type }}"
+    {# Authentication of type "gcpserviceaccount" needs to also provide the GSA email address for the GSA setup to communicate to the GSR #}
+    {% if root_repository_git_auth_type == "gcpserviceaccount" %}
+    gcpServiceAccountEmail: "{{ root_repository_service_account_email }}"
+    {% else %}{# GSR method does not need a secret reference, all others does #}
+    # Secret Reference
     secretRef:
       name: "{{ root_repository_git_secret_name }}"
+    {% endif %}

@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -70,6 +70,54 @@
     - initial-install
     - tool-install
 
+### All other tools
+  - name: Install kubectl, nomos, kustomize and gsutil
+    command:
+      cmd: gcloud components install kubectl kustomize anthos-auth kpt nomos gsutil kubectl-oidc alpha beta -q
+      creates: "{{ tools_base_path }}/google-cloud-sdk/bin/kubectl"
+    environment:
+      PATH: "{{ tools_base_path }}/google-cloud-sdk/bin:{{ ansible_env.PATH }}"
+    tags:
+    - initial-install
+    - tool-install
+
+  - name: Remove previous /usr/bin links and non-gcloud based binaries
+    ansible.builtin.file:
+      path: '/usr/bin/{{ item.app }}'
+      state: absent
+    loop:
+      - { app: gcloud }
+      - { app: kubectx }
+      - { app: nomos }
+      - { app: gsutil }
+      - { app: kustomize }
+      - { app: anthoscli }
+      - { app: kpt }
+      - { app: kubectl }
+      - { app: kubectl-oidc }
+    tags:
+    - initial-install
+    - tool-install
+
+  - name: Put the primary google sdk tools in /usr/bin
+    ansible.builtin.file:
+      src: '{{ tools_base_path }}/google-cloud-sdk/bin/{{ item.app }}'
+      dest: '/usr/bin/{{ item.app }}'
+      state: link
+    loop:
+      - { app: gcloud }
+      - { app: kubectx }
+      - { app: nomos }
+      - { app: gsutil }
+      - { app: kustomize }
+      - { app: anthoscli }
+      - { app: kpt }
+      - { app: kubectl }
+      - { app: kubectl-oidc }
+    tags:
+    - initial-install
+    - tool-install
+
   - name: Download and unarchive kubens
     unarchive:
       src: 'https://github.com/ahmetb/kubectx/releases/download/v{{ kubectx_version }}/kubens_v{{ kubectx_version }}_linux_x86_64.tar.gz'
@@ -95,7 +143,7 @@
     lineinfile:
       path: /etc/environment
       regexp: 'PATH="(\/usr\/local\/sbin:\/usr\/local\/bin:\/usr\/sbin:\/usr\/bin:\/sbin:\/bin:\/usr\/games:\/usr\/local\/games:\/snap\/bin)"$' #uugghhly...but works
-      line: 'PATH="\1:/var/google-tools-install/google-cloud-sdk/bin"'
+      line: 'PATH="/var/google-tools-install/google-cloud-sdk/bin:\1"' #prepend gcloud (snap auto installs gcloud on GCE instances)
       backrefs: yes
       state: present
     tags:
@@ -136,11 +184,14 @@
 
   - name: Enable services
     command:
-      # https://cloud.google.com/anthos/clusters/docs/bare-metal/1.6/installing/install-prereq#project_prerequisites
-      cmd: gcloud services enable anthos.googleapis.com connectgateway.googleapis.com anthosgke.googleapis.com cloudresourcemanager.googleapis.com container.googleapis.com gkeconnect.googleapis.com gkehub.googleapis.com serviceusage.googleapis.com stackdriver.googleapis.com monitoring.googleapis.com logging.googleapis.com secretmanager.googleapis.com --project={{ google_project_id }}
-    run_once: true # only one machine to do this
+      # https://cloud.google.com/anthos/clusters/docs/bare-metal/latest/installing/install-prereq
+      cmd: gcloud services enable {{ gcp_services_required | join(' ') }} --project={{ google_project_id }}
+    run_once: true # only one in whole inventory to run this
     environment:
       PATH: "{{ tools_base_path }}/google-cloud-sdk/bin:{{ ansible_env.PATH }}"
+    when:
+      - gcp_services_required is defined
+      - (gcp_services_required|length>0)
     tags:
     - initial-install
 
@@ -161,17 +212,6 @@
     tags:
     - tool-install
     - initial-install
-
-### All other tools
-  - name: Install kubectl, nomos, kustomize and gsutil
-    command:
-      cmd: gcloud components install kubectl kustomize anthos-auth kpt nomos gsutil alpha beta -q
-      creates: "{{ tools_base_path }}/google-cloud-sdk/bin/kubectl"
-    environment:
-      PATH: "{{ tools_base_path }}/google-cloud-sdk/bin:{{ ansible_env.PATH }}"
-    tags:
-    - initial-install
-    - tool-install
 
 ### IF upgrading BMCTL, remove existing
   - name: Remove bmctl
@@ -212,11 +252,15 @@
     - optional
     - tool-install
 
-  - name: Download virtctl (kubevirt CLI)
-    get_url:
-      url: https://github.com/kubevirt/kubevirt/releases/download/{{ virtctl_version }}/virtctl-{{ virtctl_version }}-linux-amd64
-      dest: /usr/local/bin/virtctl
-      mode: '0555' # Read & Executable by all
+  ### Install virtctl via bmctl (keeps this up-to-date without explicit downloading)
+  - name: Install virtctl
+    command:
+      cmd: "bmctl install virtctl"
+    args:
+      creates: /usr/bin/kubectl-virt
+      chdir: "{{ tools_base_path }}"
+    environment:
+      PATH: "{{ tools_base_path }}/google-cloud-sdk/bin:{{ ansible_env.PATH }}"
     tags:
     - optional
     - tool-install
