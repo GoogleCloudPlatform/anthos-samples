@@ -4,9 +4,7 @@ This sample shows you how to setup an Anthos clusters on bare metal in High
 Availability (HA) mode using Compute Engine Virtual Machines (VMs). The
 [setup_and_install_abm](./setup_and_install_abm.sh) script encapsulates all
 the steps required to setup the Compute Engine VMs and to trigger the
-installation of Anthos on bare metal.
-
-Follow the
+installation of Anthos on bare metal. Follow the
 [Try Anthos clusters on bare metal on Compute Engine VMs](https://cloud.google.com/anthos/clusters/docs/bare-metal/latest/try/gce-vms) guide for a step by step
 explanation of all the steps included in this script.
 
@@ -26,7 +24,7 @@ The steps inside the script is written with the assumption that you are working
 with a Google Cloud Project that has most of the default settings. This is to
 keep the different customizations to a minimal and allow for anyone to start at
 this baseline and make changes as required. Based on the popularity of certain
-variations, information about them are explained in the [FAQ](#faq) section.
+variations, information about them are explained in the [FAQ](./FAQ.md) section.
 
 1. Clone this repo into the workstation from where the rest of this guide will
    be followed.
@@ -36,13 +34,13 @@ variations, information about them are explained in the [FAQ](#faq) section.
     cd anthos-bm-gcp-bash
     ```
 
-1. Setup environment variables.
+2. Setup environment variables.
     ```sh
     export PROJECT_ID=<GCP_PROJECT_TO_USE>
     export ZONE=<GCP_ZONE_TO_USE>
     ```
 
-2. Run the installation script.
+3. Run the installation script.
 
     ```sh
     bash setup_and_install_abm.sh
@@ -122,56 +120,4 @@ variations, information about them are explained in the [FAQ](#faq) section.
     [2022-10-04 19:26:40+0000] Flushing logs... OK
     [2022-10-04 19:26:40+0000] Deleting bootstrap cluster... OK
     ✅ Installation complete. Please check the logs for any errors!!!
-    ```
----
-## FAQ
-
-The following are a list of variations with which the script can be used to
-deploy Anthos on bare metal in Compute Engine VMs.
-
----
-
-#### Using a network other than the `default`
-
-If you want to use a network other than the `default` network then you will have
-to do the following changes:
-
-1. Ensure that `TCP`, `UDP` and `SSH` traffic is allowed on the network of your
-   choice.
-   ```sh
-   gcloud compute firewall-rules create abm-allow-internal \
-        --project=$PROJECT_ID \
-        --network=<YOUR_VPC_NETWORK> \
-        --direction=INGRESS \
-        --action=ALLOW \
-        --rules=tcp:0-65535,udp:0-65535,icmp \
-        --source-ranges=10.128.0.0/9 \
-        --priority=65534
-   ```
-   ```sh
-   gcloud compute firewall-rules create abm-allow-ssh \
-        --project=$PROJECT_ID \
-        --network=<YOUR_VPC_NETWORK> \
-        --direction=INGRESS \
-        --action=ALLOW \
-        --rules=tcp:22 \
-        --source-ranges=0.0.0.0/0 \
-        --priority=65534
-   ```
-
-2. Update the command for creating Compute Engine VMs in the
-   [setup_and_install_abm](./setup_and_install_abm.sh) script to use the network
-   of your choice instead of `default`.
-
-    ```sh
-    ...
-    ...
-        --zone=${ZONE} \
-        --boot-disk-size 200G \
-        --boot-disk-type pd-ssd \
-        --can-ip-forward \
-        --network <YOUR_VPC_NETWORK> \
-    ...
-    ...
-    ...
     ```
