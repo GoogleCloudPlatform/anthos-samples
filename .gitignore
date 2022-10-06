@@ -45,3 +45,5 @@ __pycache__
 *.data
 
 abm-sa-temp.json
+bm-gcr.json
+ssh-metadata
