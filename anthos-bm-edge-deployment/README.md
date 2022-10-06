@@ -33,18 +33,14 @@ _(including instructions for installing in an [Intel NUC](https://www.intel.com/
 ### Prerequisites
 
 - Make sure you have the following already installed in your workstation
-  - **[Python](https://www.python.org/)** [>=2.7]
-  - The following Python modules _(you can use the equivalent of `pip2` for `Python3`)_
-    - **ansible** _(install with `pip2 install ansible`)_
-    - **dnspython** _(install with `pip2 install dnspython`)_
-    - **requests** _(install with `pip2 install requests`)_
-    - **google-auth** _(install with `pip2 install google-auth`)_
-  - **[Ansible CLI tool](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)**
+  - **[Docker](https://www.docker.com/get-started/)**
   - **[Google Cloud SDK](https://cloud.google.com/sdk/docs/install#linux)** (aka: gcloud)
   - **envsubst** CLI tool _(usually already installed in *nix based OSes)_
-  - **[skaffold](https://skaffold.dev/docs/install/)** [>=1.30.0] _(Optional)_
-  - **[maven](https://maven.apache.org/install.html)** [>=3.6.3] _(Optional)_
-  - **[Java](https://www.oracle.com/java/technologies/downloads/#java11)** [11.*] _(Optional)_
+
+- _**Optional**_
+  - **[skaffold](https://skaffold.dev/docs/install/)** [>=1.30.0]
+  - **[maven](https://maven.apache.org/install.html)** [>=3.6.3]
+  - **[Java](https://www.oracle.com/java/technologies/downloads/#java11)** [11.*]
 
 > _**Note:** The prerequisites marked as _(Optional)_ are only required if you
 > want to modify the source for the [Point-Of-Sales](https://github.com/GoogleCloudPlatform/point-of-sale)
@@ -74,9 +70,6 @@ cd anthos-samples/anthos-bm-edge-deployment
 export PROJECT_ID="<YOUR_GCP_PROJECT_ID>"
 export REGION="us-central1"
 export ZONE="us-central1-a"
-
-# path to which the Google Service Account key file will be downloaded to
-export LOCAL_GSA_FILE="$(pwd)/remote-gsa-key.json"
 
 # port on the GCE instance we will use to setup the nginx proxy to allow traffic into the AnthosBareMetal cluster
 export PROXY_PORT="8082"
@@ -117,71 +110,128 @@ gcloud config set compute/zone "${ZONE}"
 # when asked "Create a new key for GSA? [y/N]" type "y" and press
 ./scripts/create-primary-gsa.sh
 ```
+This script will create the JSON key file for the new Google Service Account at
+`./build-artifacts/consumer-edge-gsa.json`. It also sets up KMS keyring and key
+for SSH private key encryption.
+
 ---
 
 ### 2. Provision the GCE instances
-#### 2.1) Configure SSH keys and create the GCE instances where Anthos BareMetal will be installed
 
-> **Note:** _This step can take upto ***2 minutes*** to complete for a setup with $MACHINE_COUNT=3_
-
+#### 2.1) Create SSH keypair for communication between provisioning machine and target machines
 ```sh
-# just press the return key when asked for a passphrase for the SSH key (i.e. empty string)
-./scripts/cloud/easy-install.sh
+ssh-keygen -N '' -o -a 100 -t ed25519 -f ./build-artifacts/consumer-edge-machine
 ```
-> **Note:** This script updates your `/etc/hosts` file with the IP addresses of
-> the created GCE VMs. Thus, it will prompt you to provide the **password** to
-> your local workstation
 
-#### 2.2) Test SSH connectivity to the GCE instances
+#### 2.2) Encrypt the SSH private key using Cloud KMS
 ```sh
-# If the checks fail the first time with errors like "sh: connect to host cnuc-1 port 22: Connection refused"
-# then wait a few seconds and retry
-for i in `seq $MACHINE_COUNT`; do
-  HOSTNAME="cnuc-$i"
-  ssh abm-admin@${HOSTNAME} 'ping -c 3 google.com'
-done
+gcloud kms encrypt \
+  --key gdc-ssh-key \
+  --keyring gdc-ce-keyring \
+  --location global \
+  --plaintext-file build-artifacts/consumer-edge-machine \
+  --ciphertext-file build-artifacts/consumer-edge-machine.encrypted
+```
+
+#### 2.3) Generate the environment configuration file `.envrc` and source it
+Once created inspect the `.envrc` file to ensure that the environment variables
+have been replaced with the correct values.
+
+```sh
+envsubst < templates/envrc-template.sh > .envrc
+source .envrc
+```
+
+#### 2.4) Create the GCE instances where Anthos BareMetal will be installed
+The output of this command will be stored in `./build-artifacts/gce-info`. It
+includes information about the public IP addresses of the GCE VMs and how to SSH
+into them. You can refer to this file later to find the necessary information.
+```sh
+./scripts/cloud/create-cloud-gce-baseline.sh -c "$MACHINE_COUNT" | tee ./build-artifacts/gce-info
+```
+
+> **Note:** _This step can take upto ***2 minutes*** to complete for a setup
+> with $MACHINE_COUNT=3_
+
+---
+
+### 3. Install Anthos on Bare Metal with ansible
+
+This phase involves the creation of the docker image for installation,
+generating the ansible inventory configuration settings and running the ansible
+scripts that installs Anthos on Bare Metal into the GCE VMs.
+
+#### 3.1) Create a docker image that will be used
+You can find more information about the steps involved in creating the image
+in the [docker-build](docker-build) directory.
+```sh
+gcloud builds submit --config docker-build/cloudbuild.yaml docker-build/
 ```
 ```sh
 # -----------------------------------------------------#
 #                   Expected Output                    #
 # -----------------------------------------------------#
-PING google.com (74.125.124.113) 56(84) bytes of data.
-64 bytes from jp-in-f113.1e100.net (74.125.124.113): icmp_seq=1 ttl=115 time=1.10 ms
-64 bytes from jp-in-f113.1e100.net (74.125.124.113): icmp_seq=2 ttl=115 time=1.10 ms
-64 bytes from jp-in-f113.1e100.net (74.125.124.113): icmp_seq=3 ttl=115 time=0.886 ms
-
---- google.com ping statistics ---
-3 packets transmitted, 3 received, 0% packet loss, time 2003ms
-rtt min/avg/max/mdev = 0.886/1.028/1.102/0.100 ms
-PING google.com (108.177.112.139) 56(84) bytes of data.
 ...
 ...
-...
+latest: digest: sha256:99ded20d221a0b2bcd8edf3372c8b1f85d6c1737988b240dd28ea1291f8b151a size: 4498
+DONE
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ID                                    CREATE_TIME                DURATION  SOURCE                                                                                         IMAGES                                                  STATUS
+2238baa2-1f41-440e-a157-c65900b7666b  2022-08-17T19:28:57+00:00  6M53S     gs://my_project_cloudbuild/source/1660764535.808019-69238d8c870044f0b4b2bde77a16111d.tgz  gcr.io/my_project/consumer-edge-install (+1 more)  SUCCESS
 ```
----
 
-### 3. Install Anthos BareMetal with ansible
-#### 3.1) Generate Ansible inventory file from template and verify setup
+#### 3.2) Generate the Ansible “inventory” file from template
 ```sh
 envsubst < templates/inventory-cloud-example.yaml > inventory/gcp.yaml
-./scripts/verify-pre-installation.sh
+```
+
+#### 3.3) Run the script that creates the docker container for installation
+```sh
+./install.sh
+```
+```sh
+# -----------------------------------------------------#
+#                   Expected Output                    #
+# -----------------------------------------------------#
+...
+...
+Check the values above and if correct, do you want to proceed? (y/N): y
+Starting the installation
+Pulling docker install image...
+
+==============================
+Starting the docker container. You will need to run the following 2 commands (cut-copy-paste)
+==============================
+1: ./scripts/health-check.sh
+2: ansible-playbook all-full-install.yaml -i inventory
+3: Type 'exit' to exit the Docker shell after installation
+==============================
+Thank you for using the quick helper script!
+(you are now inside the Docker shell)
+```
+At this point you must be inside the docker container that was created based off
+of the image built earlier. You will trigger the ansible installation from
+inside this container.
+
+#### 3.4) Verify access to the GCE VMs
+```sh
 ./scripts/health-check.sh
 ```
 ```sh
 # -----------------------------------------------------#
 #                   Expected Output                    #
 # -----------------------------------------------------#
-cnuc-1 | SUCCESS => {"ansible_facts": {"discovered_interpreter_python": "/usr/bin/python3"},"changed": false,"ping": "pong"}
 cnuc-2 | SUCCESS => {"ansible_facts": {"discovered_interpreter_python": "/usr/bin/python3"},"changed": false,"ping": "pong"}
 cnuc-3 | SUCCESS => {"ansible_facts": {"discovered_interpreter_python": "/usr/bin/python3"},"changed": false,"ping": "pong"}
-
-
-SUCCESS!!
-
-Proceed!!
+cnuc-1 | SUCCESS => {"ansible_facts": {"discovered_interpreter_python": "/usr/bin/python3"},"changed": false,"ping": "pong"}
 ```
 
-#### 3.2) Run the Ansible playbook for installing Anthos Bare Metal on the GCE instances
+#### 3.5) Run the Ansible playbook for installing Anthos Bare Metal on the GCE instances
+
+This script will configure the GCE instances with all the necessary tools,
+install Anthos BareMetal, install Anthos Config Management and configure it to
+sync with the configs at `$ROOT_REPO_URL/anthos-bm-edge-deployment/acm-config-sink`.
+Upon completion you will see the `Login Token` for the cluster printed on screen.
 
 > **Note:** _This step can take upto **35 minutes** to complete for a setup with $MACHINE_COUNT=3_
 > - ***Pre-install configuration of the GCE instances:*** ~10 minutes</br>
@@ -189,9 +239,7 @@ Proceed!!
 > - ***Post-install configuration of the GCE instances:*** ~5 minutes
 
 ```sh
-# this will configure the GCE instances with all the necessary tools, install Anthos BareMetal, install Anthos
-# Config Management and configure it to sync with the configs at $ROOT_REPO_URL/anthos-bm-edge-deployment/acm-config-sink
-ansible-playbook -i inventory cloud-full-install.yaml
+ansible-playbook all-full-install.yaml -i inventory | tee ./build-artifacts/ansible-run.log
 ```
 ```sh
 # -----------------------------------------------------#
@@ -199,34 +247,9 @@ ansible-playbook -i inventory cloud-full-install.yaml
 # -----------------------------------------------------#
 ...
 ...
-PLAY RECAP ********************************************************************************************************
-cnuc-1                     : ok=136  changed=106  unreachable=0    failed=0    skipped=33   rescued=0    ignored=8
-cnuc-2                     : ok=86   changed=67   unreachable=0    failed=0    skipped=71   rescued=0    ignored=2
-cnuc-3                     : ok=86   changed=67   unreachable=0    failed=0    skipped=71   rescued=0    ignored=2
-```
----
-### 4. Log in to the ABM kubernetes cluster in the Google Cloud console
-#### 4.1) Copy the utility script into the admin GCE instance and generate a token
-```sh
-# Copy the utility scripts into the admin node of the cluster
-scp -i ~/.ssh/cnucs-cloud scripts/cloud/cnuc-k8s-login-setup.sh abm-admin@cnuc-1:
-
-# SSH into the admin node of the cluster
-ssh -i ~/.ssh/cnucs-cloud abm-admin@cnuc-1
-
-# execute the script and copy token that is printed out
-./cnuc-k8s-login-setup.sh
-```
-```sh
-# -----------------------------------------------------#
-#                   Expected Output                    #
-# -----------------------------------------------------#
-...
-...
-# Retrieving Kubernetes Service Account Token
-
-🚀 ------------------------------TOKEN-------------------------------- 🚀
-eyJhbGciOiJSUzI1NiIsImtpZCI6Imk2X3duZ3BzckQyWmszb09sZHFMN0FoWU9mV1kzOWNGZzMyb0x2WlMyalkifQ.eyJpc3MiOiJrdW
+TASK [abm-login-token : Display login token] **************************************************************************
+ok: [cnuc-1] => {
+    "msg": "eyJhbGciOiJSUzI1NiIsImtpZCI6Imk2X3duZ3BzckQyWmszb09sZHFMN0FoWU9mV1kzOWNGZzMyb0x2WlMyalkifQ.ey
 mljZS1hY2NvdW50LnVpZCI6IjQwYWQxNDk2LWM2MzEtNDhiNi05YmUxLWY5YzgwODJjYzgzOSIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYW
 iZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6ImVkZ2Etc2EtdG9rZW4tc2R4MmQiLCJrdWJlcm5ldGVzLmlvL3Nl
 cnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoiZWRnYS1zYSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2Vyd
@@ -234,13 +257,48 @@ cnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoiZWRnYS1zYSIsImt1YmVybmV0ZXMuaW8v
 Njb3VudDpkZWZhdWx0OmVkZ2Etc2EifQ.IXqXwX5pg9RIyNHJZTM6cBKTEWOMfQ4IQQa398f0qwuYlSe12CA1l6P8TInf0S1aood7NJWx
 xe-5ojRvcG8pdOuINq2yHyQ5hM7K7R4h2qRwUznRwuzOp_eXC0z0Yg7VVXCkaqnUR1_NzK7qSu4LJcuLzkCYkFdSnvKIQABHSvfvZMrJP
 Jlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJkZWZhdWx0Iiwia3V
-MgyLOd9FJyhZgjbf-a-3cbDci5YABEzioJlHVnV8GOX_q-MnIagA9-t1KpHA
-🚀 ------------------------------------------------------------------- 🚀
+MgyLOd9FJyhZgjbf-a-3cbDci5YABEzioJlHVnV8GOX_q-MnIagA9-t1KpHA"
+}
+skipping: [cnuc-2]
+skipping: [cnuc-3]
+
+PLAY RECAP ***********************************************************************************************************
+cnuc-1                     : ok=205  changed=156  unreachable=0    failed=0    skipped=48   rescued=0    ignored=12
+cnuc-2                     : ok=128  changed=99   unreachable=0    failed=0    skipped=108  rescued=0    ignored=2
+cnuc-3                     : ok=128  changed=99   unreachable=0    failed=0    skipped=108  rescued=0    ignored=2
 ```
 
-Once you have run the above steps, copy the `Token` that is printed out and login
-to the kubernetes cluster from the [`Kubernetes clusters`](https://console.cloud.google.com/kubernetes/list/overview) page in the Google Cloud
-console.
+---
+### 4. Log in to the ABM kubernetes cluster in the Google Cloud console
+
+To be able to see logs and other information about the cluster in the Google
+Cloud Platform console, you have to `Login` to the cluster using one of the
+different means available. In this section we show how to login to the cluster
+using the `Login Token` mechanism.
+
+The Kubernetes resources required to generate the login token will already be
+created inside the new Anthos on Bare Metal cluster. This is done when the
+cluster gets `Synced` with the configuration inside the
+[`acm-config-sink`](./acm-config-sink) directory through
+**Anthos Config Management**. The
+[`cloud-console-reader.yaml`](./acm-config-sink/cluster/cloud-console-reader.yaml)
+and [`console-cluster-reader-sa.yaml`](./acm-config-sink/namespaces/default/console-cluster-reader-sa.yaml)
+files inside the `acm-config-sink` directory describe what these resources are.
+
+As a last step, the ansible script generates the `Secret` that holds the token.
+The `Login Token` for the cluster you created will be printed on screen once the
+ansible script from the [previous step](#35-run-the-ansible-playbook-for-installing-anthos-bare-metal-on-the-gce-instances)
+completes. If you don't have access to the console output anymore, check the log
+file at `./build-artifacts/ansible-run.log` to get your token. You may also run
+the following ansible playbook to fetch the token again.
+
+```sh
+ansible-playbook all-get-login-tokens.yaml -i inventory
+```
+
+Once you have copied the token, login to the kubernetes cluster from the
+[`Kubernetes clusters`](https://console.cloud.google.com/kubernetes/list/overview)
+page in the Google Cloud console.
 
 <p align="center">
   <img src="docs/images/login-k8s.png">
@@ -250,7 +308,7 @@ console.
   <img src="docs/images/login-k8s-token.png">
 </p>
 
-Verify that the cluster has `synced` with the [configurations from this repository](/acm-config-sink)
+Verify that the cluster has `synced` with the [configurations from this repository](./acm-config-sink)
 using [**Anthos Config Management**](https://console.cloud.google.com/anthos/config_management)
 <p align="center">
   <img src="docs/images/acm-sync.png">
@@ -264,6 +322,9 @@ using [**Anthos Config Management**](https://console.cloud.google.com/anthos/con
 > **Note:** _The following commands are run inside the admin GCE instance (**cnuc-1**). You must already be SSH'ed into it from the previous steps_
 
 ```sh
+# SSH into the admin node of the cluster
+ssh -F ./build-artifacts/ssh-config abm-admin@cnuc-1
+
 # get the IP address of the LoadBalancer type kubernetes service
 ABM_INTERNAL_IP=$(kubectl get services api-server-lb -n pos | awk '{print $4}' | tail -n 1)
 
@@ -304,13 +365,18 @@ sudo systemctl status nginx
 ```sh
 # exit out of the admin instance
 exit
+
+# exit out of the docker container used for installation
+exit
 ```
 ---
 
 ### 6. Access the Point of Sale application
 #### 6.1) Get the external IP address of the admin GCE instance and access the UI of the **Point of Sales** application
 
-> **Note:** _The following commands are run in your local workstations. If you are still inside the admin GCE instance via SSH, then type **exit** to end the SSH session_
+> **Note:** _The following commands are run in your local workstations. If you
+> are still inside the admin GCE instance via SSH or the Docker container used
+> for the installation, then type **exit** to get back to your local shell._
 
 ```sh
 EXTERNAL_IP=$(gcloud compute instances list --project ${PROJECT_ID} --filter="name:cnuc-1" --format="get(networkInterfaces[0].accessConfigs[0].natIP)")

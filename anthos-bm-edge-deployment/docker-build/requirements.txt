@@ -1,0 +1,5 @@
+# Primary required dependencies
+ansible~=5.2.0
+dnspython~=2.2.0
+google-auth~=2.5.0
+requests~=2.27.1

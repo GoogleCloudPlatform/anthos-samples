@@ -1,0 +1,111 @@
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Make directory to store snapshot config
+- name: Create Snapshot Config folder
+  file:
+    path: '{{ snapshot_config_folder }}'
+    state: directory
+    mode: '0700'
+
+# Copy snapshot config (template)
+- name: "Setup snapshot configuration"
+  template:
+    src: snapshot-config.yaml.j2
+    dest: "{{ snapshot_config_file }}"
+
+# Make directory to store snapshot (if needed)
+- name: Create Snapshot Output folder
+  file:
+    path: '{{ snapshot_output_folder }}'
+    state: directory
+    mode: '0700'
+
+# Get date/time from CLI
+- name: Get Date Time
+  command:
+    cmd: date -u +"%Y%m%dT%H%M%SZ"
+  register: date_time
+
+# Create Snapshot File Name
+- name: Set current date
+  set_fact:
+    current_date_time: "{{ date_time.stdout }}"
+
+- name: Set output name
+  set_fact:
+    snapshot_output_file_name: "{{cluster_name}}-cluster-snapshot-{{ current_date_time }}.tar.gz"
+
+- name: Set file path
+  set_fact:
+    snapshot_output_file: "{{ snapshot_output_folder }}/{{ snapshot_output_file_name }}"
+
+- name: debug
+  debug:
+    msg: "Snapshot Name: {{ snapshot_output_file }}"
+  tags:
+  - debug
+  - never
+
+- name: Set fact for if uploading
+  set_fact:
+    upload_snapshot: "{{ snapshot_gcs_bucket_base is defined and snapshot_gcs_bucket_base | length > 0 }}"
+
+# Create (if needed) GCS bucket for uploading
+- name: Check snapshot bucket existance
+  debug:
+    msg: "Checking/creating bucket '{{ snapshot_gcs_bucket_base }}'"
+  when:
+  - upload_snapshot == True
+  tags:
+  - debug
+  - never
+
+- name: Does GCS bucket exist?
+  command:
+    cmd: gsutil ls -p {{ google_project_id }} gs://{{ snapshot_gcs_bucket_base }}
+  ignore_errors: true
+  register: bucket_exists
+
+- name: Create if missing
+  command:
+    cmd: gsutil mb -p {{ google_project_id }} gs://{{ snapshot_gcs_bucket_base }}
+  when:
+  - bucket_exists.rc > 0
+
+# Perform Snapshot collection & push to bucket
+- name: Create snapshot
+  command:
+    cmd: bmctl check cluster --snapshot --snapshot-config {{ snapshot_config_file }} --cluster {{ cluster_name }} --service-account-key-file /var/keys/gsa-key.json --snapshot-output {{ snapshot_output_file }} --kubeconfig {{ kubeconfig_shared_location }}
+  args:
+    chdir: "{{ abm_install_folder }}"
+
+- name: Upload snapshot to GCS
+  command:
+    cmd: gsutil cp {{ snapshot_output_file }} gs://{{ snapshot_gcs_bucket_base }}/{{ cluster_name }}/{{ snapshot_output_file_name }}
+  register: success_upload
+  args:
+    chdir: "{{ abm_install_folder }}"
+  when:
+  - upload_snapshot == True
+
+- name: Ouptut IF error uploading compressed file
+  debug:
+    msg: "{{ success_upload }}"
+  when:
+  - upload_snapshot == True
+  - success_upload.rc > 0
+  tags:
+  - debug
+  - never

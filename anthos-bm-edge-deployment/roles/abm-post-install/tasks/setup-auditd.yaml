@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,17 +14,137 @@
 
 - name: Install auditd
   become: yes
-  command:
-    cmd: apt-get install -y auditd audispd-plugins
+  apt:
+    pkg:
+    - auditd
+    - audispd-plugins
+    state: present
   tags:
   - observability-audit-install
   - observability-setup
 
-- name: Copy auditd rules
+- name: Copy base auditd rules
   become: yes
   template:
-    src: audit.rules.j2
+    src: audit.rules.tml
     dest: "/etc/audit/rules.d/audit.rules"
+    owner: root
+    group: root
+    mode: '0640'
+  tags:
+  - observability-audit-install
+  - observability-setup
+  - auditd-config
+
+- name: Copy times auditd rules
+  become: yes
+  template:
+    src: audit_times.rules.tml
+    dest: "/etc/audit/rules.d/times.rules"
+    owner: root
+    group: root
+    mode: '0640'
+  tags:
+  - observability-audit-install
+  - observability-setup
+  - auditd-config
+
+- name: Copy system_locale auditd rules
+  become: yes
+  template:
+    src: audit_system_locale.rules.tml
+    dest: "/etc/audit/rules.d/system_locale.rules"
+    owner: root
+    group: root
+    mode: '0640'
+  tags:
+  - observability-audit-install
+  - observability-setup
+  - auditd-config
+
+- name: Copy identity auditd rules
+  become: yes
+  template:
+    src: audit_identity.rules.tml
+    dest: "/etc/audit/rules.d/identity.rules"
+    owner: root
+    group: root
+    mode: '0640'
+  tags:
+  - observability-audit-install
+  - observability-setup
+  - auditd-config
+
+- name: Copy logins auditd rules
+  become: yes
+  template:
+    src: audit_logins.rules.tml
+    dest: "/etc/audit/rules.d/logins.rules"
+    owner: root
+    group: root
+    mode: '0640'
+  tags:
+  - observability-audit-install
+  - observability-setup
+  - auditd-config
+
+- name: Copy permissions auditd rules
+  become: yes
+  template:
+    src: audit_permissions.rules.tml
+    dest: "/etc/audit/rules.d/permissions.rules"
+    owner: root
+    group: root
+    mode: '0640'
+  tags:
+  - observability-audit-install
+  - observability-setup
+  - auditd-config
+
+- name: Copy file_change auditd rules
+  become: yes
+  template:
+    src: audit_file_change.rules.tml
+    dest: "/etc/audit/rules.d/file_change.rules"
+    owner: root
+    group: root
+    mode: '0640'
+  tags:
+  - observability-audit-install
+  - observability-setup
+  - auditd-config
+
+- name: Copy scope auditd rules
+  become: yes
+  template:
+    src: audit_scope.rules.tml
+    dest: "/etc/audit/rules.d/scope.rules"
+    owner: root
+    group: root
+    mode: '0640'
+  tags:
+  - observability-audit-install
+  - observability-setup
+  - auditd-config
+
+- name: Copy sudo auditd rules
+  become: yes
+  template:
+    src: audit_sudo.rules.tml
+    dest: "/etc/audit/rules.d/sudo.rules"
+    owner: root
+    group: root
+    mode: '0640'
+  tags:
+  - observability-audit-install
+  - observability-setup
+  - auditd-config
+
+- name: Copy modules auditd rules
+  become: yes
+  template:
+    src: audit_modules.rules.tml
+    dest: "/etc/audit/rules.d/modules.rules"
     owner: root
     group: root
     mode: '0640'

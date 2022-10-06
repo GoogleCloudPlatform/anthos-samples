@@ -31,10 +31,7 @@ else
     # get list of all CNUCs in the project
     LABELS="labels.type=abm"
     IFS=$'\r\n'
-    while IFS=$'\r\n' read -r line;
-    do
-        INSTANCES+=("$line");
-    done < <(gcloud compute instances list --filter="${LABELS}" --format="value(name, zone)" 2>/dev/null)
+    INSTANCES+=("$(gcloud compute instances list --filter="${LABELS}" --format="value(name, zone)" 2>/dev/null)")
 fi
 
 echo -e "\nRemoving '${#INSTANCES[@]}' instances"

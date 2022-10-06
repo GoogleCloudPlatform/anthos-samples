@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,6 +27,9 @@
     owner: root
     group: root
     mode: '0755'
+  tags:
+  - observability-agent-install
+  - observability-setup
 
 - name: Create fluentd config folder if not exist
   become: yes
@@ -36,6 +39,9 @@
     owner: root
     group: root
     mode: '0755'
+  tags:
+  - observability-agent-install
+  - observability-setup
 
   ### Configure Monitoring agent
 - name: Copy collectd config
@@ -158,6 +164,7 @@
 
 - name: Copy auditd config for fluentd plugin
   become: yes
+  ignore_errors: yes
   template:
     src: auditd.conf.j2
     dest: "/etc/google-fluentd/config.d/auditd.conf"
@@ -207,6 +214,14 @@
   - observability-service-reset
   - observability-setup
 
+- name: Reset daemon status for systemctl
+  become: yes
+  command:
+    cmd: systemctl daemon-reload
+  tags:
+  - observability-agent-install
+  - observability-service-reset
+  - observability-setup
 
 # Automatically restarting the agent with cron
 - name: Create cron-job to check if the agent is running and then restart the agent in the event that it crashed.
