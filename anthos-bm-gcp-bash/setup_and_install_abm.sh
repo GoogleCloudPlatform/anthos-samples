@@ -172,8 +172,9 @@ gcloud compute ssh root@$VM_WS --zone "${ZONE}" << EOF
 set -x
 
 export PROJECT_ID=\$(gcloud config get-value project)
+
 gcloud iam service-accounts keys create bm-gcr.json \
---iam-account=baremetal-gcr@\${PROJECT_ID}.iam.gserviceaccount.com
+  --iam-account=baremetal-gcr@\${PROJECT_ID}.iam.gserviceaccount.com
 
 curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
 
