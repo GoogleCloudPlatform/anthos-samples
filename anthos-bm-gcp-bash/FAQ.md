@@ -10,6 +10,10 @@ deploy Anthos on bare metal in Compute Engine VMs.
 If you want to use a network other than the `default` network then you will have
 to do the following changes:
 
+> **Note:** The firewall rules that follow show how to replicate the same rules
+> that is available by default on the `default` network. This must be used only
+> to experiment with this sample.
+
 1. Ensure that `TCP`, `UDP` and `SSH` traffic is allowed on the network of your
    choice.
    ```sh
