@@ -51,7 +51,7 @@ func TestABMEditor(t *testing.T) {
 			assert.False(vm.Get("guestAccelerators").Exists(), "guestAccelerators are disabled")
 		}
 
-		abmInstall := runSSHCmd(t, projectID, "tfadmin@cluster1-abm-ws0-001", "sudo ./run_initialization_checks.sh")
+		abmInstall := runSSHCmd(t, projectID, "tfadmin@cluster1-abm-ws0-001", "sudo -E ./run_initialization_checks.sh")
 		assert.NotContains(abmInstall, "[-]", "gce setup for abm installation should not have any failed stages")
 
 		bmctl := runSSHCmd(t, projectID, "root@cluster1-abm-ws0-001", "bmctl version")
@@ -74,14 +74,14 @@ func TestABMEditor(t *testing.T) {
 		nodePoolOKMsg := "Waiting for node pools to become ready OK"
 		deleteBootstrapClusterOKMsg := "Deleting bootstrap cluster... OK"
 
-		createClusterConfig := runSSHCmd(t, projectID, "tfadmin@cluster1-abm-ws0-001", "sudo bmctl create config -c cluster1")
+		createClusterConfig := runSSHCmd(t, projectID, "tfadmin@cluster1-abm-ws0-001", "sudo -E bmctl create config -c cluster1")
 		assert.Contains(createClusterConfig, clusterConfigCreatedMsg, "bmctl create should successfully create the config file")
 
-		runSSHCmd(t, projectID, "tfadmin@cluster1-abm-ws0-001", "sudo cp ~/cluster1.yaml bmctl-workspace/cluster1")
+		runSSHCmd(t, projectID, "tfadmin@cluster1-abm-ws0-001", "sudo -E cp ~/cluster1.yaml bmctl-workspace/cluster1")
 		listClusterConfigFile := runSSHCmd(t, projectID, "tfadmin@cluster1-abm-ws0-001", "sudo ls bmctl-workspace/cluster1")
 		assert.Contains(listClusterConfigFile, "cluster1.yaml", "cluster configuration file should be in the correct workspace directory")
 
-		installABM := runSSHCmd(t, projectID, "tfadmin@cluster1-abm-ws0-001", "sudo bmctl create cluster -c cluster1")
+		installABM := runSSHCmd(t, projectID, "tfadmin@cluster1-abm-ws0-001", "sudo -E bmctl create cluster -c cluster1")
 		assert.Contains(installABM, bootstrapClusterOKMsg, "abm installation should create a bootstrap cluster")
 		assert.Contains(installABM, depInstallOKMsg, "abm installation should install necessary dependencies")
 		assert.Contains(installABM, kubeConfigCreatedMsg, "abm installation should create the cluster configuration file")
