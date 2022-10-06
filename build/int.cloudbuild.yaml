@@ -21,6 +21,7 @@ steps:
   - 'TF_VAR_org_id=$_ORG_ID'
   - 'TF_VAR_folder_id=$_FOLDER_ID'
   - 'TF_VAR_billing_account=$_BILLING_ACCOUNT'
+# Test anthos-bm-gcp-terraform sample with defaults on project with Editor permissions
 - id: create abm-gce-defaults-on-editor-project-local
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'cd test/integration && RUN_STAGE=init go test -v -run TestABMEditor ./... -p 1']
@@ -39,6 +40,8 @@ steps:
     - verify abm-gce-defaults-on-editor-project-local
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'cd test/integration && RUN_STAGE=teardown go test -v -run TestABMEditor ./... -p 1']
+# ----
+# Test anthos-bm-gcp-terraform sample with GPU enabled VMs
 - id: create abm-gce-gpu
   waitFor:
     - destroy abm-gce-defaults-on-editor-project-local
@@ -59,6 +62,28 @@ steps:
     - verify abm-gce-gpu
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do destroy abm-gce-gpu']
+# ----
+# Test anthos-bm-gcp-bash sample
+- id: create abm-gce-bash
+  waitFor:
+    - destroy abm-gce-gpu
+  name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
+  args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do create abm-gce-bash']
+- id: converge abm-gce-bash
+  waitFor:
+    - create abm-gce-bash
+  name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
+  args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do converge abm-gce-bash']
+- id: verify abm-gce-bash
+  waitFor:
+    - converge abm-gce-bash
+  name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
+  args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do verify abm-gce-bash']
+- id: destroy abm-gce-bash
+  waitFor:
+    - verify abm-gce-bash
+  name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
+  args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do destroy abm-gce-bash']
 tags:
 - 'ci'
 - 'integration'
