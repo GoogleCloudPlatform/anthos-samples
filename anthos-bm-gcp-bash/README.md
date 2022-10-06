@@ -9,10 +9,10 @@ installation of Anthos on bare metal. Follow the
 explanation of all the steps included in this script.
 
 
-### Pre-requisites
+### Prerequisites
 
-- A workstation with access to internet _(i.e. Google Cloud APIs)_ with the following installed
-  - [Git](https://www.atlassian.com/git/tutorials/install-git)
+- A workstation with access to the Internet _(i.e. Google Cloud APIs)_ with the following installed
+  - [Git](https://git-scm.com/)
   - [Google Cloud SDK (gcloud CLI)](https://cloud.google.com/sdk/docs/install)
 - A [Google Cloud Project](https://console.cloud.google.com/cloud-resource-manager?_ga=2.187862184.1029435410.1614837439-1338907320.1614299892) _(in which the resources for the setup will be provisioned)_
 - The gcloud CLI must be [authenticated to Google Cloud and be configured to use
