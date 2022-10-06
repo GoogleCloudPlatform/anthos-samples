@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,9 +13,11 @@
 # limitations under the License.
 
 galaxy_info:
-  author: your name
-  description: your role description
-  company: your company (optional)
+  author: Mike Ensor
+  description: This role installs tools into each of the provisioned machines. Tools are Google-based (gcloud, kubectl, kubens, etc)
+  company: Google
+  role_name: "google_tools"
+  namespace: "anthos_consumer_edge"
 
   # If the issue tracker for your role is not on github, uncomment the
   # next line and provide a value
@@ -30,7 +32,7 @@ galaxy_info:
   # - CC-BY-4.0
   license: license (GPL-2.0-or-later, MIT, etc)
 
-  min_ansible_version: 2.1
+  min_ansible_version: 2.10
 
   # If this a Container Enabled role, provide the minimum Ansible Container version.
   # min_ansible_container_version:

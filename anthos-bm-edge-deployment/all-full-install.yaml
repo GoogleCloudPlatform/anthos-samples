@@ -19,14 +19,22 @@
 - hosts: all
   become: true
   become_user: root
+  gather_facts: false
+  pre_tasks:
+  - name: Decrypt SSH key
+    include_role:
+      name: decrypt-ssh-key
+  - name: Gathering Facts
+    setup: {}
   roles:
     - validate
     - google-tools
-    - update
+    - update-automation
     - ready-ubuntu
     - setup-kvm
     - abm-install
     - abm-software
     - abm-post-install
+    - ansible-pull
     - abm-login-token
   vars: []

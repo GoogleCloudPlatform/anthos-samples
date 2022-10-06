@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,3 +19,9 @@
     - name: "Include google-tools"
       include_role:
         name: "google-tools"
+  vars:
+    # Most of these VARs are pulled from all.yaml and the group/host VARs inside inventory/
+    google_region: "us-central1"
+    google_zone: "{{google_region}}-a"
+    gcp_services_required: []
+    bmctl_version: "1.11.1"

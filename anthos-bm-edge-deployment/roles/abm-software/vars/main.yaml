@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,23 +16,30 @@
 # Home directory for ACM download and operations
 acm_config_files: "/var/acm-configs"
 
-# Home directory for external secrets download and operations
+vmruntime_config_path: "/var/vmruntime"
+
+# Home directory for external secrets download and operations (TODO: Duplciated in post-install)
 external_secrets_files: "/var/external-secrets"
 
-root_repository_branch: "main"
+root_repository_git_auth_type: "{{ acm_repo_type }}"
+root_repository_service_account_email: source-repo-agent@{{ google_project_id }}.iam.gserviceaccount.com
 
-root_repository_policy_dir: "/anthos-bm-edge-deployment/acm-config-sink"
-
-root_repository_git_auth_type: "token"
 # NOTE: This is a tight coupling with the "Root Repo" that contains "ExternalSecret" instances with the `git-creds` name
 #       IF changed, both the ACM root-repo and this field need to match
 root_repository_git_secret_name: "git-creds"
 
-# This is the production project that contains the CDI containers. Need it to replace with the staging dynamically in file
+# This is the production project that contains the CDI containers. Need it to replace with the staging dynamically in file (FIXME: This is deprecated)
 cdi_staging_project: "anthos-baremetal-release"
 
-# Folder to run installation out of
-abm_install_folder: "/var/abm-install"
+# Snapshot: Where to place configuration
+snapshot_config_folder: "{{ abm_install_folder }}/snapshots"
+snapshot_config_file: "{{ snapshot_config_folder }}/snapshot-config.yaml"
+# Output of snapshot (if not uploading??? ) # TODO: Revist this, may not need
+snapshot_output_folder: "{{ snapshot_config_folder }}/snapshots/output"
 
 # CDI add CPU Monitoring flag script run by cron.d
 cdi_cron_script_file: "/var/cdi-check-node.sh"
+
+# Pull Longhorn's installation from this URL (could be updated to a local site)
+longhorn_installation_yaml_url: "https://raw.githubusercontent.com/longhorn/longhorn/v1.3.0/deploy/longhorn.yaml"
+longhorn_installation_dir: "/tmp"
