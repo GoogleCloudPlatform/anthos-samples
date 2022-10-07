@@ -1,7 +1,7 @@
 
 ## Apigee Hybrid on Anthos Baremetal on Google Compute Engine VMs with Terraform
 
-This is a sample Apigee Hybrid installation on Anthos Cluster on bare metal running on GCE Virtual Machines. [Apigee hybrid](https://cloud.google.com/apigee/docs/hybrid/v1.7/what-is-hybrid) is a platform for developing and managing API proxies that features a hybrid deployment model. The hybrid model includes a management plane hosted by Apigee in the Cloud and a runtime plane that you install and manage on one of the [supported Kubernetes platforms](https://cloud.google.com/apigee/docs/hybrid/supported-platforms). An [Apigee organization](https://cloud.google.com/apigee/docs/api-platform/fundamentals/organization-structure) is the top-level container in Apigee. It contains all your API proxies and related resources. This installation will create an evaluation Apigee Organization with the name same as GCP Project id. 
+This is a sample Apigee Hybrid installation on Anthos Cluster on bare metal running on GCE Virtual Machines. [Apigee hybrid](https://cloud.google.com/apigee/docs/hybrid/v1.7/what-is-hybrid) is a platform for developing and managing API proxies that features a hybrid deployment model. The hybrid model includes a management plane hosted by Apigee in the Cloud and a runtime plane that you install and manage on one of the [supported Kubernetes platforms](https://cloud.google.com/apigee/docs/hybrid/supported-platforms). An [Apigee organization](https://cloud.google.com/apigee/docs/api-platform/fundamentals/organization-structure) is the top-level container in Apigee. It contains all your API proxies and related resources. This installation will create an evaluation Apigee Organization with the name same as GCP Project id.
 
 ### Pre-requisites
 
@@ -37,7 +37,7 @@ This is a sample Apigee Hybrid installation on Anthos Cluster on bare metal runn
 
 Note: The repository also has a utility script that checks and configures some of these pre-requisites.
 
-### Bare metal infrastructure on Google Cloud using Compute Engine VMs
+### Anthos on bare metal with Apigee on GCE VMs
 
 The [Quickstart guide](docs/quickstart.md) sets up the following infrastructure in Google Cloud using Compute Engine VMs. The diagram assumes that none of the default values for the [variables](variables.tf) were changed other than the ones mentioned in the guide.
 
