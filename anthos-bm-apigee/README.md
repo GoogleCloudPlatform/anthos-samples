@@ -39,7 +39,7 @@ This is a sample Apigee Hybrid installation on Anthos Cluster on bare metal runn
 
 ### Anthos on bare metal with Apigee on GCE VMs
 
-The [Quickstart guide](docs/quickstart.md) sets up the following infrastructure in Google Cloud using Compute Engine VMs. The diagram assumes that none of the default values for the [variables](variables.tf) were changed other than the ones mentioned in the guide.
+The infrastructure for the Anthos on bare metal cluster is created using the [anthos-bm-gcp-terraform](../anthos-bm-gcp-terraform/README.md) sample. The sample here refers to the [anthos-bm-gcp-terraform](../anthos-bm-gcp-terraform/README.md) script as a module and provisions the GCE based infrastructure first. Then, it executes additional steps that are specific to the Apigee installtion. The [Quickstart guide](docs/quickstart.md) sets up the following infrastructure in Google Cloud using Compute Engine VMs and installs Apigee. The diagram assumes that none of the default values for the [variables](variables.tf) were changed other than the ones mentioned in the guide.
 
 ![Bare metal infrastructure on Google Cloud using Compute Engine VMs](docs/images/abm_gcp_infra.png)
 
