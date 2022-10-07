@@ -302,7 +302,7 @@ func ValidatePlanConfigurations(goTester *testing.T, initModulePlan *util.InitMo
 
 		assert.Equal(
 			goTester,
-			7,
+			8,
 			fileProvisioners,
 			fmt.Sprintf("Unexpected number of file provisioners under configuration.root_module.resources[%d].provisioners", rIdx),
 		)

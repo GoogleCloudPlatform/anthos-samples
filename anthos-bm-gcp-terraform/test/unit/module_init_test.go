@@ -50,6 +50,7 @@ func TestUnit_InitModule(goTester *testing.T) {
 	nfsYamlPath := "../test/../path/../test_nfs-csi.yaml"
 	pubKeyPathTemplate := "../test/../path/../test_pub_key-%s.pub"
 	privKeyPathTemplate := "../test/../path/../test_pub_key-%s.priv"
+	terraformSAPath := "/home/tfadmin/sa.json"
 
 	tfPlanOutput := "terraform_test.tfplan"
 	tfPlanOutputArg := fmt.Sprintf("-out=%s", tfPlanOutput)
@@ -69,6 +70,7 @@ func TestUnit_InitModule(goTester *testing.T) {
 		"nfs_yaml_path":          nfsYamlPath,
 		"pub_key_path_template":  pubKeyPathTemplate,
 		"priv_key_path_template": privKeyPathTemplate,
+		"terraform_sa_path":      terraformSAPath,
 	}
 	tfOptions := terraform.WithDefaultRetryableErrors(goTester, &terraform.Options{
 		TerraformDir: moduleDir,
@@ -176,16 +178,18 @@ func TestUnit_InitModule_DefaultValues(goTester *testing.T) {
 	publicIP := "10.10.10.01"
 	initVarsFile := "../test/../path/../init_vars_file.var"
 	resourcesPath := "../../resources"
+	terraformSAPath := "/home/tfadmin/sa.json"
 
 	tfPlanOutput := "terraform_test.tfplan"
 	tfPlanOutputArg := fmt.Sprintf("-out=%s", tfPlanOutput)
 	tfVarsMap := map[string]interface{}{
-		"project_id":       projectID,
-		"credentials_file": credentialsFile,
-		"resources_path":   resourcesPath,
-		"hostname":         hostname,
-		"publicIp":         publicIP,
-		"init_vars_file":   initVarsFile,
+		"project_id":        projectID,
+		"credentials_file":  credentialsFile,
+		"resources_path":    resourcesPath,
+		"hostname":          hostname,
+		"publicIp":          publicIP,
+		"init_vars_file":    initVarsFile,
+		"terraform_sa_path": terraformSAPath,
 	}
 	tfOptions := terraform.WithDefaultRetryableErrors(goTester, &terraform.Options{
 		TerraformDir: moduleDir,
