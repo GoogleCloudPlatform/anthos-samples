@@ -164,7 +164,8 @@ istio-ingressgateway   LoadBalancer   172.26.232.85    10.200.0.51   15021:30217
 istiod                 ClusterIP      172.26.232.33    <none>        15010/TCP,15012/TCP,443/TCP,15014/TCP        13m
 istiod-asm-1129-3      ClusterIP      172.26.232.186   <none>        15010/TCP,15012/TCP,443/TCP,15014/TCP        13m
 ```
-EXTERNAL_IP of istio-ingressgateway is the endpoint for Api Proxies deoployed on Apigee. For ex: if a mockservice with resource path of /mockservice is deployed on Apigee, it can be accessed as https://$EXTERNAL_IP.nip.io/mockservice 
+
+EXTERNAL_IP of istio-ingressgateway is the endpoint for Api Proxies deoployed on Apigee. For ex: if a mockservice with resource path of /mockservice is deployed on Apigee, it can be accessed as https://$EXTERNAL_IP.nip.io/mockservice
 
 #### Access with UI via the GCP console
 
