@@ -51,7 +51,9 @@ func TestABMEditor(t *testing.T) {
 			assert.False(vm.Get("guestAccelerators").Exists(), "guestAccelerators are disabled")
 		}
 
-		abmInstall := runSSHCmd(t, projectID, "tfadmin@cluster1-abm-ws0-001", "export GOOGLE_APPLICATION_CREDENTIALS=/home/tfadmin/terraform-sa.json && sudo -E ./run_initialization_checks.sh")
+		exportCredentialsCmd := "export GOOGLE_APPLICATION_CREDENTIALS=/home/tfadmin/terraform-sa.json"
+
+		abmInstall := runSSHCmd(t, projectID, "tfadmin@cluster1-abm-ws0-001", fmt.Sprintf("%s && sudo -E ./run_initialization_checks.sh", exportCredentialsCmd))
 		assert.NotContains(abmInstall, "[-]", "gce setup for abm installation should not have any failed stages")
 
 		bmctl := runSSHCmd(t, projectID, "root@cluster1-abm-ws0-001", "bmctl version")
@@ -74,14 +76,14 @@ func TestABMEditor(t *testing.T) {
 		nodePoolOKMsg := "Waiting for node pools to become ready OK"
 		deleteBootstrapClusterOKMsg := "Deleting bootstrap cluster... OK"
 
-		createClusterConfig := runSSHCmd(t, projectID, "tfadmin@cluster1-abm-ws0-001", "export GOOGLE_APPLICATION_CREDENTIALS=/home/tfadmin/terraform-sa.json && sudo -E bmctl create config -c cluster1")
+		createClusterConfig := runSSHCmd(t, projectID, "tfadmin@cluster1-abm-ws0-001", fmt.Sprintf("%s && sudo -E bmctl create config -c cluster1", exportCredentialsCmd))
 		assert.Contains(createClusterConfig, clusterConfigCreatedMsg, "bmctl create should successfully create the config file")
 
-		runSSHCmd(t, projectID, "tfadmin@cluster1-abm-ws0-001", "export GOOGLE_APPLICATION_CREDENTIALS=/home/tfadmin/terraform-sa.json && sudo -E cp ~/cluster1.yaml bmctl-workspace/cluster1")
+		runSSHCmd(t, projectID, "tfadmin@cluster1-abm-ws0-001", fmt.Sprintf("%s && sudo -E cp ~/cluster1.yaml bmctl-workspace/cluster1", exportCredentialsCmd))
 		listClusterConfigFile := runSSHCmd(t, projectID, "tfadmin@cluster1-abm-ws0-001", "sudo ls bmctl-workspace/cluster1")
 		assert.Contains(listClusterConfigFile, "cluster1.yaml", "cluster configuration file should be in the correct workspace directory")
 
-		installABM := runSSHCmd(t, projectID, "tfadmin@cluster1-abm-ws0-001", "export GOOGLE_APPLICATION_CREDENTIALS=/home/tfadmin/terraform-sa.json && sudo -E bmctl create cluster -c cluster1")
+		installABM := runSSHCmd(t, projectID, "tfadmin@cluster1-abm-ws0-001", fmt.Sprintf("%s && sudo -E bmctl create cluster -c cluster1", exportCredentialsCmd))
 		assert.Contains(installABM, bootstrapClusterOKMsg, "abm installation should create a bootstrap cluster")
 		assert.Contains(installABM, depInstallOKMsg, "abm installation should install necessary dependencies")
 		assert.Contains(installABM, kubeConfigCreatedMsg, "abm installation should create the cluster configuration file")
