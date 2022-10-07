@@ -83,7 +83,7 @@ steps:
   waitFor:
     - verify abm-gce-bash
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
-  args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do destroy abm-gce-bash']
+  args: ['/bin/bash', '-c', 'cft test run TestABMBash --stage teardown --verbose --test-dir test/integration']
 tags:
 - 'ci'
 - 'integration'
