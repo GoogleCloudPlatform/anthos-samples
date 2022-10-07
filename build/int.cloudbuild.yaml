@@ -78,7 +78,7 @@ steps:
   waitFor:
     - converge abm-gce-bash
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
-  args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do verify abm-gce-bash']
+  args: ['/bin/bash', '-c', 'cft test run TestABMBash --stage verify --verbose --test-dir test/integration']
 - id: destroy abm-gce-bash
   waitFor:
     - verify abm-gce-bash
