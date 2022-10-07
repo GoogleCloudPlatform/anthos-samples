@@ -68,7 +68,7 @@ steps:
   waitFor:
     - destroy abm-gce-gpu
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
-  args: ['/bin/bash', '-c', 'source /usr/local/bin/task_helper_functions.sh && kitchen_do create abm-gce-bash']
+  args: ['/bin/bash', '-c', 'cft test run TestABMBash --stage init --verbose --test-dir test/integration']
 - id: converge abm-gce-bash
   waitFor:
     - create abm-gce-bash
