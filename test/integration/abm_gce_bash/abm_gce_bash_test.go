@@ -25,7 +25,7 @@ import (
 )
 
 func TestABMBash(t *testing.T) {
-	abm := tft.NewTFBlueprintTest(t)
+	abm := tft.NewTFBlueprintTest(t, tft.WithTFDir(t.TempDir()))
 	scriptPath := "../../../anthos-bm-gcp-bash/setup_and_install_abm.sh"
 
 	abm.DefineInit(func(assert *assert.Assertions) {})
