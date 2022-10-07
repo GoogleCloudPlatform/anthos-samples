@@ -62,7 +62,7 @@ terraform apply
 ***The `apply` command sets up the Compute Engine VM based bare metal infrastructure. This can take a few minutes (approx. 3-5 mins) for the entire bare-metal cluster to be setup.***
 
 ---
-### Deploy an Anthos cluster
+### Deploy an Anthos cluster and Install Apigee
 
 After the Terraform execution completes you are ready to deploy an Anthos cluster.
 
@@ -131,7 +131,7 @@ Run the [/home/tfadmin/login.sh] script to generate a token that you can use to 
 ```
 
 ---
-### Verify and interacting with the Baremetal cluster
+### Verify Apigee Installation
 
 You can find your cluster's `kubeconfig` file on the admin machine in the `bmctl-workspace` directory. To verify your deployment, complete the following steps
 
@@ -147,7 +147,6 @@ export CLUSTER_ID=apigee-cluster
 export KUBECONFIG=$HOME/bmctl-workspace/$CLUSTER_ID/$CLUSTER_ID-kubeconfig
 kubectl get nodes
 ```
-
 You should see the nodes of the cluster printed, _similar_ to the output below:
 ```sh
 NAME          STATUS   ROLES    AGE   VERSION
@@ -156,16 +155,22 @@ apigee-cluster-abm-w1-001    Ready    <none>   14m   v1.18.6-gke.6600
 apigee-cluster-abm-w2-001    Ready    <none>   14m   v1.18.6-gke.6600
 apigee-cluster-abm-w3-001    Ready    <none>   14m   v1.18.6-gke.6600
 ```
+3. You can get the istio ingress gateway IP by running the following command:
 
+```sh
+kubectl get svc -n istio-systems
+NAME                   TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)                                      AGE
+istio-ingressgateway   LoadBalancer   172.26.232.85    10.200.0.51   15021:30217/TCP,80:32733/TCP,443:32307/TCP   13m
+istiod                 ClusterIP      172.26.232.33    <none>        15010/TCP,15012/TCP,443/TCP,15014/TCP        13m
+istiod-asm-1129-3      ClusterIP      172.26.232.186   <none>        15010/TCP,15012/TCP,443/TCP,15014/TCP        13m
+```
+EXTERNAL_IP of istio-ingressgateway is the endpoint for Api Proxies deoployed on Apigee. For ex: if a mockservice with resource path of /mockservice is deployed on Apigee, it can be accessed as https://$EXTERNAL_IP.nip.io/mockservice 
 
-#### Interacting with the cluster via the GCP console
+#### Access with UI via the GCP console
 
-During the setup process, your cluster will be auto-registered in Google Cloud using [Connect](https://cloud.google.com/anthos/multicluster-management/connect/overview). In order to interact with the cluster from the GCP console you must first ***login*** to the cluster.
-
-The [Logging into the Anthos bare metal cluster](login.md) explains how you can do it.
+During the setup process, an Apigee Organization is created and you can access the [Apigee UI](https://cloud.google.com/apigee/docs/api-platform/fundamentals/ui-overview) by logging [here](https://apigee.google.com) with your GCP Credentials.
 
 ---
-
 
 ### Cleanup
 
