@@ -30,12 +30,12 @@ This is a sample Apigee Hybrid installation on Anthos Cluster on bare metal runn
       | Require OS Login                             | constraints/compute.requireOsLogin.               | Not Enforced     |
       | Skip default network creation                | constraints/compute.skipDefaultNetworkCreation	   | Not Enforced     |
 
-- A network called default, configured with the default firewall policies exists on your GCP Project
-  - A network called default, configured with the default firewall policies exists on your GCP Project. The installation requires a network with the name - default. If, default network creation is enabled for the organization, the project will already have it. In case the "Skip default network creation" policy is enforced, you can create a new VPC network called default in auto mode.
+- A network called `default`, configured with the default firewall policies exists on your GCP Project
+  - A network called `default`, configured with the default firewall policies exists on your GCP Project. The installation requires a network with the name - default. If, default network creation is enabled for the organization, the project will already have it. In case the *"Skip default network creation"* policy is enforced, you can create a new VPC network called default in **auto mode**.
 - Your GCP Project has the required quota
-  - This sample requires 4 VMs of n1-standard-8 machine type. Ensure that there is enough quota for CPU, Memory and IP Addresses for the GCP Region you intend to use.
+  - This sample requires 4 VMs of `n1-standard-8` machine type. Ensure that there is enough quota for CPU, Memory and IP Addresses for the GCP Region you intend to use.
 
-Note: The repository also has a utility script that checks and configures some of these pre-requisites.
+**Note:** The repository also has a [utility script](./resources/run_prerequisite.sh) that checks and configures some of these pre-requisites.
 
 ### Anthos on bare metal with Apigee on GCE VMs
 
@@ -48,4 +48,4 @@ The [Quickstart guide](docs/quickstart.md) sets up the following infrastructure 
 
 - [Terraform Module Information _(includes variables definitions)_](docs/variables.md)
 - [Quickstart guide](docs/quickstart.md):
-  - The terraform script sets up the GCE VM environment. The output of the script prints out the commands to follow to install **Anthos on bare metal** in the provisioned GCE VM and to configure Apigee in the new Anthos on bare metal cluster..
+  - The terraform script sets up the GCE VM environment. The output of the script prints out the commands to follow to install **Anthos on bare metal** in the provisioned GCE VM and to configure Apigee in the new Anthos on bare metal cluster.
