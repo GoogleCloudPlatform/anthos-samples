@@ -1,4 +1,4 @@
-## Quick starter
+## Quickstart guide
 
 ### Setup the bare metal infrastructure
 
