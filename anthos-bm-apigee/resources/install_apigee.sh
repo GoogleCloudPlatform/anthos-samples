@@ -20,14 +20,14 @@ wait_for_active() {
 		status=$(gcloud alpha apigee operations describe "$operations_id" --format=json | jq -r .response.state)
 		while [ "$status" != "ACTIVE" ]; do
 			sleep 30
-			echo "Checking Operations : $operations_id" 
+			echo "Checking Operations : $operations_id"
 			status=$(gcloud alpha apigee operations describe "$operations_id" --format=json | jq -r .response.state)
 		done
 	fi
 }
 
 create_workspace() {
-	export KUBECONFIG=$PWD/bmctl-workspace/apigee-hybrid/apigee-hybrid-kubeconfig
+	export KUBECONFIG=$PWD/bmctl-workspace/apigee-cluster/apigee-cluster-kubeconfig
 	echo "export KUBECONFIG=$KUBECONFIG" >>~/.bashrc
 	echo "export KUBECONFIG=$KUBECONFIG" >>/home/tfadmin/.bashrc
 	mkdir apigee_workspace
@@ -103,7 +103,6 @@ install_apigee_ctl() {
 	VERSION=$(curl -s \
 		https://storage.googleapis.com/apigee-release/hybrid/apigee-hybrid-setup/current-version.txt?ignoreCache=1)
         export VERSION
-        
 	#Pinning down to previous version because 1.7 has some issues
 	export VERSION="1.7.3"
 	curl -LO \
@@ -131,14 +130,12 @@ setup_project_directory() {
 	#Lets do cleaup first
 	PROJECT_ID=$(gcloud config get-value project)
 	export PROJECT_ID
-	
 	#gcloud iam service-accounts delete  apigee-non-prod@$PROJECT_ID.iam.gserviceaccount.com --quiet
 	echo 'y' | ./tools/create-service-account --env non-prod --dir ./service-accounts
 	#gcloud iam service-accounts keys create ./service-accounts/$PROJECT_ID-apigee-non-prod.json --iam-account=apigee-non-prod@$PROJECT_ID.iam.gserviceaccount.com --quiet
 	INGRESS_HOST=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 	export INGRESS_HOST
 	export DOMAIN=$INGRESS_HOST".nip.io"
-        
         # shellcheck disable=SC2086
 	openssl req -nodes -new -x509 \
 	        -keyout ./certs/keystore.key \
@@ -198,7 +195,6 @@ setup_org_env() {
      		"hostnames":["'"$DOMAIN"'"]
    	}' -o envgroup.json \
 		"https://apigee.googleapis.com/v1/organizations/$ORG_NAME/envgroups"
-	
 	# shellcheck disable=SC2002
 	operations_id=$(cat envgroup.json | jq -r .name | awk -F "/" '{print $NF}')
 	wait_for_active "$operations_id"
@@ -219,7 +215,6 @@ prepare_overrides_files() {
 	cd "$APIGEE_WORKSPACE" || exit
 	PROJECT_ID=$(gcloud config get-value project)
 	export PROJECT_ID
-	
 	wget https://github.com/mikefarah/yq/releases/download/v4.24.2/yq_linux_amd64
 	chmod +x yq_linux_amd64
 	sudo mv yq_linux_amd64 /usr/local/bin/yq
@@ -246,8 +241,8 @@ prepare_overrides_files() {
 	yq -i '.metrics.serviceAccountPath = env(SVC_ACCOUNT)' overrides.yaml
 	yq -i '.connectAgent.serviceAccountPath = env(SVC_ACCOUNT)' overrides.yaml
 	yq -i '.watcher.serviceAccountPath = env(SVC_ACCOUNT)' overrides.yaml
-	yq e '{"udca" : {"serviceAccountPath" : env(SVC_ACCOUNT)}}' overrides.yaml > tempfile && mv tempfile overrides.yaml
-	yq e '{"logger" : {"serviceAccountPath" : env(SVC_ACCOUNT)}}' overrides.yaml > tempfile && mv tempfile overrides.yaml
+	yq e '{"udca" : {"serviceAccountPath" : env(SVC_ACCOUNT)}}' overrides.yaml > tempfile && cat tempfile >> overrides.yaml
+	yq e '{"logger" : {"serviceAccountPath" : env(SVC_ACCOUNT)}}' overrides.yaml > tempfile && cat tempfile >>  overrides.yaml
 
 }
 

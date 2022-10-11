@@ -77,3 +77,4 @@ variable "mode" {
     error_message = "Allowed execution modes are: setup, install, manuallb."
   }
 }
+
