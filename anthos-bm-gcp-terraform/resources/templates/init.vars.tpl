@@ -3,6 +3,7 @@ CLUSTER_ID=${clusterId}
 IS_ADMIN_VM=${isAdminVm}
 VXLAN_IP_ADDRESS=${vxLanIp}
 SERVICE_ACCOUNT=${serviceAccount}
+TERRAFORM_SA_PATH=${terraformSAccount}
 HOSTNAMES=${hostnames}
 CONTROLPLAN_VM_NAMES=${controlplaneVms}
 VM_INTERNAL_IPS=${vmInternalIps}
