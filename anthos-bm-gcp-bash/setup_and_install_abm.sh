@@ -33,6 +33,7 @@ gcloud services enable \
     anthosaudit.googleapis.com \
     anthosgke.googleapis.com \
     cloudresourcemanager.googleapis.com \
+    connectgateway.googleapis.com \
     container.googleapis.com \
     gkeconnect.googleapis.com \
     gkehub.googleapis.com \
