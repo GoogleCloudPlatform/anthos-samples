@@ -14,11 +14,14 @@
 
 # Variables associated with the cloud installation inventory
 
-# Required for GCE SSH
-ansible_ssh_private_key_file: "~/.ssh/cnucs-cloud"
-
 # Automation setting for "is cloud"
 is_cloud_resource: true
 
 # Use QEMU emulation on devices belonging to the cloud
 kubevirt_use_emulation: true
+
+# Network Gateway Group IPs
+ang_floating_ips: [
+  "10.200.0.12",
+  "10.200.0.13"
+]

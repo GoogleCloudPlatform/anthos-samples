@@ -18,10 +18,13 @@
 #
 ####
 
+## NOTE: Host names are DNS resolved to your physical host. Some routers assign .lan or other suffix. Comment out, add or adjust this file to represent your physical hardware
+
 workers:
   hosts:
-    nuc-1.lan:
-    nuc-2.lan:
-    nuc-3.lan:
-    nuc-4.lan:
-    nuc-5.lan:
+    edge-1:
+    edge-2:
+    edge-3:
+    # edge-4:
+    # edge-5:
+    # edge-6:

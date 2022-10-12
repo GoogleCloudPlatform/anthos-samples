@@ -1,0 +1,29 @@
+{
+    "displayName": "Anthos node is unavailable ",
+    "conditions": [
+      {
+        "displayName": "Anthos Node Unavailable  ",
+        "conditionThreshold": {
+          "aggregations": [
+            {
+              "alignmentPeriod": "60s",
+              "crossSeriesReducer": "REDUCE_SUM",
+              "groupByFields": [
+                "metric.label.node",
+                "metric.label.condition"
+              ],
+              "perSeriesAligner": "ALIGN_MEAN"
+            }
+          ],
+          "comparison": "COMPARISON_GT",
+          "duration": "120s",
+          "filter": "metric.type=\"kubernetes.io/anthos/kube_node_status_condition\" resource.type=\"k8s_container\" metric.label.\"status\"=\"unknown\"",
+          "trigger": {
+            "count": 1
+          }
+        }
+      }
+    ],
+    "combiner": "OR",
+    "enabled": true
+  }

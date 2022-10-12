@@ -1,0 +1,8 @@
+apiVersion: vm.cluster.gke.io/v1
+kind: VMRuntime
+metadata:
+  name: vmruntime
+spec:
+  enabled: {{ enable_vmruntime }}
+  useEmulation: {{ kubevirt_use_emulation }}
+  vmImageFormat: qcow2

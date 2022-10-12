@@ -1,0 +1,51 @@
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- name: "Hydrate and copy templates for OIDC"
+  template:
+    src: "{{ item.template }}"
+    dest: "{{ acm_config_files }}/{{ item.final_name }}"
+  loop:
+  - {"template": "oidc-setup.yaml.j2", "final_name": "oidc-setup.yaml"}
+  - {"template": "oidc-rolebindings.yaml.j2", "final_name": "oidc-rolebindings.yaml"}
+  when:
+  - primary_cluster_machine is defined
+  - primary_cluster_machine == true
+  tags:
+  - oidc
+  - post-acm
+
+- name: "Configure OIDC with Google Cloud Identity"
+  shell: |
+    kubectl -n kube-public patch clientconfig default --type merge --patch "$(cat {{ acm_config_files }}/oidc-setup.yaml)"
+  environment:
+    KUBECONFIG: "{{ kubeconfig_shared_location }}"
+  when:
+  - primary_cluster_machine is defined
+  - primary_cluster_machine == true
+  tags:
+  - oidc
+  - post-acm
+
+- name: "Configure role binding for OIDC"
+  shell: |
+    kubectl apply -f {{ acm_config_files }}/oidc-rolebindings.yaml
+  environment:
+    KUBECONFIG: "{{ kubeconfig_shared_location }}"
+  when:
+  - primary_cluster_machine is defined
+  - primary_cluster_machine == true
+  tags:
+  - oidc
+  - post-acm

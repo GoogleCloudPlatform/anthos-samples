@@ -1,0 +1,77 @@
+target/
+pkg/
+tmp/
+
+.gitcookies
+
+.screenrc
+
+# Newrelic agent log
+newrelic_agent.log
+
+# Folder to hold build-artifacts needed for Docker install (maybe all)
+# keep the .gitkeep file, but ignore everything else
+build-artifacts/*
+!build-artifacts/README.md
+!build-artifacts/ssh-config
+
+# local Inventory files are not stored
+inventory.yml
+inventory.yaml
+# GCP inventory files generated
+gcp.yaml
+gcp.yml
+
+inventory/*.yaml
+
+# never check in any public keys
+*.pub
+
+# Downloaded git repo
+serving/
+# Downloaded model
+models/**/
+
+# Debugging & Testing Ansible
+build.yml
+build.yaml
+roles/test-*/
+
+# Molecule
+.cache/
+
+# Generated configuration file
+k8s/overlays/**/configuration/*-hydrated.conf
+k8s/overlays/**/configuration/secrets/*.json
+
+### Ansible ###
+ansible.cfg
+
+## test files
+scripts/cloud/test.sh
+service-account-key.json
+
+# Module directory
+.terraform/
+tfplan
+
+*.crt
+*.key
+*.srl
+*.csr
+
+# direnv
+.envrc
+
+# Code Coverage
+coverage.out
+coverage.html
+test-report.xml
+coverage-report.xml
+
+# Ignore key files
+gsa-key.json
+remote-gsa-key.json
+
+# ansible temp files
+ansible*temp

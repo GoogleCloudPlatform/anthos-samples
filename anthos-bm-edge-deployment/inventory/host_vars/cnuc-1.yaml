@@ -18,11 +18,11 @@
 # Name of the cluster
 cluster_name: "cnuc-1"
 # Used for logging/metrics
-machine_label: "{{ cluster_name }}"
+machine_label: "cnuc-1"
 # Indicates that this is the primary machine in the cluster (only important for provisioning)
 primary_cluster_machine: true
 # Name of the "store" per the ACM repo
-acm_cluster_name: "{{ cluster_name }}"
+acm_cluster_name: "{{ lookup('env', 'CLUSTER_ACM_NAME') | default('location-2', True) }}"
 # This machine's IP
 control_plane_ip: "10.200.0.2"
 # The other IPs in the cluster
@@ -39,3 +39,12 @@ ingress_vip: "10.200.0.50"
 load_balancer_pool_cidr: [
   "10.200.0.50-10.200.0.70"
 ]
+
+# Ansible Pull Authenticaiton String
+ansible_pull_authentication_string: "{{scm_token_user}}:{{scm_token_token}}@"
+
+# Ansible Pull repo for Remote Execution
+ansible_pull_remote_execute_repo: "https://{{ ansible_pull_authentication_string | default('', true) }}gitlab.com/gcp-solutions-public/retail-edge/remote-command-repo.git"
+
+# Ansible pull repo to manage simplified drift
+ansible_pull_drift_repo: "https://{{ ansible_pull_authentication_string | default('', true) }}gitlab.com/gcp-solutions-public/retail-edge/drift-repo.git"

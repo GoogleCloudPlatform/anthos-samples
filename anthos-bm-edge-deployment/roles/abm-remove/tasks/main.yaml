@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -58,6 +58,15 @@
   - abm-remove
   - kubeconfig-remove
   - never
+
+- name: Archive current cluster snapshots
+  include: remove-snapshot.yaml
+  when:
+    - (primary_cluster_machine is defined)
+    - (primary_cluster_machine == true)
+  tags:
+    - snapshot-remove
+    - never # must specify `--tags never` on the CLI to run this
 
 - name: Remove ABM Workspace
   ansible.builtin.file:

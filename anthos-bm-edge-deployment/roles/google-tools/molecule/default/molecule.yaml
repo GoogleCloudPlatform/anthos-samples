@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ platforms:
   #   image: docker.io/ubuntu:20.10
   #   pre_build_image: true
   - name: buster
-    image: docker.io/python:3.9.1-buster
+    image: docker.io/python:3-buster
     pre_build_image: true
 
 provisioner:
