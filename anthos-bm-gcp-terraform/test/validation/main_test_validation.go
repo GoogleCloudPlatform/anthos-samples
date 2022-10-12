@@ -766,7 +766,6 @@ func ValidateInstanceTemplateModule(goTester *testing.T, module *util.TFModule, 
 				fmt.Sprintf("Invalid value for resources[%d].values.region in the instance_template child module", idx),
 			)
 			testTags := (*vars)["tags"].([]string)
-			testAccessScopes := (*vars)["access_scopes"].([]string)
 			assert.Len(
 				goTester,
 				resource.Values.Tags,
@@ -779,26 +778,6 @@ func ValidateInstanceTemplateModule(goTester *testing.T, module *util.TFModule, 
 					testTags,
 					t,
 					fmt.Sprintf("Invalid value for resources[%d].values.tags[%d] in the instance_template child module", idx, it),
-				)
-			}
-			assert.Len(
-				goTester,
-				resource.Values.ServiceAccount,
-				1,
-				fmt.Sprintf("Invalid length for resources[%d].values.service_account in the instance_template child module", idx),
-			)
-			assert.Len(
-				goTester,
-				resource.Values.ServiceAccount[0].Scopes,
-				len(testAccessScopes),
-				fmt.Sprintf("Invalid length for resources[%d].values.service_account[0].scopes in the instance_template child module", idx),
-			)
-			for it, t := range resource.Values.ServiceAccount[0].Scopes {
-				assert.Contains(
-					goTester,
-					testAccessScopes,
-					t,
-					fmt.Sprintf("Invalid value for resources[%d].values.service_account[0].scopes[%d] in the instance_template child module", idx, it),
 				)
 			}
 		}
@@ -941,8 +920,8 @@ func ValidateMainOutputs(goTester *testing.T, planOutputs *util.Outputs, vars *m
 	)
 	assert.True(
 		goTester,
-		strings.Contains(outputValue, "sudo ./run_initialization_checks.sh"),
-		"Output is expected to have 'sudo ./run_initialization_checks.sh'",
+		strings.Contains(outputValue, "sudo -E ./run_initialization_checks.sh"),
+		"Output is expected to have 'sudo -E ./run_initialization_checks.sh'",
 	)
 }
 

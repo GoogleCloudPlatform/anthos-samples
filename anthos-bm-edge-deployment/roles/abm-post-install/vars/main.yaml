@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,3 +20,9 @@ abm_install_user: "el-gato"
 
 # Match with Google-Tools (by convention, not required, but good idea)
 remote_gsa_key: "/var/keys"
+
+# Configuration files for CloudOps Dashboards
+dashboard_config_base: "/var/abm-dashboards"
+
+# Home directory for external secrets download and operations (duplidated from abm-software role)
+external_secrets_files: "/var/external-secrets"

@@ -27,6 +27,15 @@ variable "credentials_file" {
   type        = string
 }
 
+variable "terraform_sa_path" {
+  description = <<EOT
+    Path inside the VMs to which the service account used for the Terraform run
+    must be copied to. This Service Account is used for various actions when
+    initializing the VM and installing Anthos on bare metal
+  EOT
+  type        = string
+}
+
 variable "resources_path" {
   description = "Path to the resources folder with the template files"
   type        = string

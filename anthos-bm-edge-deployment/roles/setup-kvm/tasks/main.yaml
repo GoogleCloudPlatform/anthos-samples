@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -47,9 +47,9 @@
     - kvm-install
     - kvm-packages
 
-- name: Reboot machine so KVM dependencies are active
-  reboot:
-    reboot_timeout: 300
+# TODO: Refactor timeout
+- name: Reset ssh if KVM dependencies are active
+  meta: reset_connection
   when: kvm_check.rc > 0
   tags:
     - kvm-install

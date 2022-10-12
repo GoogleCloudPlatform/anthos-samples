@@ -1,0 +1,10 @@
+{{ gcloud_update_log }} {
+    size 10M              # triggers when file is bigger than 10M
+    dateext               # use date extension
+    dateformat -%Y%m%d-%s # the extention format
+    rotate 5              # keep 5 files
+    copytruncate          # truncates the original file
+    missingok             # does not throw error if the file is missing
+    notifempty            # does not rotate if the file is empty
+    compress              # Compress logs
+}

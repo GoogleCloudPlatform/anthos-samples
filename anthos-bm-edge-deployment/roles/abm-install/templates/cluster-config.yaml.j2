@@ -15,6 +15,8 @@ apiVersion: baremetal.cluster.gke.io/v1
 kind: Cluster
 metadata:
   name: {{ cluster_name }}
+  annotations:
+    baremetal.cluster.gke.io/enable-anthos-multi-cluster-connectivity: "{{ enable_mcc_network | default('false', true) | lower }}"
   namespace: {{ cluster_name }}
 spec:
   type: {{ install_type }}
@@ -25,6 +27,10 @@ spec:
   # GKE connect configuration
   gkeConnect:
     projectID: {{ google_project_id }}
+  #edgeManagement:
+  #  optIn: {{ edge_api_enabled }}
+  #  # TODO: Future, this will be configurable as API is rolled out
+  #  location: {{ edge_api_location }}
   # Control plane configuration
   controlPlane:
     nodePoolSpec:
@@ -34,7 +40,11 @@ spec:
       {% endfor %}
   # Cluster networking configuration
   clusterNetwork:
-    multipleNetworkInterfaces: {{ multi_network_enabled }}
+    multipleNetworkInterfaces: {{ multi_network_enabled | capitalize  }}
+    # eBPF
+    # enableDataplaneV2: {{ dataplane_v2 | capitalize }}
+    # Network Gateway Groups
+    advancedNetworking: {{ network_gateway_group | capitalize  }}
     pods:
       cidrBlocks:
       - {{ pod_cidr }}
@@ -132,6 +142,7 @@ spec:
   nodeAccess:
     loginUser: {{ abm_install_user }}
 ---
+
 # Node pools for worker nodes
 #apiVersion: baremetal.cluster.gke.io/v1
 #kind: NodePool
