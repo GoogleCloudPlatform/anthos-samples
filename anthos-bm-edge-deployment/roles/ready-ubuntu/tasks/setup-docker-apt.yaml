@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -76,13 +76,14 @@
     name: docker
     state: present
 
-# sudo usermod -aG docker root
+# sudo usermod -aG docker root    [WARNING]: 'append' is set, but no 'groups' are specified. Use 'groups' for appending new groups.This will change to an error in Ansible 2.14.
 - name: Add ansible_user user to "docker" group
   user:
     name: "{{ ansible_user }}"
-    group: "docker"
+    groups: "docker"
     append: yes
 
+# TODO: Refactor timeout
 - name: Reboot machine to get new session with updated docker group
   reboot:
     reboot_timeout: 300

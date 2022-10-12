@@ -19,6 +19,10 @@ DIR=$(pwd)
 INSTALL_MODE=$(cut -d "=" -f2- <<< "$(grep < init.vars INSTALL_MODE)")
 CLUSTER_ID=$(cut -d "=" -f2- <<< "$(grep < init.vars CLUSTER_ID)")
 NFS_SERVER=$(cut -d "=" -f2- <<< "$(grep < init.vars NFS_SERVER)")
+TERRAFORM_SA_PATH=$(cut -d "=" -f2- <<< "$(grep < init.vars TERRAFORM_SA_PATH)")
+
+export GOOGLE_APPLICATION_CREDENTIALS="$TERRAFORM_SA_PATH"
+gcloud auth activate-service-account --key-file "$TERRAFORM_SA_PATH"
 
 # run the initialization checks
 "$DIR"/run_initialization_checks.sh

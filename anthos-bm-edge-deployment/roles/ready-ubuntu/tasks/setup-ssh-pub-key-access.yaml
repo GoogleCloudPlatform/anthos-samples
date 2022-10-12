@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -77,7 +77,8 @@
   - abm-authorized-keys
 
 - name: Remove the temp file after copying
-  ansible.builtin.file:
+  local_action:
+    module: ansible.builtin.file
     path: "{{ tempfile_1.path }}"
     state: absent
   when: tempfile_1.path is defined

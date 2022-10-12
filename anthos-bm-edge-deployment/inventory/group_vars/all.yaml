@@ -14,55 +14,164 @@
 
 ---
 
+# Ansible Setttings (per each run)
+###
+###
+###
+
+# Ansible will use the key below
+ansible_ssh_private_key_file: "build-artifacts/consumer-edge-machine"
+ansible_ssh_common_args: "-F build-artifacts/ssh-config -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+
 #######
 
-# These are the most commonly changed variables for a particular provisioning
+####
+#### Commonly changed variables
+####
+# Latest version can be found: gsutil ls -al gs://anthos-baremetal-release/bmctl
+# Version of Anthos Bare Metal to install
+abm_version: "1.12.0" # verify coupling of ABM to BMCTL versions
+# bmctl binary version
+#TODO: set this up to query for the version, then upgrade automatically if updated
+#NOTE: A copy of this variable is in Molecule test `for google_tools`
+bmctl_version: "1.12.0" # If changed, set the `force_tools_upgrade` to true so new version of BMCTL is downloaded
+
+# Force Upgrade of tools (typically used when updating the ABM version above)
+force_tools_upgrade: false
+
+###
+### Ansible Pull Configurations
+###
+
+# Remote playbook for Ansible Pull to use (if empty, no ansible-pull used for this type of execution)
+ansible_pull_remote_execute_repo: ""
+
+# Default for ansible pull drift assistance (defaults to empty or no run)
+ansible_pull_drift_repo: ""
 
 ####
 #### Anthos Config Management
 ####
 acm_root_repo: "{{ lookup('env', 'ROOT_REPO_URL') | default('https://github.com/GoogleCloudPlatform/anthos-samples', True) }}"
+acm_repo_type: "{{ lookup('env', 'ROOT_REPO_TYPE') | default('token', True) }}"
+# From the above repo, what branch and what directory to use as bases
+root_repository_branch: "{{ lookup('env', 'ROOT_REPO_BRANCH') | default('main', True) }}"
+# Directory to use as base
+root_repository_policy_dir: "{{ lookup('env', 'ROOT_REPO_DIR') | default('/config', True) }}"
 
+###
+### Google Core Variables
+###
+google_project_id: "{{ lookup('env', 'PROJECT_ID') }}"
+google_region: "{{ lookup('env', 'REGION') | default('us-central1', True) }}" # NOTE: A copy of this variable is in Molecule test `for google_tools`
+google_zone: "{{ lookup('env', 'ZONE') | default('us-central1-a', True) }}" # NOTE: A copy of this variable is in Molecule test `for google_tools`
 
-#######
+###
+### SCM (GitLab or GitHub access token)
+###
+scm_token_user: "{{ lookup('env', 'SCM_TOKEN_USER') }}"
+scm_token_token: "{{ lookup('env', 'SCM_TOKEN_TOKEN') }}"
 
+# gsutil ls -al gs://config-management-release/released/
+# Anthos Config Management version
+acm_version: "1.12.0"
 
+####
+#### Anthos Network Gateway
+####
+# Floating IP addresses for Anthos Network Gateway
+ang_floating_ips: [] # Floating IP for ANG
+vpn_gateway_ips: [] # Gateway IPs for VPN
+network_gateway_group_install: false
+network_gateway_mcc: false
+
+###
+### Global Snapshot & Update Variables
+###
+snapshot_gcs_bucket_base: "{{ lookup('env', 'SNAPSHOT_GCS') | default( [ google_project_id, '-clusters-snapshots' ] | join, True) }}" # leave empty to generate local-only snapshots
+# snapshot_gcs_bucket_base: ""
+
+###
+### Storage Provider
+###
+storage_provider: "longhorn" # Options: openebs, robin, none
+# Storage provider roots for disc storage
+storage_provider_roots: [ "/customer" ]
+# GSM Secret name used for Longhorn HMAC
+longhorn_secret_name: "longhorn-cloud-storage-hmac"
+
+###
+### OIDC in cluster (setup OIDC before provisioning, set environment variables to the values)
+###
+enable_oidc: "{{ lookup('env', 'OIDC_ENABLED')|bool or false }}" # Off by default, change with ENV var, not with default value
+oidc_client_id: "{{ lookup('env', 'OIDC_CLIENT_ID') }}"
+oidc_client_secret: "{{ lookup('env', 'OIDC_CLIENT_SECRET') }}"
+oidc_user: "{{ lookup('env', 'OIDC_USER') }}"
+
+###
+### VM Runtime (KubeVirt + A4VM)
+###
+# VM Runtime
+enable_vmruntime: true
+
+# Base folder to place configuration and installation items for ABM
+abm_install_folder: "/var/abm-install"
+
+###
+### Default Ansible configuration variables
+###
 # All ansible interactions are using this user during provisioning
 ansible_user: abm-admin
+# Path to the private key file used for SSH
+ansible_ssh_key_file_encrypted: build-artifacts/consumer-edge-machine.encrypted
+ansible_ssh_key_timeout: "4h"
+# Details of Google Cloud KMS key used to decrypt SSH private key
+google_kms: {
+    keyring_name: "gdc-ce-keyring", # Defined in ./scripts/create-primary-gsa.sh -- future will be TF
+    key_name: "gdc-ssh-key",
+    location: "global"
+  }
 
-# Variables assigned to all inventory
-
-google_project_id: "{{ lookup('env', 'PROJECT_ID') }}"
-google_region: "{{ lookup('env', 'REGION') | default('us-central1', True) }}"
-google_zone: "{{ lookup('env', 'ZONE') | default('us-central1-a', True) }}"
 local_gsa_key: "{{ lookup('env', 'LOCAL_GSA_FILE') }}"
 tools_base_path: "/var/google-tools-install"
 
 kubeconfig_shared_root: "/var/kubeconfig"
 kubeconfig_shared_location: "{{ kubeconfig_shared_root }}/kubeconfig"
 
-# Latest version can be found: gsutil ls -al gs://anthos-baremetal-release/bmctl
-# Version of Anthos Bare Metal to install
-abm_version: "1.8.2" # verify coupling of ABM to BMCTL versions
-# bmctl binary version
-#TODO: set this up to query for the version, then upgrade automatically if updated
-bmctl_version: "1.8.2" # If changed, set the `force_tools_upgrade` to true so new version of BMCTL is downloaded
-
-# gsutil ls -al gs://config-management-release/released/
-# Anthos Config Management
-acm_version: "1.8.1"
-
-# Force Upgrade of tools (typically used when updating the ABM version above)
-force_tools_upgrade: false
-
-# SCM (GitLab, GitHub access token)
-scm_token_user: "{{ lookup('env', 'SCM_TOKEN_USER') }}"
-scm_token_token: "{{ lookup('env', 'SCM_TOKEN_TOKEN') }}"
+#NOTE: A copy of this variable is in Molecule test `for google_tools`
+gcp_services_required:
+  - anthos.googleapis.com
+  - anthosaudit.googleapis.com
+  - anthosgke.googleapis.com
+  - cloudkms.googleapis.com
+  - cloudresourcemanager.googleapis.com
+  - connectgateway.googleapis.com
+  - container.googleapis.com
+  - gkeconnect.googleapis.com
+  - gkehub.googleapis.com
+  - iam.googleapis.com
+  - iamcredentials.googleapis.com
+  - logging.googleapis.com
+  - monitoring.googleapis.com
+  - opsconfigmonitoring.googleapis.com
+  - secretmanager.googleapis.com
+  - serviceusage.googleapis.com
+  - sourcerepo.googleapis.com
+  - stackdriver.googleapis.com
+  - storage.googleapis.com
 
 #Secret name for longhorn to take backups of volumes and send to cloud storage bucket
 volume_backup_secret_name: gcp-cloud-storage-backup-secret
 
+# Setup VLAN on Host # TODO: Add the ability to create multiple VLAN interfaces dynamically
+setup_vlan: false
+vlan_interfaces: []
+
+# Observability package
+install_observability: false
+
 # All of the Service Accounts used in this solution
+## LONGHORN
 service_accounts: [
   {
     name: abm-gcr-agent,
@@ -96,7 +205,8 @@ service_accounts: [
       "roles/logging.logWriter",
       "roles/monitoring.metricWriter",
       "roles/stackdriver.resourceMetadata.writer",
-      "roles/monitoring.dashboardEditor"
+      "roles/monitoring.dashboardEditor",
+      "roles/opsconfigmonitoring.resourceMetadata.writer"
     ]
   },
   {
@@ -111,7 +221,7 @@ service_accounts: [
   {
     name: longhorn-cloud-storage,
     keyfile: longhorn-cloud-storage-creds.json,
-    description: "Longhorn taking volume backups on cloud stoarge ",
+    description: "Longhorn taking volume backups on cloud storage ",
     roles: [
       "roles/storage.objectAdmin"
     ]
@@ -124,7 +234,32 @@ service_accounts: [
       "roles/gkehub.gatewayAdmin",
       "roles/gkehub.viewer"
     ]
+  },
+  {
+    name: source-repo-agent,
+    keyfile: google-source-repo-agent.json,
+    description: "Agent used for GSR",
+    roles: [
+      "roles/source.reader"
+    ]
+  },
+  {
+    name: cdi-import-agent,
+    keyfile: cdi-import-agent-creds.json,
+    description: "Agent used for CDI image access",
+    roles: [
+      "roles/storage.objectViewer"
+    ]
+  },
+  {
+    name: storage-agent-svc-account,
+    keyfile: storage-agent-svc-account-creds.json,
+    description: "Agent used for Snapshot Cloud Storage",
+    roles: [
+      "roles/storage.admin"
+    ]
   }
+
 ]
 
 # git_creds_gcp_secret_name is the secret created to hold the Git PAT info corresponding to that Namespace Repo
@@ -137,13 +272,13 @@ franchises: [
   {
     franchise_number: "123", # DEPRECATED
     git_creds_gcp_secret_name: "global-lab-git-creds", # Secret to access the namespace repo containing the franchise's information
-    franchise_name: "Global McD", # DEPRECATED
+    franchise_name: "Global", # DEPRECATED
     stores: [
       "edge-2" # store-usa-123-1
     ]
   },
   {
-    franchise_name: "Chicago McD",
+    franchise_name: "Chicago",
     franchise_number: "234",
     git_creds_gcp_secret_name: "northam-lab-git-creds",
     stores: [

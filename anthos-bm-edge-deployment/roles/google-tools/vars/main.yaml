@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ google_project_id: "{{ lookup('env', 'PROJECT_ID') }}"
 tools_base_path: "/var/google-tools-install"
 
 # gcloud version to download (gcloud version) -- roughly kept up-to-date, the system will update when installed, keeping up-to-date just makes the install a little faster
-gcloud_version: "347.0.0"
+gcloud_version: "392.0.0"
 
 # Local GSA Key (needs to be provided via command line vars)
 local_gsa_key: "{{ lookup('env', 'LOCAL_GSA_FILE') }}"
@@ -30,10 +30,7 @@ local_gsa_key: "{{ lookup('env', 'LOCAL_GSA_FILE') }}"
 # location of the GSA credentials file for gcloud initialization
 remote_gsa_key: "/var/keys"
 
-kubectx_version: "0.9.3"
-
-# KubeVirt CLI tool
-virtctl_version: "v0.42.1"
+kubectx_version: "0.9.4"
 
 # K9s binary version (https://github.com/derailed/k9s/releases)
-k9s_version: "v0.24.12"
+k9s_version: "v0.25.21"

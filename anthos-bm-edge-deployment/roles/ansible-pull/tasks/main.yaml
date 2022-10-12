@@ -1,0 +1,145 @@
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+# Setup Python on target
+
+- name: "Setup Python"
+  apt:
+    pkg:
+    - python3
+    - python3-pip
+  tags:
+  - ansible-pull
+  - ansible-pull-install
+  - ansible-pull-common
+
+- name: "Remove python for python3 if present"
+  apt:
+    name: python-is-python3
+    state: absent
+  tags:
+  - ansible-pull
+  - ansible-pull-install
+  - ansible-pull-common
+
+- name: "Reset SSH connection if python changed"
+  meta: reset_connection
+  tags:
+  - ansible-pull
+  - ansible-pull-install
+  - ansible-pull-common
+
+- name: "Update pip"
+  ansible.builtin.command:
+    cmd: "pip install --upgrade pip"
+  tags:
+  - ansible-pull
+  - ansible-pull-install
+  - ansible-pull-common
+
+- name: "Install Ansible"
+  ansible.builtin.command:
+    cmd: "pip install ansible"
+  tags:
+  - ansible-pull
+  - ansible-pull-install
+  - ansible-pull-common
+
+# Make working directory for ansible-pull
+- name: Create local directory to work from
+  file:
+    path: '{{ ansible_pull_workdir }}'
+    state: directory
+    recurse: True
+    owner: root
+    group: root
+    mode: '{{ ansible_pull_workdir_permissions }}'
+  tags:
+  - ansible-pull
+  - ansible-pull-common
+
+- name: Create inventory folder for variables and hosts file
+  file:
+    path: '{{ ansible_pull_inventory_folder }}'
+    state: directory
+    recurse: True
+    owner: root
+    group: root
+    mode: '{{ ansible_pull_workdir_permissions }}'
+  tags:
+  - ansible-pull
+  - ansible-pull-common
+
+- name: Create group_vars for all variables
+  file:
+    path: '{{ ansible_pull_inventory_folder }}/group_vars'
+    state: directory
+    recurse: True
+    owner: root
+    group: root
+    mode: '{{ ansible_pull_workdir_permissions }}'
+  tags:
+  - ansible-pull
+  - ansible-pull-common
+
+# Setup host information for the remote host
+- name: Create local variables file for ansible-pull
+  template:
+    src: ansible-pull-all.yaml.j2
+    dest: "{{ ansible_pull_inventory_folder }}/group_vars/all.yaml"
+    owner: root
+    group: root
+    mode: '0600'
+  tags:
+  - ansible-pull
+  - ansible-pull-common
+
+# Setup host information for the remote host
+- name: Create local inventory for ansible-pull
+  template:
+    src: ansible-pull-inventory.yaml.j2
+    dest: "{{ ansible_pull_inventory_folder }}/inventory.yaml"
+    owner: root
+    group: root
+    mode: '0600'
+  tags:
+  - ansible-pull
+  - ansible-pull-common
+
+# Setup cron job
+- name: Create cron-job for ansible-pull
+  template:
+    src: ansible-pull-cron.j2
+    dest: /etc/cron.d/ansible-pull-execute-command
+    owner: root
+    group: root
+    mode: '0700'
+  when:
+  - ansible_pull_remote_execute_repo is defined # only setup cron job IF there is a defined repo to pull from
+  tags:
+  - ansible-pull
+  - ansible-pull-configure
+
+## Rotate logs for Ansible-Pull (can get large over time, need to keep small
+- name: set up logrotate for rails log
+  template:
+    src: ansible-pull-logrotate.j2
+    dest: /etc/logrotate.d/ansible-pull-logrotate
+    owner: root
+    group: root
+    mode: 0644
+  tags:
+  - ansible-pull
+  - ansible-pull-configure
