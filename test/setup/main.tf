@@ -34,7 +34,7 @@ resource "random_id" "random_project_id_suffix" {
 # Project Editor and Project IAM Admin permissions
 module "abm_infra_editor_project" {
   source              = "terraform-google-modules/project-factory/google"
-  version             = "~> 13.0"
+  version             = "~> 14.0"
   name                = "ci-abm-${random_id.random_project_id_suffix.hex}"
   random_project_id   = true
   auto_create_network = true
