@@ -104,7 +104,7 @@ apply_firewall_policies() {
 
 create_owner_service_account() {
 	EXISTS=$(gcloud iam service-accounts list \
-		--filter="email=baremetal-owner@"${project}".iam.gserviceaccount.com" \
+		--filter="email=baremetal-owner@${project}.iam.gserviceaccount.com" \
 		--format="value(name, disabled)" \
 		--project="${project}")
 
