@@ -72,7 +72,38 @@
 
     > **Note:** When prompted to confirm the Terraform plan, type 'Yes' and enter
 
-***The `apply` command sets up the Compute Engine VM based bare metal infrastructure. This can take a few minutes (approx. 3-5 mins) for the entire bare-metal cluster to be setup.***
+    ***The `apply` command sets up the Compute Engine VM based bare metal infrastructure. This can take a few minutes (approx. 3-5 mins) for the entire bare-metal cluster to be setup.***
+
+    Upon a successfull run you will see an output similar the one below:
+
+    ```sh
+    admin_vm_ssh = <<EOT
+    ################################################################################
+    ##              AnthosBM on Google Compute Engine VM with Terraform           ##
+    ##                        (Run the following commands)                        ##
+    ##   (Note that the 1st command should have you SSH'ed into the admin host)   ##
+    ################################################################################
+
+    > gcloud compute ssh tfadmin@apigee-cluster-abm-ws0-001 --project=shabir-abm-apigee --zone=us-east1-b
+
+    # ------------------------------------------------------------------------------
+    # You must be SSH'ed into the admin host apigee-cluster-abm-ws0-001 as tfadmin user now
+    # ------------------------------------------------------------------------------
+    > export GOOGLE_APPLICATION_CREDENTIALS=/home/tfadmin/terraform-sa.json && \
+      sudo -E ./run_initialization_checks.sh && \
+      sudo -E bmctl create config -c apigee-cluster && \
+      sudo -E cp ~/apigee-cluster.yaml bmctl-workspace/apigee-cluster && \
+      sudo -E bmctl create cluster -c apigee-cluster
+
+    ################################################################################
+
+    ################################################################################
+    #            Setup APIGEE with the new Anthos on bare metal cluster            #
+    ################################################################################
+    > ./install_apigee.sh
+
+    EOT
+    ```
 
 ---
 ### Deploy an Anthos cluster and Install Apigee
@@ -86,13 +117,19 @@ bare metal cluster into the provisioned VMs.
     gcloud compute ssh tfadmin@apigee-cluster-abm-ws0-001 --project=<YOUR_PROJECT> --zone=<YOUR_ZONE>
     ```
 
-2. Install the Anthos on bare metal cluster and then **install Apigee into the cluster**
+2. Install the Anthos on bare metal cluster
 
     ```sh
-    sudo ./run_initialization_checks.sh && \
-    sudo bmctl create config -c apigee-cluster && \
-    sudo cp ~/apigee-cluster.yaml bmctl-workspace/apigee-cluster && \
-    sudo bmctl create cluster -c apigee-cluster && \
+    export GOOGLE_APPLICATION_CREDENTIALS=/home/tfadmin/terraform-sa.json && \
+    sudo -E ./run_initialization_checks.sh && \
+    sudo -E bmctl create config -c apigee-cluster && \
+    sudo -E cp ~/apigee-cluster.yaml bmctl-workspace/apigee-cluster && \
+    sudo -E bmctl create cluster -c apigee-cluster
+    ```
+
+3. Install  Apigee into the cluster
+
+    ```sh
     ./install_apigee.sh
     ```
 ---

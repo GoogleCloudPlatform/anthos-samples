@@ -18,7 +18,7 @@ locals {
   install_apigee_instructions = join("\n", [
     "",
     "################################################################################",
-    "#            Setup APIGEE with the new Anthos on bare metal cluster      Í      #",
+    "#            Setup APIGEE with the new Anthos on bare metal cluster            #",
     "################################################################################",
     "> ./install_apigee.sh",
     "",
