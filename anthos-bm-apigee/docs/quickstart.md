@@ -191,9 +191,6 @@ Checking Apigee Containers ...
 Checking Apigee Containers ...
 Checking Apigee Containers ...
 Apigee is Ready
-Anthos on bare metal installation complete!
-Run [export KUBECONFIG=/home/tfadmin/bmctl-workspace/apigee-cluster/apigee-cluster-kubeconfig] to set the kubeconfig
-Run the [/home/tfadmin/login.sh] script to generate a token that you can use to login to the cluster from the Google Cloud Console
 ```
 
 ---
