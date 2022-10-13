@@ -32,7 +32,8 @@ Organization with the same name as the ID of the Google Cloud Project you use.
     default firewall policies configured on it. If, default network creation is
     enabled for the organization, the project will already have it. In case the
     *`Skip default network creation`* policy is enforced, you can create a new
-    VPC network called default in **auto mode**.
+    VPC `network` called default in **auto mode**.
+    _[See image for example.](./docs/images/default_network.png)_
 
   - **Quota:** The project must have the required quota. his sample requires 4
     VMs of `n1-standard-8` machine type. Ensure that there is enough quota for
