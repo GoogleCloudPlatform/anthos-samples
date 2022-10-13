@@ -229,7 +229,7 @@ steps.
 1. You can get the istio ingress gateway IP by running the following command:
 
     ```sh
-    kubectl get svc -n istio-systems
+    kubectl get svc -n istio-system
     ```
     ```sh
     NAME                   TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)                                      AGE
@@ -241,7 +241,8 @@ steps.
     `EXTERNAL_IP` of istio-ingressgateway is the endpoint for API proxies
     deployed on Apigee. For example, if a mockservice with resource path of
     `/mockservice` is deployed on Apigee, it can be accessed via
-    https://$EXTERNAL_IP.nip.io/mockservice
+    `https://$EXTERNAL_IP.nip.io/mockservice`. The `EXTERNAL_IP` here will be an
+    IP on the VxLAN network that creates the L2-network between the GCE VMs.
 
 ---
 ### Access with UI via the GCP console
