@@ -249,7 +249,16 @@ steps.
 
 During the setup process, an Apigee Organization is created and you can access
 the [Apigee UI](https://cloud.google.com/apigee/docs/api-platform/fundamentals/ui-overview)
-by logging [here](https://apigee.google.com) with your GCP Credentials.
+by logging into [apigee.google.com](https://apigee.google.com) with your GCP
+Credentials.
+
+<p align="center">
+  <img src="images/apigee-ui.png">
+  <em>
+    </br>
+    (click image to enlarge)
+  </em>
+</p>
 
 ---
 ### Cleanup
