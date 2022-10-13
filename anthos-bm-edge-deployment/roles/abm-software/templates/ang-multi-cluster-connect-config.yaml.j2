@@ -1,0 +1,38 @@
+{% if egress_cluster_ip is defined %}
+apiVersion: networking.gke.io/v1alpha1
+kind: MultiClusterConnectivityConfig
+metadata:
+  name: mcc-edge-config
+  namespace: kube-system
+spec:
+  asns:
+    peer: 65534
+    self: 65533
+  tunnels:
+  - ikeKey:
+      name: ike-key
+      namespace: kube-system
+    peer:
+      bgpIP: 169.254.0.1
+      privateIP: {{ vpn_gateway_ips[0] }} # GCP Gateway IP 1
+      publicIP: {{ vpn_gateway_ips[0] }} # GCP Gateway IP 1
+    self:
+      bgpIP: 169.254.0.2
+      privateIP: {{ ang_floating_ips[0] }}  # Floating IP
+      publicIP: {{ egress_cluster_ip }} # "public IP or NAT IP of packets leaving edge cluster"
+  {% if vpn_gateway_ips|length > 1 %}
+  # Second Tunnel
+  - ikeKey:
+      name: ike-key
+      namespace: kube-system
+    peer:
+      bgpIP: 169.254.0.3
+      privateIP: {{ vpn_gateway_ips[1] }}
+      publicIP: {{ vpn_gateway_ips[1] }}
+    self:
+      bgpIP: 169.254.0.4
+      privateIP: {{ ang_floating_ips[1] }} # Floating IP
+      publicIP: {{ egress_cluster_ip }}
+  {% endif %}
+
+{% endif %}

@@ -44,6 +44,7 @@ locals {
   login_script                        = "${var.resources_path}/login.sh"
   firewall_rule_name                  = "${var.abm_cluster_id}-allow-lb-traffic-rule"
   nfs_yaml_file                       = "${var.resources_path}/.temp/.nfs-csi.yaml"
+  terraform_sa_path                   = "/home/${var.username}/terraform-sa.json"
   firewall_rule_ports                 = [6444, 443]
   firewall_rule_port_str              = join(",", [for port in local.firewall_rule_ports : "tcp:${port}"])
   vm_hostnames_str                    = join("|", local.vm_hostnames)
@@ -68,7 +69,7 @@ locals {
 
 module "enable_google_apis_primary" {
   source                      = "terraform-google-modules/project-factory/google//modules/project_services"
-  version                     = "13.0.0"
+  version                     = "~> 14.0"
   project_id                  = var.project_id
   activate_apis               = var.primary_apis
   disable_services_on_destroy = false
@@ -76,7 +77,7 @@ module "enable_google_apis_primary" {
 
 module "enable_google_apis_secondary" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "13.0.0"
+  version = "~> 14.0"
   # fetched from previous module to explicitely express dependency
   project_id                  = module.enable_google_apis_primary.project_id
   depends_on                  = [module.enable_google_apis_primary]
@@ -108,7 +109,7 @@ module "create_service_accounts" {
 
 module "instance_template" {
   source  = "terraform-google-modules/vm/google//modules/instance_template"
-  version = "~> 7.8.0"
+  version = "~> 7.9"
   depends_on = [
     module.enable_google_apis_primary,
     module.enable_google_apis_secondary
@@ -131,10 +132,7 @@ module "instance_template" {
   metadata = {
     enable-oslogin = "false"
   }
-  service_account = {
-    email  = var.gce_vm_service_account
-    scopes = var.access_scopes # --scopes cloud-platform
-  }
+  service_account = null
   gpu = !local.gpu_enabled ? null : {
     type  = var.gpu.type
     count = var.gpu.count
@@ -325,21 +323,22 @@ resource "local_file" "init_args_file" {
   for_each = toset(local.vm_hostnames)
   filename = format(local.init_script_vars_file_path_template, each.value)
   content = templatefile(local.init_script_vars_file, {
-    zone             = var.zone,
-    clusterId        = var.abm_cluster_id,
-    isAdminVm        = contains(local.admin_vm_hostnames, each.value),
-    vxLanIp          = local.vm_vxlan_ip[local.vmHostnameToVmName[each.value]],
-    serviceAccount   = var.anthos_service_account_name,
-    hostnames        = local.vm_hostnames_str,
-    controlplaneVms  = local.controlplan_vm_hostnames_str,
-    vmInternalIps    = local.vm_internal_ips,
-    logFile          = local.init_script_logfile_name
-    firewallRuleName = local.firewall_rule_name
-    firewallPorts    = local.firewall_rule_port_str
-    installMode      = var.mode
-    ingressNeg       = var.mode == "manuallb" ? module.configure_ingress_lb[0].neg_name : ""
-    ingressLbIp      = var.mode == "manuallb" ? module.configure_ingress_lb[0].public_ip : ""
-    nfsServer        = var.nfs_server
+    zone              = var.zone,
+    clusterId         = var.abm_cluster_id,
+    isAdminVm         = contains(local.admin_vm_hostnames, each.value),
+    vxLanIp           = local.vm_vxlan_ip[local.vmHostnameToVmName[each.value]],
+    serviceAccount    = var.anthos_service_account_name,
+    terraformSAccount = local.terraform_sa_path,
+    hostnames         = local.vm_hostnames_str,
+    controlplaneVms   = local.controlplan_vm_hostnames_str,
+    vmInternalIps     = local.vm_internal_ips,
+    logFile           = local.init_script_logfile_name
+    firewallRuleName  = local.firewall_rule_name
+    firewallPorts     = local.firewall_rule_port_str
+    installMode       = var.mode
+    ingressNeg        = var.mode == "manuallb" ? module.configure_ingress_lb[0].neg_name : ""
+    ingressLbIp       = var.mode == "manuallb" ? module.configure_ingress_lb[0].public_ip : ""
+    nfsServer         = var.nfs_server
   })
 }
 
@@ -367,6 +366,7 @@ module "init_hosts" {
   init_vars_file         = format(local.init_script_vars_file_path_template, each.value)
   cluster_yaml_path      = local.cluster_yaml_file
   nfs_yaml_path          = local.nfs_yaml_file
+  terraform_sa_path      = local.terraform_sa_path
 }
 
 module "install_abm" {
@@ -384,7 +384,7 @@ module "install_abm" {
 
 module "gke_hub_membership" {
   source                = "terraform-google-modules/gcloud/google"
-  version               = "~>3.1.1"
+  version               = "~> 3.1"
   platform              = "linux"
   create_cmd_entrypoint = "echo"
   create_cmd_body       = "GKE hub membership is created by bmctl create cluster"

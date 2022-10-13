@@ -1,0 +1,15 @@
+kind: EgressNATPolicy
+apiVersion: networking.gke.io/v1
+metadata:
+  name: egress
+spec:
+  sources:
+  - namespaceSelector:
+      matchLabels:
+        type: frontend
+  action: SNAT
+  destinations:
+    - cidr: 8.8.8.0/24
+  gatewayRef:
+    name: default
+    namespace: kube-system

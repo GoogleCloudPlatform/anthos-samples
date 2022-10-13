@@ -1,0 +1,5 @@
+SHELL=/bin/bash
+BASH_ENV="/root/.bashrc"
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/var/gcloud-sdk/google-cloud-sdk/bin
+# */1 * * * * bash -c "cd /var/consumer-edge-install && /var/consumer-edge-install/docker-build/docker-cron-startup-script.sh >> /var/log/cron.log 2>&1"
+@reboot bash -c "cd /var/consumer-edge-install && /var/consumer-edge-install/docker-build/docker-cron-startup-script.sh >> /var/log/cron.log 2>&1"

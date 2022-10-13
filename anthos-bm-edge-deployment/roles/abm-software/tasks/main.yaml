@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,10 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+- name: Post-Install--Fail if number of available hosts != in-play count
+  fail:
+    msg: "Failure caused by expected {{ ansible_play_hosts_all|length }} hosts but have {{ ansible_play_hosts|length }}. Check failures above to see what issue happened."
+  when: (ansible_play_hosts_all|length) != (ansible_play_hosts|length)
+  tags:
+  - verify
+
 #
 # Install ACM
 #
-
 - name: Fail if local SCM_TOKEN_USER ENV is not defined
   assert:
     that:
@@ -34,6 +40,14 @@
   tags:
   - verify
 
+- name: Create cluster snapshot
+  include: create-snapshot.yaml
+  when:
+    - (primary_cluster_machine is defined)
+    - (primary_cluster_machine == true)
+  tags:
+  - cluster-snapshot
+
 - name: Remove taint from master node
   command:
     cmd: kubectl taint nodes {{ cluster_name }} node-role.kubernetes.io/master:NoSchedule-
@@ -44,31 +58,46 @@
   tags:
   - abm-software
   - abm-config
-  - onetime
 
-### TODO: This is a fix for a pre-release functionality targeted for 1.8.3
-- name: "Update CDI deployment for future software release"
-  run_once: true
-  shell: |
-    kubectl get deployment -n cdi cdi-operator -o yaml > cdi-operator-change.yaml
-
-    sed -i "s|v1.34.0-gke.1|v1.34.1-gke.5|" cdi-operator-change.yaml
-    sed -i "s|{{ cdi_staging_project }}|{{ google_project_id }}|" cdi-operator-change.yaml
-
-    kubectl apply -f cdi-operator-change.yaml
-    kubectl delete po -n cdi --all
-    touch /var/.has-cdi-update
-    rm -rf cdi-operator-change.yaml
-  args:
-    executable: /bin/bash
-    creates: /var/.has-cdi-update
-  environment:
-    PATH: "{{ tools_base_path }}/google-cloud-sdk/bin:{{ ansible_env.PATH }}"
-    KUBECONFIG: "{{ kubeconfig_shared_location }}"
+- name: Folder for VMRUntime configuration
+  file:
+    path: '{{ vmruntime_config_path }}'
+    state: directory
+    mode: '0755'
+  when: "(primary_cluster_machine is defined) and (primary_cluster_machine == true)"
   tags:
   - abm-software
-  - future-bug-fix
-  - cdi-install
+  - vmruntime
+
+- name: Copy VMRuntime for install
+  template:
+    src: vmruntime-config.yaml.j2
+    dest: "{{ vmruntime_config_path }}/vmruntime.yaml"
+  when:
+    - (primary_cluster_machine is defined)
+    - (primary_cluster_machine == true)
+  tags:
+  - abm-software
+  - vmruntime
+
+- name: "Install VMRuntime"
+  shell: |
+      kubectl apply -f {{ vmruntime_config_path }}/vmruntime.yaml
+      # Allow for the API to register the API
+      sleep 5s
+  args:
+    executable: /bin/bash
+  environment:
+    KUBECONFIG: "{{ kubeconfig_shared_location }}"
+  when:
+    - (primary_cluster_machine is defined)
+    - (primary_cluster_machine == true)
+  retries: 3
+  register: result
+  until: result.rc == 0
+  tags:
+  - abm-software
+  - vmruntime
 
 - name: Folder for ACM configurations
   file:
@@ -81,257 +110,37 @@
   - abm-config
 
 ### Add External Secrets
-
-- name: Create folder for External Secrets files
-  file:
-    path: '{{ external_secrets_files }}'
-    state: directory
-    mode: '0755'
+- name: Setup External Secrets
+  include: external-secrets.yaml
+  vars:
+    kubeconfig: "{{ kubeconfig_shared_location }}"
   tags:
-  - external-secrets-operator
-  - external-secrets-copy
-
-# Copy over the external secrets operator and CRD to all inventory
-- name: Copy External Secrets Operator and CRD files
-  copy:
-    src: "{{ item }}"
-    dest: "{{ external_secrets_files }}"
-    mode: '0444' # read/write/execute owner, everyone else read/execute
-  with_fileglob: "external-secrets-c*.yaml"
-  tags:
-  - external-secrets-operator
-  - external-secrets-copy
-
-- name: "Install External Secrets Operator (b/185519826)"
-  shell: |
-      kubectl apply -f {{ external_secrets_files }}/external-secrets-crd.yaml
-      # Allow for the API to register the API
-      sleep 5s
-      kubectl wait --for=condition=established --timeout=600s crd externalsecrets.kubernetes-client.io
-      exit $?
-  args:
-    executable: /bin/bash
-  environment:
-    KUBECONFIG: "{{ kubeconfig_shared_location }}"
-  when:
-    - (primary_cluster_machine is defined)
-    - (primary_cluster_machine == true)
-  retries: 3
-  register: result
-  until: result.rc == 0
-  tags:
-  - external-secrets-operator
-  - external-secrets-apply
-
- ###  Longhorn
- #
-- name: Copy Longhorn namespace and configmap
-  template:
-    src: longhorn-default-setting.yaml.j2
-    dest: "{{ acm_config_files }}/longhorn-default-setting.yaml"
-  when:
-    - (primary_cluster_machine is defined)
-    - (primary_cluster_machine == true)
-  tags:
-  - longhorn-config-management
-
-
-- name: Create Longhorn namespace and configmap
-  shell: |
-    kubectl apply -f {{ acm_config_files }}/longhorn-default-setting.yaml
-    exit $?
-  when:
-    - (primary_cluster_machine is defined)
-    - (primary_cluster_machine == true)
-  retries: 3
-  register: cmc_result
-  until: cmc_result.rc == 0
-  environment:
-    KUBECONFIG: "{{ kubeconfig_shared_location }}"
-  tags:
-  - longhorn-config-management
-
-
-
-### ACM
-- name: "Enable ACM API in GCP"
-  command:
-    cmd: gcloud alpha container hub config-management enable
-  run_once: true # only needs to run once
-  when: "(primary_cluster_machine is defined) and (primary_cluster_machine == true)"
-  environment:
-    PATH: "{{ tools_base_path }}/google-cloud-sdk/bin:{{ ansible_env.PATH }}"
-  tags:
-  - abm-software
-  - enable-acm
-
-########## Start installing software
-- name: "Download ACM Operator"
-  command:
-    cmd: "gsutil cp gs://config-management-release/released/{{ acm_version }}/config-management-operator.yaml {{ acm_config_files }}/config-management-operator.yaml"
-    creates: "{{ acm_config_files }}/config-management-operator.yaml"
-  environment:
-    PATH: "{{ tools_base_path }}/google-cloud-sdk/bin:{{ ansible_env.PATH }}"
-  when: "(primary_cluster_machine is defined) and (primary_cluster_machine == true)"
-  tags:
+  - external-secrets-install
   - abm-software
 
-### Operator
-# Check for ACM Operator
-- name: "Test for config-management operator presence"
-  include: kubectl-presence.yaml
+###  Setup & install Longhorn if settings
+- name: Setup Longhorn
+  include: csi-longhorn.yaml
   vars:
-    name: "config-management"
-    type: "configmanagements.configmanagement.gke.io"
-    namespace: ""
     kubeconfig: "{{ kubeconfig_shared_location }}"
-    fact_name: "has_acm_operator"
-  when: "(primary_cluster_machine is defined) and (primary_cluster_machine == true)"
+  when: storage_provider == "longhorn"
   tags:
-  - acm-operator
+  - longhorn
+  - storage-setup
 
-- name: "Install ACM Operator"
-  shell: |
-      kubectl apply -f {{ acm_config_files }}/config-management-operator.yaml
-      sleep 10s
-      kubectl wait --for=condition=established --timeout=600s crd configmanagements.configmanagement.gke.io # Wait for ConfigManagement & RootSync CRDs
-      exit $?
-  args:
-    executable: /bin/bash
-  environment:
-    KUBECONFIG: "{{ kubeconfig_shared_location }}"
-  when:
-    - (primary_cluster_machine is defined)
-    - (primary_cluster_machine == true)
-    - (has_acm_operator == false)
-  retries: 3
-  register: result
-  until: result.rc == 0
+### Anthos Network Gateway
+- name: "Install Anthos Config Management (ACM)"
+  include: acm-install.yaml
   tags:
-  - acm-operator
-
-### Create ConfigSync configuration objects
-- name: Copy config management configuration
-  template:
-    src: config-management.yaml.j2
-    dest: "{{ acm_config_files }}/config-management-configuration.yaml"
-  when:
-    - (primary_cluster_machine is defined)
-    - (primary_cluster_machine == true)
-  tags:
+  - acm-config-management-install
   - acm-config-management
 
-- name: "Test for config-management"
-  include: kubectl-presence.yaml
-  vars:
-    name: "config-management"
-    type: "configmanagements.configmanagement.gke.io"
-    namespace: "config-management-system"
-    kubeconfig: "{{ kubeconfig_shared_location }}"
-    fact_name: "has_config_management"
-  when:
-    - (primary_cluster_machine is defined)
-    - (primary_cluster_machine == true)
+### Anthos Network Gateway
+- name: "Install Anthos Network Gateway"
+  include: network-gateway-group.yaml
+  when: network_gateway_group_install == true
   tags:
-  - acm-config-management
-
-- name: "Create Config Management Configuration"
-  shell: |
-    kubectl apply -f {{ acm_config_files }}/config-management-configuration.yaml
-    sleep 10s # just enough for the API to pick up the changes, then wait can take over
-    kubectl wait --for=condition=established --timeout=600s crd rootsyncs.configsync.gke.io
-    exit $?
-  when:
-    - (primary_cluster_machine is defined)
-    - (primary_cluster_machine == true)
-    - (has_config_management == false)
-  retries: 3
-  register: cmc_result
-  until: cmc_result.rc == 0
-  environment:
-    KUBECONFIG: "{{ kubeconfig_shared_location }}"
-  tags:
-  - acm-config-management
-
-#### Root Repo Configuration
-
-- name: Copy config management configuration
-  template:
-    src: root-sync.yaml.j2
-    dest: "{{ acm_config_files }}/root-sync.yaml"
-  when:
-    - (primary_cluster_machine is defined)
-    - (primary_cluster_machine == true)
-  tags:
-  - acm-root-repo
-
-- name: "Test for Root Repo secret"
-  include: kubectl-presence.yaml
-  vars:
-    name: "{{ root_repository_git_secret_name }}"
-    type: "secrets"
-    namespace: "config-management-system"
-    kubeconfig: "{{ kubeconfig_shared_location }}"
-    fact_name: "has_root_repo_secret"
-  when:
-    - (primary_cluster_machine is defined)
-    - (primary_cluster_machine == true)
-  tags:
-  - acm-root-repo
-
-- name: "Create secret token for Root Repo"
-  command:
-    cmd: "kubectl create secret generic {{ root_repository_git_secret_name }} --namespace='config-management-system' --from-literal='username={{ scm_token_user }}' --from-literal='token={{ scm_token_token }}'"
-  environment:
-    KUBECONFIG: "{{ kubeconfig_shared_location }}"
-  when:
-    - (primary_cluster_machine is defined)
-    - (primary_cluster_machine == true)
-    - (has_root_repo_secret == false)
-  tags:
-  - acm-root-repo
-
-- name: "Test for Root Repo installed"
-  include: kubectl-presence.yaml
-  vars:
-    name: "root-sync"
-    type: "RootSync"
-    namespace: "config-management-system"
-    kubeconfig: "{{ kubeconfig_shared_location }}"
-    fact_name: "has_root_repo_installed"
-  when:
-    - (primary_cluster_machine is defined)
-    - (primary_cluster_machine == true)
-  tags:
-  - acm-root-repo
-
-- name: "Apply Root Repo configuration"
-  shell: |
-    kubectl apply -f {{ acm_config_files }}/root-sync.yaml
-    sleep 10s # just enough for the API to pick up the changes, then wait can take over
-    kubectl wait --for=condition=established --timeout=600s crd rootsyncs.configsync.gke.io
-    exit $?
-  environment:
-    KUBECONFIG: "{{ kubeconfig_shared_location }}"
-  when:
-    - (primary_cluster_machine is defined)
-    - (primary_cluster_machine == true)
-    - (has_root_repo_installed == false)
-  tags:
-  - acm-root-repo
-
-- name: "Create secret for External Secrets"
-  shell: |
-    kubectl create ns external-secrets || true
-    kubectl create secret generic gcp-creds --from-file=/var/keys/external-secrets-k8s-creds.json -n external-secrets || true
-  environment:
-    KUBECONFIG: "{{ kubeconfig_shared_location }}"
-  when:
-    - (primary_cluster_machine is defined)
-    - (primary_cluster_machine == true)
-  tags:
-  - abm-software
-  - external-secrets
+  - ang-install
 
 - name: "Add CPU Monitor KubeVirt service files"
   include: cpumonitor-service.yaml
@@ -383,5 +192,11 @@
   - enable-acm
   - post-acm
 
-
-
+- name: Setup OIDC in cluster
+  include: setup-oidc.yaml
+  when:
+  - enable_oidc == true
+  tags:
+  - abm-software
+  - oidc
+  - post-acm

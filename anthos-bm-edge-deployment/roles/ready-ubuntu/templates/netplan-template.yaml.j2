@@ -1,0 +1,11 @@
+network:
+  version: 2
+  ethernets:
+    {{ eth-interface-name }}:
+      dhcp4: false
+  bridges:
+   1br:
+    dhcp4: true
+    interfaces: [ {{ eth-interface-name }}]
+    addresses: [ {{ host-address }}/{{ host-address-mask }}]
+    nameservers: [ 8.8.8.8, 8.8.4.4 ]
