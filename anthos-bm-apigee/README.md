@@ -45,15 +45,15 @@ Organization with the same name as the ID of the Google Cloud Project you use.
 
 - The following list of **Organizational Policy Constraints** enabled on the Google Cloud Organization your GCP Project is in:
 
-      |  Policy Name                                 | Constraint Name                                   | Effective Polciy |
-      |  ------------------------------------------- | ------------------------------------------------- | ---------------- |
-      | Disable service account creation             | constraints/iam.disableServiceAccountCreation	   | Not Enforced     |
-      | Disable service account key creation         | constraints/iam.disableServiceAccountKeyCreation  | Not enforced     |
-      | Restrict VM IP Forwarding                    | constraints/compute.vmCanIpForward.               | Allowed All      |
-      | Define allowed external IPs for VM instances | constraints/compute.vmExternalIpAccess	           | Allowed All      |
-      | Shielded VMs                                 | constraints/compute.requireShieldedVm	           | Not Enforced     |
-      | Require OS Login                             | constraints/compute.requireOsLogin.               | Not Enforced     |
-      | Skip default network creation                | constraints/compute.skipDefaultNetworkCreation	   | Not Enforced     |
+    |  Policy Name                                 | Constraint Name                                   | Effective Polciy |
+    |  ------------------------------------------- | ------------------------------------------------- | ---------------- |
+    | Disable service account creation             | constraints/iam.disableServiceAccountCreation	   | Not Enforced     |
+    | Disable service account key creation         | constraints/iam.disableServiceAccountKeyCreation  | Not enforced     |
+    | Restrict VM IP Forwarding                    | constraints/compute.vmCanIpForward.               | Allowed All      |
+    | Define allowed external IPs for VM instances | constraints/compute.vmExternalIpAccess	           | Allowed All      |
+    | Shielded VMs                                 | constraints/compute.requireShieldedVm	           | Not Enforced     |
+    | Require OS Login                             | constraints/compute.requireOsLogin.               | Not Enforced     |
+    | Skip default network creation                | constraints/compute.skipDefaultNetworkCreation	   | Not Enforced     |
 ---
 
 ### Anthos on bare metal with Apigee on GCE VMs
