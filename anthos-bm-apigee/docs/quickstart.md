@@ -132,6 +132,12 @@ bare metal cluster into the provisioned VMs.
     ```sh
     ./install_apigee.sh
     ```
+
+    > **Note:** You may see continuous errors printed on screen such as
+    > `ERROR: gcloud crashed (KeyError): 'organizations'` during the
+    > installation. These indicate a continuous check being run on a loop until
+    > a certain condition is being met. Please don't cancel the installation and
+    > wait for the checks to eventually reconcile and proceed.
 ---
 
 Running the commands from the Terraform output starts setting up a new Anthos
