@@ -17,7 +17,9 @@ Organization with the same name as the ID of the Google Cloud Project you use.
 
 > **NOTE:** We have provided a [utility script](./resources/run_prerequisite.sh)
   that checks and configures some of the following project/organization level
-  prerequisites. You may use it to validate some of the requirements that follow
+  prerequisites. You may use it to validate some of the requirements that follow.
+  Please ensure you have authenticated the `gcloud` CLI to use the GCP project
+  you intend to use before running this script.
 
 - A workstation with access to internet _(i.e. Google Cloud APIs)_ with the following installed
   - [Git](https://www.atlassian.com/git/tutorials/install-git)
