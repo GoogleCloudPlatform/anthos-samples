@@ -64,7 +64,6 @@ apply_firewall_policies() {
 	gcloud compute firewall-rules create default-allow-icmp --network default --allow icmp --source-ranges 0.0.0.0/0
 	gcloud compute firewall-rules create default-allow-internal --network default --allow tcp:0-65535,udp:0-65535,icmp --source-ranges 10.128.0.0/9
 	gcloud compute firewall-rules create default-allow-out --direction egress --priority 0 --network default --allow tcp,udp --destination-ranges 0.0.0.0/0
-
 }
 
 create_owner_service_account() {
