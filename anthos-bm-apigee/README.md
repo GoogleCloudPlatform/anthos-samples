@@ -78,6 +78,6 @@ than the ones mentioned in this guide.
 - [Terraform Module Information _(includes variables definitions)_](docs/variables.md)
 - [Quickstart guide](docs/quickstart.md):
   - The terraform script sets up the GCE VM environment. The output of the
-    script prints out the commands to follow to install **Anthos on bare metal**
-    in the provisioned GCE VM and to configure Apigee in the new Anthos on bare
-    metal cluster.
+    script prints out the commands to follow to install Anthos on bare metal
+    in the provisioned GCE VM and to **configure Apigee** in the new Anthos on
+    bare metal cluster.
