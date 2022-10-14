@@ -49,6 +49,7 @@ locals {
   firewall_rule_port_str              = join(",", [for port in local.firewall_rule_ports : "tcp:${port}"])
   vm_hostnames_str                    = join("|", local.vm_hostnames)
   controlplan_vm_hostnames_str        = join("|", local.controlplane_vm_hostnames)
+  admin_vm_public_ip                  = [for vm in module.admin_vm_hosts.vm_info : vm.externalIp][0]
   vm_hostnames = concat(
     local.admin_vm_hostnames,
     local.controlplane_vm_hostnames,
