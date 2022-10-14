@@ -34,9 +34,8 @@ func TestABMBash(t *testing.T) {
 		cmd := exec.Command("/bin/bash", scriptPath)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
-		stdoutStderr, err := cmd.CombinedOutput()
+		err := cmd.Run()
 		assert.NoError(err)
-		fmt.Printf("STDOUT/STDERR output from running the setup_and_install_abm script:\n\t%s\n", stdoutStderr)
 	})
 
 	abm.DefineVerify(func(assert *assert.Assertions) {
