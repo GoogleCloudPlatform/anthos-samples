@@ -49,6 +49,7 @@ locals {
   firewall_rule_port_str              = join(",", [for port in local.firewall_rule_ports : "tcp:${port}"])
   vm_hostnames_str                    = join("|", local.vm_hostnames)
   controlplan_vm_hostnames_str        = join("|", local.controlplane_vm_hostnames)
+  admin_vm_public_ip                  = [for vm in module.admin_vm_hosts.vm_info : vm.externalIp][0]
   vm_hostnames = concat(
     local.admin_vm_hostnames,
     local.controlplane_vm_hostnames,
@@ -68,7 +69,7 @@ locals {
 
 module "enable_google_apis_primary" {
   source                      = "terraform-google-modules/project-factory/google//modules/project_services"
-  version                     = "13.0.0"
+  version                     = "~> 14.0"
   project_id                  = var.project_id
   activate_apis               = var.primary_apis
   disable_services_on_destroy = false
@@ -76,7 +77,7 @@ module "enable_google_apis_primary" {
 
 module "enable_google_apis_secondary" {
   source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "13.0.0"
+  version = "~> 14.0"
   # fetched from previous module to explicitely express dependency
   project_id                  = module.enable_google_apis_primary.project_id
   depends_on                  = [module.enable_google_apis_primary]
@@ -108,7 +109,7 @@ module "create_service_accounts" {
 
 module "instance_template" {
   source  = "terraform-google-modules/vm/google//modules/instance_template"
-  version = "~> 7.9.0"
+  version = "~> 7.9"
   depends_on = [
     module.enable_google_apis_primary,
     module.enable_google_apis_secondary
@@ -383,7 +384,7 @@ module "install_abm" {
 
 module "gke_hub_membership" {
   source                = "terraform-google-modules/gcloud/google"
-  version               = "~>3.1.1"
+  version               = "~> 3.1"
   platform              = "linux"
   create_cmd_entrypoint = "echo"
   create_cmd_body       = "GKE hub membership is created by bmctl create cluster"
