@@ -44,6 +44,11 @@ admin-openrc.sh
 __pycache__
 *.data
 
+# APIGee samples specific ignores
+new_policy.yaml
+
+# Service Account Key files
+anthos-bm-owner.json
 abm-sa-temp.json
 bm-gcr.json
 ssh-metadata
