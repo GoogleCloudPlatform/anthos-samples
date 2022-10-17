@@ -204,6 +204,12 @@ variable "mode" {
   }
 }
 
+variable "as_sub_module" {
+  description = "This script is being run as a sub module; thus output extra variables"
+  type        = bool
+  default     = false
+}
+
 variable "nfs_server" {
   description = "Provision a Google Filestore instance for NFS shared storage"
   type        = bool

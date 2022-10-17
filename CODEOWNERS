@@ -11,3 +11,4 @@
 /attached-logging-monitoring/     @GoogleCloudPlatform/onyx-gke-observability
 /anthos-multi-cloud/		  @GoogleCloudPlatform/anthos-multicloud
 /anthos-bm-utils/		  @GoogleCloudPlatform/anthos-baremetal-eng
+/anthos-bm-apigee/		  @GoogleCloudPlatform/app-mod-customer-engineers
