@@ -14,7 +14,7 @@
 # limitations under the License.
 
 # [START anthosbaremetal_scripts_create_primary_gsa]
-# [START_EXCLUDE silent]
+# [START_EXCLUDE]
 set -e
 
 echo "This will create a Google Service Account and key that is used on each of the target machines to run gcloud commands"
@@ -53,7 +53,7 @@ else
   fi
   # otherwise, no need to do anything
 fi
-# [START_EXCLUDE silent]
+# [START_EXCLUDE]
 # FIXME: These are not specific to GSA creation, but necessary for project
 # setup (future, this will all be terraform)
 gcloud services enable --project "${PROJECT_ID}" \
