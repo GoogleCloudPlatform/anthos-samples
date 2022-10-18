@@ -32,8 +32,7 @@ if [[ -z "${PROJECT_ID}" ]]; then
   echo "Project ID required, provide as script argument or 'export PROJECT_ID={}'"
   exit 1
 fi
-
-# [START anthosbaremetal_scripts_create_primary_gsa_create_sa]
+# [END_EXCLUDE]
 EXISTS=$(gcloud iam service-accounts list \
   --filter="email=${GSA_EMAIL}" \
   --format="value(name, disabled)" \
@@ -54,8 +53,7 @@ else
   fi
   # otherwise, no need to do anything
 fi
-# [END anthosbaremetal_scripts_create_primary_gsa_create_sa]
-
+# [START_EXCLUDE]
 # FIXME: These are not specific to GSA creation, but necessary for project
 # setup (future, this will all be terraform)
 gcloud services enable --project "${PROJECT_ID}" \
