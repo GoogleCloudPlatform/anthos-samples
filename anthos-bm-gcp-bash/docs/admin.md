@@ -26,7 +26,7 @@ _(which is specific to an admin cluster)_.
 
     ```sh
     git clone https://github.com/GoogleCloudPlatform/anthos-samples
-    cd anthos-bm-gcp-bash
+    cd anthos-samples/anthos-bm-gcp-bash
     ```
 
 2. Setup environment variables.
@@ -51,7 +51,7 @@ _(which is specific to an admin cluster)_.
     🔄 Installing Anthos on bare metal...
     Your active configuration is: [shabir-shell-check2]
     Pseudo-terminal will not be allocated because stdin is not a terminal.
-    Enter passphrase for key '/Users/shabirmean/.ssh/google_compute_engine':
+    Enter passphrase for key '/Users/sundarpichai/.ssh/google_compute_engine':
     Welcome to Ubuntu 20.04.5 LTS (GNU/Linux 5.15.0-1018-gcp x86_64)
 
     * Documentation:  https://help.ubuntu.com

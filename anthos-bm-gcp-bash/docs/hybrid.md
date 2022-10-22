@@ -25,7 +25,7 @@ explanation of all the steps included in this script.
 
     ```sh
     git clone https://github.com/GoogleCloudPlatform/anthos-samples
-    cd anthos-bm-gcp-bash
+    cd anthos-samples/anthos-bm-gcp-bash
     ```
 
 2. Setup environment variables.
@@ -47,9 +47,9 @@ explanation of all the steps included in this script.
     ✅ Successfully set up SSH access from admin workstation to cluster node VMs.
 
     🔄 Installing Anthos on bare metal...
-    Your active configuration is: [shabir-shell-check2]
+    Your active configuration is: [abm-test-project]
     Pseudo-terminal will not be allocated because stdin is not a terminal.
-    Enter passphrase for key '/Users/shabirmean/.ssh/google_compute_engine':
+    Enter passphrase for key '/Users/sergrybrin/.ssh/google_compute_engine':
     Welcome to Ubuntu 20.04.5 LTS (GNU/Linux 5.15.0-1018-gcp x86_64)
 
     * Documentation:  https://help.ubuntu.com
@@ -71,8 +71,8 @@ explanation of all the steps included in this script.
     Run 'do-release-upgrade' to upgrade to it.
 
 
-    + export PROJECT_ID=shabir-shell-check2
-    + PROJECT_ID=shabir-shell-check2
+    + export PROJECT_ID=abm-test-project
+    + PROJECT_ID=abm-test-project
     + export clusterid=cluster-1
     + clusterid=cluster-1
     + bmctl create config -c cluster-1
