@@ -113,13 +113,6 @@ _(which is specific to an admin cluster)_.
     [2022-10-22 00:08:09+0000] Waiting for node update jobs to finish OK
     [2022-10-22 00:09:49+0000] Flushing logs... OK
     [2022-10-22 00:09:49+0000] Deleting bootstrap cluster... OK
-    install_admin_cluster.sh: line 304: red: command not found
-    install_admin_cluster.sh: line 305: nodeConfig:: command not found
-    install_admin_cluster.sh: line 306: podDensity:: command not found
-    install_admin_cluster.sh: line 307: maxPodsPerNode:: command not found
-    install_admin_cluster.sh: line 308: EOB: command not found
-    install_admin_cluster.sh: line 310: bmctl: command not found
-    install_admin_cluster.sh: line 311: EOF: command not found
     ✅ Installation complete. Please check the logs for any errors!!!
 
     ✅ If you do not see any errors in the output log, then you now have the following setup:
