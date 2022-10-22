@@ -50,7 +50,7 @@ _(which is specific to an admin cluster)_.
 
     🔄 Installing Anthos on bare metal...
     Pseudo-terminal will not be allocated because stdin is not a terminal.
-    Enter passphrase for key '/Users/sundarpichai/.ssh/google_compute_engine': 
+    Enter passphrase for key '/Users/sundarpichai/.ssh/google_compute_engine':
     Welcome to Ubuntu 20.04.5 LTS (GNU/Linux 5.15.0-1021-gcp x86_64)
 
     * Documentation:  https://help.ubuntu.com
