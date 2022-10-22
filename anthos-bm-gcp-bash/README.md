@@ -5,8 +5,8 @@ _(e.g. hybrid, admin, user, standalone)_ Anthos clusters on bare metal in
 Compute Engine Virtual Machines (VMs). Select the guide for the type of cluster
 you want to install and follow the guide.
 
-- [Setup and install a **hybrid** Anthos on bare metal cluster](./docs/admin.md)
-- [Setup and install a **admin** Anthos on bare metal cluster](./docs/hybrid.md)
+- [Setup and install a **hybrid** Anthos on bare metal cluster](./docs/hybrid.md)
+- [Setup and install a **admin** Anthos on bare metal cluster](./docs/admin.md)
 
 ---
 The steps inside the script is written with the assumption that you are working
