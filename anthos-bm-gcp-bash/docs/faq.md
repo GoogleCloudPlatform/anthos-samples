@@ -38,8 +38,8 @@ to do the following changes:
    ```
 
 2. Update the command for creating Compute Engine VMs in the
-   [setup_and_install_abm](./setup_and_install_abm.sh) script to use the network
-   of your choice instead of `default`.
+   [install_hybrid_cluster](/anthos-bm-gcp-bash/install_admin_cluster.sh) script
+   to use the network of your choice instead of `default`.
 
     ```sh
     ...
