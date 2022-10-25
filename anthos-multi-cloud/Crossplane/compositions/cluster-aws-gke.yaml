@@ -151,12 +151,14 @@ spec:
             Name: anthos-VPC   
           enableDnsSupport: true
           enableDnsHostnames: true 
-  - name: subnet-zone-1
+  - name: subnet-zone-1-private
     base:
       apiVersion: ec2.aws.upbound.io/v1beta1
       kind: Subnet
       metadata:
-        name: subnet-zone-1
+        name: subnet-zone-1-private
+        labels:
+          subnetName: subnet-zone-1-private
       spec:
         providerConfigRef: 
           name: default-aws
@@ -168,8 +170,505 @@ spec:
             matchLabels:
               vpcName: anthosVPC
           tags:
-            Name: anthos-subnet-1
+            Name: anthos-subnet-1-private
+  - name: subnet-zone-2-private
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: Subnet
+      metadata:
+        name: subnet-zone-2-private
+        labels:
+          subnetName: subnet-zone-2-private
+      spec:
+        providerConfigRef: 
+          name: default-aws
+        forProvider:
+          cidrBlock: 10.0.2.0/24
+          region: us-east-1
+          availabilityZone: us-east-1b
+          vpcIdSelector:
+            matchLabels:
+              vpcName: anthosVPC
+          tags:
+            Name: anthos-subnet-2-private
+  - name: subnet-zone-3-private
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: Subnet
+      metadata:
+        name: subnet-zone-3-private
+        labels:
+          subnetName: subnet-zone-3-private
+      spec:
+        providerConfigRef: 
+          name: default-aws
+        forProvider:
+          cidrBlock: 10.0.3.0/24
+          region: us-east-1
+          availabilityZone: us-east-1c
+          vpcIdSelector:
+            matchLabels:
+              vpcName: anthosVPC
+          tags:
+            Name: anthos-subnet-3-private
+  - name: subnet-zone-1-public
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: Subnet
+      metadata:
+        name: subnet-zone-1-public
+        labels:
+          subnetName: subnet-zone-1-public
+      spec:
+        providerConfigRef: 
+          name: default-aws
+        forProvider:
+          cidrBlock: 10.0.101.0/24
+          region: us-east-1
+          availabilityZone: us-east-1a
+          mapPublicIpOnLaunch: true
+          vpcIdSelector:
+            matchLabels:
+              vpcName: anthosVPC
+          tags:
+            Name: anthos-1-public
+  - name: subnet-zone-2-public
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: Subnet
+      metadata:
+        name: subnet-zone-2-public
+        labels:
+          subnetName: subnet-zone-2-public
+      spec:
+        providerConfigRef: 
+          name: default-aws
+        forProvider:
+          cidrBlock: 10.0.102.0/24
+          region: us-east-1
+          availabilityZone: us-east-1b
+          mapPublicIpOnLaunch: true
+          vpcIdSelector:
+            matchLabels:
+              vpcName: anthosVPC
+          tags:
+            Name: anthos-subnet-2-public   
+  - name: subnet-zone-3-public
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: Subnet
+      metadata:
+        name: subnet-zone-3-public
+        labels:
+          subnetName: subnet-zone-3-public
+      spec:
+        providerConfigRef: 
+          name: default-aws
+        forProvider:
+          cidrBlock: 10.0.103.0/24
+          region: us-east-1
+          availabilityZone: us-east-1c
+          mapPublicIpOnLaunch: true
+          vpcIdSelector:
+            matchLabels:
+              vpcName: anthosVPC
+          tags:
+            Name: anthos-subnet-3-public
+  - name: internet-gateway
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: InternetGateway
+      metadata:
+        name: routegw
+        labels:
+          gwname: anthos-inet-gw
+      spec:
+        providerConfigRef: 
+          name: default-aws
+        forProvider:
+          region: us-east-1
+          tags:
+            Name: main
+          vpcIdSelector:
+            matchLabels:
+              vpcName: anthosVPC
+          tags:
+            Name: anthos-inet-gw
+  
+  - name: routingtable-subnet-1-pub
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: RouteTable
+      metadata:
+        name: routingtable-subnet-1
+        labels:
+          tableName: routingtable-subnet-1-pub
+      spec:
+        providerConfigRef: 
+            name: default-aws
+        forProvider:
+          region: us-east-1
+          tags:
+            Name: anthos-public-sub1
+          vpcIdSelector:
+            matchLabels:
+              vpcName: anthosVPC
+  - name: routingtabe-assoc-1
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: RouteTableAssociation
+      metadata:
+        name: example
+      spec:
+        providerConfigRef: 
+          name: default-aws
+        forProvider:
+          region: us-east-1
+          tags:
+            Name: anthos-public-sub1
+          routeTableIdSelector:
+            matchLabels:
+              tableName: routingtable-subnet-1-pub
+          subnetIdSelector:
+            matchLabels:
+              subnetName: subnet-zone-1-public
+  - name: routingtable-subnet-2-pub
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: RouteTable
+      metadata:
+        name: routingtable-subnet-2
+        labels:
+          tableName: routingtable-subnet-2-pub
+      spec:
+        providerConfigRef: 
+          name: default-aws
+        forProvider:
+          region: us-east-1
+          tags:
+            Name: anthos-public-sub2
+          vpcIdSelector:
+            matchLabels:
+              vpcName: anthosVPC
+  - name: routingtabe-assoc-2
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: RouteTableAssociation
+      metadata:
+        name: example
+      spec:
+        providerConfigRef: 
+          name: default-aws
+        forProvider:
+          region: us-east-1
+          routeTableIdSelector:
+            matchLabels:
+              tableName: routingtable-subnet-2-pub
+          subnetIdSelector:
+            matchLabels:
+              subnetName: subnet-zone-2-public
+  - name: routingtable-subnet-3-pub
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: RouteTable
+      metadata:
+        name: routingtable-subnet-3
+        labels:
+          tableName: routingtable-subnet-3-pub
+      spec:
+        providerConfigRef: 
+          name: default-aws
+        forProvider:
+          region: us-east-1
+          tags:
+            Name: anthos-public-sub3
+          vpcIdSelector:
+            matchLabels:
+              vpcName: anthosVPC
+  - name: routingtabe-assoc-3
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: RouteTableAssociation
+      metadata:
+        name: example
+      spec:
+        providerConfigRef: 
+          name: default-aws
+        forProvider:
+          region: us-east-1
+          routeTableIdSelector:
+            matchLabels:
+              tableName: routingtable-subnet-3-pub
+          subnetIdSelector:
+            matchLabels:
+              subnetName: subnet-zone-3-public
+  - name: default-route-1
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: DefaultRouteTable
+      metadata:
+        name: route1
+      spec:
+        providerConfigRef: 
+          name: default-aws
+        forProvider:
+          defaultRouteTableIdRef:
+            matchLabels:
+              tableName: routingtable-subnet-1-pub
+          region: us-east-1
+          route:
+            - cidrBlock: 0.0.0.0/0
+              gatewayIdSelector:
+                matchLabels:
+                  gwname: anthos-inet-gw
+  - name: default-route-2
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: DefaultRouteTable
+      metadata:
+        name: route3
+      spec:
+        providerConfigRef: 
+          name: default-aws
+        forProvider:
+          defaultRouteTableIdRef:
+            matchLabels:
+              tableName: routingtable-subnet-2-pub
+          region: us-east-1
+          route:
+            - cidrBlock: 0.0.0.0/0
+              gatewayIdSelector:
+                matchLabels:
+                  gwname: anthos-inet-gw
+  - name: default-route-3
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: DefaultRouteTable
+      metadata:
+        name: route-3
+      spec:
+        providerConfigRef: 
+          name: default-aws
+        forProvider:
+          defaultRouteTableIdRef:
+            matchLabels:
+              tableName: routingtable-subnet-3-pub
+          region: us-east-1
+          route:
+            - cidrBlock: 0.0.0.0/0
+              gatewayIdSelector:
+                matchLabels:
+                  gwname: anthos-inet-gw
+  - name: routingtable-subnet-1-private
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: RouteTable
+      metadata:
+        name: routingtable-subnet-1-private
+        labels:
+          tableName: routingtable-subnet-1-priv
+      spec:
+        providerConfigRef: 
+            name: default-aws
+        forProvider:
+          region: us-east-1
+          tags:
+            Name: anthos-private-sub1
+          vpcIdSelector:
+            matchLabels:
+              vpcName: anthosVPC
+  - name: routingtabe-assoc-1-private
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: RouteTableAssociation
+      metadata:
+        name: example
+      spec:
+        providerConfigRef: 
+          name: default-aws
+        forProvider:
+          region: us-east-1
+          routeTableIdSelector:
+            matchLabels:
+              tableName: routingtable-subnet-1-priv
+          subnetIdSelector:
+            matchLabels:
+              subnetName: subnet-zone-1-private
+  - name: routingtable-subnet-2-private
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: RouteTable
+      metadata:
+        name: routingtable-subnet-2-priv
+        labels:
+          tableName: routingtable-subnet-2-priv
+      spec:
+        providerConfigRef: 
+            name: default-aws
+        forProvider:
+          region: us-east-1
+          tags:
+            Name: anthos-private-sub2
+          vpcIdSelector:
+            matchLabels:
+              vpcName: anthosVPC
+  - name: routingtabe-assoc-2-private
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: RouteTableAssociation
+      metadata:
+        name: example
+      spec:
+        providerConfigRef: 
+          name: default-aws
+        forProvider:
+          region: us-east-1
+          routeTableIdSelector:
+            matchLabels:
+              tableName: routingtable-subnet-2-priv
+          subnetIdSelector:
+            matchLabels:
+              subnetName: subnet-zone-2-private
+  - name: routingtable-subnet-3-private
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: RouteTable
+      metadata:
+        name: routingtable-subnet-3-priv
+        labels:
+          tableName: routingtable-subnet-3-priv
+      spec:
+        providerConfigRef: 
+            name: default-aws
+        forProvider:
+          region: us-east-1
+          tags:
+            Name: anthos-private-sub3
+          vpcIdSelector:
+            matchLabels:
+              vpcName: anthosVPC
+  - name: routingtabe-assoc-3-private
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: RouteTableAssociation
+      metadata:
+        name: example
+      spec:
+        providerConfigRef: 
+          name: default-aws
+        forProvider:
+          region: us-east-1
+          routeTableIdSelector:
+            matchLabels:
+              tableName: routingtable-subnet-3-priv
+          subnetIdSelector:
+            matchLabels:
+              subnetName: subnet-zone-3-private
+  - name: eip-subnet-1
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: EIP
+      metadata:
+        labels:
+          eipName: eip-subnet-1
+      spec:
+        providerConfigRef: 
+          name: default-aws
+        forProvider:
+          region: us-east-1
+          vpc: false
+  - name: eip-subnet-2
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: EIP
+      metadata:
+        labels:
+          eipName: eip-subnet-2
+      spec:
+        providerConfigRef: 
+          name: default-aws
+        forProvider:
+          region: us-east-1
+          vpc: false
+  - name: eip-subnet-3
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: EIP
+      metadata:
+        labels:
+          eipName: eip-subnet-3
+      spec:
+        providerConfigRef: 
+          name: default-aws
+        forProvider:
+          region: us-east-1
+          vpc: false       
+  - name: nat-gw-1
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: NATGateway
+      metadata:
+        name: nat-gw-1
+        labels:
+          natName: nat-gw-1
+      spec:
+        providerConfigRef: 
+          name: default-aws
+        forProvider:
+          region: us-east-1
+          allocationIdSelector:
+            matchLabels:
+              eipName: eip-subnet-1
+          subnetIdSelector:
+            matchLabels:
+              subnetName: subnet-zone-1-public
+          tags:
+            Name: subnet-1-pub-NAT
+  - name: nat-gw-2
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: NATGateway
+      metadata:
+        name: nat-gw-2
+        labels:
+          natName: nat-gw-2
+      spec:
+        providerConfigRef: 
+          name: default-aws
+        forProvider:
+          region: us-east-1
+          allocationIdSelector:
+            matchLabels:
+              eipName: eip-subnet-2
+          subnetIdSelector:
+            matchLabels:
+              subnetName: subnet-zone-2-public
+          tags:
+            Name: subnet-2-pub-NAT
+  - name: nat-gw-3
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: NATGateway
+      metadata:
+        name: nat-gw-3
+        labels:
+          natName: nat-gw-3
+      spec:
+        providerConfigRef: 
+          name: default-aws
+        forProvider:
+          region: us-east-1
+          allocationIdSelector:
+            matchLabels:
+              eipName: eip-subnet-3
+          subnetIdSelector:
+            matchLabels:
+              subnetName: subnet-zone-3-public
+          tags:
+            Name: subnet-3-pub-NAT
 
+
+  
   #   patches:
   #   - fromFieldPath: status.membershipId
   #     toFieldPath: spec.forProvider.membership
