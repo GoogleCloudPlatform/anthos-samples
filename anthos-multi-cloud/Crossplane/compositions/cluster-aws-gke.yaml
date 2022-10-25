@@ -5,7 +5,7 @@ metadata:
   labels:
     crossplane.io/xrd: compositeclusters.demo.anthos.com
     provider: aws
-    cluster: eks
+    cluster: gke
 spec:
   compositeTypeRef:
     apiVersion: demo.anthos.com/v1
