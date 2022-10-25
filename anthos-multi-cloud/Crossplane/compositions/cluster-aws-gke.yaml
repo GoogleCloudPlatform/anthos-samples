@@ -1,0 +1,419 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: cluster-aws-gke
+  labels:
+    crossplane.io/xrd: compositeclusters.demo.anthos.com
+    provider: aws
+    cluster: eks
+spec:
+  compositeTypeRef:
+    apiVersion: demo.anthos.com/v1
+    kind:  CompositeCluster
+#  patchSets:
+#  - name: metadata
+#    patches:
+#    - fromFieldPath: metadata.labels
+  resources:
+ # - name: anthos-api-role
+    # base:
+    #   apiVersion: iam.aws.crossplane.io/v1beta1
+    #   # kind: Role
+    #   # metadata:
+    #     labels:
+    #       role: controlplane
+    #   spec:
+    #     providerConfigRef: 
+    #       name: default-aws
+    #     forProvider:
+    #       assumeRolePolicyDocument: |
+    #         {
+    #            "Version": "2012-10-17",
+    #             "Statement": [
+    #                 {
+    #                 "Sid": "",
+    #                 "Effect": "Allow",
+    #                 "Principal": {
+    #                     "Federated": "accounts.google.com"
+    #                 },
+    #                 "Action": "sts:AssumeRoleWithWebIdentity",
+    #                 "Condition": {
+    #                   "StringEquals": {
+    #                     "accounts.google.com:sub": "service-'$PROJECT_NUMBER'@gcp-sa-gkemulticloud.iam.gserviceaccount.com"
+    #                     }
+    #                   }
+    #                 }     
+    #             ]
+    #         }
+    #   patches:
+    # - type: ToCompositeFieldPath
+    # - fromFieldPath: spec.parameters.fleetProject
+    #   toFieldPath: spec.forProvider.fleet.project
+  - name: anthos-service-agent-role
+    base:
+      apiVersion: iam.aws.upbound.io/v1beta1
+      kind: Role
+      metadata:
+        labels:
+          role: anthos-service-agent-role
+      spec:
+        providerConfigRef: 
+          name: default-aws
+        forProvider:
+          assumeRolePolicy: |
+            {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+              "Sid": "",
+              "Effect": "Allow",
+              "Principal": {
+              "Federated": "accounts.google.com"
+              },
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "StringEquals": {
+                "accounts.google.com:sub": "service-261832825633@gcp-sa-gkemulticloud.iam.gserviceaccount.com"
+                }
+              }
+              }
+            ]
+            }
+  - name: anthos-service-agent-policy
+    base:
+      apiVersion: iam.aws.upbound.io/v1beta1
+      kind: Policy
+      metadata:
+        labels:
+          policy: anthos-service-agent-policy
+      spec:
+        providerConfigRef: 
+          name: default-aws
+        forProvider:
+          policy: |
+            {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                  "Sid": "",
+                  "Effect": "Allow",
+                  "Action": [
+                    "ec2:AuthorizeSecurityGroupEgress",
+                    "ec2:AuthorizeSecurityGroupIngress",
+                    "ec2:CreateLaunchTemplate",
+                    "ec2:CreateNetworkInterface",
+                    "ec2:CreateSecurityGroup",
+                    "ec2:CreateTags",
+                    "ec2:CreateVolume",
+                    "ec2:DeleteLaunchTemplate",
+                    "ec2:DeleteNetworkInterface",
+                    "ec2:DeleteSecurityGroup",
+                    "ec2:DeleteTags",
+                    "ec2:DeleteVolume",
+                    "ec2:DescribeAccountAttributes",
+                    "ec2:DescribeInternetGateways",
+                    "ec2:DescribeKeyPairs",
+                    "ec2:DescribeLaunchTemplates",
+                    "ec2:DescribeNetworkInterfaces",
+                    "ec2:DescribeSecurityGroupRules",
+                    "ec2:DescribeSecurityGroups",
+                    "ec2:DescribeSubnets",
+                    "ec2:DescribeVpcs",
+                    "ec2:GetConsoleOutput",
+                    "ec2:ModifyNetworkInterfaceAttribute",
+                    "ec2:RevokeSecurityGroupEgress",
+                    "ec2:RevokeSecurityGroupIngress",
+                    "ec2:RunInstances",
+                    "iam:AWSServiceName",
+                    "iam:CreateServiceLinkedRole",
+                    "iam:PassRole",
+                    "autoscaling:CreateAutoScalingGroup",
+                    "autoscaling:CreateOrUpdateTags",
+                    "autoscaling:DeleteAutoScalingGroup",
+                    "autoscaling:DeleteTags",
+                    "autoscaling:DescribeAutoScalingGroups",
+                    "autoscaling:TerminateInstanceInAutoScalingGroup",
+                    "autoscaling:UpdateAutoScalingGroup",
+                    "elasticloadbalancing:AddTags",
+                    "elasticloadbalancing:CreateListener",
+                    "elasticloadbalancing:CreateLoadBalancer",
+                    "elasticloadbalancing:CreateTargetGroup",
+                    "elasticloadbalancing:DeleteListener",
+                    "elasticloadbalancing:DeleteLoadBalancer",
+                    "elasticloadbalancing:DeleteTargetGroup",
+                    "elasticloadbalancing:DescribeListeners",
+                    "elasticloadbalancing:DescribeLoadBalancers",
+                    "elasticloadbalancing:DescribeTargetGroups",
+                    "elasticloadbalancing:DescribeTargetHealth",
+                    "elasticloadbalancing:ModifyTargetGroupAttributes",
+                    "elasticloadbalancing:RemoveTags",
+                    "kms:DescribeKey",
+                    "kms:Encrypt",
+                    "kms:GenerateDataKeyWithoutPlaintext"
+                    ],
+                  "Resource": "*"
+                }
+              ]
+            }
+  - name: anthos-service-agent-attach
+    base:
+      apiVersion: iam.aws.upbound.io/v1beta1
+      kind: RolePolicyAttachment
+      metadata:
+        name: sample-node-policy-3
+      spec:
+        providerConfigRef: 
+          name: default-aws
+        forProvider:
+          roleSelector:
+            matchLabels:
+              role: anthos-service-agent-role
+          policyArnSelector:
+            matchLabels:
+              policy: anthos-service-agent-policy
+          
+  - name: vpc
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: VPC
+      metadata:
+        name: anthosVPC
+        labels:
+          vpcName: anthosVPC
+      spec:
+        providerConfigRef: 
+          name: default-aws
+        forProvider:
+          cidrBlock: 10.0.0.0/16
+          region: us-east-1
+          tags:
+            Name: anthos-VPC   
+          enableDnsSupport: true
+          enableDnsHostnames: true 
+  - name: subnet-zone-1
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: Subnet
+      metadata:
+        name: subnet-zone-1
+      spec:
+        providerConfigRef: 
+          name: default-aws
+        forProvider:
+          cidrBlock: 10.0.1.0/24
+          region: us-east-1
+          availabilityZone: us-east-1a
+          vpcIdSelector:
+            matchLabels:
+              vpcName: anthosVPC
+          tags:
+            Name: anthos-subnet-1
+
+
+  # - name: sc-nodepool
+  #   base:
+  #     apiVersion: ec2.aws.crossplane.io/v1beta1
+  #     kind: SecurityGroup
+  #     spec:
+  #       providerConfigRef: 
+  #         name: default-aws
+  #       forProvider:
+  #         description: Cluster communication with worker nodes
+  #         groupName: devops-catalog
+  #         region: us-east-1
+  #         vpcIdSelector:
+  #           matchControllerRef: true
+  #         egress:
+  #         - fromPort: 0
+  #           toPort: 0
+  #           ipProtocol: "-1"
+  #           ipRanges:
+  #           - cidrIp: "0.0.0.0/0"
+  # - name: subnet-nodepool-1a
+  #   base:
+  #     apiVersion: ec2.aws.crossplane.io/v1beta1
+  #     kind: Subnet
+  #     metadata:
+  #       labels:
+  #         zone: us-east-1a
+  #         access: public
+  #     spec:
+  #       providerConfigRef: 
+  #         name: default-aws
+  #       forProvider:
+  #         region: us-east-1
+  #         availabilityZone: us-east-1a
+  #         cidrBlock: 10.0.0.0/24
+  #         vpcIdSelector:
+  #           matchControllerRef: true
+  #         mapPublicIPOnLaunch: true
+  #         tags:
+  #           - key: Name
+  #             value: devops-catalog
+  #           - key: kubernetes.io/cluster/devops-catalog
+  #             value: shared
+  # - name: subnet-nodepool-1b
+  #   base:
+  #     apiVersion: ec2.aws.crossplane.io/v1beta1
+  #     kind: Subnet
+  #     metadata:
+  #       labels:
+  #         zone: us-east-1b
+  #         access: public
+  #     spec:
+  #       providerConfigRef: 
+  #         name: default-aws
+  #       forProvider:
+  #         region: us-east-1
+  #         availabilityZone: us-east-1b
+  #         cidrBlock: 10.0.1.0/24
+  #         vpcIdSelector:
+  #           matchControllerRef: true
+  #         mapPublicIPOnLaunch: true
+  #         tags:
+  #           - key: Name
+  #             value: devops-catalog
+  #           - key: kubernetes.io/cluster/devops-catalog
+  #             value: shared
+  # - name: subnet-nodepool-1c
+  #   base:
+  #     apiVersion: ec2.aws.crossplane.io/v1beta1
+  #     kind: Subnet
+  #     metadata:
+  #       labels:
+  #         zone: us-east-1c
+  #         access: public
+  #     spec:
+  #       providerConfigRef: 
+  #         name: default-aws
+  #       forProvider:
+  #         region: us-east-1
+  #         availabilityZone: us-east-1c
+  #         cidrBlock: 10.0.2.0/24
+  #         vpcIdSelector:
+  #           matchControllerRef: true
+  #         mapPublicIPOnLaunch: true
+  #         tags:
+  #           - key: Name
+  #             value: devops-catalog
+  #           - key: kubernetes.io/cluster/devops-catalog
+  #             value: shared
+  # - name: gateway
+  #   base:
+  #     apiVersion: ec2.aws.crossplane.io/v1beta1
+  #     kind: InternetGateway
+  #     spec:
+  #       providerConfigRef: 
+  #         name: default-aws
+  #       forProvider:
+  #         region: us-east-1
+  #         vpcIdSelector:
+  #           matchControllerRef: true
+  # - name: routetable
+  #   base:
+  #     apiVersion: ec2.aws.crossplane.io/v1beta1
+  #     kind: RouteTable
+  #     spec:
+  #       providerConfigRef: 
+  #         name: default-aws
+  #       forProvider:
+  #         region: us-east-1
+  #         vpcIdSelector:
+  #           matchControllerRef: true
+  #         routes:
+  #           - destinationCidrBlock: 0.0.0.0/0
+  #             gatewayIdSelector:
+  #               matchControllerRef: true
+  #         associations:
+  #           - subnetIdSelector:
+  #               matchControllerRef: true
+  #               matchLabels:
+  #                 zone: us-east-1a
+  #                 access: public
+  #           - subnetIdSelector:
+  #               matchControllerRef: true
+  #               matchLabels:
+  #                 zone: us-east-1b
+  #                 access: public
+  #           - subnetIdSelector:
+  #               matchControllerRef: true
+  #               matchLabels:
+  #                 zone: us-east-1c
+  #                 access: public
+  # - name: attachedCluster
+  #   base:
+  #     apiVersion: anthos.gcp.crossplane.io/v1alpha1
+  #     kind: AttachedCluster
+  #     spec:
+  #       providerConfigRef: 
+  #         name: default-gcp
+  #       forProvider:
+  #         location: us-east4
+  #         distribution: eks
+  #         clusterCredentials:
+  #           source: Secret
+  #           secretRef:
+  #             namespace: default
+  #             key: kubeconfig
+  #   patches:
+  #   - type: ToCompositeFieldPath
+  #     fromFieldPath: status.atProvider.membershipId
+  #     toFieldPath: status.membershipId
+  #   - fromFieldPath: spec.parameters.adminUsers
+  #     toFieldPath: spec.forProvider.adminUsers
+  #   - fromFieldPath: spec.parameters.fleetProject
+  #     toFieldPath: spec.forProvider.fleet.project
+  #     transforms:
+  #       - type: string
+  #         string:
+  #           fmt: "projects/%s"
+  #   - fromFieldPath: status.odicIssuerUrl
+  #     toFieldPath: spec.forProvider.authority.issuerUrl
+  #   - fromFieldPath: spec.parameters.k8sVersion
+  #     toFieldPath: spec.forProvider.platformVersion
+  #     transforms:
+  #       - type: map
+  #         map:
+  #           1.23: 1.23.0-gke.1
+  #   - fromFieldPath: "metadata.uid"
+  #     toFieldPath: spec.forProvider.clusterCredentials.secretRef.name
+  #     transforms:
+  #       - type: string
+  #         string:
+  #           fmt: "%s-ekscluster"
+  # - name: feature
+  #   base:
+  #     apiVersion: anthos.gcp.crossplane.io/v1alpha1
+  #     kind: HubFeature
+  #     spec:
+  #       providerConfigRef:
+  #         name: default-gcp
+  #       forProvider:
+  #         location: global
+  #         featureName: configmanagement
+  # - name: configSync
+  #   base:
+  #     apiVersion: anthos.gcp.crossplane.io/v1alpha1
+  #     kind: HubFeatureMembership
+  #     spec:
+  #       providerConfigRef:
+  #         name: default-gcp
+  #       forProvider:
+  #         location: global
+  #         feature: configmanagement
+  #         configManagement:
+  #           version: "1.12.0"
+  #           git:
+  #             secretType: none
+  #             repo: https://github.com/bkauf/anthos-crossplane-demo.git
+  #             policyDir: cluster-acm/
+  #             branch: master
+  #   patches:
+  #   - fromFieldPath: status.membershipId
+  #     toFieldPath: spec.forProvider.membership
+   # - fromFieldPath: spec.parameters.configSync.branch
+   #   toFieldPath: spec.forProvider.configManagement.git.branch
+   # - fromFieldPath: spec.parameters.configSync.repo
+   #   toFieldPath: spec.forProvider.configManagement.git.repo
+   # - fromFieldPath: spec.parameters.configSync.policyDir
+   #   toFieldPath: spec.forProvider.configManagement.git.policyDir

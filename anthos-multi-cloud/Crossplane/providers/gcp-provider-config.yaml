@@ -1,0 +1,12 @@
+apiVersion: gcp.upbound.io/v1beta1
+kind: ProviderConfig
+metadata:
+  name: default-gcp
+spec:
+  credentials:
+    secretRef:
+      key: creds
+      name: gcp-creds
+      namespace: crossplane-system
+    source: Secret
+  projectID: anthos-multi-cloud-335819

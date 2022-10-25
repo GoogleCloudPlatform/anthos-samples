@@ -1,0 +1,89 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: cluster-gcp
+  labels:
+    crossplane.io/xrd: compositeclusters.demo.anthos.com
+    provider: gcp
+    cluster: gke
+spec:
+  compositeTypeRef:
+    apiVersion: demo.anthos.com/v1
+    kind:  CompositeCluster
+  patchSets:
+  - name: metadata
+    patches:
+    - fromFieldPath: metadata.labels
+  resources:
+  - name: cluster
+    base:
+      apiVersion: container.gcp.upbound.io/v1beta1
+      kind: Cluster
+      spec:
+        providerConfigRef:
+          name: default-gcp
+        forProvider:
+          location: us-central1-a
+    patches:
+    - fromFieldPath: metadata.annotations[crossplane.io/external-name]
+      toFieldPath: metadata.annotations[crossplane.io/external-name]
+    - fromFieldPath: spec.parameters.k8sVersion
+      toFieldPath: spec.forProvider.initialClusterVersion
+    - fromFieldPath: metadata.uid
+      toFieldPath: spec.writeConnectionSecretToRef.name
+      transforms:
+        - type: string
+          string:
+            fmt: "%s-gkecluster"
+    - type: ToCompositeFieldPath
+      fromFieldPath: metadata.annotations[crossplane.io/external-name]
+      toFieldPath: status.clusterName
+    - type: ToCompositeFieldPath
+      fromFieldPath: metadata.annotations[crossplane.io/external-name]
+      toFieldPath: status.membershipId
+    - type: ToCompositeFieldPath
+      fromFieldPath: status.atProvider.selfLink
+      toFieldPath: status.clusterSelfLink
+    - type: ToCompositeFieldPath
+      fromFieldPath: status.atProvider.status
+      toFieldPath: status.controlPlaneStatus
+    - fromFieldPath: spec.writeConnectionSecretToRef.namespace
+      toFieldPath: spec.writeConnectionSecretToRef.namespace
+    readinessChecks:
+    - type: MatchString
+      fieldPath: status.atProvider.status
+      matchString: ACTIVE
+    connectionDetails:
+      - fromConnectionSecretKey: kubeconfig
+  - name: nodepool
+    base:
+      apiVersion: container.gcp.upbound.io/v1beta1
+      kind: NodePool
+      spec:
+        spec:
+        providerConfigRef:
+          name: default-gcp
+        forProvider:
+          clusterRef:
+            matchControllerRef: true
+          config:
+            machineType: n1-standard-1
+            diskSizeGb: 120
+            diskType: pd-ssd
+            imageType: cos_containerd
+            labels:
+              test-label: crossplane-created
+            oauthScopes:
+            - "https://www.googleapis.com/auth/devstorage.read_only"
+            - "https://www.googleapis.com/auth/logging.write"
+            - "https://www.googleapis.com/auth/monitoring"
+            - "https://www.googleapis.com/auth/servicecontrol"
+            - "https://www.googleapis.com/auth/service.management.readonly"
+            - "https://www.googleapis.com/auth/trace.append"      
+          initialNodeCount: 3
+          locations:
+            - "us-east1-b"
+    patches:
+  - fromFieldPath: status.clusterName
+    toFieldPath: spec.forProvider.clusterRef.name
+   

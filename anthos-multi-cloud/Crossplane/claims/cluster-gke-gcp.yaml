@@ -1,0 +1,21 @@
+apiVersion: demo.anthos.com/v1
+kind: CompositeCluster 
+metadata:
+  name: b-tea3m
+  labels:
+    cluster-owner: prod-cluster-2
+spec:
+  compositionRef:
+    # Possible values cluster-gcp, cluster-aws-gke
+    name: cluster-gcp
+  parameters:
+    # Possible values small, medium, large
+    nodeSize: medium
+    k8sVersion: "1.23"
+    fleetProject: "261832825633"
+    minNodeCount: 3
+    adminUsers:
+    - bkauf@google.com  
+  writeConnectionSecretToRef:
+    namespace: default
+    name: b-tea2m
