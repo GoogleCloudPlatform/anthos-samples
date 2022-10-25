@@ -132,7 +132,246 @@ spec:
               role: anthos-service-agent-role
           policyArnSelector:
             matchLabels:
-              policy: anthos-service-agent-policy     
+              policy: anthos-service-agent-policy  
+  - name: anthos-control-plane-role
+    base:
+      apiVersion: iam.aws.upbound.io/v1beta1
+      kind: Role
+      metadata:
+        labels:
+          role: anthos-control-plane-role
+      spec:
+        providerConfigRef: 
+          name: default-aws
+        forProvider:
+          assumeRolePolicy: |
+            {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Sid": "",
+                "Effect": "Allow",
+                "Principal": {
+                  "Service": "ec2.amazonaws.com"
+                },
+                "Action": "sts:AssumeRole"
+              }
+            ]           
+  - name: anthos-control-plane-policy
+    base:
+      apiVersion: iam.aws.upbound.io/v1beta1
+      kind: Policy
+      metadata:
+        labels:
+          policy: anthos-control-plane-policy
+      spec:
+        providerConfigRef: 
+          name: default-aws
+        forProvider:
+          policy: |
+            {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Sid": "",
+                  "Effect": "Allow",
+                  "Action": [
+                    "ec2:AttachNetworkInterface",
+                    "ec2:AttachVolume",
+                    "ec2:AuthorizeSecurityGroupIngress",
+                    "ec2:CreateRoute",
+                    "ec2:CreateSecurityGroup",
+                    "ec2:CreateSnapshot",
+                    "ec2:CreateTags",
+                    "ec2:CreateVolume",
+                    "ec2:DeleteRoute",
+                    "ec2:DeleteSecurityGroup",
+                    "ec2:DeleteSnapshot",
+                    "ec2:DeleteTags",
+                    "ec2:DeleteVolume",
+                    "ec2:DescribeAccountAttributes",
+                    "ec2:DescribeAvailabilityZones",
+                    "ec2:DescribeDhcpOptions",
+                    "ec2:DescribeInstances",
+                    "ec2:DescribeInstanceTypes",
+                    "ec2:DescribeInternetGateways",
+                    "ec2:DescribeLaunchTemplateVersions",
+                    "ec2:DescribeRegions",
+                    "ec2:DescribeRouteTables",
+                    "ec2:DescribeSecurityGroups",
+                    "ec2:DescribeSnapshots",
+                    "ec2:DescribeSubnets",
+                    "ec2:DescribeTags",
+                    "ec2:DescribeVolumes",
+                    "ec2:DescribeVolumesModifications",
+                    "ec2:DescribeVpcs",
+                    "ec2:DetachVolume",
+                    "ec2:ModifyInstanceAttribute",
+                    "ec2:ModifyVolume",
+                    "ec2:RevokeSecurityGroupIngress",
+                    "autoscaling:DescribeAutoScalingGroups",
+                    "autoscaling:DescribeAutoScalingInstances",
+                    "autoscaling:DescribeLaunchConfigurations",
+                    "autoscaling:DescribeTags",
+                    "autoscaling:SetDesiredCapacity",
+                    "autoscaling:TerminateInstanceInAutoScalingGroup",
+                    "elasticloadbalancing:AddTags",
+                    "elasticloadbalancing:ApplySecurityGroupsToLoadBalancer",
+                    "elasticloadbalancing:AttachLoadBalancerToSubnets",
+                    "elasticloadbalancing:ConfigureHealthCheck",
+                    "elasticloadbalancing:CreateListener",
+                    "elasticloadbalancing:CreateLoadBalancer",
+                    "elasticloadbalancing:CreateLoadBalancerListeners",
+                    "elasticloadbalancing:CreateLoadBalancerPolicy",
+                    "elasticloadbalancing:CreateTargetGroup",
+                    "elasticloadbalancing:DeleteListener",
+                    "elasticloadbalancing:DeleteLoadBalancer",
+                    "elasticloadbalancing:DeleteLoadBalancerListeners",
+                    "elasticloadbalancing:DeleteTargetGroup",
+                    "elasticloadbalancing:DeregisterInstancesFromLoadBalancer",
+                    "elasticloadbalancing:DeregisterTargets",
+                    "elasticloadbalancing:DescribeListeners",
+                    "elasticloadbalancing:DescribeLoadBalancerAttributes",
+                    "elasticloadbalancing:DescribeLoadBalancerPolicies",
+                    "elasticloadbalancing:DescribeLoadBalancers",
+                    "elasticloadbalancing:DescribeTargetGroups",
+                    "elasticloadbalancing:DescribeTargetHealth",
+                    "elasticloadbalancing:DetachLoadBalancerFromSubnets",
+                    "elasticloadbalancing:ModifyListener",
+                    "elasticloadbalancing:ModifyLoadBalancerAttributes",
+                    "elasticloadbalancing:ModifyTargetGroup",
+                    "elasticloadbalancing:RegisterInstancesWithLoadBalancer",
+                    "elasticloadbalancing:RegisterTargets",
+                    "elasticloadbalancing:SetLoadBalancerPoliciesForBackendServer",
+                    "elasticloadbalancing:SetLoadBalancerPoliciesOfListener",
+                    "elasticfilesystem:CreateAccessPoint",
+                    "elasticfilesystem:DeleteAccessPoint",
+                    "elasticfilesystem:DescribeAccessPoints",
+                    "elasticfilesystem:DescribeFileSystems",
+                    "elasticfilesystem:DescribeMountTargets",
+                    "kms:CreateGrant",
+                    "kms:Decrypt",
+                    "kms:Encrypt",
+                    "kms:GrantIsForAWSResource"
+                  ],
+                  "Resource": "*"
+                }
+              ]
+            }
+  - name: anthos-control-plane-attach
+    base:
+      apiVersion: iam.aws.upbound.io/v1beta1
+      kind: RolePolicyAttachment
+      metadata:
+        name: attach-control-plane
+      spec:
+        providerConfigRef: 
+          name: default-aws
+        forProvider:
+          roleSelector:
+            matchLabels:
+              role: anthos-control-plane-role
+          policyArnSelector:
+            matchLabels:
+              policy: anthos-control-plane-policy  
+  - name: anthos-instance-profile-cp
+    base:
+      apiVersion: iam.aws.upbound.io/v1beta1
+      kind: InstanceProfile
+      metadata:  
+        labels:
+          profileName: anthosCPProfile
+        name: anthosCPProfile
+      spec:
+        providerConfigRef: 
+          name: default-aws
+        forProvider:
+          roleSelector:
+            matchLabels:
+              role: anthos-control-plane-role
+  - name: anthos-node-pool-role
+    base:
+      apiVersion: iam.aws.upbound.io/v1beta1
+      kind: Role
+      metadata:
+        labels:
+          role: anthos-node-pool-role
+      spec:
+        providerConfigRef: 
+          name: default-aws
+        forProvider:
+          assumeRolePolicy: |
+            {
+              "Version": "2012-10-17",
+              "Statement": [
+              {
+                "Sid": "",
+                "Effect": "Allow",
+                "Principal": {
+                  "Service": "ec2.amazonaws.com"
+                  },
+                "Action": "sts:AssumeRole"
+                }
+              ]
+            }
+#Need to fix Resource * 
+  - name: anthos-node-pool-policy
+    base:
+      apiVersion: iam.aws.upbound.io/v1beta1
+      kind: Policy
+      metadata:
+        labels:
+          policy: anthos-node-pool-policy
+      spec:
+        providerConfigRef: 
+          name: default-aws
+        forProvider:
+          policy: |
+            {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": ["kms:Decrypt"],
+                  "Resource": "*"
+                }
+              ]
+            }
+
+  - name: anthos-node-pool-attach
+    base:
+      apiVersion: iam.aws.upbound.io/v1beta1
+      kind: RolePolicyAttachment
+      metadata:
+        name: attach-node-pool
+      spec:
+        providerConfigRef: 
+          name: default-aws
+        forProvider:
+          roleSelector:
+            matchLabels:
+              role: anthos-node-pool-role
+          policyArnSelector:
+            matchLabels:
+              policy: anthos-node-pool-policy  
+
+  - name: anthos-instance-profile-node-pool
+    base:
+      apiVersion: iam.aws.upbound.io/v1beta1
+      kind: InstanceProfile
+      metadata:
+        
+        labels:
+          profileName: anthosNPProfile
+        name: anthosCPProfile
+      spec:
+        providerConfigRef: 
+          name: default-aws
+        forProvider:
+          roleSelector:
+            matchLabels:
+              role: anthos-node-pool-role
+  
   - name: vpc
     base:
       apiVersion: ec2.aws.upbound.io/v1beta1
@@ -171,6 +410,7 @@ spec:
               vpcName: anthosVPC
           tags:
             Name: anthos-subnet-1-private
+            Key: kubernetes.io/role/internal-elb,Value=1
   - name: subnet-zone-2-private
     base:
       apiVersion: ec2.aws.upbound.io/v1beta1
@@ -191,6 +431,7 @@ spec:
               vpcName: anthosVPC
           tags:
             Name: anthos-subnet-2-private
+            Key: kubernetes.io/role/internal-elb,Value=1
   - name: subnet-zone-3-private
     base:
       apiVersion: ec2.aws.upbound.io/v1beta1
@@ -211,6 +452,7 @@ spec:
               vpcName: anthosVPC
           tags:
             Name: anthos-subnet-3-private
+            Key: kubernetes.io/role/internal-elb,Value=1
   - name: subnet-zone-1-public
     base:
       apiVersion: ec2.aws.upbound.io/v1beta1
@@ -232,6 +474,7 @@ spec:
               vpcName: anthosVPC
           tags:
             Name: anthos-1-public
+            Key: kubernetes.io/role/elb,Value=1
   - name: subnet-zone-2-public
     base:
       apiVersion: ec2.aws.upbound.io/v1beta1
@@ -252,7 +495,8 @@ spec:
             matchLabels:
               vpcName: anthosVPC
           tags:
-            Name: anthos-subnet-2-public   
+            Name: anthos-subnet-2-public 
+            Key: kubernetes.io/role/elb,Value=1  
   - name: subnet-zone-3-public
     base:
       apiVersion: ec2.aws.upbound.io/v1beta1
@@ -274,6 +518,7 @@ spec:
               vpcName: anthosVPC
           tags:
             Name: anthos-subnet-3-public
+            Key: kubernetes.io/role/elb,Value=1
   - name: internet-gateway
     base:
       apiVersion: ec2.aws.upbound.io/v1beta1
@@ -577,6 +822,8 @@ spec:
         forProvider:
           region: us-east-1
           vpc: false
+          tags:
+            Name: eip-subnet-1
   - name: eip-subnet-2
     base:
       apiVersion: ec2.aws.upbound.io/v1beta1
@@ -590,6 +837,8 @@ spec:
         forProvider:
           region: us-east-1
           vpc: false
+          tags:
+            Name: eip-subnet-2
   - name: eip-subnet-3
     base:
       apiVersion: ec2.aws.upbound.io/v1beta1
@@ -602,7 +851,9 @@ spec:
           name: default-aws
         forProvider:
           region: us-east-1
-          vpc: false       
+          vpc: false 
+          tags:
+            Name: eip-subnet-3      
   - name: nat-gw-1
     base:
       apiVersion: ec2.aws.upbound.io/v1beta1
@@ -666,8 +917,131 @@ spec:
               subnetName: subnet-zone-3-public
           tags:
             Name: subnet-3-pub-NAT
-
-
+  - name: default-route-private-1
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: DefaultRouteTable
+      metadata:
+        name: route1
+      spec:
+        providerConfigRef: 
+          name: default-aws
+        forProvider:
+          defaultRouteTableIdRef:
+            matchLabels:
+              tableName: routingtable-subnet-1-priv
+          region: us-east-1
+          route:
+            - cidrBlock: 0.0.0.0/0
+              gatewayIdSelector:
+                matchLabels:
+                  gwname: anthos-inet-gw
+  - name: default-route-private-2
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: DefaultRouteTable
+      metadata:
+        name: route2
+      spec:
+        providerConfigRef: 
+          name: default-aws
+        forProvider:
+          defaultRouteTableIdRef:
+            matchLabels:
+              tableName: routingtable-subnet-2-priv
+          region: us-east-1
+          route:
+            - cidrBlock: 0.0.0.0/0
+              gatewayIdSelector:
+                matchLabels:
+                  gwname: anthos-inet-gw
+  - name: default-route-private-3
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: DefaultRouteTable
+      metadata:
+        name: route3
+      spec:
+        providerConfigRef: 
+          name: default-aws
+        forProvider:
+          defaultRouteTableIdRef:
+            matchLabels:
+              tableName: routingtable-subnet-3-priv
+          region: us-east-1
+          route:
+            - cidrBlock: 0.0.0.0/0
+              gatewayIdSelector:
+                matchLabels:
+                  gwname: anthos-inet-gw
+  - name: awsKMS
+    base:
+      apiVersion: kms.aws.upbound.io/v1beta1
+      kind: Key
+      metadata:
+        labels:
+          kmsName: anthos-key
+        name: etcd-key
+      spec:
+        providerConfigRef: 
+          name: default-aws
+        forProvider:
+          description: KMS for Anthos etcd
+          region: us-east-1  
+  
+  
+  # - name: anthosCluster
+  #   base:
+  #     apiVersion: containeraws.gcp.upbound.io/v1beta1
+  #     kind: Cluster
+  #     metadata:
+  #       labels:
+  #         clusterName: anthos-aws-cluster
+  #       name: anthos-aws-cluster
+  #     spec:
+  #       providerConfigRef: 
+  #         name: default-gcp
+  #       forProvider:
+  
+  #         authorization:
+  #           - adminUsers:
+  #               - username: emailAddress:bkauf@google.com
+  #         awsRegion: us-east-1
+  #         controlPlane:
+  #           - awsServicesAuthentication:
+  #               - roleArn: arn:aws:iam::012345678910:role/containeraws-gcp-upbound-api-role
+  #                 roleSessionName: example-aws-cluster-session
+  #             configEncryption:
+  #               - kmsKeyArn: arn:aws:kms:us-east-1:507099386010:key/10118b42-d101-40d4-a3b5-036d08dc1d0d
+  #             databaseEncryption:
+  #               - kmsKeyArn: arn:aws:kms:us-east-1:507099386010:key/10118b42-d101-40d4-a3b5-036d08dc1d0d
+  #             iamInstanceProfile: containeraws-gcp-upbound-ctp-profile
+  #             instanceType: t3.medium
+  #             mainVolume:
+  #               - iops: 3000
+  #                 kmsKeyArn: arn:aws:kms:us-east-1:507099386010:key/10118b42-d101-40d4-a3b5-036d08dc1d0d
+  #                 sizeGib: 10
+  #                 volumeType: GP3
+  #             rootVolume:
+  #               - iops: 3000
+  #                 kmsKeyArn: arn:aws:kms:us-east-1:507099386010:key/10118b42-d101-40d4-a3b5-036d08dc1d0d
+  #                 sizeGib: 10
+  #                 volumeType: GP3
+  #             subnetIds:
+  #               - subnet-00000000000000000
+  #             version: 1.23.8-gke.1700
+  #         description: Example aws cluster
+  #         fleet:
+  #           - project: anthos-multi-cloud-335819
+  #         location: us-east4
+  #         networking:
+  #           - podAddressCidrBlocks:
+  #               - 10.2.0.0/16
+  #             serviceAddressCidrBlocks:
+  #               - 10.1.0.0/16
+  #             vpcId: vpc-00000000000000000
+  #         project: anthos-multi-cloud-335819
+  
   
   #   patches:
   #   - fromFieldPath: status.membershipId
