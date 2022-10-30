@@ -146,17 +146,22 @@ spec:
         forProvider:
           assumeRolePolicy: |
             {
-            "Version": "2012-10-17",
-            "Statement": [
-              {
-                "Sid": "",
-                "Effect": "Allow",
-                "Principal": {
-                  "Service": "ec2.amazonaws.com"
-                },
-                "Action": "sts:AssumeRole"
-              }
-            ]           
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Sid": "",
+                  "Effect": "Allow",
+                  "Principal": {
+                    "Service": "ec2.amazonaws.com"
+                  },
+                  "Action": "sts:AssumeRole"
+                }
+              ] 
+            }
+    patches:
+    - type: ToCompositeFieldPath
+      fromFieldPath: status.atProvider.arn
+      toFieldPath: status.cpRole       
   - name: anthos-control-plane-policy
     base:
       apiVersion: iam.aws.upbound.io/v1beta1
@@ -360,7 +365,6 @@ spec:
       apiVersion: iam.aws.upbound.io/v1beta1
       kind: InstanceProfile
       metadata:
-        
         labels:
           profileName: anthosNPProfile
         name: anthosCPProfile
@@ -371,7 +375,10 @@ spec:
           roleSelector:
             matchLabels:
               role: anthos-node-pool-role
-  
+    patches:
+    - type: ToCompositeFieldPath
+      fromFieldPath: status.atProvider.id
+      toFieldPath: status.npInstanceProfile
   - name: vpc
     base:
       apiVersion: ec2.aws.upbound.io/v1beta1
@@ -390,6 +397,11 @@ spec:
             Name: anthos-VPC   
           enableDnsSupport: true
           enableDnsHostnames: true 
+    patches:
+    - type: ToCompositeFieldPath
+      fromFieldPath: status.atProvider.id
+      toFieldPath: status.vpcId
+   
   - name: subnet-zone-1-private
     base:
       apiVersion: ec2.aws.upbound.io/v1beta1
@@ -411,6 +423,10 @@ spec:
           tags:
             Name: anthos-subnet-1-private
             Key: kubernetes.io/role/internal-elb,Value=1
+    patches:
+    - type: ToCompositeFieldPath
+      fromFieldPath: status.atProvider.id
+      toFieldPath: status.subnetId1Priv
   - name: subnet-zone-2-private
     base:
       apiVersion: ec2.aws.upbound.io/v1beta1
@@ -432,6 +448,10 @@ spec:
           tags:
             Name: anthos-subnet-2-private
             Key: kubernetes.io/role/internal-elb,Value=1
+    patches:
+    - type: ToCompositeFieldPath
+      fromFieldPath: status.atProvider.id
+      toFieldPath: status.subnetId2Priv
   - name: subnet-zone-3-private
     base:
       apiVersion: ec2.aws.upbound.io/v1beta1
@@ -453,6 +473,10 @@ spec:
           tags:
             Name: anthos-subnet-3-private
             Key: kubernetes.io/role/internal-elb,Value=1
+    patches:
+    - type: ToCompositeFieldPath
+      fromFieldPath: status.atProvider.id
+      toFieldPath: status.subnetId3Priv
   - name: subnet-zone-1-public
     base:
       apiVersion: ec2.aws.upbound.io/v1beta1
@@ -987,68 +1011,87 @@ spec:
           name: default-aws
         forProvider:
           description: KMS for Anthos etcd
-          region: us-east-1  
-  
-  
-  # - name: anthosCluster
-  #   base:
-  #     apiVersion: containeraws.gcp.upbound.io/v1beta1
-  #     kind: Cluster
-  #     metadata:
-  #       labels:
-  #         clusterName: anthos-aws-cluster
-  #       name: anthos-aws-cluster
-  #     spec:
-  #       providerConfigRef: 
-  #         name: default-gcp
-  #       forProvider:
-  
-  #         authorization:
-  #           - adminUsers:
-  #               - username: emailAddress:bkauf@google.com
-  #         awsRegion: us-east-1
-  #         controlPlane:
-  #           - awsServicesAuthentication:
-  #               - roleArn: arn:aws:iam::012345678910:role/containeraws-gcp-upbound-api-role
-  #                 roleSessionName: example-aws-cluster-session
-  #             configEncryption:
-  #               - kmsKeyArn: arn:aws:kms:us-east-1:507099386010:key/10118b42-d101-40d4-a3b5-036d08dc1d0d
-  #             databaseEncryption:
-  #               - kmsKeyArn: arn:aws:kms:us-east-1:507099386010:key/10118b42-d101-40d4-a3b5-036d08dc1d0d
-  #             iamInstanceProfile: containeraws-gcp-upbound-ctp-profile
-  #             instanceType: t3.medium
-  #             mainVolume:
-  #               - iops: 3000
-  #                 kmsKeyArn: arn:aws:kms:us-east-1:507099386010:key/10118b42-d101-40d4-a3b5-036d08dc1d0d
-  #                 sizeGib: 10
-  #                 volumeType: GP3
-  #             rootVolume:
-  #               - iops: 3000
-  #                 kmsKeyArn: arn:aws:kms:us-east-1:507099386010:key/10118b42-d101-40d4-a3b5-036d08dc1d0d
-  #                 sizeGib: 10
-  #                 volumeType: GP3
-  #             subnetIds:
-  #               - subnet-00000000000000000
-  #             version: 1.23.8-gke.1700
-  #         description: Example aws cluster
-  #         fleet:
-  #           - project: anthos-multi-cloud-335819
-  #         location: us-east4
-  #         networking:
-  #           - podAddressCidrBlocks:
-  #               - 10.2.0.0/16
-  #             serviceAddressCidrBlocks:
-  #               - 10.1.0.0/16
-  #             vpcId: vpc-00000000000000000
-  #         project: anthos-multi-cloud-335819
-  
-  
-  #   patches:
-  #   - fromFieldPath: status.membershipId
-  #     toFieldPath: spec.forProvider.membership
-   # - fromFieldPath: spec.parameters.configSync.branch
-   #   toFieldPath: spec.forProvider.configManagement.git.branch
-   # - fromFieldPath: spec.parameters.configSync.repo
-   #   toFieldPath: spec.forProvider.configManagement.git.repo
-   # - fromFieldPath: spec.parameters.configSync.policyDir
-   #   toFieldPath: spec.forProvider.configManagement.git.policyDir
+          region: us-east-2  
+    patches:
+    - type: ToCompositeFieldPath
+      fromFieldPath: status.atProvider.arn
+      toFieldPath: status.kmsArn 
+    - type: FromCompositeFieldPath
+      fromFieldPath: spec.parameters.awsRegion
+      toFieldPath: spec.forProvider.region
+  - name: anthosCluster
+    base:
+      apiVersion: containeraws.gcp.upbound.io/v1beta1
+      kind: Cluster
+      metadata:
+        labels:
+          clusterName: anthos-aws-cluster
+        name: anthos-aws-cluster
+      spec:
+        providerConfigRef: 
+          name: default-gcp
+        forProvider:
+          authorization:
+            - adminUsers:
+                - username: emailAddress:bkauf@google.com
+          awsRegion: patched
+          controlPlane:
+            - awsServicesAuthentication:
+                - roleArn: patched
+                  roleSessionName: example-aws-cluster-session
+              configEncryption:
+                - kmsKeyArn: patched
+              databaseEncryption:
+                - kmsKeyArn: patched
+              iamInstanceProfile: containeraws-gcp-upbound-ctp-profile
+              instanceType: t3.medium
+              mainVolume:
+                - iops: 3000
+                 # kmsKeyArn: arn:aw118b42-d101-40d4-a3b5-036d08dc1d0d
+                  sizeGib: 10
+                  volumeType: GP3
+              rootVolume:
+                - iops: 3000
+                 # kmsKeyArn: arn:aws:kms:us-east-1:507099386010:key/10118b42-d101-40d4-a3b5-036d08dc1d0d
+                  sizeGib: 10
+                  volumeType: GP3
+              subnetIds:
+                - subnet-00000000000000000
+              version: 1.23.8-gke.1700
+          description: Example aws cluster
+          fleet:
+            - project: patched
+          location: patched
+          networking:
+            - podAddressCidrBlocks:
+                - 10.2.0.0/16
+              serviceAddressCidrBlocks:
+                - 10.1.0.0/16
+              vpcId: patched
+          project: patched
+    patches:
+     - type: FromCompositeFieldPath
+       fromFieldPath: spec.parameters.awsRegion
+       toFieldPath: spec.forProvider.awsRegion
+     - fromFieldPath: spec.parameters.fleetProject
+       toFieldPath: spec.forProvider.controlPlane.fleet.project
+     - fromFieldPath: spec.parameters.gcpRegion
+       toFieldPath: spec.forProvider.controlPlane.location
+     - fromFieldPath: status.cpRoleArn
+       toFieldPath:  controlPlane.awsServicesAuthentication.roleArn
+     - fromFieldPath: status.kmsArn
+       toFieldPath: spec.forProvider.controlPlane.configEncryption.kmsKeyArn
+     - fromFieldPath: status.kmsArn
+       toFieldPath:  spec.forProvider.controlPlane.databaseEncryption.kmsKeyArn
+     - fromFieldPath: status.vpcId
+       toFieldPath: spec.forProvider.controlPlane.networking.vpcId
+     - type: CombineFromComposite
+       combine:
+        variables:
+        - fromFieldPath: status.subnetId1Priv
+        - fromFieldPath: status.subnetId2Priv
+        - fromFieldPath: status.subnetId3Priv
+        strategy: string
+        string:
+          fmt: "%s,%s,%s"
+       toFieldPath: spec.forProvider.controlPlane.subnetIds

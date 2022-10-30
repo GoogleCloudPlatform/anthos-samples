@@ -13,6 +13,8 @@ spec:
     nodeSize: medium
     k8sVersion: "1.23"
     fleetProject: "261832825633"
+    awsRegion: "us-east-1"
+    gcpRegion: "us-east4"
     minNodeCount: 3  
     adminUsers:
     - bkauf@google.com

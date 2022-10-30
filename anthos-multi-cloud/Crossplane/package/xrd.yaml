@@ -47,6 +47,10 @@ spec:
                     type: string
                   k8sVersion:
                     type: string
+                  awsRegion:
+                    type: string
+                  gcpRegion:
+                    type: string
                   minNodeCount:
                     type: integer
                   nodeSize:
@@ -54,8 +58,7 @@ spec:
                 type: object
           status:
             type: object
-            description: A AttachedClusterStatus represents the observed state of
-              a Cluster.
+            description: Anthos Cluster object 
             properties:
               cluster:
                 type: string
@@ -71,6 +74,21 @@ spec:
                 type: string
               odicIssuerUrl:
                 type: string
+              vpcId:
+                type: string
+              subnetId1Priv:
+                type: string
+              subnetId2Priv:
+                type: string
+              subnetId3Priv:
+                type: string
+              cpRoleArn:
+                type: string
+              npInstanceProfile:
+                type: string
+              kmsArn:
+                type: string
+              
     additionalPrinterColumns:
     - name: clusterName
       type: string
@@ -81,3 +99,6 @@ spec:
     - name: nodePool
       type: string
       jsonPath: ".status.nodePoolStatus"
+    - name: cpRole
+      type: string
+      jsonPath: ".status.cpRoleArn"
