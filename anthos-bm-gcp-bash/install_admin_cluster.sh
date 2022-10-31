@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# shellcheck disable=SC2181
 if [[ -z "${PROJECT_ID}" ]]; then
   printf "🚨 Environment variable PROJECT_ID not set. Set it to the Google Cloud Project you intend to use."
   exit 1
@@ -107,6 +108,29 @@ gcloud projects add-iam-policy-binding "$PROJECT_ID" \
 # [END anthos_bm_gcp_bash_admin_add_iam_role]
 printf "✅ Successfully added the requires IAM roles to the Service Account.\n\n"
 
+printf "🔄 Creating Cloud Storage bucket to hold GCE VM init script...\n"
+# [START anthos_bm_gcp_bash_admin_create_storage_bucket]
+BUCKET=abm-vm-init
+gsutil -q stat gs://${BUCKET}/.dontremove 2> /dev/null
+if [[ $? -gt 0 ]]; then
+    printf "Init script bucket does not exist, creating gs://%s" "$BUCKET"
+    gsutil mb -p "${PROJECT_ID}" gs://"${BUCKET}"
+    if [[ $? -gt 0 ]]; then
+        printf "Error: Cannot create bucket [%s] for init scripts in project [%s]" "$BUCKET" "$PROJECT_ID"
+        exit 1
+    fi
+    # Add file to flag that bucket is available
+    printf "do not remove this file" | gsutil cp - gs://$BUCKET/.dontremove
+fi
+# [END anthos_bm_gcp_bash_admin_create_storage_bucket]
+printf "✅ Successfully created Cloud Storage bucket for GCE VM init script.\n\n"
+
+printf "🔄 Uploading GCE VM init script to the Cloud Storage bucket...\n"
+# [START anthos_bm_gcp_bash_admin_upload_init_script]
+gsutil cp resources/gce-init.sh gs://${BUCKET}/gce-init.sh
+# [END anthos_bm_gcp_bash_admin_upload_init_script]
+printf "✅ Successfully uploaded GCE VM init script to the Cloud Storage bucket.\n\n"
+
 # declare arrays for VM names and IPs
 printf "🔄 Setting up array variables for the VM names and IP addresses...\n"
 # [START anthos_bm_gcp_bash_admin_vms_array]
@@ -138,7 +162,7 @@ do
       --min-cpu-platform "Intel Haswell" \
       --scopes cloud-platform \
       --machine-type "$MACHINE_TYPE" \
-      --metadata "cluster_id=${ADMIN_CLUSTER_NAME}"
+      --metadata "startup-script-url=gs://${BUCKET}/gce-init.sh,cluster_id=${ADMIN_CLUSTER_NAME}"
     IP=$(gcloud compute instances describe "$vm" --zone "${ZONE}" \
          --format='get(networkInterfaces[0].networkIP)')
     IPs+=("$IP")
@@ -151,7 +175,7 @@ printf "🔄 Checking SSH access to the GCE VMs...\n"
 # [START anthos_bm_gcp_bash_admin_check_ssh]
 for vm in "${VMs[@]}"
 do
-    while ! gcloud compute ssh root@"$vm" --zone "${ZONE}" --command "printf SSH to $vm succeeded"
+    while ! gcloud compute ssh anthos@"$vm" --zone "${ZONE}" --command "printf SSH to $vm succeeded"
     do
         printf "Trying to SSH into %s failed. Sleeping for 5 seconds. zzzZZzzZZ" "$vm"
         sleep  5
@@ -167,7 +191,7 @@ printf "🔄 Setting up VxLAN in the GCE VMs...\n"
 i=2 # We start from 10.200.0.2/24
 for vm in "${VMs[@]}"
 do
-    gcloud compute ssh root@"$vm" --zone "${ZONE}" << EOF
+    gcloud compute ssh anthos@"$vm" --zone "${ZONE}" << EOF
         apt-get -qq update > /dev/null
         apt-get -qq install -y jq > /dev/null
         set -x
@@ -191,7 +215,7 @@ printf "✅ Successfully setup VxLAN in the GCE VMs.\n\n"
 # install the necessary tools inside the VMs
 printf "🔄 Setting up admin workstation...\n"
 # [START anthos_bm_gcp_bash_admin_init_vm]
-gcloud compute ssh root@$VM_WS --zone "${ZONE}" << EOF
+gcloud compute ssh anthos@$VM_WS --zone "${ZONE}" << EOF
 set -x
 
 export PROJECT_ID=\$(gcloud config get-value project)
@@ -220,10 +244,10 @@ printf "✅ Successfully set up admin workstation.\n\n"
 # to all the other (control-plane and worker) VMs
 printf "🔄 Setting up SSH access from admin workstation to cluster node VMs...\n"
 # [START anthos_bm_gcp_bash_admin_add_ssh_keys]
-gcloud compute ssh root@$VM_WS --zone "${ZONE}" << EOF
+gcloud compute ssh anthos@$VM_WS --zone "${ZONE}" << EOF
 set -x
-ssh-keygen -t rsa -N "" -f /root/.ssh/id_rsa
-sed 's/ssh-rsa/root:ssh-rsa/' ~/.ssh/id_rsa.pub > ssh-metadata
+ssh-keygen -t rsa -N "" -f /anthos/.ssh/id_rsa
+sed 's/ssh-rsa/anthos:ssh-rsa/' ~/.ssh/id_rsa.pub > ssh-metadata
 for vm in ${VMs[@]}
 do
     gcloud compute instances add-metadata \$vm --zone ${ZONE} --metadata-from-file ssh-keys=ssh-metadata
@@ -235,7 +259,7 @@ printf "✅ Successfully set up SSH access from admin workstation to cluster nod
 # initiate Anthos on bare metal installation from the admin workstation
 printf "🔄 Installing Anthos on bare metal...\n"
 # [START anthos_bm_gcp_bash_admin_install_abm]
-gcloud compute ssh root@$VM_WS --zone "${ZONE}" <<EOF
+gcloud compute ssh anthos@$VM_WS --zone "${ZONE}" <<EOF
 set -x
 export PROJECT_ID=\$(gcloud config get-value project)
 ADMIN_CLUSTER_NAME=\$(curl http://metadata.google.internal/computeMetadata/v1/instance/attributes/cluster_id -H "Metadata-Flavor: Google")
@@ -243,11 +267,11 @@ export ADMIN_CLUSTER_NAME
 bmctl create config -c \$ADMIN_CLUSTER_NAME
 cat > bmctl-workspace/\$ADMIN_CLUSTER_NAME/\$ADMIN_CLUSTER_NAME.yaml << EOB
 ---
-gcrKeyPath: /root/bm-gcr.json
-sshPrivateKeyPath: /root/.ssh/id_rsa
-gkeConnectAgentServiceAccountKeyPath: /root/bm-gcr.json
-gkeConnectRegisterServiceAccountKeyPath: /root/bm-gcr.json
-cloudOperationsServiceAccountKeyPath: /root/bm-gcr.json
+gcrKeyPath: /anthos/bm-gcr.json
+sshPrivateKeyPath: /anthos/.ssh/id_rsa
+gkeConnectAgentServiceAccountKeyPath: /anthos/bm-gcr.json
+gkeConnectRegisterServiceAccountKeyPath: /anthos/bm-gcr.json
+cloudOperationsServiceAccountKeyPath: /anthos/bm-gcr.json
 ---
 apiVersion: v1
 kind: Namespace
@@ -303,6 +327,7 @@ bmctl create cluster -c \$ADMIN_CLUSTER_NAME
 EOF
 # [END anthos_bm_gcp_bash_admin_install_abm]
 
+# [START anthos_bm_gcp_bash_admin_gce_info]
 printf "✅ Installation complete. Please check the logs for any errors!!!\n\n"
 printf "✅ If you do not see any errors in the output log, then you now have the following setup:\n\n"
 printf "|---------------------------------------------------------------------------------------------------------|\n"
@@ -313,3 +338,4 @@ printf "| abm-user-cluster-cp1  | 10.200.0.4            | 🌟 Ready for use as 
 printf "| abm-user-cluster-w1   | 10.200.0.5            | 🌟 Ready for use as worker for the user cluster         |\n"
 printf "| abm-user-cluster-w2   | 10.200.0.6            | 🌟 Ready for use as worker for the user cluster         |\n"
 printf "|---------------------------------------------------------------------------------------------------------|\n\n"
+# [END anthos_bm_gcp_bash_admin_gce_info]
