@@ -11,6 +11,144 @@ spec:
     apiVersion: demo.anthos.com/v1
     kind:  CompositeCluster
   resources:
+  - name: anthosCluster
+    base:
+      apiVersion: containeraws.gcp.upbound.io/v1beta1
+      kind: Cluster
+      metadata:
+        labels:
+          clusterName: anthos-aws-cluster
+        name: anthos-aws-cluster
+        labels:
+        testing.upbound.io/example-name: example-aws-nodepool
+      spec:
+        providerConfigRef: 
+          name: default-gcp
+        forProvider:
+          authorization:
+            - adminUsers:
+                - username: emailAddress:bkauf@google.com
+          awsRegion: patched
+          controlPlane:
+            - awsServicesAuthentication:
+                - roleArn: patched
+              configEncryption:
+                - kmsKeyArn: patched
+              databaseEncryption:
+                - kmsKeyArn: patched
+              iamInstanceProfile: patched
+              instanceType: t3.medium
+              mainVolume:
+                - iops: 3000
+                 # kmsKeyArn: arn:aw118b42-d101-40d4-a3b5-036d08dc1d0d
+                  sizeGib: 10
+                  volumeType: GP3
+              rootVolume:
+                - iops: 3000
+                 # kmsKeyArn: arn:aws:kms:us-east-1:507099386010:key/10118b42-d101-40d4-a3b5-036d08dc1d0d
+                  sizeGib: 10
+                  volumeType: GP3
+              subnetIds:
+                - subnet-0b788331811baaeec
+                - subnet-0d9523098b1fa1ba8
+                - subnet-0e2b8207acf0c9350
+              version: 1.23.8-gke.1700
+          description: Example aws cluster
+          fleet:
+            - project: "261832825633" 
+          location: us-east4
+          networking:
+            - podAddressCidrBlocks:
+                - 10.2.0.0/16
+              serviceAddressCidrBlocks:
+                - 10.1.0.0/16
+              vpcId: patched
+          project: patched
+    patches:
+    - type: FromCompositeFieldPath
+      fromFieldPath: spec.parameters.awsRegion
+      toFieldPath: spec.forProvider.awsRegion
+    - type: FromCompositeFieldPath
+      fromFieldPath: status.vpcId
+      toFieldPath: spec.forProvider.networking.vpcId
+    - type: FromCompositeFieldPath
+      fromFieldPath: status.subnetId1Priv
+      toFieldPath: spec.forProvider.controlPlane.awsServicesAuthentication.subnetIds[0]
+    - type: FromCompositeFieldPath
+      fromFieldPath: status.subnetId2Priv
+      toFieldPath: spec.forProvider.controlPlane.awsServicesAuthentication.subnetIds[1]
+    - type: FromCompositeFieldPath
+      fromFieldPath: status.subnetId3Priv
+      toFieldPath: spec.forProvider.controlPlane.awsServicesAuthentication.subnetIds[2]
+    - type: FromCompositeFieldPath
+      fromFieldPath: status.cpRoleArn
+      toFieldPath:  spec.forProvider.controlPlane.awsServicesAuthentication.roleArn
+    - type: FromCompositeFieldPath
+      fromFieldPath: status.cpInstanceProfile
+      toFieldPath:  spec.forProvider.controlPlane.awsServicesAuthentication.iamInstanceProfile 
+    - type: FromCompositeFieldPath
+      fromFieldPath: status.kmsArn
+      toFieldPath: spec.forProvider.controlPlane.configEncryption.kmsKeyArn
+    - type: FromCompositeFieldPath
+      fromFieldPath: status.kmsArn
+      toFieldPath:  spec.forProvider.controlPlane.databaseEncryption.kmsKeyArn
+    - type: FromCompositeFieldPath
+      fromFieldPath: spec.parameters.gcpProjectId
+      toFieldPath: spec.forProvider.project
+  - name: anthosNodePool
+    base:
+      apiVersion: containeraws.gcp.upbound.io/v1beta1
+      kind: NodePool
+      metadata:
+        labels:
+          testing.upbound.io/example-name: example-aws-nodepool
+        name: example-aws-nodepool
+      spec:
+        providerConfigRef: 
+            name: default-gcp
+        forProvider:
+          autoscaling:
+            - maxNodeCount: 5
+              minNodeCount: 1
+          clusterSelector:
+            matchLabels:
+              testing.upbound.io/example-name: anthos-cluster
+          config:
+            - configEncryption:
+                - kmsKeyArn: patched
+              iamInstanceProfile: patched
+              instanceType: t3.medium
+              labels:
+                label-one: value-one
+              rootVolume:
+                - iops: 3000
+                  #kmsKeyArn: arn:aws:kms:my-aws-region:012345678910:key/12345678-1234-1234-1234-123456789111
+                  sizeGib: 10
+                  volumeType: GP3
+              tags:
+                tag-one: value-one
+          location: patched
+          maxPodsConstraint:
+            - maxPodsPerNode: 110
+          project: patched
+          subnetId: patched
+          version: 1.23.8-gke.1700
+    patches:
+        - type: FromCompositeFieldPath
+          fromFieldPath: spec.parameters.gcpRegion
+          toFieldPath: spec.forProvider.location
+        - type: FromCompositeFieldPath
+          fromFieldPath: spec.parameters.gcpProjectId
+          toFieldPath: spec.project
+        - type: FromCompositeFieldPath
+          fromFieldPath: status.subnetId1Priv
+          toFieldPath: spec.forProvider.subnetId
+        - type: FromCompositeFieldPath
+          fromFieldPath: status.kmsArn
+          toFieldPath:  spec.forProvider.config.configEncryption.kmsKeyArn
+        - type: FromCompositeFieldPath
+          fromFieldPath: status.npInstanceProfile
+          toFieldPath:  spec.config.iamInstanceProfile
   - name: anthos-service-agent-role
     base:
       apiVersion: iam.aws.upbound.io/v1beta1
@@ -294,6 +432,10 @@ spec:
           roleSelector:
             matchLabels:
               role: anthos-control-plane-role
+    patches:
+    - type: ToCompositeFieldPath
+      fromFieldPath: status.atProvider.id
+      toFieldPath: status.cpInstanceProfile
   - name: anthos-node-pool-role
     base:
       apiVersion: iam.aws.upbound.io/v1beta1
@@ -319,7 +461,7 @@ spec:
                 }
               ]
             }
-#Need to fix Resource * 
+ # Need to fix Resource * 
   - name: anthos-node-pool-policy
     base:
       apiVersion: iam.aws.upbound.io/v1beta1
@@ -392,7 +534,7 @@ spec:
           name: default-aws
         forProvider:
           cidrBlock: 10.0.0.0/16
-          region: us-east-1
+          region: patched
           tags:
             Name: anthos-VPC   
           enableDnsSupport: true
@@ -401,6 +543,9 @@ spec:
     - type: ToCompositeFieldPath
       fromFieldPath: status.atProvider.id
       toFieldPath: status.vpcId
+    - type: FromCompositeFieldPath
+      fromFieldPath: spec.parameters.awsRegion
+      toFieldPath: spec.forProvider.region
    
   - name: subnet-zone-1-private
     base:
@@ -1019,79 +1164,3 @@ spec:
     - type: FromCompositeFieldPath
       fromFieldPath: spec.parameters.awsRegion
       toFieldPath: spec.forProvider.region
-  - name: anthosCluster
-    base:
-      apiVersion: containeraws.gcp.upbound.io/v1beta1
-      kind: Cluster
-      metadata:
-        labels:
-          clusterName: anthos-aws-cluster
-        name: anthos-aws-cluster
-      spec:
-        providerConfigRef: 
-          name: default-gcp
-        forProvider:
-          authorization:
-            - adminUsers:
-                - username: emailAddress:bkauf@google.com
-          awsRegion: patched
-          controlPlane:
-            - awsServicesAuthentication:
-                - roleArn: patched
-                  roleSessionName: example-aws-cluster-session
-              configEncryption:
-                - kmsKeyArn: patched
-              databaseEncryption:
-                - kmsKeyArn: patched
-              iamInstanceProfile: containeraws-gcp-upbound-ctp-profile
-              instanceType: t3.medium
-              mainVolume:
-                - iops: 3000
-                 # kmsKeyArn: arn:aw118b42-d101-40d4-a3b5-036d08dc1d0d
-                  sizeGib: 10
-                  volumeType: GP3
-              rootVolume:
-                - iops: 3000
-                 # kmsKeyArn: arn:aws:kms:us-east-1:507099386010:key/10118b42-d101-40d4-a3b5-036d08dc1d0d
-                  sizeGib: 10
-                  volumeType: GP3
-              subnetIds:
-                - subnet-00000000000000000
-              version: 1.23.8-gke.1700
-          description: Example aws cluster
-          fleet:
-            - project: patched
-          location: patched
-          networking:
-            - podAddressCidrBlocks:
-                - 10.2.0.0/16
-              serviceAddressCidrBlocks:
-                - 10.1.0.0/16
-              vpcId: patched
-          project: patched
-    patches:
-     - type: FromCompositeFieldPath
-       fromFieldPath: spec.parameters.awsRegion
-       toFieldPath: spec.forProvider.awsRegion
-     - fromFieldPath: spec.parameters.fleetProject
-       toFieldPath: spec.forProvider.controlPlane.fleet.project
-     - fromFieldPath: spec.parameters.gcpRegion
-       toFieldPath: spec.forProvider.controlPlane.location
-     - fromFieldPath: status.cpRoleArn
-       toFieldPath:  controlPlane.awsServicesAuthentication.roleArn
-     - fromFieldPath: status.kmsArn
-       toFieldPath: spec.forProvider.controlPlane.configEncryption.kmsKeyArn
-     - fromFieldPath: status.kmsArn
-       toFieldPath:  spec.forProvider.controlPlane.databaseEncryption.kmsKeyArn
-     - fromFieldPath: status.vpcId
-       toFieldPath: spec.forProvider.controlPlane.networking.vpcId
-     - type: CombineFromComposite
-       combine:
-        variables:
-        - fromFieldPath: status.subnetId1Priv
-        - fromFieldPath: status.subnetId2Priv
-        - fromFieldPath: status.subnetId3Priv
-        strategy: string
-        string:
-          fmt: "%s,%s,%s"
-       toFieldPath: spec.forProvider.controlPlane.subnetIds

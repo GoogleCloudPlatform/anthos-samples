@@ -45,6 +45,8 @@ spec:
                     type: array
                   fleetProject:
                     type: string
+                  gcpProjectId:
+                    type: string
                   k8sVersion:
                     type: string
                   awsRegion:
@@ -83,6 +85,8 @@ spec:
               subnetId3Priv:
                 type: string
               cpRoleArn:
+                type: string
+              cpInstanceProfile:
                 type: string
               npInstanceProfile:
                 type: string
