@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.13.0](https://github.com/GoogleCloudPlatform/anthos-samples/compare/v0.12.2...v0.13.0) (2022-11-02)
+
+
+### Features
+
+* add new sample for running APIGee on ABM ([#419](https://github.com/GoogleCloudPlatform/anthos-samples/issues/419)) ([a658745](https://github.com/GoogleCloudPlatform/anthos-samples/commit/a65874570f9aedd470ab9547a447781c03bb9d9f))
+* update ABM version to 1.13.1 ([#472](https://github.com/GoogleCloudPlatform/anthos-samples/issues/472)) ([77a979d](https://github.com/GoogleCloudPlatform/anthos-samples/commit/77a979d991ec7bd2655dc230ff33e23de1835ec6))
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/gruntwork-io/terratest to v0.40.24 ([#448](https://github.com/GoogleCloudPlatform/anthos-samples/issues/448)) ([20acedc](https://github.com/GoogleCloudPlatform/anthos-samples/commit/20acedc5a9cacdfbe8c74dcfbe15cfdc9bd12271))
+* **deps:** update module github.com/stretchr/testify to v1.8.1 ([#461](https://github.com/GoogleCloudPlatform/anthos-samples/issues/461)) ([ebdca2b](https://github.com/GoogleCloudPlatform/anthos-samples/commit/ebdca2bde75a19bad468102828f2ba703ed60432))
+
 ## [0.12.2](https://github.com/GoogleCloudPlatform/anthos-samples/compare/v0.12.1...v0.12.2) (2022-09-23)
 
 
