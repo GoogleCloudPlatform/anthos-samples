@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.1](https://github.com/GoogleCloudPlatform/anthos-samples/compare/v0.13.0...v0.13.1) (2022-11-02)
+
+
+### Miscellaneous Chores
+
+* release 0.13.1 ([02eb88b](https://github.com/GoogleCloudPlatform/anthos-samples/commit/02eb88b5c813b340eabc6cfc8ed0d6f752d92d52))
+
 ## [0.13.0](https://github.com/GoogleCloudPlatform/anthos-samples/compare/v0.12.2...v0.13.0) (2022-11-02)
 
 
