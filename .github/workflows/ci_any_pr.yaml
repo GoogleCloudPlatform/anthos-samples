@@ -21,7 +21,7 @@ on:
 jobs:
   # Run static code tests: license-check, terraform format, Golang linting
   static-code-tests:
-    runs-on: [self-hosted, runner-apr-22]
+    runs-on: [self-hosted, runner-nov-22]
     steps:
       - uses: actions/checkout@v3
         with:
@@ -49,7 +49,7 @@ jobs:
           fi
   # Run terraform validate on terraform based samples
   tf-validate:
-    runs-on: [self-hosted, runner-apr-22]
+    runs-on: [self-hosted, runner-nov-22]
     strategy:
       matrix:
         # list of directories in the repo that hosts Terraform samples
@@ -77,7 +77,7 @@ jobs:
           terraform validate -json .
   # Run the Golang unit tests in any of the samples
   go-unit-tests:
-    runs-on: [self-hosted, runner-apr-22]
+    runs-on: [self-hosted, runner-nov-22]
     strategy:
       matrix:
         # list of directories in the repo that hosts Golang unit tests

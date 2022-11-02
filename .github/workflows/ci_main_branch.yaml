@@ -22,7 +22,7 @@ on:
       - release/*
 jobs:
   static-code-tests:
-    runs-on: [self-hosted, runner-apr-22]
+    runs-on: [self-hosted, runner-nov-22]
     steps:
       - uses: actions/checkout@v3
         with:
@@ -49,7 +49,7 @@ jobs:
             exit 1
           fi
   tf-validate:
-    runs-on: [self-hosted, runner-apr-22]
+    runs-on: [self-hosted, runner-nov-22]
     strategy:
       matrix:
         # list of directories in the repo that hosts Terraform samples
@@ -76,7 +76,7 @@ jobs:
           terraform init -backend=false
           terraform validate -json .
   go-unit-tests:
-    runs-on: [self-hosted, runner-apr-22]
+    runs-on: [self-hosted, runner-nov-22]
     needs: tf-validate
     strategy:
       matrix:
