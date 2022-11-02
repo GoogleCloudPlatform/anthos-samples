@@ -57,6 +57,7 @@ spec:
                     type: integer
                   nodeSize:
                     type: string
+
                 type: object
           status:
             type: object
@@ -103,6 +104,6 @@ spec:
     - name: nodePool
       type: string
       jsonPath: ".status.nodePoolStatus"
-    - name: cpRole
+    - name: cpProfile
       type: string
-      jsonPath: ".status.cpRoleArn"
+      jsonPath: ".status.cpInstanceProfile"
