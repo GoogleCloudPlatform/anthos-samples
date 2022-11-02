@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/gruntwork-io/terratest v0.40.24
 	github.com/icrowley/fake v0.0.0-20220625154756-3c7517006344
-	github.com/stretchr/testify v1.8.0
+	github.com/stretchr/testify v1.8.1
 	gopkg.in/yaml.v2 v2.4.0
 )
 

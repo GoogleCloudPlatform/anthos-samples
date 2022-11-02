@@ -2,4 +2,4 @@
 ansible~=5.2.0
 dnspython~=2.2.0
 google-auth==2.13.0
-requests~=2.27.1
+requests~=2.28.1
