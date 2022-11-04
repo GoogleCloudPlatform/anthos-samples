@@ -93,6 +93,8 @@ spec:
                 type: string
               kmsArn:
                 type: string
+              saRoleArn:
+                type: string
               
     additionalPrinterColumns:
     - name: clusterName

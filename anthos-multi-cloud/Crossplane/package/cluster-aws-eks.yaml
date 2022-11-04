@@ -41,8 +41,7 @@ spec:
           name: cluster-conn
           namespace: default
     patches:
-    - type: ToCompositeFieldPath
-      fromFieldPath: status.atProvider.identity.oidc.issuer
+    - fromFieldPath: status.atProvider.identity.oidc.issuer
       toFieldPath: status.odicIssuerUrl
     - fromFieldPath: metadata.annotations[crossplane.io/external-name]
       toFieldPath: metadata.annotations[crossplane.io/external-name]

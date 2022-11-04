@@ -30,13 +30,12 @@ spec:
                 - username: emailAddress:bkauf@google.com
           awsRegion: patched
           controlPlane:
-            - awsServicesAuthentication:
-             #   - roleArn: patched
+            - awsServicesAuthentication: 
+                - roleArn: patched
               configEncryption:
-             #   - kmsKeyArn: patched
-              databaseEncryption:
-             #   - kmsKeyArn: patched
-              iamInstanceProfile: 
+                - kmsKeyArn: test
+              databaseEncryption: []
+              iamInstanceProfile:  test
               instanceType: t3.medium
               mainVolume:
                 - iops: 3000
@@ -48,11 +47,8 @@ spec:
                  # kmsKeyArn: arn:aws:kms:us-east-1:507099386010:key/10118b42-d101-40d4-a3b5-036d08dc1d0d
                   sizeGib: 10
                   volumeType: GP3
-              subnetIds:
-            #    - subnet-0b788331811baaeec
-            #    - subnet-0d9523098b1fa1ba8
-            #    - subnet-0e2b8207acf0c9350
-              version: 1.23.8-gke.1700
+              subnetIds: []
+              version: 1.24.3-gke.2100
              # tags:
              # -   name: "cx-anthos"
           description: Example aws cluster
@@ -64,42 +60,58 @@ spec:
                 - 10.2.0.0/16
               serviceAddressCidrBlocks:
                 - 10.1.0.0/16
-            #  vpcId: patched
-          project: patched
+              vpcId: patched
+        #  project: patched
     patches:
     - type: FromCompositeFieldPath
-      fromFieldPath: status.kmsArn
-      toFieldPath: spec.forProvider.controlPlane.configEncryption.kmsKeyArn
+      fromFieldPath: status.saRoleArn
+      toFieldPath:  spec.forProvider.controlPlane[0].awsServicesAuthentication[0].roleArn
+     # policy:
+     #   fromFieldPath: Required
     - type: FromCompositeFieldPath
       fromFieldPath: status.kmsArn
-      toFieldPath: spec.forProvider.controlPlane.databaseEncryption.kmsKeyArn
+      toFieldPath: spec.forProvider.controlPlane[0].configEncryption[0].kmsKeyArn
+    #  policy:
+    #    fromFieldPath: Required 
     - type: FromCompositeFieldPath
-      fromFieldPath: status.vpcId
-      toFieldPath: spec.forProvider.networking.vpcId
-    - type: FromCompositeFieldPath 
-      fromFieldPath: status.subnetId1Priv
-      toFieldPath: spec.forProvider.controlPlane.subnetIds[0]
-    - type: FromCompositeFieldPath
-      fromFieldPath: status.subnetId2Priv
-      toFieldPath: spec.forProvider.controlPlane.subnetIds[1]
-    - type: FromCompositeFieldPath
-      fromFieldPath: status.subnetId3Priv
-      toFieldPath: spec.forProvider.controlPlane.subnetIds[2]
-    - type: FromCompositeFieldPath
-      fromFieldPath: status.cpRoleArn
-      toFieldPath:  spec.forProvider.controlPlane.awsServicesAuthentication.roleArn
+      fromFieldPath: status.kmsArn
+      toFieldPath: spec.forProvider.controlPlane[0].databaseEncryption[0].kmsKeyArn
+    # policy:
+    #   fromFieldPath: Required  
     - type: FromCompositeFieldPath
       fromFieldPath: status.cpInstanceProfile
-      toFieldPath:  spec.forProvider.controlPlane..iamInstanceProfile 
+      toFieldPath:  spec.forProvider.controlPlane[0].iamInstanceProfile 
     - type: FromCompositeFieldPath
-      fromFieldPath: spec.parameters.gcpProjectId
+      fromFieldPath: status.vpcId
+      toFieldPath: spec.forProvider.networking[0].vpcId
+    #  policy:
+    #    fromFieldPath: Required 
+    - type: FromCompositeFieldPath
+      fromFieldPath: status.subnetId1Priv
+      toFieldPath: spec.forProvider.controlPlane[0].subnetIds[0]
+     # policy:
+     #  fromFieldPath: Required
+    - type: FromCompositeFieldPath
+      fromFieldPath: status.subnetId2Priv
+      toFieldPath: spec.forProvider.controlPlane[0].subnetIds[1]
+     # policy:
+     #  fromFieldPath: Required
+    - type: FromCompositeFieldPath
+      fromFieldPath: status.subnetId3Priv
+      toFieldPath: spec.forProvider.controlPlane[0].subnetIds[2]
+    - fromFieldPath: spec.parameters.gcpProjectId
       toFieldPath: spec.forProvider.project
-    - type: FromCompositeFieldPath
-      fromFieldPath: spec.parameters.awsRegion
+      policy:
+       fromFieldPath: Required
+      type: FromCompositeFieldPath
+    - fromFieldPath: spec.parameters.awsRegion
       toFieldPath: spec.forProvider.awsRegion
-   # - type: FromCompositeFieldPath  
-   #   fromFieldPath: spec.parameters.fleetProject
-   #   toFieldPath: spec.forProvider.fleet.project
+      policy:
+       fromFieldPath: Required
+      type: FromCompositeFieldPath
+    - fromFieldPath: spec.parameters.fleetProject
+      toFieldPath: spec.forProvider.fleet[0].project
+      type: FromCompositeFieldPath  
 
     
   - name: anthosNodePool
@@ -163,6 +175,8 @@ spec:
       metadata:
         labels:
           role: anthos-service-agent-role
+        annotations:
+          crossplane.io/external-name: anthos-SA-Role
       spec:
         providerConfigRef: 
           name: default-aws
@@ -186,6 +200,10 @@ spec:
               }
             ]
             }
+    patches:
+    - type: ToCompositeFieldPath
+      fromFieldPath: status.atProvider.arn
+      toFieldPath: status.saRoleArn
   - name: anthos-service-agent-policy
     base:
       apiVersion: iam.aws.upbound.io/v1beta1
@@ -193,6 +211,8 @@ spec:
       metadata:
         labels:
           policy: anthos-service-agent-policy
+        annotations:
+          crossplane.io/external-name: anthos-SA-Policy
       spec:
         providerConfigRef: 
           name: default-aws
@@ -285,6 +305,8 @@ spec:
       metadata:
         labels:
           role: anthos-control-plane-role
+        annotations:
+          crossplane.io/external-name: anthos-CP-Role
       spec:
         providerConfigRef: 
           name: default-aws
@@ -306,7 +328,7 @@ spec:
     patches:
     - type: ToCompositeFieldPath
       fromFieldPath: status.atProvider.arn
-      toFieldPath: status.cpRole       
+      toFieldPath: status.cpRoleArn       
   - name: anthos-control-plane-policy
     base:
       apiVersion: iam.aws.upbound.io/v1beta1
@@ -314,6 +336,8 @@ spec:
       metadata:
         labels:
           policy: anthos-control-plane-policy
+        annotations:
+          crossplane.io/external-name: anthos-CP-Policy
       spec:
         providerConfigRef: 
           name: default-aws
@@ -431,7 +455,9 @@ spec:
       metadata:  
         labels:
           profileName: anthosCPProfile
-        name: anthosCPProfile
+        name: anthos-CP-Profile
+        annotations:
+          crossplane.io/external-name: anthos-CP-Instance-Profile
       spec:
         providerConfigRef: 
           name: default-aws
@@ -450,6 +476,8 @@ spec:
       metadata:
         labels:
           role: anthos-node-pool-role
+        annotations:
+          crossplane.io/external-name: anthos-NP-Role
       spec:
         providerConfigRef: 
           name: default-aws
@@ -476,6 +504,8 @@ spec:
       metadata:
         labels:
           policy: anthos-node-pool-policy
+        annotations:
+          crossplane.io/external-name: anthos-NP-Policy
       spec:
         providerConfigRef: 
           name: default-aws
@@ -516,7 +546,9 @@ spec:
       metadata:
         labels:
           profileName: anthosNPProfile
-        name: anthosCPProfile
+        name: anthosNPProfile
+        annotations:
+          crossplane.io/external-name: anthos-NP-Instance-profile
       spec:
         providerConfigRef: 
           name: default-aws
@@ -536,6 +568,8 @@ spec:
         name: anthosVPC
         labels:
           vpcName: anthosVPC
+        annotations:
+          crossplane.io/external-name: anthos-vpc
       spec:
         providerConfigRef: 
           name: default-aws
@@ -598,7 +632,7 @@ spec:
             matchLabels:
               vpcName: anthosVPC
           tags:
-            Name: anthos-subnet-2-private
+            Name: anthos-2-private
             Key: kubernetes.io/role/internal-elb,Value=1
     patches:
     - type: ToCompositeFieldPath
@@ -623,7 +657,7 @@ spec:
             matchLabels:
               vpcName: anthosVPC
           tags:
-            Name: anthos-subnet-3-private
+            Name: anthos-3-private
             Key: kubernetes.io/role/internal-elb,Value=1
     patches:
     - type: ToCompositeFieldPath
@@ -671,7 +705,7 @@ spec:
             matchLabels:
               vpcName: anthosVPC
           tags:
-            Name: anthos-subnet-2-public 
+            Name: anthos-2-public 
             Key: kubernetes.io/role/elb,Value=1  
   - name: subnet-zone-3-public
     base:
@@ -693,7 +727,7 @@ spec:
             matchLabels:
               vpcName: anthosVPC
           tags:
-            Name: anthos-subnet-3-public
+            Name: anthos-3-public
             Key: kubernetes.io/role/elb,Value=1
   - name: internet-gateway
     base:
@@ -836,6 +870,7 @@ spec:
           defaultRouteTableIdRef:
             matchLabels:
               tableName: routingtable-subnet-1-pub
+            name: route-1-pub
           region: us-east-1
           route:
             - cidrBlock: 0.0.0.0/0
@@ -847,7 +882,7 @@ spec:
       apiVersion: ec2.aws.upbound.io/v1beta1
       kind: DefaultRouteTable
       metadata:
-        name: route3
+        name: route2
       spec:
         providerConfigRef: 
           name: default-aws
@@ -855,6 +890,7 @@ spec:
           defaultRouteTableIdRef:
             matchLabels:
               tableName: routingtable-subnet-2-pub
+            name: route-2-pub
           region: us-east-1
           route:
             - cidrBlock: 0.0.0.0/0
@@ -874,6 +910,7 @@ spec:
           defaultRouteTableIdRef:
             matchLabels:
               tableName: routingtable-subnet-3-pub
+            name: route-3-pub
           region: us-east-1
           route:
             - cidrBlock: 0.0.0.0/0
@@ -1106,6 +1143,7 @@ spec:
           defaultRouteTableIdRef:
             matchLabels:
               tableName: routingtable-subnet-1-priv
+            name: route-1-priv
           region: us-east-1
           route:
             - cidrBlock: 0.0.0.0/0
@@ -1125,6 +1163,7 @@ spec:
           defaultRouteTableIdRef:
             matchLabels:
               tableName: routingtable-subnet-2-priv
+            name: route-2-priv
           region: us-east-1
           route:
             - cidrBlock: 0.0.0.0/0
@@ -1144,6 +1183,7 @@ spec:
           defaultRouteTableIdRef:
             matchLabels:
               tableName: routingtable-subnet-3-priv
+            name: route-3-priv
           region: us-east-1
           route:
             - cidrBlock: 0.0.0.0/0
@@ -1158,6 +1198,8 @@ spec:
         labels:
           kmsName: anthos-key
         name: etcd-key
+        annotations:
+          crossplane.io/external-name: anthos-key
       spec:
         providerConfigRef: 
           name: default-aws
