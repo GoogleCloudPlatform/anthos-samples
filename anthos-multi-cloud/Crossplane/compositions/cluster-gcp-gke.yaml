@@ -19,71 +19,114 @@ spec:
     base:
       apiVersion: container.gcp.upbound.io/v1beta1
       kind: Cluster
+      metadata:
+        annotations:
+          meta.upbound.io/example-id: gkehub/v1beta1/membership
+        labels:
+          testing.upbound.io/example-name: gke-cluster
       spec:
-        providerConfigRef:
+        providerConfigRef: 
           name: default-gcp
         forProvider:
+          #initialNodeCount: 1
           location: us-central1-a
     patches:
-    - fromFieldPath: metadata.annotations[crossplane.io/external-name]
-      toFieldPath: metadata.annotations[crossplane.io/external-name]
-    - fromFieldPath: spec.parameters.k8sVersion
-      toFieldPath: spec.forProvider.initialClusterVersion
-    - fromFieldPath: metadata.uid
-      toFieldPath: spec.writeConnectionSecretToRef.name
-      transforms:
-        - type: string
-          string:
-            fmt: "%s-gkecluster"
-    - type: ToCompositeFieldPath
-      fromFieldPath: metadata.annotations[crossplane.io/external-name]
-      toFieldPath: status.clusterName
-    - type: ToCompositeFieldPath
-      fromFieldPath: metadata.annotations[crossplane.io/external-name]
-      toFieldPath: status.membershipId
-    - type: ToCompositeFieldPath
-      fromFieldPath: status.atProvider.selfLink
-      toFieldPath: status.clusterSelfLink
+    - type: FromCompositeFieldPath
+      fromFieldPath: spec.parameters.k8sVersion
+      toFieldPath: spec.forProvider.minMasterVersion
+    - type: FromCompositeFieldPath 
+      fromFieldPath: spec.parameters.minNodeCount
+      toFieldPath: spec.forProvider.initialNodeCount
+    - type: FromCompositeFieldPath
+      fromFieldPath: spec.parameters.minNodeCount
+      toFieldPath: spec.forProvider.initialNodeCount
     - type: ToCompositeFieldPath
       fromFieldPath: status.atProvider.status
       toFieldPath: status.controlPlaneStatus
-    - fromFieldPath: spec.writeConnectionSecretToRef.namespace
-      toFieldPath: spec.writeConnectionSecretToRef.namespace
-    readinessChecks:
-    - type: MatchString
-      fieldPath: status.atProvider.status
-      matchString: ACTIVE
-    connectionDetails:
-      - fromConnectionSecretKey: kubeconfig
+    - type: ToCompositeFieldPath
+      fromFieldPath: spec.forProvider.location
+      toFieldPath: status.region
+   
   - name: nodepool
     base:
       apiVersion: container.gcp.upbound.io/v1beta1
       kind: NodePool
+      metadata:
+        annotations:
+          meta.upbound.io/example-id: container/v1beta1/nodepool
+        labels:
+          testing.upbound.io/example-name: nodepool
       spec:
-        spec:
-        providerConfigRef:
+        providerConfigRef: 
           name: default-gcp
         forProvider:
-          clusterRef:
-            matchControllerRef: true
-          config:
-            machineType: n1-standard-1
-            diskSizeGb: 120
-            diskType: pd-ssd
-            imageType: cos_containerd
-            labels:
-              test-label: crossplane-created
-            oauthScopes:
-            - "https://www.googleapis.com/auth/devstorage.read_only"
-            - "https://www.googleapis.com/auth/logging.write"
-            - "https://www.googleapis.com/auth/monitoring"
-            - "https://www.googleapis.com/auth/servicecontrol"
-            - "https://www.googleapis.com/auth/service.management.readonly"
-            - "https://www.googleapis.com/auth/trace.append"      
-          initialNodeCount: 3
-          locations:
-            - "us-east1-b"
-    patches:
-  - fromFieldPath: status.clusterName
-    toFieldPath: spec.forProvider.clusterRef.name
-   
+          clusterSelector:
+            matchLabels:
+              testing.upbound.io/example-name: gke-cluster
+          nodeConfig:
+            - machineType: e2-medium
+              oauthScopes:
+                - https://www.googleapis.com/auth/cloud-platform
+              preemptible: true
+              serviceAccountSelector:
+                matchLabels:
+                  testing.upbound.io/example-name: nodepool
+          nodeCount: 1
+
+    # - type: ToCompositeFieldPath
+    #   fromFieldPath: status.atProvider.status
+    #   toFieldPath: status.controlPlaneStatus
+    # - fromFieldPath: spec.writeConnectionSecretToRef.namespace
+    #   toFieldPath: spec.writeConnectionSecretToRef.namespace
+    # readinessChecks:
+    # - type: MatchString
+    #   fieldPath: status.atProvider.status
+    #   matchString: ACTIVE
+    # connectionDetails:
+    #   - fromConnectionSecretKey: kubeconfig
+  # - name: nodepool
+  #   base:
+  #     apiVersion: container.gcp.upbound.io/v1beta1
+  #     kind: NodePool
+  #     spec:
+  #       spec:
+  #       providerConfigRef:
+  #         name: default-gcp
+  #       forProvider:
+  #         clusterRef:
+  #           matchControllerRef: true
+  #         config:
+  #           machineType: n1-standard-1
+  #           diskSizeGb: 120
+  #           diskType: pd-ssd
+  #           imageType: cos_containerd
+  #           labels:
+  #             test-label: crossplane-created
+  #           oauthScopes:
+  #           - "https://www.googleapis.com/auth/devstorage.read_only"
+  #           - "https://www.googleapis.com/auth/logging.write"
+  #           - "https://www.googleapis.com/auth/monitoring"
+  #           - "https://www.googleapis.com/auth/servicecontrol"
+  #           - "https://www.googleapis.com/auth/service.management.readonly"
+  #           - "https://www.googleapis.com/auth/trace.append"      
+  #         initialNodeCount: 3
+  #         locations:
+  #           - "us-central1-a"
+  #   patches:
+  #   - fromFieldPath: status.clusterName
+  #     toFieldPath: spec.forProvider.clusterRef.name
+  #   - fromFieldPath: spec.parameters.nodeSize
+  #     toFieldPath: spec.forProvider.config.machineType
+  #     transforms:
+  #     - type: map
+  #       map:
+  #         small: e2-small
+  #         medium: e2-medium
+  #         large: e2-standard-2
+  #   - type: ToCompositeFieldPath
+  #     fromFieldPath: status.atProvider.status
+  #     toFieldPath: status.nodePoolStatus
+  #   readinessChecks:
+  #   - type: MatchString
+      # fieldPath: status.atProvider.status
+      # matchString: ACTIVE

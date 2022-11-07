@@ -95,6 +95,8 @@ spec:
                 type: string
               saRoleArn:
                 type: string
+              region:
+                type: string
               
     additionalPrinterColumns:
     - name: clusterName
@@ -103,9 +105,6 @@ spec:
     - name: controlPlane
       type: string
       jsonPath: ".status.controlPlaneStatus"
-    - name: nodePool
+    - name: region
       type: string
-      jsonPath: ".status.nodePoolStatus"
-    - name: cpProfile
-      type: string
-      jsonPath: ".status.cpInstanceProfile"
+      jsonPath: ".status.region"
