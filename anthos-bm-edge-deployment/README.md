@@ -75,7 +75,7 @@ export ZONE="us-central1-a"
 export PROXY_PORT="8082"
 
 # should be a multiple of 3 since N/3 clusters are created with each having 3 nodes
-export MACHINE_COUNT="3"
+export GCE_COUNT="3"
 
 # fork of this repository: https://github.com/GoogleCloudPlatform/anthos-samples
 export ROOT_REPO_URL="<LINK_TO_YOUR_FORK_OF_THIS_REPO>"
@@ -147,11 +147,11 @@ The output of this command will be stored in `./build-artifacts/gce-info`. It
 includes information about the public IP addresses of the GCE VMs and how to SSH
 into them. You can refer to this file later to find the necessary information.
 ```sh
-./scripts/cloud/create-cloud-gce-baseline.sh -c "$MACHINE_COUNT" | tee ./build-artifacts/gce-info
+./scripts/cloud/create-cloud-gce-baseline.sh -c "$GCE_COUNT" | tee ./build-artifacts/gce-info
 ```
 
 > **Note:** _This step can take upto ***2 minutes*** to complete for a setup
-> with $MACHINE_COUNT=3_
+> with $GCE_COUNT=3_
 
 ---
 
@@ -233,7 +233,7 @@ install Anthos BareMetal, install Anthos Config Management and configure it to
 sync with the configs at `$ROOT_REPO_URL/anthos-bm-edge-deployment/acm-config-sink`.
 Upon completion you will see the `Login Token` for the cluster printed on screen.
 
-> **Note:** _This step can take upto **35 minutes** to complete for a setup with $MACHINE_COUNT=3_
+> **Note:** _This step can take upto **35 minutes** to complete for a setup with $GCE_COUNT=3_
 > - ***Pre-install configuration of the GCE instances:*** ~10 minutes</br>
 > - ***Installing Anthos BareMetal:*** ~20 minutes</br>
 > - ***Post-install configuration of the GCE instances:*** ~5 minutes
