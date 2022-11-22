@@ -59,8 +59,8 @@ The following are performed from the **provisioning machine**.
 
     ```bash
     # Set however many machines you have provisioned. This example is 3
-    export MACHINE_COUNT=3
-    for i in `seq $MACHINE_COUNT`; do
+    export GCE_COUNT=3
+    for i in `seq $GCE_COUNT`; do
         HOSTNAME="nuc-$i" # chose 'cnuc' or 'nuc' according to your scenario
         ssh abm-admin@${HOSTNAME} 'ping -c 3 google.com'
     done
