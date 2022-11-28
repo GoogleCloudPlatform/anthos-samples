@@ -24,22 +24,11 @@ kubectl --namespace crossplane-system \
     create secret generic gcp-creds \
     --from-file creds=./gcp-creds.json
 ```
-## AWS Secrets
-```sh 
-export AWS_ACCESS_KEY_ID=[...]
-export AWS_SECRET_ACCESS_KEY=[...]
-
-echo "[default]
-aws_access_key_id = $AWS_ACCESS_KEY_ID
-aws_secret_access_key = $AWS_SECRET_ACCESS_KEY
-" | tee aws-creds.conf
-
-kubectl --namespace crossplane-system \
-    create secret generic aws-creds \
-    --from-file creds=./aws-creds.conf
-kubectl apply -f provider-default-aws.yaml
+Install the GCP provider
+```sh
+kubectl crossplane install provider \
+    crossplane/provider-gcp:v0.21.0
 ```
-
 
 Edit the providers/gcp-provider-config.yaml to include your project number
 ```sh
@@ -47,11 +36,7 @@ Edit the providers/gcp-provider-config.yaml to include your project number
 ``` 
 Apply the configurations
 ```sh
-kubectl apply -f providers/gcp.yaml
-
 kubectl apply -f providers/gcp-provider-config.yaml
-kubectl apply -f providers/aws.yaml
-kubectl apply -f providers/aws-provider-config.yaml
 kubectl apply -f compositions/cluster-gcp-gke.yaml
 kubectl apply -f package/xrd.yaml 
 ```

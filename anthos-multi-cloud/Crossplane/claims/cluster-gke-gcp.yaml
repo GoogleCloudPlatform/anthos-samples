@@ -1,13 +1,13 @@
 apiVersion: demo.anthos.com/v1
 kind: CompositeCluster 
 metadata:
-  name: b-tea3m
+  name: cluster1
   labels:
     cluster-owner: prod-cluster-2
 spec:
   compositionRef:
     # Possible values cluster-gcp, cluster-aws-gke
-    name: cluster-gcp
+    name: cluster-gcp-up
   parameters:
     # Possible values small, medium, large
     nodeSize: medium
@@ -18,4 +18,4 @@ spec:
     - bkauf@google.com  
   writeConnectionSecretToRef:
     namespace: default
-    name: b-tea2m
+    name: cluster1

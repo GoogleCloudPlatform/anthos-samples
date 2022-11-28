@@ -17,116 +17,144 @@ spec:
   resources:
   - name: cluster
     base:
-      apiVersion: container.gcp.upbound.io/v1beta1
+      apiVersion: container.gcp.crossplane.io/v1beta2
       kind: Cluster
-      metadata:
-        annotations:
-          meta.upbound.io/example-id: gkehub/v1beta1/membership
-        labels:
-          testing.upbound.io/example-name: gke-cluster
       spec:
-        providerConfigRef: 
+        providerConfigRef:
           name: default-gcp
         forProvider:
-          #initialNodeCount: 1
-          location: us-central1-a
+          initialClusterVersion: "1.23"
+          location: us-east1
+          networkConfig:
+            enableIntraNodeVisibility: true
+          loggingService: logging.googleapis.com/kubernetes
+          monitoringService: monitoring.googleapis.com/kubernetes
+          addonsConfig:
+            gcePersistentDiskCsiDriverConfig:
+              enabled: true
+          network: "default"
+        writeConnectionSecretToRef:
+          namespace: default
     patches:
-    - type: FromCompositeFieldPath
-      fromFieldPath: spec.parameters.k8sVersion
-      toFieldPath: spec.forProvider.minMasterVersion
-    - type: FromCompositeFieldPath 
-      fromFieldPath: spec.parameters.minNodeCount
-      toFieldPath: spec.forProvider.initialNodeCount
-    - type: FromCompositeFieldPath
-      fromFieldPath: spec.parameters.minNodeCount
-      toFieldPath: spec.forProvider.initialNodeCount
+    - fromFieldPath: metadata.annotations[crossplane.io/external-name]
+      toFieldPath: metadata.annotations[crossplane.io/external-name]
+    - fromFieldPath: spec.parameters.k8sVersion
+      toFieldPath: spec.forProvider.initialClusterVersion
+    - fromFieldPath: metadata.uid
+      toFieldPath: spec.writeConnectionSecretToRef.name
+      transforms:
+        - type: string
+          string:
+            fmt: "%s-gkecluster"
+    - type: ToCompositeFieldPath
+      fromFieldPath: metadata.annotations[crossplane.io/external-name]
+      toFieldPath: status.clusterName
+    - type: ToCompositeFieldPath
+      fromFieldPath: metadata.annotations[crossplane.io/external-name]
+      toFieldPath: status.membershipId
+    - type: ToCompositeFieldPath
+      fromFieldPath: status.atProvider.selfLink
+      toFieldPath: status.clusterSelfLink
     - type: ToCompositeFieldPath
       fromFieldPath: status.atProvider.status
       toFieldPath: status.controlPlaneStatus
-    - type: ToCompositeFieldPath
-      fromFieldPath: spec.forProvider.location
-      toFieldPath: status.region
-   
+    - fromFieldPath: spec.writeConnectionSecretToRef.namespace
+      toFieldPath: spec.writeConnectionSecretToRef.namespace
+    readinessChecks:
+    - type: MatchString
+      fieldPath: status.atProvider.status
+      matchString: ACTIVE
+    connectionDetails:
+      - fromConnectionSecretKey: kubeconfig
   - name: nodepool
     base:
-      apiVersion: container.gcp.upbound.io/v1beta1
+      apiVersion: container.gcp.crossplane.io/v1beta1
       kind: NodePool
-      metadata:
-        annotations:
-          meta.upbound.io/example-id: container/v1beta1/nodepool
-        labels:
-          testing.upbound.io/example-name: nodepool
       spec:
-        providerConfigRef: 
+        providerConfigRef:
           name: default-gcp
         forProvider:
-          clusterSelector:
-            matchLabels:
-              testing.upbound.io/example-name: gke-cluster
-          nodeConfig:
-            - machineType: e2-medium
-              oauthScopes:
-                - https://www.googleapis.com/auth/cloud-platform
-              preemptible: true
-              serviceAccountSelector:
-                matchLabels:
-                  testing.upbound.io/example-name: nodepool
-          nodeCount: 1
-
-    # - type: ToCompositeFieldPath
-    #   fromFieldPath: status.atProvider.status
-    #   toFieldPath: status.controlPlaneStatus
-    # - fromFieldPath: spec.writeConnectionSecretToRef.namespace
-    #   toFieldPath: spec.writeConnectionSecretToRef.namespace
-    # readinessChecks:
-    # - type: MatchString
-    #   fieldPath: status.atProvider.status
-    #   matchString: ACTIVE
-    # connectionDetails:
-    #   - fromConnectionSecretKey: kubeconfig
-  # - name: nodepool
-  #   base:
-  #     apiVersion: container.gcp.upbound.io/v1beta1
-  #     kind: NodePool
-  #     spec:
-  #       spec:
-  #       providerConfigRef:
-  #         name: default-gcp
-  #       forProvider:
-  #         clusterRef:
-  #           matchControllerRef: true
-  #         config:
-  #           machineType: n1-standard-1
-  #           diskSizeGb: 120
-  #           diskType: pd-ssd
-  #           imageType: cos_containerd
-  #           labels:
-  #             test-label: crossplane-created
-  #           oauthScopes:
-  #           - "https://www.googleapis.com/auth/devstorage.read_only"
-  #           - "https://www.googleapis.com/auth/logging.write"
-  #           - "https://www.googleapis.com/auth/monitoring"
-  #           - "https://www.googleapis.com/auth/servicecontrol"
-  #           - "https://www.googleapis.com/auth/service.management.readonly"
-  #           - "https://www.googleapis.com/auth/trace.append"      
-  #         initialNodeCount: 3
-  #         locations:
-  #           - "us-central1-a"
-  #   patches:
-  #   - fromFieldPath: status.clusterName
-  #     toFieldPath: spec.forProvider.clusterRef.name
-  #   - fromFieldPath: spec.parameters.nodeSize
-  #     toFieldPath: spec.forProvider.config.machineType
-  #     transforms:
-  #     - type: map
-  #       map:
-  #         small: e2-small
-  #         medium: e2-medium
-  #         large: e2-standard-2
-  #   - type: ToCompositeFieldPath
-  #     fromFieldPath: status.atProvider.status
-  #     toFieldPath: status.nodePoolStatus
-  #   readinessChecks:
-  #   - type: MatchString
-      # fieldPath: status.atProvider.status
-      # matchString: ACTIVE
+          clusterRef:
+            matchControllerRef: true
+          config:
+            machineType: n1-standard-1
+            diskSizeGb: 120
+            diskType: pd-ssd
+            imageType: cos_containerd
+            labels:
+              test-label: crossplane-created
+            oauthScopes:
+            - "https://www.googleapis.com/auth/devstorage.read_only"
+            - "https://www.googleapis.com/auth/logging.write"
+            - "https://www.googleapis.com/auth/monitoring"
+            - "https://www.googleapis.com/auth/servicecontrol"
+            - "https://www.googleapis.com/auth/service.management.readonly"
+            - "https://www.googleapis.com/auth/trace.append"      
+          initialNodeCount: 3
+          locations:
+            - "us-east1-b"
+    patches:
+    - fromFieldPath: status.clusterName
+      toFieldPath: spec.forProvider.clusterRef.name
+    - fromFieldPath: spec.parameters.nodeSize
+      toFieldPath: spec.forProvider.config.machineType
+      transforms:
+        - type: map
+          map:
+            small: e2-small
+            medium: e2-medium
+            large: e2-standard-2
+    - type: ToCompositeFieldPath
+      fromFieldPath: status.atProvider.status
+      toFieldPath: status.nodePoolStatus
+    readinessChecks:
+    - type: MatchString
+      fieldPath: status.atProvider.status
+      matchString: ACTIVE
+  - name: hubmembership
+    base:
+      apiVersion: anthos.gcp.crossplane.io/v1alpha1
+      kind: HubMembership
+      spec:
+        providerConfigRef:
+          name: default-gcp
+    patches:
+    - fromFieldPath: status.membershipId
+      toFieldPath: spec.forProvider.membershipId
+    - fromFieldPath: status.clusterSelfLink
+      toFieldPath: spec.forProvider.GkeClusterId
+      transforms:
+        - type: string
+          string:
+            type: TrimPrefix
+            trim: "https://container.googleapis.com/v1/"
+  - name: feature
+    base:
+      apiVersion: anthos.gcp.crossplane.io/v1alpha1
+      kind: HubFeature
+      spec:
+        providerConfigRef:
+          name: default-gcp
+        forProvider:
+          location: global
+          featureName: configmanagement
+  - name: configSync
+    base:
+      apiVersion: anthos.gcp.crossplane.io/v1alpha1
+      kind: HubFeatureMembership
+      spec:
+        providerConfigRef:
+          name: default-gcp
+        forProvider:
+          location: global
+          feature: configmanagement
+          configManagement:
+            version: "1.12.0"
+            git:
+              secretType: none
+              repo: https://github.com/bkauf/anthos-crossplane-demo.git
+              policyDir: cluster-acm/
+              branch: master
+    patches:
+    - fromFieldPath: status.membershipId
+      toFieldPath: spec.forProvider.membership

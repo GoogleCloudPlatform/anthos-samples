@@ -24,7 +24,7 @@ spec:
             type: object
             properties:
               parameters:
-                description: Clusters
+                description: AttachedClusterParameters is the cluster configs.
                 properties:
                   #configSync:
                   #  properties:
@@ -45,23 +45,17 @@ spec:
                     type: array
                   fleetProject:
                     type: string
-                  gcpProjectId:
-                    type: string
                   k8sVersion:
-                    type: string
-                  awsRegion:
-                    type: string
-                  gcpRegion:
                     type: string
                   minNodeCount:
                     type: integer
                   nodeSize:
                     type: string
-
                 type: object
           status:
             type: object
-            description: Anthos Cluster object 
+            description: A AttachedClusterStatus represents the observed state of
+              a Cluster.
             properties:
               cluster:
                 type: string
@@ -77,27 +71,6 @@ spec:
                 type: string
               odicIssuerUrl:
                 type: string
-              vpcId:
-                type: string
-              subnetId1Priv:
-                type: string
-              subnetId2Priv:
-                type: string
-              subnetId3Priv:
-                type: string
-              cpRoleArn:
-                type: string
-              cpInstanceProfile:
-                type: string
-              npInstanceProfile:
-                type: string
-              kmsArn:
-                type: string
-              saRoleArn:
-                type: string
-              region:
-                type: string
-              
     additionalPrinterColumns:
     - name: clusterName
       type: string
@@ -105,6 +78,6 @@ spec:
     - name: controlPlane
       type: string
       jsonPath: ".status.controlPlaneStatus"
-    - name: region
+    - name: nodePool
       type: string
-      jsonPath: ".status.region"
+      jsonPath: ".status.nodePoolStatus"
