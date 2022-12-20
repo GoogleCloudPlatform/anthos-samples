@@ -3,7 +3,7 @@ module github.com/GoogleCloudPlatform/anthos-samples/anthos-bm-gcp-terraform
 go 1.19
 
 require (
-	github.com/gruntwork-io/terratest v0.41.3
+	github.com/gruntwork-io/terratest v0.41.6
 	github.com/icrowley/fake v0.0.0-20221112152111-d7b7e2276db2
 	github.com/stretchr/testify v1.8.1
 	gopkg.in/yaml.v2 v2.4.0
