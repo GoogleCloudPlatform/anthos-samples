@@ -82,7 +82,6 @@ module "anthos_cluster" {
   depends_on                                       = [module.kms, module.iam, module.vpc]
   control_plane_instance_type                      = var.control_plane_instance_type
   node_pool_instance_type                          = var.node_pool_instance_type
-
 }
 module "create_vars" {
   source                = "terraform-google-modules/gcloud/google"
