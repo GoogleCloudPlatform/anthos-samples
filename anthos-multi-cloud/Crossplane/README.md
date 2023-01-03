@@ -22,7 +22,7 @@ You will need to create a service account in your GCP project and [export the JS
 ```sh
 kubectl --namespace crossplane-system \
     create secret generic gcp-creds \
-    --from-file creds=./gcp-creds.json
+    --from-file creds=secrets/gcp-creds.json
 ```
 Install the GCP provider
 ```sh
