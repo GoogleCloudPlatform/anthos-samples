@@ -22,7 +22,7 @@ on:
       - release/*
 jobs:
   static-code-tests:
-    runs-on: [self-hosted, runner-apr-22]
+    runs-on: [self-hosted, runner-nov-22]
     steps:
       - uses: actions/checkout@v3
         with:
@@ -34,7 +34,7 @@ jobs:
       - name: Terraform Checkstyle
         timeout-minutes: 20
         run: |
-          tfenv use 1.1.9
+          tfenv use 1.3.3
           terraform fmt -recursive -check -diff ./
       - name: Golang Checkstyle
         timeout-minutes: 20
@@ -49,7 +49,7 @@ jobs:
             exit 1
           fi
   tf-validate:
-    runs-on: [self-hosted, runner-apr-22]
+    runs-on: [self-hosted, runner-nov-22]
     strategy:
       matrix:
         # list of directories in the repo that hosts Terraform samples
@@ -72,11 +72,11 @@ jobs:
         run: |
           echo "Terraform validating: $SAMPLE_DIR"
           cd $SAMPLE_DIR
-          tfenv use 1.1.9
+          tfenv use 1.3.3
           terraform init -backend=false
           terraform validate -json .
   go-unit-tests:
-    runs-on: [self-hosted, runner-apr-22]
+    runs-on: [self-hosted, runner-nov-22]
     needs: tf-validate
     strategy:
       matrix:

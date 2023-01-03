@@ -35,7 +35,12 @@ if [[ -z "${ADMIN_CLUSTER_NAME}" ]]; then
   done
 fi
 
-printf "\n✅ Using Project [%s], Zone [%s] and Cluster name [%s].\n\n" "$PROJECT_ID" "$ZONE" "$ADMIN_CLUSTER_NAME"
+if [[ -z "${BMCTL_VERSION}" ]]; then
+  printf "🚨 Environment variable BMCTL_VERSION not set. Set it to the Anthos bare metal version you intend to use."
+  exit 1
+fi
+
+printf "\n✅ Using Project [%s], Zone [%s], Cluster name [%s] and Anthos bare metal version [%s].\n\n" "$PROJECT_ID" "$ZONE" "$ADMIN_CLUSTER_NAME" "$BMCTL_VERSION"
 
 # create the GCP Service Account to be used by Anthos on bare metal
 printf "🔄 Creating Service Account and Service Account key...\n"
@@ -138,7 +143,7 @@ do
       --min-cpu-platform "Intel Haswell" \
       --scopes cloud-platform \
       --machine-type "$MACHINE_TYPE" \
-      --metadata "cluster_id=${ADMIN_CLUSTER_NAME}"
+      --metadata "cluster_id=${ADMIN_CLUSTER_NAME},bmctl_version=${BMCTL_VERSION}"
     IP=$(gcloud compute instances describe "$vm" --zone "${ZONE}" \
          --format='get(networkInterfaces[0].networkIP)')
     IPs+=("$IP")
@@ -195,6 +200,8 @@ gcloud compute ssh root@$VM_WS --zone "${ZONE}" << EOF
 set -x
 
 export PROJECT_ID=\$(gcloud config get-value project)
+BMCTL_VERSION=\$(curl http://metadata.google.internal/computeMetadata/v1/instance/attributes/bmctl_version -H "Metadata-Flavor: Google")
+export BMCTL_VERSION
 
 gcloud iam service-accounts keys create bm-gcr.json \
   --iam-account=baremetal-gcr@\${PROJECT_ID}.iam.gserviceaccount.com
@@ -204,7 +211,7 @@ curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s ht
 chmod +x kubectl
 mv kubectl /usr/local/sbin/
 mkdir baremetal && cd baremetal
-gsutil cp gs://anthos-baremetal-release/bmctl/1.13.0/linux-amd64/bmctl .
+gsutil cp gs://anthos-baremetal-release/bmctl/$BMCTL_VERSION/linux-amd64/bmctl .
 chmod a+x bmctl
 mv bmctl /usr/local/sbin/
 
@@ -239,7 +246,9 @@ gcloud compute ssh root@$VM_WS --zone "${ZONE}" <<EOF
 set -x
 export PROJECT_ID=\$(gcloud config get-value project)
 ADMIN_CLUSTER_NAME=\$(curl http://metadata.google.internal/computeMetadata/v1/instance/attributes/cluster_id -H "Metadata-Flavor: Google")
+BMCTL_VERSION=\$(curl http://metadata.google.internal/computeMetadata/v1/instance/attributes/bmctl_version -H "Metadata-Flavor: Google")
 export ADMIN_CLUSTER_NAME
+export BMCTL_VERSION
 bmctl create config -c \$ADMIN_CLUSTER_NAME
 cat > bmctl-workspace/\$ADMIN_CLUSTER_NAME/\$ADMIN_CLUSTER_NAME.yaml << EOB
 ---
@@ -261,7 +270,7 @@ metadata:
   namespace: cluster-\$ADMIN_CLUSTER_NAME
 spec:
   type: admin
-  anthosBareMetalVersion: 1.13.0
+  anthosBareMetalVersion: \$BMCTL_VERSION
   gkeConnect:
     projectID: \$PROJECT_ID
   controlPlane:
@@ -303,13 +312,15 @@ bmctl create cluster -c \$ADMIN_CLUSTER_NAME
 EOF
 # [END anthos_bm_gcp_bash_admin_install_abm]
 
+# [START anthos_bm_gcp_bash_admin_gce_info]
 printf "✅ Installation complete. Please check the logs for any errors!!!\n\n"
 printf "✅ If you do not see any errors in the output log, then you now have the following setup:\n\n"
 printf "|---------------------------------------------------------------------------------------------------------|\n"
 printf "| VM Name               | L2 Network IP (VxLAN) | INFO                                                    |\n"
 printf "|---------------------------------------------------------------------------------------------------------|\n"
-printf "| abm-admin-cluster-cp1 | 10.200.0.3            | Has control plane of admin cluster running inside       |\n"
-printf "| abm-user-cluster-cp1  | 10.200.0.4            | 🌟 Ready for use as control plane for the user cluster  |\n"
+printf "| abm-admin-cluster-cp  | 10.200.0.3            | Has control plane of admin cluster running inside       |\n"
+printf "| abm-user-cluster-cp   | 10.200.0.4            | 🌟 Ready for use as control plane for the user cluster  |\n"
 printf "| abm-user-cluster-w1   | 10.200.0.5            | 🌟 Ready for use as worker for the user cluster         |\n"
 printf "| abm-user-cluster-w2   | 10.200.0.6            | 🌟 Ready for use as worker for the user cluster         |\n"
 printf "|---------------------------------------------------------------------------------------------------------|\n\n"
+# [END anthos_bm_gcp_bash_admin_gce_info]

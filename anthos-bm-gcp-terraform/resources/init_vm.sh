@@ -167,7 +167,7 @@ function __setup_kubctl__ () {
 ##############################################################################
 function __setup_bmctl__ () {
   mkdir baremetal && cd baremetal || return
-  gsutil cp gs://anthos-baremetal-release/bmctl/1.12.2/linux-amd64/bmctl .
+  gsutil cp gs://anthos-baremetal-release/bmctl/1.13.1/linux-amd64/bmctl .
   chmod a+x bmctl
   mv bmctl /usr/local/sbin/
   __check_exit_status__ $? \
