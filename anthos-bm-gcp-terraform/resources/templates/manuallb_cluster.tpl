@@ -17,7 +17,7 @@ metadata:
   namespace: ${clusterId}-ns
 spec:
   type: hybrid
-  anthosBareMetalVersion: 1.13.1
+  anthosBareMetalVersion: 1.14.0
   gkeConnect:
     projectID: ${projectId}
   controlPlane:
