@@ -5,7 +5,8 @@
   ],
   "ignorePaths": [
     "**/anthos-multi-cloud/**",
-    "**/anthos-bm-openstack-terraform/**"
+    "**/anthos-bm-openstack-terraform/**",
+    "**/anthos-bm-edge-deployment/**"
   ],
   "prConcurrentLimit":5,
   "stabilityDays":7,
