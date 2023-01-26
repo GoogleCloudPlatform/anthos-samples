@@ -74,7 +74,7 @@ variable "image" {
     Use 'gcloud compute images list' to find a list of all available images
   EOF
   type        = string
-  default     = "ubuntu-2004-focal-v20210429"
+  default     = "ubuntu-2004-focal-v20221018"
 }
 
 variable "image_project" {
@@ -162,7 +162,8 @@ variable "secondary_apis" {
     "compute.googleapis.com",
     "anthosaudit.googleapis.com",
     "opsconfigmonitoring.googleapis.com",
-    "file.googleapis.com"
+    "file.googleapis.com",
+    "connectgateway.googleapis.com"
   ]
 }
 
