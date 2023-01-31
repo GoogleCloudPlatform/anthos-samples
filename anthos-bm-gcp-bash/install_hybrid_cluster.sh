@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+set -euo pipefail
+
 printf "✅ Using Project [%s] and Zone [%s].\n\n" "$PROJECT_ID" "$ZONE"
 
 # create the GCP Service Account to be used by Anthos on bare metal
