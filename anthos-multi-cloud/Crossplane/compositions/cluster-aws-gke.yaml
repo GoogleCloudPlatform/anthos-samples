@@ -1,0 +1,1225 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: cluster-aws-gke
+  labels:
+    crossplane.io/xrd: compositeclusters.demo.anthos.com
+    provider: aws
+    cluster: gke
+spec:
+  compositeTypeRef:
+    apiVersion: demo.anthos.com/v1
+    kind:  CompositeCluster
+  resources:
+  - name: anthosCluster
+    base:
+      apiVersion: containeraws.gcp.upbound.io/v1beta1
+      kind: Cluster
+      metadata:
+        labels:
+          clusterName: anthos-aws-cluster
+          testing.upbound.io/example-name: example-aws-nodepool
+        name: anthos-aws-cluster
+      spec:
+        providerConfigRef:
+          name: default-gcp
+        forProvider:
+          authorization:
+            - adminUsers:
+                - username: emailAddress:bkauf@google.com
+          awsRegion: patched
+          controlPlane:
+            - awsServicesAuthentication:
+                - roleArn: patched
+              configEncryption:
+                - kmsKeyArn: test
+              databaseEncryption: []
+              iamInstanceProfile:  test
+              instanceType: t3.medium
+              mainVolume:
+                - iops: 3000
+                 # kmsKeyArn: arn:aw118b42-d101-40d4-a3b5-036d08dc1d0d
+                  sizeGib: 10
+                  volumeType: GP3
+              rootVolume:
+                - iops: 3000
+                 # kmsKeyArn: arn:aws:kms:us-east-1:507099386010:key/10118b42-d101-40d4-a3b5-036d08dc1d0d
+                  sizeGib: 10
+                  volumeType: GP3
+              subnetIds: []
+              version: 1.24.3-gke.2100
+             # tags:
+             # -   name: "cx-anthos"
+          description: Example aws cluster
+          fleet:
+            - project: "123456789123"
+          location: us-east4
+          networking:
+            - podAddressCidrBlocks:
+                - 10.2.0.0/16
+              serviceAddressCidrBlocks:
+                - 10.1.0.0/16
+              vpcId: patched
+        #  project: patched
+    patches:
+    - type: FromCompositeFieldPath
+      fromFieldPath: status.saRoleArn
+      toFieldPath:  spec.forProvider.controlPlane[0].awsServicesAuthentication[0].roleArn
+     # policy:
+     #   fromFieldPath: Required
+    - type: FromCompositeFieldPath
+      fromFieldPath: status.kmsArn
+      toFieldPath: spec.forProvider.controlPlane[0].configEncryption[0].kmsKeyArn
+    #  policy:
+    #    fromFieldPath: Required
+    - type: FromCompositeFieldPath
+      fromFieldPath: status.kmsArn
+      toFieldPath: spec.forProvider.controlPlane[0].databaseEncryption[0].kmsKeyArn
+    # policy:
+    #   fromFieldPath: Required
+    - type: FromCompositeFieldPath
+      fromFieldPath: status.cpInstanceProfile
+      toFieldPath:  spec.forProvider.controlPlane[0].iamInstanceProfile
+    - type: FromCompositeFieldPath
+      fromFieldPath: status.vpcId
+      toFieldPath: spec.forProvider.networking[0].vpcId
+    #  policy:
+    #    fromFieldPath: Required
+    - type: FromCompositeFieldPath
+      fromFieldPath: status.subnetId1Priv
+      toFieldPath: spec.forProvider.controlPlane[0].subnetIds[0]
+     # policy:
+     #  fromFieldPath: Required
+    - type: FromCompositeFieldPath
+      fromFieldPath: status.subnetId2Priv
+      toFieldPath: spec.forProvider.controlPlane[0].subnetIds[1]
+     # policy:
+     #  fromFieldPath: Required
+    - type: FromCompositeFieldPath
+      fromFieldPath: status.subnetId3Priv
+      toFieldPath: spec.forProvider.controlPlane[0].subnetIds[2]
+    - fromFieldPath: spec.parameters.gcpProjectId
+      toFieldPath: spec.forProvider.project
+      policy:
+       fromFieldPath: Required
+      type: FromCompositeFieldPath
+    - fromFieldPath: spec.parameters.awsRegion
+      toFieldPath: spec.forProvider.awsRegion
+      policy:
+       fromFieldPath: Required
+      type: FromCompositeFieldPath
+    - fromFieldPath: spec.parameters.fleetProject
+      toFieldPath: spec.forProvider.fleet[0].project
+      type: FromCompositeFieldPath
+
+
+  - name: anthosNodePool
+    base:
+      apiVersion: containeraws.gcp.upbound.io/v1beta1
+      kind: NodePool
+      metadata:
+        labels:
+          testing.upbound.io/example-name: example-aws-nodepool
+        name: example-aws-nodepool
+      spec:
+        providerConfigRef:
+            name: default-gcp
+        forProvider:
+          autoscaling:
+            - maxNodeCount: 5
+              minNodeCount: 1
+          clusterSelector:
+            matchLabels:
+              testing.upbound.io/example-name: anthos-cluster
+          config:
+            - configEncryption:
+                - kmsKeyArn: patched
+              iamInstanceProfile: patched
+              instanceType: t3.medium
+              labels:
+                label-one: value-one
+              rootVolume:
+                - iops: 3000
+                  #kmsKeyArn: arn:aws:kms:my-aws-region:012345678910:key/12345678-1234-1234-1234-123456789111
+                  sizeGib: 10
+                  volumeType: GP3
+              tags:
+                tag-one: value-one
+          location: patched
+          maxPodsConstraint:
+            - maxPodsPerNode: 110
+          project: patched
+          subnetId: patched
+          version: 1.23.8-gke.1700
+    patches:
+        - type: FromCompositeFieldPath
+          fromFieldPath: spec.parameters.gcpRegion
+          toFieldPath: spec.forProvider.location
+        - type: FromCompositeFieldPath
+          fromFieldPath: spec.parameters.gcpProjectId
+          toFieldPath: spec.project
+        - type: FromCompositeFieldPath
+          fromFieldPath: status.subnetId1Priv
+          toFieldPath: spec.forProvider.subnetId
+        - type: FromCompositeFieldPath
+          fromFieldPath: status.kmsArn
+          toFieldPath:  spec.forProvider.config.configEncryption.kmsKeyArn
+        - type: FromCompositeFieldPath
+          fromFieldPath: status.npInstanceProfile
+          toFieldPath:  spec.config.iamInstanceProfile
+  - name: anthos-service-agent-role
+    base:
+      apiVersion: iam.aws.upbound.io/v1beta1
+      kind: Role
+      metadata:
+        labels:
+          role: anthos-service-agent-role
+        annotations:
+          crossplane.io/external-name: anthos-SA-Role
+      spec:
+        providerConfigRef:
+          name: default-aws
+        forProvider:
+          assumeRolePolicy: |
+            {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+              "Sid": "",
+              "Effect": "Allow",
+              "Principal": {
+              "Federated": "accounts.google.com"
+              },
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "StringEquals": {
+                "accounts.google.com:sub": "service-261832825633@gcp-sa-gkemulticloud.iam.gserviceaccount.com"
+                }
+              }
+              }
+            ]
+            }
+    patches:
+    - type: ToCompositeFieldPath
+      fromFieldPath: status.atProvider.arn
+      toFieldPath: status.saRoleArn
+  - name: anthos-service-agent-policy
+    base:
+      apiVersion: iam.aws.upbound.io/v1beta1
+      kind: Policy
+      metadata:
+        labels:
+          policy: anthos-service-agent-policy
+        annotations:
+          crossplane.io/external-name: anthos-SA-Policy
+      spec:
+        providerConfigRef:
+          name: default-aws
+        forProvider:
+          policy: |
+            {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                  "Sid": "",
+                  "Effect": "Allow",
+                  "Action": [
+                    "ec2:AuthorizeSecurityGroupEgress",
+                    "ec2:AuthorizeSecurityGroupIngress",
+                    "ec2:CreateLaunchTemplate",
+                    "ec2:CreateNetworkInterface",
+                    "ec2:CreateSecurityGroup",
+                    "ec2:CreateTags",
+                    "ec2:CreateVolume",
+                    "ec2:DeleteLaunchTemplate",
+                    "ec2:DeleteNetworkInterface",
+                    "ec2:DeleteSecurityGroup",
+                    "ec2:DeleteTags",
+                    "ec2:DeleteVolume",
+                    "ec2:DescribeAccountAttributes",
+                    "ec2:DescribeInternetGateways",
+                    "ec2:DescribeKeyPairs",
+                    "ec2:DescribeLaunchTemplates",
+                    "ec2:DescribeNetworkInterfaces",
+                    "ec2:DescribeSecurityGroupRules",
+                    "ec2:DescribeSecurityGroups",
+                    "ec2:DescribeSubnets",
+                    "ec2:DescribeVpcs",
+                    "ec2:GetConsoleOutput",
+                    "ec2:ModifyNetworkInterfaceAttribute",
+                    "ec2:RevokeSecurityGroupEgress",
+                    "ec2:RevokeSecurityGroupIngress",
+                    "ec2:RunInstances",
+                    "iam:AWSServiceName",
+                    "iam:CreateServiceLinkedRole",
+                    "iam:PassRole",
+                    "autoscaling:CreateAutoScalingGroup",
+                    "autoscaling:CreateOrUpdateTags",
+                    "autoscaling:DeleteAutoScalingGroup",
+                    "autoscaling:DeleteTags",
+                    "autoscaling:DescribeAutoScalingGroups",
+                    "autoscaling:TerminateInstanceInAutoScalingGroup",
+                    "autoscaling:UpdateAutoScalingGroup",
+                    "elasticloadbalancing:AddTags",
+                    "elasticloadbalancing:CreateListener",
+                    "elasticloadbalancing:CreateLoadBalancer",
+                    "elasticloadbalancing:CreateTargetGroup",
+                    "elasticloadbalancing:DeleteListener",
+                    "elasticloadbalancing:DeleteLoadBalancer",
+                    "elasticloadbalancing:DeleteTargetGroup",
+                    "elasticloadbalancing:DescribeListeners",
+                    "elasticloadbalancing:DescribeLoadBalancers",
+                    "elasticloadbalancing:DescribeTargetGroups",
+                    "elasticloadbalancing:DescribeTargetHealth",
+                    "elasticloadbalancing:ModifyTargetGroupAttributes",
+                    "elasticloadbalancing:RemoveTags",
+                    "kms:DescribeKey",
+                    "kms:Encrypt",
+                    "kms:GenerateDataKeyWithoutPlaintext"
+                    ],
+                  "Resource": "*"
+                }
+              ]
+            }
+  - name: anthos-service-agent-attach
+    base:
+      apiVersion: iam.aws.upbound.io/v1beta1
+      kind: RolePolicyAttachment
+      metadata:
+        name: sample-node-policy-3
+      spec:
+        providerConfigRef:
+          name: default-aws
+        forProvider:
+          roleSelector:
+            matchLabels:
+              role: anthos-service-agent-role
+          policyArnSelector:
+            matchLabels:
+              policy: anthos-service-agent-policy
+  - name: anthos-control-plane-role
+    base:
+      apiVersion: iam.aws.upbound.io/v1beta1
+      kind: Role
+      metadata:
+        labels:
+          role: anthos-control-plane-role
+        annotations:
+          crossplane.io/external-name: anthos-CP-Role
+      spec:
+        providerConfigRef:
+          name: default-aws
+        forProvider:
+          assumeRolePolicy: |
+            {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Sid": "",
+                  "Effect": "Allow",
+                  "Principal": {
+                    "Service": "ec2.amazonaws.com"
+                  },
+                  "Action": "sts:AssumeRole"
+                }
+              ]
+            }
+    patches:
+    - type: ToCompositeFieldPath
+      fromFieldPath: status.atProvider.arn
+      toFieldPath: status.cpRoleArn
+  - name: anthos-control-plane-policy
+    base:
+      apiVersion: iam.aws.upbound.io/v1beta1
+      kind: Policy
+      metadata:
+        labels:
+          policy: anthos-control-plane-policy
+        annotations:
+          crossplane.io/external-name: anthos-CP-Policy
+      spec:
+        providerConfigRef:
+          name: default-aws
+        forProvider:
+          policy: |
+            {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Sid": "",
+                  "Effect": "Allow",
+                  "Action": [
+                    "ec2:AttachNetworkInterface",
+                    "ec2:AttachVolume",
+                    "ec2:AuthorizeSecurityGroupIngress",
+                    "ec2:CreateRoute",
+                    "ec2:CreateSecurityGroup",
+                    "ec2:CreateSnapshot",
+                    "ec2:CreateTags",
+                    "ec2:CreateVolume",
+                    "ec2:DeleteRoute",
+                    "ec2:DeleteSecurityGroup",
+                    "ec2:DeleteSnapshot",
+                    "ec2:DeleteTags",
+                    "ec2:DeleteVolume",
+                    "ec2:DescribeAccountAttributes",
+                    "ec2:DescribeAvailabilityZones",
+                    "ec2:DescribeDhcpOptions",
+                    "ec2:DescribeInstances",
+                    "ec2:DescribeInstanceTypes",
+                    "ec2:DescribeInternetGateways",
+                    "ec2:DescribeLaunchTemplateVersions",
+                    "ec2:DescribeRegions",
+                    "ec2:DescribeRouteTables",
+                    "ec2:DescribeSecurityGroups",
+                    "ec2:DescribeSnapshots",
+                    "ec2:DescribeSubnets",
+                    "ec2:DescribeTags",
+                    "ec2:DescribeVolumes",
+                    "ec2:DescribeVolumesModifications",
+                    "ec2:DescribeVpcs",
+                    "ec2:DetachVolume",
+                    "ec2:ModifyInstanceAttribute",
+                    "ec2:ModifyVolume",
+                    "ec2:RevokeSecurityGroupIngress",
+                    "autoscaling:DescribeAutoScalingGroups",
+                    "autoscaling:DescribeAutoScalingInstances",
+                    "autoscaling:DescribeLaunchConfigurations",
+                    "autoscaling:DescribeTags",
+                    "autoscaling:SetDesiredCapacity",
+                    "autoscaling:TerminateInstanceInAutoScalingGroup",
+                    "elasticloadbalancing:AddTags",
+                    "elasticloadbalancing:ApplySecurityGroupsToLoadBalancer",
+                    "elasticloadbalancing:AttachLoadBalancerToSubnets",
+                    "elasticloadbalancing:ConfigureHealthCheck",
+                    "elasticloadbalancing:CreateListener",
+                    "elasticloadbalancing:CreateLoadBalancer",
+                    "elasticloadbalancing:CreateLoadBalancerListeners",
+                    "elasticloadbalancing:CreateLoadBalancerPolicy",
+                    "elasticloadbalancing:CreateTargetGroup",
+                    "elasticloadbalancing:DeleteListener",
+                    "elasticloadbalancing:DeleteLoadBalancer",
+                    "elasticloadbalancing:DeleteLoadBalancerListeners",
+                    "elasticloadbalancing:DeleteTargetGroup",
+                    "elasticloadbalancing:DeregisterInstancesFromLoadBalancer",
+                    "elasticloadbalancing:DeregisterTargets",
+                    "elasticloadbalancing:DescribeListeners",
+                    "elasticloadbalancing:DescribeLoadBalancerAttributes",
+                    "elasticloadbalancing:DescribeLoadBalancerPolicies",
+                    "elasticloadbalancing:DescribeLoadBalancers",
+                    "elasticloadbalancing:DescribeTargetGroups",
+                    "elasticloadbalancing:DescribeTargetHealth",
+                    "elasticloadbalancing:DetachLoadBalancerFromSubnets",
+                    "elasticloadbalancing:ModifyListener",
+                    "elasticloadbalancing:ModifyLoadBalancerAttributes",
+                    "elasticloadbalancing:ModifyTargetGroup",
+                    "elasticloadbalancing:RegisterInstancesWithLoadBalancer",
+                    "elasticloadbalancing:RegisterTargets",
+                    "elasticloadbalancing:SetLoadBalancerPoliciesForBackendServer",
+                    "elasticloadbalancing:SetLoadBalancerPoliciesOfListener",
+                    "elasticfilesystem:CreateAccessPoint",
+                    "elasticfilesystem:DeleteAccessPoint",
+                    "elasticfilesystem:DescribeAccessPoints",
+                    "elasticfilesystem:DescribeFileSystems",
+                    "elasticfilesystem:DescribeMountTargets",
+                    "kms:CreateGrant",
+                    "kms:Decrypt",
+                    "kms:Encrypt",
+                    "kms:GrantIsForAWSResource"
+                  ],
+                  "Resource": "*"
+                }
+              ]
+            }
+  - name: anthos-control-plane-attach
+    base:
+      apiVersion: iam.aws.upbound.io/v1beta1
+      kind: RolePolicyAttachment
+      metadata:
+        name: attach-control-plane
+      spec:
+        providerConfigRef:
+          name: default-aws
+        forProvider:
+          roleSelector:
+            matchLabels:
+              role: anthos-control-plane-role
+          policyArnSelector:
+            matchLabels:
+              policy: anthos-control-plane-policy
+  - name: anthos-instance-profile-cp
+    base:
+      apiVersion: iam.aws.upbound.io/v1beta1
+      kind: InstanceProfile
+      metadata:
+        labels:
+          profileName: anthosCPProfile
+        name: anthos-CP-Profile
+        annotations:
+          crossplane.io/external-name: anthos-CP-Instance-Profile
+      spec:
+        providerConfigRef:
+          name: default-aws
+        forProvider:
+          roleSelector:
+            matchLabels:
+              role: anthos-control-plane-role
+    patches:
+    - type: ToCompositeFieldPath
+      fromFieldPath: status.atProvider.id
+      toFieldPath: status.cpInstanceProfile
+  - name: anthos-node-pool-role
+    base:
+      apiVersion: iam.aws.upbound.io/v1beta1
+      kind: Role
+      metadata:
+        labels:
+          role: anthos-node-pool-role
+        annotations:
+          crossplane.io/external-name: anthos-NP-Role
+      spec:
+        providerConfigRef:
+          name: default-aws
+        forProvider:
+          assumeRolePolicy: |
+            {
+              "Version": "2012-10-17",
+              "Statement": [
+              {
+                "Sid": "",
+                "Effect": "Allow",
+                "Principal": {
+                  "Service": "ec2.amazonaws.com"
+                  },
+                "Action": "sts:AssumeRole"
+                }
+              ]
+            }
+ # Need to fix Resource *
+  - name: anthos-node-pool-policy
+    base:
+      apiVersion: iam.aws.upbound.io/v1beta1
+      kind: Policy
+      metadata:
+        labels:
+          policy: anthos-node-pool-policy
+        annotations:
+          crossplane.io/external-name: anthos-NP-Policy
+      spec:
+        providerConfigRef:
+          name: default-aws
+        forProvider:
+          policy: |
+            {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": ["kms:Decrypt"],
+                  "Resource": "*"
+                }
+              ]
+            }
+  - name: anthos-node-pool-attach
+    base:
+      apiVersion: iam.aws.upbound.io/v1beta1
+      kind: RolePolicyAttachment
+      metadata:
+        name: attach-node-pool
+      spec:
+        providerConfigRef:
+          name: default-aws
+        forProvider:
+          roleSelector:
+            matchLabels:
+              role: anthos-node-pool-role
+          policyArnSelector:
+            matchLabels:
+              policy: anthos-node-pool-policy
+
+  - name: anthos-instance-profile-node-pool
+    base:
+      apiVersion: iam.aws.upbound.io/v1beta1
+      kind: InstanceProfile
+      metadata:
+        labels:
+          profileName: anthosNPProfile
+        name: anthosNPProfile
+        annotations:
+          crossplane.io/external-name: anthos-NP-Instance-profile
+      spec:
+        providerConfigRef:
+          name: default-aws
+        forProvider:
+          roleSelector:
+            matchLabels:
+              role: anthos-node-pool-role
+    patches:
+    - type: ToCompositeFieldPath
+      fromFieldPath: status.atProvider.id
+      toFieldPath: status.npInstanceProfile
+  - name: vpc
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: VPC
+      metadata:
+        name: anthosVPC
+        labels:
+          vpcName: anthosVPC
+        annotations:
+          crossplane.io/external-name: anthos-vpc
+      spec:
+        providerConfigRef:
+          name: default-aws
+        forProvider:
+          cidrBlock: 10.0.0.0/16
+          region: patched
+          tags:
+            Name: anthos-VPC
+          enableDnsSupport: true
+          enableDnsHostnames: true
+    patches:
+    - type: ToCompositeFieldPath
+      fromFieldPath: status.atProvider.id
+      toFieldPath: status.vpcId
+    - type: FromCompositeFieldPath
+      fromFieldPath: spec.parameters.awsRegion
+      toFieldPath: spec.forProvider.region
+
+  - name: subnet-zone-1-private
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: Subnet
+      metadata:
+        name: subnet-zone-1-private
+        labels:
+          subnetName: subnet-zone-1-private
+      spec:
+        providerConfigRef:
+          name: default-aws
+        forProvider:
+          cidrBlock: 10.0.1.0/24
+          region: us-east-1
+          availabilityZone: us-east-1a
+          vpcIdSelector:
+            matchLabels:
+              vpcName: anthosVPC
+          tags:
+            Name: anthos-subnet-1-private
+            Key: kubernetes.io/role/internal-elb,Value=1
+    patches:
+    - type: ToCompositeFieldPath
+      fromFieldPath: status.atProvider.id
+      toFieldPath: status.subnetId1Priv
+  - name: subnet-zone-2-private
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: Subnet
+      metadata:
+        name: subnet-zone-2-private
+        labels:
+          subnetName: subnet-zone-2-private
+      spec:
+        providerConfigRef:
+          name: default-aws
+        forProvider:
+          cidrBlock: 10.0.2.0/24
+          region: us-east-1
+          availabilityZone: us-east-1b
+          vpcIdSelector:
+            matchLabels:
+              vpcName: anthosVPC
+          tags:
+            Name: anthos-2-private
+            Key: kubernetes.io/role/internal-elb,Value=1
+    patches:
+    - type: ToCompositeFieldPath
+      fromFieldPath: status.atProvider.id
+      toFieldPath: status.subnetId2Priv
+  - name: subnet-zone-3-private
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: Subnet
+      metadata:
+        name: subnet-zone-3-private
+        labels:
+          subnetName: subnet-zone-3-private
+      spec:
+        providerConfigRef:
+          name: default-aws
+        forProvider:
+          cidrBlock: 10.0.3.0/24
+          region: us-east-1
+          availabilityZone: us-east-1c
+          vpcIdSelector:
+            matchLabels:
+              vpcName: anthosVPC
+          tags:
+            Name: anthos-3-private
+            Key: kubernetes.io/role/internal-elb,Value=1
+    patches:
+    - type: ToCompositeFieldPath
+      fromFieldPath: status.atProvider.id
+      toFieldPath: status.subnetId3Priv
+  - name: subnet-zone-1-public
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: Subnet
+      metadata:
+        name: subnet-zone-1-public
+        labels:
+          subnetName: subnet-zone-1-public
+      spec:
+        providerConfigRef:
+          name: default-aws
+        forProvider:
+          cidrBlock: 10.0.101.0/24
+          region: us-east-1
+          availabilityZone: us-east-1a
+          mapPublicIpOnLaunch: true
+          vpcIdSelector:
+            matchLabels:
+              vpcName: anthosVPC
+          tags:
+            Name: anthos-1-public
+            Key: kubernetes.io/role/elb,Value=1
+  - name: subnet-zone-2-public
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: Subnet
+      metadata:
+        name: subnet-zone-2-public
+        labels:
+          subnetName: subnet-zone-2-public
+      spec:
+        providerConfigRef:
+          name: default-aws
+        forProvider:
+          cidrBlock: 10.0.102.0/24
+          region: us-east-1
+          availabilityZone: us-east-1b
+          mapPublicIpOnLaunch: true
+          vpcIdSelector:
+            matchLabels:
+              vpcName: anthosVPC
+          tags:
+            Name: anthos-2-public
+            Key: kubernetes.io/role/elb,Value=1
+  - name: subnet-zone-3-public
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: Subnet
+      metadata:
+        name: subnet-zone-3-public
+        labels:
+          subnetName: subnet-zone-3-public
+      spec:
+        providerConfigRef:
+          name: default-aws
+        forProvider:
+          cidrBlock: 10.0.103.0/24
+          region: us-east-1
+          availabilityZone: us-east-1c
+          mapPublicIpOnLaunch: true
+          vpcIdSelector:
+            matchLabels:
+              vpcName: anthosVPC
+          tags:
+            Name: anthos-3-public
+            Key: kubernetes.io/role/elb,Value=1
+  - name: internet-gateway
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: InternetGateway
+      metadata:
+        name: routegw
+        labels:
+          gwname: anthos-inet-gw
+      spec:
+        providerConfigRef:
+          name: default-aws
+        forProvider:
+          region: us-east-1
+          tags:
+            Name-v1: main
+            Name: anthos-inet-gw
+          vpcIdSelector:
+            matchLabels:
+              vpcName: anthosVPC
+  - name: routingtable-subnet-1-pub
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: RouteTable
+      metadata:
+        name: routingtable-subnet-1
+        labels:
+          tableName: routingtable-subnet-1-pub
+      spec:
+        providerConfigRef:
+            name: default-aws
+        forProvider:
+          region: us-east-1
+          tags:
+            Name: anthos-public-sub1
+          vpcIdSelector:
+            matchLabels:
+              vpcName: anthosVPC
+  - name: routingtabe-assoc-1
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: RouteTableAssociation
+      metadata:
+        name: example
+      spec:
+        providerConfigRef:
+          name: default-aws
+        forProvider:
+          region: us-east-1
+          tags:
+            Name: anthos-public-sub1
+          routeTableIdSelector:
+            matchLabels:
+              tableName: routingtable-subnet-1-pub
+          subnetIdSelector:
+            matchLabels:
+              subnetName: subnet-zone-1-public
+  - name: routingtable-subnet-2-pub
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: RouteTable
+      metadata:
+        name: routingtable-subnet-2
+        labels:
+          tableName: routingtable-subnet-2-pub
+      spec:
+        providerConfigRef:
+          name: default-aws
+        forProvider:
+          region: us-east-1
+          tags:
+            Name: anthos-public-sub2
+          vpcIdSelector:
+            matchLabels:
+              vpcName: anthosVPC
+  - name: routingtabe-assoc-2
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: RouteTableAssociation
+      metadata:
+        name: example
+      spec:
+        providerConfigRef:
+          name: default-aws
+        forProvider:
+          region: us-east-1
+          routeTableIdSelector:
+            matchLabels:
+              tableName: routingtable-subnet-2-pub
+          subnetIdSelector:
+            matchLabels:
+              subnetName: subnet-zone-2-public
+  - name: routingtable-subnet-3-pub
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: RouteTable
+      metadata:
+        name: routingtable-subnet-3
+        labels:
+          tableName: routingtable-subnet-3-pub
+      spec:
+        providerConfigRef:
+          name: default-aws
+        forProvider:
+          region: us-east-1
+          tags:
+            Name: anthos-public-sub3
+          vpcIdSelector:
+            matchLabels:
+              vpcName: anthosVPC
+  - name: routingtabe-assoc-3
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: RouteTableAssociation
+      metadata:
+        name: example
+      spec:
+        providerConfigRef:
+          name: default-aws
+        forProvider:
+          region: us-east-1
+          routeTableIdSelector:
+            matchLabels:
+              tableName: routingtable-subnet-3-pub
+          subnetIdSelector:
+            matchLabels:
+              subnetName: subnet-zone-3-public
+  - name: default-route-1
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: DefaultRouteTable
+      metadata:
+        name: route1
+      spec:
+        providerConfigRef:
+          name: default-aws
+        forProvider:
+          defaultRouteTableIdRef:
+            matchLabels:
+              tableName: routingtable-subnet-1-pub
+            name: route-1-pub
+          region: us-east-1
+          route:
+            - cidrBlock: 0.0.0.0/0
+              gatewayIdSelector:
+                matchLabels:
+                  gwname: anthos-inet-gw
+  - name: default-route-2
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: DefaultRouteTable
+      metadata:
+        name: route2
+      spec:
+        providerConfigRef:
+          name: default-aws
+        forProvider:
+          defaultRouteTableIdRef:
+            matchLabels:
+              tableName: routingtable-subnet-2-pub
+            name: route-2-pub
+          region: us-east-1
+          route:
+            - cidrBlock: 0.0.0.0/0
+              gatewayIdSelector:
+                matchLabels:
+                  gwname: anthos-inet-gw
+  - name: default-route-3
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: DefaultRouteTable
+      metadata:
+        name: route-3
+      spec:
+        providerConfigRef:
+          name: default-aws
+        forProvider:
+          defaultRouteTableIdRef:
+            matchLabels:
+              tableName: routingtable-subnet-3-pub
+            name: route-3-pub
+          region: us-east-1
+          route:
+            - cidrBlock: 0.0.0.0/0
+              gatewayIdSelector:
+                matchLabels:
+                  gwname: anthos-inet-gw
+  - name: routingtable-subnet-1-private
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: RouteTable
+      metadata:
+        name: routingtable-subnet-1-private
+        labels:
+          tableName: routingtable-subnet-1-priv
+      spec:
+        providerConfigRef:
+            name: default-aws
+        forProvider:
+          region: us-east-1
+          tags:
+            Name: anthos-private-sub1
+          vpcIdSelector:
+            matchLabels:
+              vpcName: anthosVPC
+  - name: routingtabe-assoc-1-private
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: RouteTableAssociation
+      metadata:
+        name: example
+      spec:
+        providerConfigRef:
+          name: default-aws
+        forProvider:
+          region: us-east-1
+          routeTableIdSelector:
+            matchLabels:
+              tableName: routingtable-subnet-1-priv
+          subnetIdSelector:
+            matchLabels:
+              subnetName: subnet-zone-1-private
+  - name: routingtable-subnet-2-private
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: RouteTable
+      metadata:
+        name: routingtable-subnet-2-priv
+        labels:
+          tableName: routingtable-subnet-2-priv
+      spec:
+        providerConfigRef:
+            name: default-aws
+        forProvider:
+          region: us-east-1
+          tags:
+            Name: anthos-private-sub2
+          vpcIdSelector:
+            matchLabels:
+              vpcName: anthosVPC
+  - name: routingtabe-assoc-2-private
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: RouteTableAssociation
+      metadata:
+        name: example
+      spec:
+        providerConfigRef:
+          name: default-aws
+        forProvider:
+          region: us-east-1
+          routeTableIdSelector:
+            matchLabels:
+              tableName: routingtable-subnet-2-priv
+          subnetIdSelector:
+            matchLabels:
+              subnetName: subnet-zone-2-private
+  - name: routingtable-subnet-3-private
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: RouteTable
+      metadata:
+        name: routingtable-subnet-3-priv
+        labels:
+          tableName: routingtable-subnet-3-priv
+      spec:
+        providerConfigRef:
+            name: default-aws
+        forProvider:
+          region: us-east-1
+          tags:
+            Name: anthos-private-sub3
+          vpcIdSelector:
+            matchLabels:
+              vpcName: anthosVPC
+  - name: routingtabe-assoc-3-private
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: RouteTableAssociation
+      metadata:
+        name: example
+      spec:
+        providerConfigRef:
+          name: default-aws
+        forProvider:
+          region: us-east-1
+          routeTableIdSelector:
+            matchLabels:
+              tableName: routingtable-subnet-3-priv
+          subnetIdSelector:
+            matchLabels:
+              subnetName: subnet-zone-3-private
+  - name: eip-subnet-1
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: EIP
+      metadata:
+        labels:
+          eipName: eip-subnet-1
+      spec:
+        providerConfigRef:
+          name: default-aws
+        forProvider:
+          region: us-east-1
+          vpc: false
+          tags:
+            Name: eip-subnet-1
+  - name: eip-subnet-2
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: EIP
+      metadata:
+        labels:
+          eipName: eip-subnet-2
+      spec:
+        providerConfigRef:
+          name: default-aws
+        forProvider:
+          region: us-east-1
+          vpc: false
+          tags:
+            Name: eip-subnet-2
+  - name: eip-subnet-3
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: EIP
+      metadata:
+        labels:
+          eipName: eip-subnet-3
+      spec:
+        providerConfigRef:
+          name: default-aws
+        forProvider:
+          region: us-east-1
+          vpc: false
+          tags:
+            Name: eip-subnet-3
+  - name: nat-gw-1
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: NATGateway
+      metadata:
+        name: nat-gw-1
+        labels:
+          natName: nat-gw-1
+      spec:
+        providerConfigRef:
+          name: default-aws
+        forProvider:
+          region: us-east-1
+          allocationIdSelector:
+            matchLabels:
+              eipName: eip-subnet-1
+          subnetIdSelector:
+            matchLabels:
+              subnetName: subnet-zone-1-public
+          tags:
+            Name: subnet-1-pub-NAT
+  - name: nat-gw-2
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: NATGateway
+      metadata:
+        name: nat-gw-2
+        labels:
+          natName: nat-gw-2
+      spec:
+        providerConfigRef:
+          name: default-aws
+        forProvider:
+          region: us-east-1
+          allocationIdSelector:
+            matchLabels:
+              eipName: eip-subnet-2
+          subnetIdSelector:
+            matchLabels:
+              subnetName: subnet-zone-2-public
+          tags:
+            Name: subnet-2-pub-NAT
+  - name: nat-gw-3
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: NATGateway
+      metadata:
+        name: nat-gw-3
+        labels:
+          natName: nat-gw-3
+      spec:
+        providerConfigRef:
+          name: default-aws
+        forProvider:
+          region: us-east-1
+          allocationIdSelector:
+            matchLabels:
+              eipName: eip-subnet-3
+          subnetIdSelector:
+            matchLabels:
+              subnetName: subnet-zone-3-public
+          tags:
+            Name: subnet-3-pub-NAT
+  - name: default-route-private-1
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: DefaultRouteTable
+      metadata:
+        name: route1
+      spec:
+        providerConfigRef:
+          name: default-aws
+        forProvider:
+          defaultRouteTableIdRef:
+            matchLabels:
+              tableName: routingtable-subnet-1-priv
+            name: route-1-priv
+          region: us-east-1
+          route:
+            - cidrBlock: 0.0.0.0/0
+              gatewayIdSelector:
+                matchLabels:
+                  gwname: anthos-inet-gw
+  - name: default-route-private-2
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: DefaultRouteTable
+      metadata:
+        name: route2
+      spec:
+        providerConfigRef:
+          name: default-aws
+        forProvider:
+          defaultRouteTableIdRef:
+            matchLabels:
+              tableName: routingtable-subnet-2-priv
+            name: route-2-priv
+          region: us-east-1
+          route:
+            - cidrBlock: 0.0.0.0/0
+              gatewayIdSelector:
+                matchLabels:
+                  gwname: anthos-inet-gw
+  - name: default-route-private-3
+    base:
+      apiVersion: ec2.aws.upbound.io/v1beta1
+      kind: DefaultRouteTable
+      metadata:
+        name: route3
+      spec:
+        providerConfigRef:
+          name: default-aws
+        forProvider:
+          defaultRouteTableIdRef:
+            matchLabels:
+              tableName: routingtable-subnet-3-priv
+            name: route-3-priv
+          region: us-east-1
+          route:
+            - cidrBlock: 0.0.0.0/0
+              gatewayIdSelector:
+                matchLabels:
+                  gwname: anthos-inet-gw
+  - name: awsKMS
+    base:
+      apiVersion: kms.aws.upbound.io/v1beta1
+      kind: Key
+      metadata:
+        labels:
+          kmsName: anthos-key
+        name: etcd-key
+        annotations:
+          crossplane.io/external-name: anthos-key
+      spec:
+        providerConfigRef:
+          name: default-aws
+        forProvider:
+          description: KMS for Anthos etcd
+          region: us-east-2
+    patches:
+    - type: ToCompositeFieldPath
+      fromFieldPath: status.atProvider.arn
+      toFieldPath: status.kmsArn
+    - type: FromCompositeFieldPath
+      fromFieldPath: spec.parameters.awsRegion
+      toFieldPath: spec.forProvider.region

@@ -1,0 +1,111 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: cluster-gcp-up
+  labels:
+    crossplane.io/xrd: compositeclusters.demo.anthos.com
+    provider: gcp
+    cluster: gke
+spec:
+  compositeTypeRef:
+    apiVersion: demo.anthos.com/v1
+    kind:  CompositeCluster
+  patchSets:
+  - name: metadata
+    patches:
+    - fromFieldPath: metadata.labels
+  resources:
+  - name: cluster
+    base:
+      apiVersion: container.gcp.upbound.io/v1beta1
+      kind: Cluster
+      metadata:
+        annotations:
+          meta.upbound.io/example-id: gkehub/v1beta1/membership
+        labels:
+          testing.upbound.io/example-name: gke-cluster
+      spec:
+        providerConfigRef:
+          name: default-gcp
+        forProvider:
+          initialNodeCount: 1
+          location: us-central1-a
+          removeDefaultNodePool: true
+    patches:
+    - type: FromCompositeFieldPath
+      fromFieldPath: spec.parameters.k8sVersion
+      toFieldPath: spec.forProvider.minMasterVersion
+    - type: ToCompositeFieldPath
+      fromFieldPath: metadata.annotations[crossplane.io/external-name]
+      toFieldPath: status.clusterName
+    - type: ToCompositeFieldPath
+      fromFieldPath: spec.forProvider.location
+      toFieldPath: status.region
+    - type: ToCompositeFieldPath
+      fromFieldPath: status.atProvider.masterVersion
+      toFieldPath: status.version
+  - name: nodepool
+    base:
+      apiVersion: container.gcp.upbound.io/v1beta1
+      kind: NodePool
+      metadata:
+        annotations:
+          meta.upbound.io/example-id: container/v1beta1/nodepool
+        labels:
+          testing.upbound.io/example-name: nodepool
+      spec:
+        providerConfigRef:
+          name: default-gcp
+        forProvider:
+          clusterSelector:
+            matchControllerRef: true
+            # matchLabels:
+            #   testing.upbound.io/example-name: gke-cluster
+          location: us-central1-a
+          nodeConfig:
+            - machineType: e2-medium
+              oauthScopes:
+                - https://www.googleapis.com/auth/cloud-platform
+              serviceAccount: 261832825633-compute@developer.gserviceaccount.com
+              nodeLocations:
+                - us-central1-a
+    patches:
+    - type: FromCompositeFieldPath
+      fromFieldPath: spec.parameters.minNodeCount
+      toFieldPath: spec.forProvider.nodeCount
+    - type: FromCompositeFieldPath
+      fromFieldPath: status.clusterName
+      toFieldPath: spec.forProvider.cluster
+  - name: membership
+    base:
+      apiVersion: gkehub.gcp.upbound.io/v1beta1
+      kind: Membership
+      metadata:
+        annotations:
+          meta.upbound.io/example-id: gkehub/v1beta1/membership
+        labels:
+          testing.upbound.io/example-name: gke-cluster
+        name: gke-cluster
+      spec:
+        providerConfigRef:
+          name: default-gcp
+        forProvider:
+          endpoint:
+            - gkeCluster:
+                - resourceLinkSelector:
+                    matchLabels:
+                      testing.upbound.io/example-name: gke-cluster

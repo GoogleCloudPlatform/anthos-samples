@@ -1,0 +1,97 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: compositeclusters.demo.anthos.com
+spec:
+  connectionSecretKeys:
+  - kubeconfig
+  group: demo.anthos.com
+  names:
+    kind: CompositeCluster
+    plural: compositeclusters
+  claimNames:
+    kind: Cluster
+    plural: clusters
+  versions:
+  - name: v1
+    served: true
+    referenceable: true
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          spec:
+            type: object
+            properties:
+              parameters:
+                description: AttachedClusterParameters is the cluster configs.
+                properties:
+                  #configSync:
+                  #  properties:
+                  #    branch:
+                  #      type: string
+                  #    policyDir:
+                  #      type: string
+                  #    repo:
+                  #      type: string
+                  #  required:
+                  #  - branch
+                  #  - policyDir
+                  #  - repo
+                  #  type: object
+                  adminUsers:
+                    items:
+                      type: string
+                    type: array
+                  fleetProject:
+                    type: string
+                  k8sVersion:
+                    type: string
+                  minNodeCount:
+                    type: integer
+                  nodeSize:
+                    type: string
+                type: object
+          status:
+            type: object
+            description: A AttachedClusterStatus represents the observed state of
+              a Cluster.
+            properties:
+              cluster:
+                type: string
+              clusterName:
+                type: string
+              clusterSelfLink:
+                type: string
+              controlPlaneStatus:
+                type: string
+              membershipId:
+                type: string
+              nodePoolStatus:
+                type: string
+              odicIssuerUrl:
+                type: string
+    additionalPrinterColumns:
+    - name: clusterName
+      type: string
+      jsonPath: ".status.clusterName"
+    - name: controlPlane
+      type: string
+      jsonPath: ".status.controlPlaneStatus"
+    - name: nodePool
+      type: string
+      jsonPath: ".status.nodePoolStatus"
