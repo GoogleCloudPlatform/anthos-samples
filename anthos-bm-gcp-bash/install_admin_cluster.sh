@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+set -euo pipefail
+
 if [[ -z "${PROJECT_ID}" ]]; then
   printf "🚨 Environment variable PROJECT_ID not set. Set it to the Google Cloud Project you intend to use."
   exit 1

@@ -360,7 +360,7 @@ func TestUnit_MainScript_ValidateDefaults(goTester *testing.T) {
 	// verify input variable image in plan matches the default value
 	assert.Equal(
 		goTester,
-		"ubuntu-2004-focal-v20210429",
+		"ubuntu-2004-focal-v20221018",
 		terraformPlan.Variables.Image.Value,
 		"Variable does not match expected default value: image.",
 	)
@@ -433,6 +433,7 @@ func TestUnit_MainScript_ValidateDefaults(goTester *testing.T) {
 		"anthosaudit.googleapis.com",
 		"opsconfigmonitoring.googleapis.com",
 		"file.googleapis.com",
+		"connectgateway.googleapis.com",
 	}
 
 	assert.Len(
