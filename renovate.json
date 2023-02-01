@@ -16,5 +16,9 @@
        "type:security"
      ],
      "stabilityDays":0
-  }
+  },
+  "schedule": [
+    "every 3 months on the first day of the month"
+  ],
+  "timezone": "America/New_York"
 }
