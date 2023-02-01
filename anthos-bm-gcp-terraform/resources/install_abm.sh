@@ -54,6 +54,9 @@ if [ "$NFS_SERVER" == "true" ]; then
   # Configure nfs-csi storageClass
   kubectl --kubeconfig "$KUBECONFIG_PATH" apply -f "$DIR"/nfs-csi.yaml
 
+  # Configure default nfs-csi accessmode as ReadWriteMany
+  kubectl --kubeconfig "$KUBECONFIG_PATH" patch StorageProfile nfs-csi --type=merge -p '{"spec":{"claimPropertySets":[{"accessModes":["ReadWriteMany"]}]}}'
+
   echo ""
   echo "[+] Configuring NFS Container Storage Interface complete!"
   echo "[+] You may utilize with [storageClassName: nfs-csi]"
