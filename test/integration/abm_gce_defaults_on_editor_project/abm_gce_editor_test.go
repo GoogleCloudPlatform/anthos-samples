@@ -57,7 +57,7 @@ func TestABMEditor(t *testing.T) {
 		assert.NotContains(abmInstall, "[-]", "gce setup for abm installation should not have any failed stages")
 
 		bmctl := runSSHCmd(t, projectID, "root@cluster1-abm-ws0-001", "bmctl version")
-		assert.Contains(bmctl, "bmctl version: 1.12.2", "bmctl version should be 1.12.2")
+		assert.Contains(bmctl, "bmctl version: 1.14.0", "bmctl version should be 1.14.0")
 
 		docker := runSSHCmd(t, projectID, "root@cluster1-abm-ws0-001", "docker version")
 		dockerExpectedOP := []string{"Client: Docker Engine", "Server: Docker Engine", "API version", "Version", "linux/amd64"}

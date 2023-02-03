@@ -13,8 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# [START anthosbaremetal_scripts_create_primary_gsa]
-
+# [START anthosbaremetal_scripts_create_gsa]
+# [START_EXCLUDE]
 set -e
 
 echo "This will create a Google Service Account and key that is used on each of the target machines to run gcloud commands"
@@ -32,7 +32,7 @@ if [[ -z "${PROJECT_ID}" ]]; then
   echo "Project ID required, provide as script argument or 'export PROJECT_ID={}'"
   exit 1
 fi
-
+# [END_EXCLUDE]
 EXISTS=$(gcloud iam service-accounts list \
   --filter="email=${GSA_EMAIL}" \
   --format="value(name, disabled)" \
@@ -53,7 +53,7 @@ else
   fi
   # otherwise, no need to do anything
 fi
-
+# [START_EXCLUDE]
 # FIXME: These are not specific to GSA creation, but necessary for project
 # setup (future, this will all be terraform)
 gcloud services enable --project "${PROJECT_ID}" \
@@ -130,5 +130,5 @@ if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
 else
   echo "Skipping making new keys"
 fi
-
-# [END anthosbaremetal_scripts_create_primary_gsa]
+# [END_EXCLUDE]
+# [END anthosbaremetal_scripts_create_gsa]

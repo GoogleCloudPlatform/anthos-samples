@@ -163,6 +163,9 @@ data:
           cloudresourcemanager.googleapis.com:
             url:
               endpoint: cloudresourcemanager.googleapis.com
+          connectgateway.googleapis.com:
+            url:
+              endpoint: connectgateway.googleapis.com
           container.googleapis.com:
             url:
               endpoint: container.googleapis.com
