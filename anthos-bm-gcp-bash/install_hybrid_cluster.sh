@@ -152,10 +152,10 @@ do
         apt-get -qq install -y jq > /dev/null
         set -x
         ip link add vxlan0 type vxlan id 42 dev ens4 dstport 0
-        current_ip=\$(ip --json a show dev ens4 | jq '.[0].addr_info[0].local' -r)
-        printf "VM IP address is: \$current_ip"
+        current_ip=$(ip --json a show dev ens4 | jq '.[0].addr_info[0].local' -r)
+        printf "VM IP address is: $current_ip"
         for ip in ${IPs[@]}; do
-            if [ "\$ip" != "\$current_ip" ]; then
+            if [ "$ip" != "$current_ip" ]; then
                 bridge fdb append to 00:00:00:00:00:00 dst \$ip dev vxlan0
             fi
         done
