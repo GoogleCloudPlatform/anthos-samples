@@ -29,6 +29,7 @@ func TestABMEditor(t *testing.T) {
 	abm.DefineVerify(func(assert *assert.Assertions) {
 		abm.DefaultVerify(assert)
 		projectID := abm.GetStringOutput("project_id")
+		abmVersion := abm.GetStringOutput("abm_version")
 
 		// pre run ssh command so that ssh-keygen can run
 		runSSHCmd(t, projectID, "tfadmin@cluster1-abm-ws0-001", "ls")
@@ -57,7 +58,7 @@ func TestABMEditor(t *testing.T) {
 		assert.NotContains(abmInstall, "[-]", "gce setup for abm installation should not have any failed stages")
 
 		bmctl := runSSHCmd(t, projectID, "root@cluster1-abm-ws0-001", "bmctl version")
-		assert.Contains(bmctl, "bmctl version: 1.14.0", "bmctl version should be 1.14.0")
+		assert.Contains(bmctl, fmt.Sprintf("bmctl version: %s", abmVersion), fmt.Sprintf("bmctl version should be %s", abmVersion))
 
 		docker := runSSHCmd(t, projectID, "root@cluster1-abm-ws0-001", "docker version")
 		dockerExpectedOP := []string{"Client: Docker Engine", "Server: Docker Engine", "API version", "Version", "linux/amd64"}
