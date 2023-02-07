@@ -117,6 +117,7 @@ do
       --network default \
       --tags http-server,https-server \
       --min-cpu-platform "Intel Haswell" \
+      --enable-nested-virtualization \
       --scopes cloud-platform \
       --machine-type "$MACHINE_TYPE"
     IP=$(gcloud compute instances describe "$vm" --zone "${ZONE}" \
