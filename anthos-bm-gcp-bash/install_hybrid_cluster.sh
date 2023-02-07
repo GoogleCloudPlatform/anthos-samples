@@ -25,12 +25,12 @@ if [[ -z "${ZONE}" ]]; then
   exit 1
 fi
 
-if [[ -z "${ADMIN_CLUSTER_NAME}" ]]; then
-  printf "🚨 Environment variable ADMIN_CLUSTER_NAME is not set.\n"
+if [[ -z "${CLUSTER_NAME}" ]]; then
+  printf "🚨 Environment variable CLUSTER_NAME is not set.\n"
   while true; do
-    read -rp "💡 Should the script continue with the default name - 'abm-admin-cluster'? " yn
+    read -rp "💡 Should the script continue with the default name - 'abm-cluster'? " yn
     case $yn in
-        [Yy]* ) ADMIN_CLUSTER_NAME="abm-admin-cluster"; break;;
+        [Yy]* ) CLUSTER_NAME="abm-cluster"; break;;
         [Nn]* ) exit 1;;
         * ) echo "Please answer yes or no.";;
     esac
@@ -42,7 +42,7 @@ if [[ -z "${BMCTL_VERSION}" ]]; then
   exit 1
 fi
 
-printf "\n✅ Using Project [%s], Zone [%s], Cluster name [%s] and Anthos bare metal version [%s].\n\n" "$PROJECT_ID" "$ZONE" "$ADMIN_CLUSTER_NAME" "$BMCTL_VERSION"
+printf "\n✅ Using Project [%s], Zone [%s], Cluster name [%s] and Anthos bare metal version [%s].\n\n" "$PROJECT_ID" "$ZONE" "$CLUSTER_NAME" "$BMCTL_VERSION"
 
 # create the GCP Service Account to be used by Anthos on bare metal
 printf "🔄 Creating Service Account and Service Account key...\n"
@@ -147,7 +147,7 @@ do
       --enable-nested-virtualization \
       --scopes cloud-platform \
       --machine-type "$MACHINE_TYPE" \
-      --metadata "cluster_id=${ADMIN_CLUSTER_NAME},bmctl_version=${BMCTL_VERSION}"
+      --metadata "cluster_id=${CLUSTER_NAME},bmctl_version=${BMCTL_VERSION}"
     IP=$(gcloud compute instances describe "$vm" --zone "${ZONE}" \
          --format='get(networkInterfaces[0].networkIP)')
     IPs+=("$IP")
@@ -249,12 +249,12 @@ printf "🔄 Installing Anthos on bare metal...\n"
 gcloud compute ssh root@$VM_WS --zone "${ZONE}" <<EOF
 set -x
 export PROJECT_ID=$(gcloud config get-value project)
-ADMIN_CLUSTER_NAME=\$(curl http://metadata.google.internal/computeMetadata/v1/instance/attributes/cluster_id -H "Metadata-Flavor: Google")
+CLUSTER_NAME=\$(curl http://metadata.google.internal/computeMetadata/v1/instance/attributes/cluster_id -H "Metadata-Flavor: Google")
 BMCTL_VERSION=\$(curl http://metadata.google.internal/computeMetadata/v1/instance/attributes/bmctl_version -H "Metadata-Flavor: Google")
-export ADMIN_CLUSTER_NAME
+export CLUSTER_NAME
 export BMCTL_VERSION
-bmctl create config -c \$ADMIN_CLUSTER_NAME
-cat > bmctl-workspace/\$ADMIN_CLUSTER_NAME/\$ADMIN_CLUSTER_NAME.yaml << EOB
+bmctl create config -c \$CLUSTER_NAME
+cat > bmctl-workspace/\$CLUSTER_NAME/\$CLUSTER_NAME.yaml << EOB
 ---
 gcrKeyPath: /root/bm-gcr.json
 sshPrivateKeyPath: /root/.ssh/id_rsa
@@ -265,13 +265,13 @@ cloudOperationsServiceAccountKeyPath: /root/bm-gcr.json
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: cluster-\$ADMIN_CLUSTER_NAME
+  name: cluster-\$CLUSTER_NAME
 ---
 apiVersion: baremetal.cluster.gke.io/v1
 kind: Cluster
 metadata:
-  name: \$ADMIN_CLUSTER_NAME
-  namespace: cluster-\$ADMIN_CLUSTER_NAME
+  name: \$CLUSTER_NAME
+  namespace: cluster-\$CLUSTER_NAME
 spec:
   type: hybrid
   anthosBareMetalVersion: \$BMCTL_VERSION
@@ -279,7 +279,7 @@ spec:
     projectID: \$PROJECT_ID
   controlPlane:
     nodePoolSpec:
-      clusterName: \$ADMIN_CLUSTER_NAME
+      clusterName: \$CLUSTER_NAME
       nodes:
       - address: 10.200.0.3
       - address: 10.200.0.4
@@ -322,15 +322,15 @@ apiVersion: baremetal.cluster.gke.io/v1
 kind: NodePool
 metadata:
   name: node-pool-1
-  namespace: cluster-\$ADMIN_CLUSTER_NAME
+  namespace: cluster-\$CLUSTER_NAME
 spec:
-  clusterName: \$ADMIN_CLUSTER_NAME
+  clusterName: \$CLUSTER_NAME
   nodes:
   - address: 10.200.0.6
   - address: 10.200.0.7
 EOB
 
-bmctl create cluster -c \$ADMIN_CLUSTER_NAME
+bmctl create cluster -c \$CLUSTER_NAME
 EOF
 # [END anthos_bm_gcp_bash_hybrid_install_abm]
 printf "✅ Installation complete. Please check the logs for any errors!!!\n\n"
