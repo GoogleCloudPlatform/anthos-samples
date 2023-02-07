@@ -28,17 +28,17 @@ fi
 if [[ -z "${ADMIN_CLUSTER_NAME}" ]]; then
   printf "🚨 Environment variable ADMIN_CLUSTER_NAME not set.\n"
   while true; do
-    read -rp "💡 Should the script continue with the default name - 'abm-admin-cluster'? " yn
+    read -rp "💡 Should the script continue with the default name - 'abm-admin-cluster'? (Use 'Y' or 'y for Yes and 'N' or 'n' for No)" yn
     case $yn in
         [Yy]* ) ADMIN_CLUSTER_NAME="abm-admin-cluster"; break;;
         [Nn]* ) exit 1;;
-        * ) echo "Please answer yes or no.";;
+        * ) echo "Please answer 'Y' or 'y for Yes and 'N' or 'n' for No.";;
     esac
   done
 fi
 
 if [[ -z "${BMCTL_VERSION}" ]]; then
-  printf "🚨 Environment variable BMCTL_VERSION not set. Set it to the Anthos bare metal version you intend to use."
+  printf "🚨 Environment variable BMCTL_VERSION is not set. Set it to the Anthos bare metal version you intend to use."
   exit 1
 fi
 

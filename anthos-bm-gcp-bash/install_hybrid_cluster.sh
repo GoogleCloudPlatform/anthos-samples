@@ -16,17 +16,17 @@
 set -euo pipefail
 
 if [[ -z "${PROJECT_ID}" ]]; then
-  printf "🚨 Environment variable PROJECT_ID not set. Set it to the Google Cloud Project you intend to use."
+  printf "🚨 Environment variable PROJECT_ID is not set. Set it to the Google Cloud Project you intend to use."
   exit 1
 fi
 
 if [[ -z "${ZONE}" ]]; then
-  printf "🚨 Environment variable ZONE not set. Set it to the Google Cloud Zone where the resources must be created."
+  printf "🚨 Environment variable ZONE is not set. Set it to the Google Cloud Zone where the resources must be created."
   exit 1
 fi
 
 if [[ -z "${ADMIN_CLUSTER_NAME}" ]]; then
-  printf "🚨 Environment variable ADMIN_CLUSTER_NAME not set.\n"
+  printf "🚨 Environment variable ADMIN_CLUSTER_NAME is not set.\n"
   while true; do
     read -rp "💡 Should the script continue with the default name - 'abm-admin-cluster'? " yn
     case $yn in
