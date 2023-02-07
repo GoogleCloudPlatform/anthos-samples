@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+output "abm_version" {
+  description = "Version of Anthos Bare Metal"
+  value       = var.abm_version
+}
+
 output "admin_vm_ssh" {
   description = "Run the following command to provision the anthos cluster."
   value = var.mode != "setup" ? null : join("\n", [

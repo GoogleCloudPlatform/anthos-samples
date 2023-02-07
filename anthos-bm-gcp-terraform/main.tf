@@ -278,6 +278,7 @@ resource "local_file" "cluster_yaml_manuallb" {
     workerNodeIps   = local.worker_internal_ips,
     controlPlaneVIP = module.configure_controlplane_lb[0].public_ip,
     ingressVIP      = module.configure_ingress_lb[0].public_ip
+    abmVersion      = var.abm_version
   })
 }
 
