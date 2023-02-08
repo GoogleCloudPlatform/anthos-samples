@@ -57,6 +57,8 @@ if [ "$NFS_SERVER" == "true" ]; then
   echo ""
   echo "[+] Configuring NFS Container Storage Interface complete!"
   echo "[+] You may utilize with [storageClassName: nfs-csi]"
+  echo "[+] If using VM Runtime, after enabling the VM Runtime run the following command:"
+  echo "[+]   [kubectl patch StorageProfile nfs-csi --type=merge -p '{\"spec\":{\"claimPropertySets\":[{\"accessModes\":[\"ReadWriteMany\"]}]}}']"
   echo ""
 fi
 
