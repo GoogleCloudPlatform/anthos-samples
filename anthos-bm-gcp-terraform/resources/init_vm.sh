@@ -30,6 +30,7 @@ VM_INTERNAL_IPS=$(cut -d "=" -f2- <<< "$(grep < init.vars VM_INTERNAL_IPS)")
 LOG_FILE=$(cut -d "=" -f2- <<< "$(grep < init.vars LOG_FILE)")
 DEFAULT_IFACE=$(ip link | awk -F: '$0 !~ "lo|vir|wl|^[^0-9]"{print $2;getline}' | xargs)
 NFS_SERVER=$(cut -d "=" -f2- <<< "$(grep < init.vars NFS_SERVER)")
+ABM_VERSION=$(cut -d "=" -f2- <<< "$(grep < init.vars ABM_VERSION)")
 
 DATE=$(date)
 HOSTNAME=$(hostname)
@@ -167,7 +168,7 @@ function __setup_kubctl__ () {
 ##############################################################################
 function __setup_bmctl__ () {
   mkdir baremetal && cd baremetal || return
-  gsutil cp gs://anthos-baremetal-release/bmctl/1.14.0/linux-amd64/bmctl .
+  gsutil cp "gs://anthos-baremetal-release/bmctl/$ABM_VERSION/linux-amd64/bmctl" .
   chmod a+x bmctl
   mv bmctl /usr/local/sbin/
   __check_exit_status__ $? \

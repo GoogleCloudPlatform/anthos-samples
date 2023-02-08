@@ -256,6 +256,7 @@ resource "local_file" "cluster_yaml_bundledlb" {
     gcp_accounts    = var.gcp_login_accounts,
     controlPlaneIps = local.controlplane_vxlan_ips,
     workerNodeIps   = local.worker_vxlan_ips
+    abmVersion      = var.abm_version
   })
 }
 
@@ -277,6 +278,7 @@ resource "local_file" "cluster_yaml_manuallb" {
     workerNodeIps   = local.worker_internal_ips,
     controlPlaneVIP = module.configure_controlplane_lb[0].public_ip,
     ingressVIP      = module.configure_ingress_lb[0].public_ip
+    abmVersion      = var.abm_version
   })
 }
 
@@ -339,6 +341,7 @@ resource "local_file" "init_args_file" {
     ingressNeg        = var.mode == "manuallb" ? module.configure_ingress_lb[0].neg_name : ""
     ingressLbIp       = var.mode == "manuallb" ? module.configure_ingress_lb[0].public_ip : ""
     nfsServer         = var.nfs_server
+    abmVersion        = var.abm_version
   })
 }
 
