@@ -18,3 +18,7 @@
 output "project_id" {
   value = var.editor_project_id
 }
+
+output "abm_version" {
+  value = module.anthos_bm_gcp.abm_version
+}
