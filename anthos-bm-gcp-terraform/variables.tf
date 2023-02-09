@@ -205,6 +205,12 @@ variable "mode" {
   }
 }
 
+variable "abm_version" {
+  description = "Version of Anthos Bare Metal"
+  type        = string
+  default     = "1.14.1"
+}
+
 variable "as_sub_module" {
   description = "This script is being run as a sub module; thus output extra variables"
   type        = bool
