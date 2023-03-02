@@ -49,3 +49,14 @@ resource "azurerm_role_assignment" "contributor" {
   role_definition_name = "Contributor"
   principal_id         = azuread_service_principal.aad_app.object_id
 }
+
+#Create federated identity credentials under application.
+#A maximum of 20 credentials can be added to an application.
+resource "azuread_application_federated_identity_credential" "federated_identity" {
+  application_object_id = azuread_application.aad_app.object_id
+  display_name          = "${var.application_name}-federation"
+  description           = "Federated identity credential associated with an application"
+  audiences             = ["api://AzureADTokenExchange"]
+  issuer                = "https://accounts.google.com"
+  subject               = "service-${var.project_number}@gcp-sa-gkemulticloud.iam.gserviceaccount.com"
+}

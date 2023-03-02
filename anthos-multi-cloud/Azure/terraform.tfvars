@@ -7,7 +7,7 @@ https://cloud.google.com/anthos/clusters/docs/multi-cloud/azure/reference/suppor
 */
 control_plane_instance_type = "Standard_DS2_v2"
 node_pool_instance_type     = "Standard_DS2_v2"
-cluster_version             = "1.22.8-gke.2100"
+cluster_version             = "1.23.16-gke.200"
 /*
 Use 'gcloud container aws get-server-config --location [gcp-region]' to see K8s versions/ region availability --
 https://cloud.google.com/anthos/clusters/docs/multi-cloud/azure/reference/supported-regions
