@@ -34,7 +34,8 @@ resource "random_string" "suffix" {
 module "aad_app" {
   source = "./modules/aad-app"
 
-  #gcp_project      = var.gcp_project_id
+  #gcp_project     = var.gcp_project_id
+  project_number   = module.gcp_data.project_number
   application_name = "${local.name_prefix}-app"
 }
 
@@ -84,7 +85,6 @@ module "anthos_cluster" {
   control_plane_instance_type = var.control_plane_instance_type
   node_pool_instance_type     = var.node_pool_instance_type
   application_id              = module.aad_app.aad_app_id
-  application_object_id       = module.aad_app.aad_app_obj_id
   fleet_project               = "projects/${module.gcp_data.project_number}"
   depends_on = [
     module.aad_app, module.cluster_rg, module.cluster_vnet

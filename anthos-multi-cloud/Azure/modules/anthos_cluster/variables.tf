@@ -49,7 +49,5 @@ variable "tenant_id" {
 }
 variable "application_id" {
 }
-variable "application_object_id" {
-}
 variable "fleet_project" {
 }
