@@ -35,6 +35,7 @@ provider "azurerm" {
 }
 
 provider "azuread" {
+  version = ">= 2.14.0"
 }
 provider "google" {
   project = var.gcp_project_id

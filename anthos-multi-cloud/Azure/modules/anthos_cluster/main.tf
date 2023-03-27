@@ -20,33 +20,16 @@
  * Azure client terraform: https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/container_azure_client
 */
 
-module "azure_client" {
-  source         = "./client"
-  anthos_prefix  = var.anthos_prefix
-  location       = var.location
-  tenant_id      = var.tenant_id
-  application_id = var.application_id
-}
-
-resource "azuread_application_certificate" "aad_app_azure_client_cert" {
-  application_object_id = var.application_object_id
-  type                  = "AsymmetricX509Cert"
-  value                 = module.azure_client.certificate
-  end_date_relative     = "8760h"
-}
-
-resource "time_sleep" "wait_for_aad_app_azure_client_cert" {
-  create_duration = "60s"
-  depends_on      = [azuread_application_certificate.aad_app_azure_client_cert]
-}
-
 resource "google_container_azure_cluster" "this" {
-  client            = "projects/${var.project_number}/locations/${var.location}/azureClients/${module.azure_client.client_name}"
   azure_region      = var.azure_region
   description       = "Test Azure GKE cluster created with Terraform"
   location          = var.location
   name              = var.anthos_prefix
   resource_group_id = var.resource_group_id
+  azure_services_authentication {
+    tenant_id      = var.tenant_id
+    application_id = var.application_id
+  }
   authorization {
     dynamic "admin_users" {
       for_each = var.admin_users
@@ -81,7 +64,6 @@ resource "google_container_azure_cluster" "this" {
   fleet {
     project = var.fleet_project
   }
-  depends_on = [time_sleep.wait_for_aad_app_azure_client_cert]
   timeouts {
     create = "45m"
     update = "45m"
