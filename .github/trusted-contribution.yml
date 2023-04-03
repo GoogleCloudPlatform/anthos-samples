@@ -18,6 +18,7 @@ annotations:
 trustedContributors:
   - release-please[bot]
   - renovate[bot]
+  - renovate-bot
   - forking-renovate[bot]
   - dependabot[bot]
   - apeabody
