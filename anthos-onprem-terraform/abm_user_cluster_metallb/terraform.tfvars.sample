@@ -1,0 +1,10 @@
+project_id          = "YOUR_PROJECT_ID"
+admin_cluster_name  = "anthos-bm-user-cluster"
+control_plane_ips   = ["10.200.0.4"]
+worker_node_ips     = ["10.200.0.5", "10.200.0.6"]
+control_plane_vip   = "10.200.0.50"
+ingress_vip         = "10.200.0.51"
+lb_address_pools    = [
+    { name = "lbpool_1", addresses = "10.200.0.51-10.200.0.70" }
+]
+# admin_user_emails   = ["ADMIN_1_GCP_ACCOUNT", "ADMIN_2_GCP_ACCOUNT"]
