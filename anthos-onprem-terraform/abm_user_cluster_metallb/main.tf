@@ -49,7 +49,7 @@ resource "google_project_service" "default" {
 
 # Create an anthos baremetal user cluster and enroll it with the gkeonprem API
 resource "google_gkeonprem_bare_metal_cluster" "default" {
-  name                     = "gkeonprem-bm-cluster-metallb"
+  name                     = var.cluster_name
   description              = "Anthos bare metal user cluster with MetalLB"
   provider                 = google-private
   depends_on               = [google_project_service.default]
@@ -132,8 +132,8 @@ resource "google_gkeonprem_bare_metal_cluster" "default" {
 
 # Create a node pool of worker nodes for the anthos baremetal user cluster
 resource "google_gkeonprem_bare_metal_node_pool" "default" {
-  name               = "node-pool1"
-  display_name       = "Nodepool 1"
+  name               = "${var.cluster_name}-nodepool"
+  display_name       = "Nodepool for ${var.cluster_name}"
   provider           = google-private
   bare_metal_cluster = google_gkeonprem_bare_metal_cluster.default.name
   location           = var.region

@@ -29,6 +29,12 @@ variable "region" {
   default     = "us-west1"
 }
 
+variable "cluster_name" {
+  description = "The name of the user cluster to be created"
+  type        = string
+  default = "bm-metallb-user-cluster"
+}
+
 variable "admin_cluster_name" {
   description = <<EOT
     The name of the admin cluster that manages the user cluster. The admin cluster
