@@ -32,7 +32,7 @@ variable "region" {
 variable "cluster_name" {
   description = "The name of the user cluster to be created"
   type        = string
-  default = "bm-metallb-user-cluster"
+  default     = "bm-metallb-user-cluster"
 }
 
 variable "admin_cluster_name" {
