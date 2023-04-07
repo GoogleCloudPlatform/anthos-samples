@@ -69,7 +69,7 @@ variable "control_plane_ips" {
       for ip in var.control_plane_ips :
       can(regex("^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", ip))
     ])
-    error_message = "Invalid IP address for Control plane node"
+    error_message = "Invalid IP address for Control plane node."
   }
 }
 
@@ -81,7 +81,7 @@ variable "worker_node_ips" {
       for ip in var.worker_node_ips :
       can(regex("^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", ip))
     ])
-    error_message = "Invalid IP address for Worker pool node"
+    error_message = "Invalid IP address for Worker pool node."
   }
 }
 
@@ -93,7 +93,7 @@ variable "control_plane_vip" {
   type        = string
   validation {
     condition     = can(regex("^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", var.control_plane_vip))
-    error_message = "Invalid IP address for Control plane VIP"
+    error_message = "Invalid IP address for Control plane VIP."
   }
 }
 
@@ -105,7 +105,7 @@ variable "ingress_vip" {
   type        = string
   validation {
     condition     = can(regex("^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", var.ingress_vip))
-    error_message = "Invalid IP address for Ingress VIP"
+    error_message = "Invalid IP address for Ingress VIP."
   }
 }
 
