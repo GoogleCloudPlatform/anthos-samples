@@ -107,12 +107,15 @@ resource "google_gkeonprem_bare_metal_cluster" "default" {
     }
   }
 
-  security_config {
-    authorization {
-      dynamic "admin_users" {
-        for_each = var.admin_user_emails
-        content {
-          username = admin_users.value
+  dynamic "security_config" {
+    for_each = length(var.admin_user_emails) == 0 ? [] : [1]
+    content {
+      authorization {
+        dynamic "admin_users" {
+          for_each = var.admin_user_emails
+          content {
+            username = admin_users.value
+          }
         }
       }
     }
