@@ -1,4 +1,4 @@
-#[END anthos_onprem_terraform_bare_metal_user_cluster_metallb_tfvars]
+# [START anthos_onprem_terraform_bare_metal_user_cluster_metallb_tfvars]
 # -------------------- IGNORE ABOVE THIS LINE -----------------------
 
 project_id          = "YOUR_PROJECT_ID"
@@ -15,4 +15,4 @@ lb_address_pools    = [
 # admin_user_emails   = ["ADMIN_1_GCP_ACCOUNT", "ADMIN_2_GCP_ACCOUNT"]
 
 # -------------------- IGNORE BELOW THIS LINE -----------------------
-#[END anthos_onprem_terraform_bare_metal_user_cluster_metallb_tfvars]
+# [END anthos_onprem_terraform_bare_metal_user_cluster_metallb_tfvars]
