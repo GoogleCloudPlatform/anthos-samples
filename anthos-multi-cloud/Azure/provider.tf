@@ -35,7 +35,12 @@ provider "azurerm" {
   features {}
 }
 
-provider "azuread" {}
+provider "azuread" {
+  /**
+   * update this block with your default Azure Active Directory information
+   * like tenant_id or client_id.
+   */
+}
 
 provider "google" {
   project = var.gcp_project_id

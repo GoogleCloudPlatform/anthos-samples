@@ -52,7 +52,6 @@ variable "bmctl_version" {
     versions 1.13.1 and later
   EOT
   type        = string
-  default     = "1.14.2"
 }
 
 variable "control_plane_ips" {
@@ -128,6 +127,7 @@ variable "admin_user_emails" {
     you will have to explicitely include the creator email as well.
   EOT
   type        = list(string)
+  default     = []
 }
 
 variable "primary_apis" {

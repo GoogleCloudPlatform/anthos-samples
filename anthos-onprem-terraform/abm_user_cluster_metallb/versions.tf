@@ -15,6 +15,7 @@
  */
 
 terraform {
+  required_version = ">= v0.15.5, < 1.4" # this line should not change during a release
   required_providers {
     google = {
       source  = "hashicorp/google"
@@ -24,6 +25,10 @@ terraform {
       source  = "hashicorp/google-beta"
       version = ">= 3.68.0"
     }
+  }
+
+  provider_meta "google" {
+    module_name = "anthos-samples/anthos-onprem/baremetal/user-cluster:metallb/v0.0.1"
   }
 }
 
