@@ -32,7 +32,7 @@ variable "region" {
 variable "cluster_name" {
   description = "The name of the user cluster to be created"
   type        = string
-  default     = "bm-metallb-user-cluster"
+  default     = "bm-manuallb-user-cluster"
 }
 
 variable "admin_cluster_name" {
@@ -52,7 +52,6 @@ variable "bmctl_version" {
     versions 1.13.1 and later
   EOT
   type        = string
-  default     = "1.14.2"
 }
 
 variable "control_plane_ips" {
@@ -118,6 +117,7 @@ variable "admin_user_emails" {
     you will have to explicitely include the creator email as well.
   EOT
   type        = list(string)
+  default     = []
 }
 
 variable "primary_apis" {
