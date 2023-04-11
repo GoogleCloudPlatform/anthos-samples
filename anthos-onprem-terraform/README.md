@@ -6,7 +6,7 @@ _(i.e. Anthos on bare metal and Anthos on VMware)_ using the
 [Google Cloud Terraform provider](https://registry.terraform.io/providers/hashicorp/google/latest/docs).
 
 
-All the samples here, first **emulates** a bare metal infrastucture using
+Most samples here, first **emulates** a bare metal infrastucture using
 Compute Engine (GCE) VMs. It is on this imaginary bare metal environment the
 clusters are installed. Thus, as a prestep to all the guides here, you will see
 a step for provisioning the bare metal insfrastructure. If you have your own
@@ -23,7 +23,7 @@ suit your environment.
    - See [guide](https://cloud.google.com/anthos/clusters/docs/bare-metal/latest/installing/creating-clusters/create-admin-cluster-api) for creating an admin cluster using other clients
 - Create **user** clusters with Terraform
   - [MetalLB](./abm_user_cluster_metallb/)
-  - ManualLB `(coming soon)`
+  - [ManualLB](./abm_user_cluster_manuallb/)
 - Create **standalone** clusters with Terraform `(coming soon)`
 ---
 

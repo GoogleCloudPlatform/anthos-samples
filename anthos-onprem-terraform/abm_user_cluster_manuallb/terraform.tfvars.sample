@@ -2,14 +2,15 @@
 # -------------------- IGNORE ABOVE THIS LINE -----------------------
 
 project_id          = "YOUR_PROJECT_ID"
+region              = "GCP_REGION_TO_USE"
 admin_cluster_name  = "YOUR_ADMIN_CLUSTER_NAME"
 cluster_name        = "YOUR_USER_CLUSTER_NAME"
-bmctl_version       = "BMCTL_VERSION_OF_CLUSTER"
+bare_metal_version  = "VERSION_OF_CLUSTER"
 control_plane_ips   = ["CONTROLPLANE_IP_1", "CONTROLPLANE_IP_2", "CONTROLPLANE_IP_3"]
 worker_node_ips     = ["WORKER_IP_1", "WORKER_IP_2"]
 control_plane_vip   = "CONTROLPLANE_VIRTUAL_IP"
 ingress_vip         = "INGRESS_VIRTUAL_IP"
-# admin_user_emails   = ["ADMIN_1_GCP_ACCOUNT", "ADMIN_2_GCP_ACCOUNT"]
+admin_user_emails   = ["ADMIN_1_GCP_ACCOUNT", "ADMIN_2_GCP_ACCOUNT"]
 
 # -------------------- IGNORE BELOW THIS LINE -----------------------
 #[END anthos_onprem_terraform_bare_metal_user_cluster_manuallb_tfvars]

@@ -45,7 +45,7 @@ variable "admin_cluster_name" {
   type        = string
 }
 
-variable "bmctl_version" {
+variable "bare_metal_version" {
   description = <<EOT
     The Anthos clusters on bare metal version for your user cluster. The terraform
     provider based cluster creation is only supported for Anthos bare metal
@@ -117,7 +117,6 @@ variable "admin_user_emails" {
     you will have to explicitely include the creator email as well.
   EOT
   type        = list(string)
-  default     = []
 }
 
 variable "primary_apis" {

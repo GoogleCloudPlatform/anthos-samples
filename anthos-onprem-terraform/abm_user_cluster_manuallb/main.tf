@@ -54,7 +54,7 @@ resource "google_gkeonprem_bare_metal_cluster" "default" {
   provider                 = google-private
   depends_on               = [google_project_service.default]
   location                 = var.region
-  bare_metal_version       = var.bmctl_version
+  bare_metal_version       = var.bare_metal_version
   admin_cluster_membership = "projects/${var.project_id}/locations/global/memberships/${var.admin_cluster_name}"
   network_config {
     island_mode_cidr {
