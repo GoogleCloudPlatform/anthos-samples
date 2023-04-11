@@ -1,5 +1,7 @@
 project_id          = "YOUR_PROJECT_ID"
 admin_cluster_name  = "YOUR_ADMIN_CLUSTER_NAME"
+cluster_name        = "YOUR_USER_CLUSTER_NAME"
+bmctl_version       = "BMCTL_VERSION_OF_CLUSTER"
 control_plane_ips   = ["10.200.0.4"]
 worker_node_ips     = ["10.200.0.5", "10.200.0.6"]
 control_plane_vip   = "10.200.0.50"
