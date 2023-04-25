@@ -1,0 +1,20 @@
+# [START anthos_onprem_terraform_vmware_user_cluster_metallb_tfvars]
+# -------------------- IGNORE ABOVE THIS LINE -----------------------
+
+project_id          = "YOUR_PROJECT_ID"
+region              = "GCP_REGION_TO_USE"
+admin_cluster_name  = "YOUR_ADMIN_CLUSTER_NAME"
+on_prem_version  = "VERSION_OF_CLUSTER"
+cluster_name        = "avmw-user-cluster-metallb"
+control_plane_node_cpus = 4
+control_plane_node_memory = 8192
+control_plane_node_replicas = 3
+control_plane_vip   = "10.200.0.50"
+ingress_vip         = "10.200.0.51"
+lb_address_pools    = [
+    { name = "lbpool_1", addresses = ["10.200.0.51-10.200.0.70"] }
+]
+
+
+# -------------------- IGNORE BELOW THIS LINE -----------------------
+# [END anthos_onprem_terraform_vmware_user_cluster_metallb_tfvars]
