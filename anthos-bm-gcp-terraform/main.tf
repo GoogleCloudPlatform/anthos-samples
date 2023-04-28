@@ -188,7 +188,6 @@ module "configure_controlplane_lb" {
   ]
   type                  = "controlplanelb"
   project               = var.project_id
-  region                = var.region
   zone                  = var.zone
   name_prefix           = "${var.abm_cluster_id}-cp"
   ip_name               = "${var.abm_cluster_id}-cp-public-ip"
@@ -215,7 +214,6 @@ module "configure_ingress_lb" {
   ]
   type                  = "ingresslb"
   project               = var.project_id
-  region                = var.region
   zone                  = var.zone
   name_prefix           = "${var.abm_cluster_id}-ing"
   ip_name               = "${var.abm_cluster_id}-ing-public-ip"
