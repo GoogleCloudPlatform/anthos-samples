@@ -39,10 +39,31 @@ func TestUnit_MainScript(goTester *testing.T) {
 	util.LogError(err, "Failed to read current working directory")
 	credentialsFile := fmt.Sprintf("%s/credentials_file.json", workingDir)
 
+	dummyCredentials := `
+{
+	"type": "service_account",
+	"project_id": "temp-proj",
+	"private_key_id": "pkey-id",
+	"private_key": "-----BEGIN PRIVATE KEY-----\npkey\n-----END PRIVATE KEY-----\n",
+	"client_email": "temp-proj@temp-proj.iam.gserviceaccount.com",
+	"client_id": "12344321",
+	"auth_uri": "https://accounts.google.com/o/oauth2/auth",
+	"token_uri": "https://oauth2.googleapis.com/token",
+	"auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+	"client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/temp-proj@temp-proj.iam.gserviceaccount.com"
+}
+	`
+	if _, err := os.Stat(credentialsFile); err == nil {
+		os.Remove(credentialsFile)
+	}
 	tmpFile, err := os.Create(credentialsFile)
 	util.LogError(err, fmt.Sprintf("Could not create temporary file at %s", credentialsFile))
 	defer tmpFile.Close()
 	defer os.Remove(credentialsFile)
+
+	_, err = tmpFile.WriteString(dummyCredentials)
+	util.LogError(err, fmt.Sprintf("Could not write to temporary file at %s", credentialsFile))
+	tmpFile.Sync()
 
 	resourcesPath := "./resources"
 	username := "test_username"
@@ -131,6 +152,7 @@ func TestUnit_MainScript(goTester *testing.T) {
 	var terraformPlan util.MainModulePlan
 	err = json.Unmarshal([]byte(tfPlanJSON), &terraformPlan)
 	util.LogError(err, "Failed to parse the JSON plan into the MainModulePlan struct in unit/module_main.go")
+	util.WriteToFile(tfPlanJSON, "../../plan.json")
 	/**
 	 * Pro tip:
 	 * Write the json to a file using the util.WriteToFile() method to easily debug
@@ -280,10 +302,31 @@ func TestUnit_MainScript_ValidateDefaults(goTester *testing.T) {
 	credentialsFile := fmt.Sprintf("%s/credentials_file.json", workingDir)
 	resourcesPath := "./resources"
 
+	dummyCredentials := `
+	{
+		"type": "service_account",
+		"project_id": "temp-proj",
+		"private_key_id": "pkey-id",
+		"private_key": "-----BEGIN PRIVATE KEY-----\npkey\n-----END PRIVATE KEY-----\n",
+		"client_email": "temp-proj@temp-proj.iam.gserviceaccount.com",
+		"client_id": "12344321",
+		"auth_uri": "https://accounts.google.com/o/oauth2/auth",
+		"token_uri": "https://oauth2.googleapis.com/token",
+		"auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+		"client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/temp-proj@temp-proj.iam.gserviceaccount.com"
+	}
+		`
+	if _, err := os.Stat(credentialsFile); err == nil {
+		os.Remove(credentialsFile)
+	}
 	tmpFile, err := os.Create(credentialsFile)
 	util.LogError(err, fmt.Sprintf("Could not create temporary file at %s", credentialsFile))
 	defer tmpFile.Close()
 	defer os.Remove(credentialsFile)
+
+	_, err = tmpFile.WriteString(dummyCredentials)
+	util.LogError(err, fmt.Sprintf("Could not write to temporary file at %s", credentialsFile))
+	tmpFile.Sync()
 
 	machineType := "test_machine_type"
 	tfPlanOutput := "terraform_test.tfplan"
