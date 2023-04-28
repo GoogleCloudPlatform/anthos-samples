@@ -286,7 +286,7 @@ spec:
       - 192.168.0.0/16
     services:
       cidrBlocks:
-      - 172.26.232.0/24
+      - 10.96.0.0/20
   loadBalancer:
     mode: bundled
     ports:
