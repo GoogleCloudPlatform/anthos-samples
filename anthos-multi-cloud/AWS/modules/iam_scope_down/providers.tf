@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,29 +15,11 @@
  */
 
 terraform {
-  required_version = ">= 0.13"
+  required_version = ">= v0.15.5, < 1.4"
   required_providers {
-    openstack = {
-      source  = "terraform-provider-openstack/openstack"
-      version = "1.47.0"
-    }
-    tls = {
-      source  = "hashicorp/tls"
-      version = "4.0.4"
-    }
-    template = {
-      source  = "hashicorp/template"
-      version = "2.2.0"
+    google = {
+      source  = "hashicorp/google"
+      version = ">= 4.14.0"
     }
   }
-}
-
-provider "openstack" {
-  user_name     = var.os_user_name
-  tenant_name   = var.os_tenant_name
-  password      = var.os_password
-  auth_url      = var.os_auth_url
-  region        = var.os_region
-  endpoint_type = var.os_endpoint_type
-  use_octavia   = true
 }
