@@ -21,13 +21,27 @@ terraform {
       source  = "hashicorp/google"
       version = ">= 3.68.0"
     }
-    googlebeta = {
+    google-beta = {
       source  = "hashicorp/google-beta"
       version = ">= 3.68.0"
     }
   }
 
-  provider_meta "google" {
-    module_name = "anthos-samples/terraform/anthos-bm-terraform:gce/v0.14.0"
-  }
+  # provider_meta "google" {
+  #   module_name = "anthos-samples/terraform/anthos-bm-terraform:gce/v0.14.0"
+  # }
+}
+
+provider "google" {
+  project     = var.project_id
+  region      = var.region
+  zone        = var.zone
+  credentials = file(var.credentials_file)
+}
+
+provider "google-beta" {
+  project     = var.project_id
+  region      = var.region
+  zone        = var.zone
+  credentials = file(var.credentials_file)
 }
