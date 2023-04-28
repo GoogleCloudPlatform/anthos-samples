@@ -27,9 +27,9 @@ terraform {
     }
   }
 
-  # provider_meta "google" {
-  #   module_name = "anthos-samples/terraform/anthos-bm-terraform:gce/v0.14.0"
-  # }
+  provider_meta "google" {
+    module_name = "anthos-samples/terraform/anthos-bm-terraform:gce/v0.14.0"
+  }
 }
 
 provider "google" {
