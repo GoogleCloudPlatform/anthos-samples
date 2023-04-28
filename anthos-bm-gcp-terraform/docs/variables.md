@@ -66,14 +66,12 @@ terraform-docs markdown table \
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_abm_cluster_id"></a> [abm\_cluster\_id](#input\_abm\_cluster\_id) | Unique id to represent the Anthos Cluster to be created | `string` | `"cluster1"` | no |
-| <a name="input_access_scopes"></a> [access\_scopes](#input\_access\_scopes) | The IAM access scopes associated to the Compute Engine VM Service Accounts | `set(string)` | <pre>[<br>  "cloud-platform"<br>]</pre> | no |
 | <a name="input_anthos_service_account_name"></a> [anthos\_service\_account\_name](#input\_anthos\_service\_account\_name) | Name given to the Service account that will be used by the Anthos cluster components | `string` | `"baremetal-gcr"` | no |
 | <a name="input_boot_disk_size"></a> [boot\_disk\_size](#input\_boot\_disk\_size) | Size of the primary boot disk to be attached to the Compute Engine VMs in GBs | `number` | `200` | no |
 | <a name="input_boot_disk_type"></a> [boot\_disk\_type](#input\_boot\_disk\_type) | Type of the boot disk to be attached to the Compute Engine VMs | `string` | `"pd-ssd"` | no |
 | <a name="input_connect_agent_account"></a> [connect\_agent\_account](#input\_connect\_agent\_account) | GCP account email address to use with Connect Agent for logging into the cluster using Google Cloud identity. | `string` | `""` | no |
 | <a name="input_credentials_file"></a> [credentials\_file](#input\_credentials\_file) | Path to the Google Cloud Service Account key file.<br>    This is the key that will be used to authenticate the provider with the Cloud APIs | `string` | n/a | yes |
 | <a name="input_enable_nested_virtualization"></a> [enable\_nested\_virtualization](#input\_enable\_nested\_virtualization) | Enable nested virtualization on the Compute Engine VMs are to be scheduled | `string` | `"true"` | no |
-| <a name="input_gce_vm_service_account"></a> [gce\_vm\_service\_account](#input\_gce\_vm\_service\_account) | Service Account to use for GCE instances | `string` | `""` | no |
 | <a name="input_gpu"></a> [gpu](#input\_gpu) | GPU information to be attached to the provisioned GCE instances.<br>    See https://cloud.google.com/compute/docs/gpus for supported types | `object({ type = string, count = number })` | <pre>{<br>  "count": 0,<br>  "type": ""<br>}</pre> | no |
 | <a name="input_image"></a> [image](#input\_image) | The source image to use when provisioning the Compute Engine VMs.<br>    Use 'gcloud compute images list' to find a list of all available images | `string` | `"ubuntu-2004-focal-v20210429"` | no |
 | <a name="input_image_family"></a> [image\_family](#input\_image\_family) | Source image to use when provisioning the Compute Engine VMs.<br>    The source image should be one that is in the selected image\_project | `string` | `"ubuntu-2004-lts"` | no |

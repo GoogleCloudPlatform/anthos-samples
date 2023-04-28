@@ -54,7 +54,6 @@ terraform-docs markdown table \
 | <a name="input_name_prefix"></a> [name\_prefix](#input\_name\_prefix) | Prefix to associate to the names of the loadbalancer resources created by this module | `string` | n/a | yes |
 | <a name="input_network"></a> [network](#input\_network) | VPC network to which the loadbalancer resources are connected to | `string` | `"default"` | no |
 | <a name="input_project"></a> [project](#input\_project) | Unique identifer of the Google Cloud Project that is to be used | `string` | n/a | yes |
-| <a name="input_region"></a> [region](#input\_region) | Google Cloud Region in which the loadbalancer resources should be provisioned | `string` | n/a | yes |
 | <a name="input_type"></a> [type](#input\_type) | Indication of the type of loadbalancer you want to create; whether it is a<br>    L4 loadbalancer for the control plane of the cluster or a L7 loadbalancer<br>    for the Ingress controller. Supported values are: controlplanelb, ingresslb | `string` | n/a | yes |
 | <a name="input_zone"></a> [zone](#input\_zone) | Zone within the selected Google Cloud Region that is to be used | `string` | n/a | yes |
 

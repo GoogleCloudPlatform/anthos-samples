@@ -82,10 +82,6 @@ func TestUnit_MainScript(goTester *testing.T) {
 		"test_tag_1",
 		"test_tag_2",
 	}
-	accessScopes := []string{
-		"test_scope_1",
-		"test_scope_2",
-	}
 	primaryApis := []string{
 		"test_primary_api_1.googleapis.com",
 	}
@@ -123,7 +119,6 @@ func TestUnit_MainScript(goTester *testing.T) {
 		"boot_disk_size":               bootDiskSize,
 		"network":                      network,
 		"tags":                         tags,
-		"access_scopes":                accessScopes,
 		"anthos_service_account_name":  anthosServiceAccountName,
 		"primary_apis":                 primaryApis,
 		"secondary_apis":               secondaryApis,
@@ -457,7 +452,6 @@ func TestUnit_MainScript_ValidateDefaults(goTester *testing.T) {
 	)
 
 	defaultTags := []string{"http-server", "https-server"}
-	defaultAccessScopes := []string{"cloud-platform"}
 	defaultPrimaryApis := []string{
 		"cloudresourcemanager.googleapis.com",
 	}
@@ -487,12 +481,6 @@ func TestUnit_MainScript_ValidateDefaults(goTester *testing.T) {
 	)
 	assert.Len(
 		goTester,
-		terraformPlan.Variables.AccessScope.Value,
-		len(defaultAccessScopes),
-		"List variable length does not match the expected default value list length: access_scopes.",
-	)
-	assert.Len(
-		goTester,
 		terraformPlan.Variables.PrimaryAPIs.Value,
 		len(defaultPrimaryApis),
 		"List variable length does not match the expected default value list length: primary_apis.",
@@ -510,14 +498,6 @@ func TestUnit_MainScript_ValidateDefaults(goTester *testing.T) {
 			defaultTags,
 			tag,
 			"Variable does not match any valid default value: tags",
-		)
-	}
-	for _, scope := range terraformPlan.Variables.AccessScope.Value {
-		assert.Contains(
-			goTester,
-			defaultAccessScopes,
-			scope,
-			"Variable does not match any valid default value: access_scopes.",
 		)
 	}
 	for _, pAPI := range terraformPlan.Variables.PrimaryAPIs.Value {
