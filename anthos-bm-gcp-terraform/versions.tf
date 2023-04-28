@@ -29,16 +29,5 @@ terraform {
 
   provider_meta "google" {
     module_name = "anthos-samples/terraform/anthos-bm-terraform:gce/v0.14.0"
-    project     = var.project_id
-    region      = var.region
-    zone        = var.zone
-    credentials = file(var.credentials_file)
-  }
-
-  provider_meta "google-beta" {
-    project     = var.project_id
-    region      = var.region
-    zone        = var.zone
-    credentials = file(var.credentials_file)
   }
 }
