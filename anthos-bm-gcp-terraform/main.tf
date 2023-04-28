@@ -14,6 +14,22 @@
  * limitations under the License.
  */
 
+
+provider "google" {
+  project     = var.project_id
+  region      = var.region
+  zone        = var.zone
+  credentials = file(var.credentials_file)
+}
+
+provider "google-beta" {
+  project     = var.project_id
+  region      = var.region
+  zone        = var.zone
+  credentials = file(var.credentials_file)
+}
+
+
 locals {
   init_script_logfile_name            = "init.log"
   vm_name_template                    = "%s-abm-%s%d"
