@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 locals {
   init_script_logfile_name            = "init.log"
   vm_name_template                    = "%s-abm-%s%d"
