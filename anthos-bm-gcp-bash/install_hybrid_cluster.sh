@@ -160,7 +160,7 @@ printf "🔄 Checking SSH access to the GCE VMs...\n"
 # [START anthos_bm_gcp_bash_hybrid_check_ssh]
 for vm in "${VMs[@]}"
 do
-    while ! gcloud compute ssh root@"$vm" --zone "${ZONE}" --command "printf SSH to $vm succeeded"
+    while ! gcloud compute ssh root@"$vm" --zone "${ZONE}" --command "printf 'SSH to $vm succeeded\n'"
     do
         printf "Trying to SSH into %s failed. Sleeping for 5 seconds. zzzZZzzZZ" "$vm"
         sleep  5
