@@ -84,22 +84,6 @@ resource "google_gkeonprem_vmware_cluster" "default" {
       }
     }
   }
-
-  lifecycle {
-    ignore_changes = [
-      annotations["features.onprem.cluster.gke.io/sync-onpremusercluster"],
-      annotations["onprem.cluster.gke.io/block-docker-node-pools"],
-      annotations["onprem.cluster.gke.io/error-reason"],
-      annotations["onprem.cluster.gke.io/node-pool-update-policy"],
-      annotations["onprem.cluster.gke.io/operation"],
-      annotations["onprem.cluster.gke.io/operation-id"],
-      annotations["onprem.cluster.gke.io/override-gkehub-endpoint"],
-      annotations["onprem.cluster.gke.io/source"],
-      annotations["onprem.cluster.gke.io/status"],
-      annotations["onprem.cluster.gke.io/start-time"],
-      annotations["onprem.cluster.gke.io/user-cluster-resource-link"]
-    ]
-  }
 }
 
 # Create a node pool for the anthos vmware user cluster
