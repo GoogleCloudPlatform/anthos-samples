@@ -39,10 +39,3 @@ provider "google" {
   zone        = var.zone
   credentials = file(var.credentials_file)
 }
-
-provider "googlebeta" {
-  project     = var.project_id
-  region      = var.region
-  zone        = var.zone
-  credentials = file(var.credentials_file)
-}
