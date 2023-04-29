@@ -1,10 +1,11 @@
-#[END anthos_onprem_terraform_bare_metal_user_cluster_metallb_tfvars]
-# -------------------- IGNORE ABOVE THIS LINE -----------------------
+# [START anthos_onprem_terraform_bare_metal_user_cluster_metallb_tfvars]
 
-project_id          = "YOUR_PROJECT_ID"
-admin_cluster_name  = "YOUR_ADMIN_CLUSTER_NAME"
-cluster_name        = "YOUR_USER_CLUSTER_NAME"
-bmctl_version       = "BMCTL_VERSION_OF_CLUSTER"
+project_id          = "PROJECT_ID"
+region              = "ON_PREM_API_REGION"
+admin_cluster_name  = "ADMIN_CLUSTER_NAME"
+bare_metal_version  = "VERSION"
+admin_user_emails   = ["YOUR_EMAIL_ADDRESS", "ADMIN_2_EMAIL_ADDRESS"]
+cluster_name        = "abm-user-cluster-metallb"
 control_plane_ips   = ["10.200.0.4"]
 worker_node_ips     = ["10.200.0.5", "10.200.0.6"]
 control_plane_vip   = "10.200.0.50"
@@ -12,7 +13,5 @@ ingress_vip         = "10.200.0.51"
 lb_address_pools    = [
     { name = "lbpool_1", addresses = ["10.200.0.51-10.200.0.70"] }
 ]
-# admin_user_emails   = ["ADMIN_1_GCP_ACCOUNT", "ADMIN_2_GCP_ACCOUNT"]
 
-# -------------------- IGNORE BELOW THIS LINE -----------------------
-#[END anthos_onprem_terraform_bare_metal_user_cluster_metallb_tfvars]
+# [END anthos_onprem_terraform_bare_metal_user_cluster_metallb_tfvars]

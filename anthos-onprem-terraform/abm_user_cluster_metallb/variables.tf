@@ -45,7 +45,7 @@ variable "admin_cluster_name" {
   type        = string
 }
 
-variable "bmctl_version" {
+variable "bare_metal_version" {
   description = <<EOT
     The Anthos clusters on bare metal version for your user cluster. The terraform
     provider based cluster creation is only supported for Anthos bare metal
@@ -121,13 +121,9 @@ variable "lb_address_pools" {
 variable "admin_user_emails" {
   description = <<EOT
     Email addresses of GCP accounts that will be designated as administrator
-    accounts of the cluster. If this list is empty, the cluster creator, by default
-    will be granted cluster admin privileges. However, if you include an email
-    addresses in this list then those GCP accounts overrides the default. Thus,
-    you will have to explicitely include the creator email as well.
+    accounts of the cluster.
   EOT
   type        = list(string)
-  default     = []
 }
 
 variable "primary_apis" {

@@ -64,13 +64,18 @@ have changed directory to where this samples is:
 - Update missing variables in the `terraform.tfvars` file:
   - **`project_id`**: The GCP project of the admin cluster and where the user
     cluster will be created.
+  - **`region`**: The Google Cloud region in which the Anthos On-Prem API
+    runs.
   - **`admin_cluster_name`**: The name of the admin cluster that will manage the
     new user cluster. If you used the [install_admin_cluster.sh](/anthos-bm-gcp-bash/install_admin_cluster.sh)
     script and used the default name, then this must be `abm-admin-cluster`.
+  - **`bare_metal_version`**: The Anthos clusters on bare metal version for
+    your user cluster. This must be same as the admin cluster version or one
+    minor version less, at most. It cannot be higher in any case - minor or
+    patch.
+
   - **`admin_user_emails`**: List of GCP accounts that must be given
-    administrator rights on the user cluster. This field is commented out in the
-    sample variables files. If you leave it commented out, then the create of
-    the cluster will be made adminsitrator by default.
+    administrator rights on the user cluster.
 
 - Execute terraform:
 
