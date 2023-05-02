@@ -58,15 +58,15 @@ resource "google_gkeonprem_vmware_cluster" "default" {
   admin_cluster_membership = "projects/${var.project_id}/locations/global/memberships/${var.admin_cluster_name}"
   network_config {
     service_address_cidr_blocks = ["10.96.0.0/12"]
-    pod_address_cidr_blocks = ["192.168.0.0/16"]
+    pod_address_cidr_blocks     = ["192.168.0.0/16"]
     dhcp_ip_config {
       enabled = true
     }
   }
   control_plane_node {
-     cpus = var.control_plane_node_cpus
-     memory = var.control_plane_node_memory
-     replicas = var.control_plane_node_replicas
+    cpus     = var.control_plane_node_cpus
+    memory   = var.control_plane_node_memory
+    replicas = var.control_plane_node_replicas
   }
   load_balancer {
     vip_config {
@@ -87,13 +87,13 @@ resource "google_gkeonprem_vmware_cluster" "default" {
 
 # Create a node pool for the anthos vmware user cluster
 resource "google_gkeonprem_vmware_node_pool" "default" {
-  name               = "${var.cluster_name}-nodepool"
-  display_name       = "Nodepool for ${var.cluster_name}"
-  provider           = google-private
+  name           = "${var.cluster_name}-nodepool"
+  display_name   = "Nodepool for ${var.cluster_name}"
+  provider       = google-private
   vmware_cluster = google_gkeonprem_vmware_cluster.default.name
-  location           = var.region
+  location       = var.region
   config {
-    replicas = 3
+    replicas   = 3
     image_type = "ubuntu_containerd"
   }
   depends_on = [
