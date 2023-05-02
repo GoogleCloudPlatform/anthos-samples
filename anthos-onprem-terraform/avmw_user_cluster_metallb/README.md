@@ -5,7 +5,7 @@ We show an example of how to create an Anthos on VMware
 
 The sample here assumes that the user has already created an admin cluster and that it follows the prerequisites outlined in [public documentation](https://cloud.google.com/anthos/clusters/docs/on-prem/latest/how-to/create-user-cluster-api#before_you_begin) to leverage the GKE on prem API for the Cloud Console including registering the admin cluster and enabling admin activity logs and system level log/mon on the admin cluster.
 
-The minimum user cluster version for the private preview is Anthos 1.13.0. 
+The minimum user cluster version for the private preview is Anthos 1.13.0.
 
 ### Create the user cluster with terraform
 

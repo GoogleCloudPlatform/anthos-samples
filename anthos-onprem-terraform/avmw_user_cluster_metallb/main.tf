@@ -56,7 +56,6 @@ resource "google_gkeonprem_vmware_cluster" "default" {
   location                 = var.region
   on_prem_version          = var.on_prem_version
   admin_cluster_membership = "projects/${var.project_id}/locations/global/memberships/${var.admin_cluster_name}"
-  
   network_config {
     service_address_cidr_blocks = ["10.96.0.0/12"]
     pod_address_cidr_blocks = ["192.168.0.0/16"]
