@@ -61,7 +61,7 @@ KUBECTL_GLOBAL_CMDS = [
     'kubectl describe clusterrolebindings {kubeconfig_arg} --request-timeout {timeout}',      # noqa: E501
     'kubectl describe crd {kubeconfig_arg} --request-timeout {timeout}',
     'kubectl describe nodes {kubeconfig_arg} --request-timeout {timeout}',
-    'kubectl get validatingwebhookconfigurations -o wide {kubeconfig_arg} --request-timeout {timeout}', # noqa: E501
+    'kubectl get validatingwebhookconfigurations -o wide {kubeconfig_arg} --request-timeout {timeout}',  # noqa: E501
     'kubectl get validatingwebhookconfigurations -o yaml {kubeconfig_arg} --request-timeout {timeout}', # noqa: E501
 ]
 
