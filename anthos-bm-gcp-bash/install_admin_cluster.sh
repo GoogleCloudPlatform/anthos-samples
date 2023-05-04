@@ -66,6 +66,7 @@ gcloud services enable \
     container.googleapis.com \
     gkeconnect.googleapis.com \
     gkehub.googleapis.com \
+    gkeonprem.googleapis.com \
     serviceusage.googleapis.com \
     stackdriver.googleapis.com \
     monitoring.googleapis.com \
