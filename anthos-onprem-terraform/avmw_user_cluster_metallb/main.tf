@@ -51,7 +51,7 @@ resource "google_project_service" "default" {
 resource "google_gkeonprem_vmware_cluster" "default" {
   name                     = var.cluster_name
   description              = "Anthos VMware user cluster with MetalLB"
-  provider                 = google-private
+  provider                 = google-beta
   depends_on               = [google_project_service.default]
   location                 = var.region
   on_prem_version          = var.on_prem_version
@@ -89,7 +89,7 @@ resource "google_gkeonprem_vmware_cluster" "default" {
 resource "google_gkeonprem_vmware_node_pool" "default" {
   name           = "${var.cluster_name}-nodepool"
   display_name   = "Nodepool for ${var.cluster_name}"
-  provider       = google-private
+  provider       = google-beta
   vmware_cluster = google_gkeonprem_vmware_cluster.default.name
   location       = var.region
   config {
