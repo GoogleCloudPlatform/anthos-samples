@@ -53,7 +53,11 @@ have changed directory to where this samples is:
 
 ### Upgrade the user cluster with terraform
 
-Before upgrading the user cluster, please make sure the admin cluster of the target version has been upgraded. The steps to upgrade the admin cluster is listed in the [public documentation](https://cloud.google.com/anthos/clusters/docs/on-prem/latest/how-to/upgrading#:~:text=In%20the%20Cluster%20basics%20section,Click%20Upgrade.).
+Before upgrading the user cluster, please make sure the platform controller of the target version has been upgraded. The command to upgrade the platform controller is
+
+```
+gkectl prepare --upgrade-platform
+```
 
 Then, following the steps below to upgrade the user cluster via terraform.
 
