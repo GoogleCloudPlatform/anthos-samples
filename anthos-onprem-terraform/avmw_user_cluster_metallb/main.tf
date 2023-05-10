@@ -93,8 +93,9 @@ resource "google_gkeonprem_vmware_node_pool" "default" {
   vmware_cluster = google_gkeonprem_vmware_cluster.default.name
   location       = var.region
   config {
-    replicas   = 3
-    image_type = "ubuntu_containerd"
+    replicas             = 3
+    image_type           = "ubuntu_containerd"
+    enable_load_balancer = true
   }
   depends_on = [
     google_gkeonprem_vmware_cluster.default
