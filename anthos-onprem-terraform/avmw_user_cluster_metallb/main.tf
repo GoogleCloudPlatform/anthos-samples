@@ -83,6 +83,14 @@ resource "google_gkeonprem_vmware_cluster" "default" {
       }
     }
   }
+  authorization {
+    dynamic "admin_users" {
+      for_each = var.admin_user_emails
+      content {
+        username = admin_users.value
+      }
+    }
+  }
 }
 
 # Create a node pool for the anthos vmware user cluster
