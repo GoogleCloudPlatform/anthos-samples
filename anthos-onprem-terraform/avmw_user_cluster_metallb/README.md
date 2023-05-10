@@ -56,7 +56,7 @@ have changed directory to where this samples is:
 Before upgrading the user cluster, please make sure the platform controller of the target version has been upgraded. The command to upgrade the platform controller is
 
 ```
-gkectl prepare --upgrade-platform
+gkectl prepare --bundle-path /var/lib/gke/bundles/gke-onprem-vsphere-TARGET_VERSION.tgz --kubeconfig ADMIN_CLUSTER_KUBECONFIG --upgrade-platform
 ```
 
 Then, following the steps below to upgrade the user cluster via terraform.
