@@ -9,5 +9,5 @@ control_plane_node_replicas = 3
 control_plane_vip           = "CONTROL_PLANE_VIP"
 ingress_vip                 = "INGRESS_VIP"
 lb_address_pools            = [
-    { name = "POOL_NAME", addresses = IP_ADDRESS_RANGE }
+    { name = "lbpool_1", addresses = ["10.200.0.51-10.200.0.70"] }
 ]
