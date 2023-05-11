@@ -163,6 +163,12 @@ module "controlplane_vm_hosts" {
   network           = var.network
   vm_names          = local.controlplane_vm_names
   instance_template = module.instance_template.self_link
+
+  lifecycle {
+    replace_triggered_by = [
+      local_file.init_args_file
+    ]
+  }
 }
 
 module "worker_vm_hosts" {
@@ -176,6 +182,12 @@ module "worker_vm_hosts" {
   network           = var.network
   vm_names          = local.worker_vm_names
   instance_template = module.instance_template.self_link
+
+  lifecycle {
+    replace_triggered_by = [
+      local_file.init_args_file
+    ]
+  }
 }
 
 module "configure_controlplane_lb" {
