@@ -166,7 +166,7 @@ module "controlplane_vm_hosts" {
 
   lifecycle {
     replace_triggered_by = [
-      local_file.init_args_file
+      local_file.init_args_file.content_md5
     ]
   }
 }
@@ -185,7 +185,7 @@ module "worker_vm_hosts" {
 
   lifecycle {
     replace_triggered_by = [
-      local_file.init_args_file
+      local_file.init_args_file.content_md5
     ]
   }
 }
