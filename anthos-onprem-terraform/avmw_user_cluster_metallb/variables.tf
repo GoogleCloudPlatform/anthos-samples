@@ -102,6 +102,14 @@ variable "control_plane_node_replicas" {
   default     = 3
 }
 
+variable "admin_user_emails" {
+  description = <<EOT
+    Email addresses of GCP accounts that will be designated as administrator
+    accounts of the cluster.
+  EOT
+  type        = list(string)
+}
+
 variable "lb_address_pools" {
   description = <<EOT
     The list of address pool configurations to be used by the MetalLB load balancer.

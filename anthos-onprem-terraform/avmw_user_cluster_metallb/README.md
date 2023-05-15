@@ -50,3 +50,29 @@ have changed directory to where this samples is:
 
     You can view your user cluster in the
     [Anthos clusters page](https://console.cloud.google.com/anthos/clusters).
+
+### Upgrade the user cluster with terraform
+
+Before upgrading the user cluster, please make sure the admin cluster platform controller has been upgraded to the target version. The steps to upgrade the admin cluster platform controller is listed in the [public documentation](https://cloud.google.com/anthos/clusters/docs/on-prem/latest/how-to/upgrading#:~:text=In%20the%20Cluster%20basics%20section,Click%20Upgrade.). An example is shown below:
+
+```
+gcloud beta container vmware admin-clusters update ADMIN_CLUSTER_ID --required-platform-version=TARGET_VERSION --location REGION --project FLEET_HOST_PROJECT_ID
+```
+
+Then, following the steps below to upgrade the user cluster via terraform.
+
+- Update the version variable in the `terraform.tfvars` file:
+  - **`on_prem_version`**: The Anthos clusters on VMware version for
+    your user cluster.
+
+- Execute terraform:
+
+    ```sh
+    terraform init
+    ```
+    ```sh
+    terraform plan
+    ```
+    ```sh
+    terraform apply
+    ```
