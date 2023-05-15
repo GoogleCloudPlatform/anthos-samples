@@ -53,13 +53,7 @@ have changed directory to where this samples is:
 
 ### Upgrade the user cluster with terraform
 
-Before upgrading the user cluster, please make sure the platform controller of the target version has been upgraded. The command to upgrade the platform controller is
-
-```
-gkectl prepare --bundle-path /var/lib/gke/bundles/gke-onprem-vsphere-TARGET_VERSION.tgz --kubeconfig ADMIN_CLUSTER_KUBECONFIG --upgrade-platform
-```
-
-Or using the gcloud command to upgrade the platform controller
+Before upgrading the user cluster, please make sure the admin cluster platform controller has been upgraded to the target version. The steps to upgrade the admin cluster platform controller is listed in the [public documentation](https://cloud.google.com/anthos/clusters/docs/on-prem/latest/how-to/upgrading#:~:text=In%20the%20Cluster%20basics%20section,Click%20Upgrade.). An example is shown below:
 
 ```
 gcloud beta container vmware admin-clusters update ADMIN_CLUSTER_ID --required-platform-version=TARGET_VERSION --location REGION --project FLEET_HOST_PROJECT_ID
