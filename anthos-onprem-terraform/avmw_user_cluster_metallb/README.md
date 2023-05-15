@@ -59,6 +59,12 @@ Before upgrading the user cluster, please make sure the platform controller of t
 gkectl prepare --bundle-path /var/lib/gke/bundles/gke-onprem-vsphere-TARGET_VERSION.tgz --kubeconfig ADMIN_CLUSTER_KUBECONFIG --upgrade-platform
 ```
 
+Or using the gcloud command to upgrade the platform controller
+
+```
+gcloud beta container vmware admin-clusters update ADMIN_CLUSTER_ID --required-platform-version=TARGET_VERSION --location REGION --project FLEET_HOST_PROJECT_ID
+```
+
 Then, following the steps below to upgrade the user cluster via terraform.
 
 - Update the version variable in the `terraform.tfvars` file:
