@@ -1,7 +1,14 @@
+> #### This is a terraform script to provision the GCE infrastructure in which Anthos clusters on bare metal (ABM) will be installed. The cluster installation is done using `bash` scripts. This does NOT use the `google_gkeonprem_*` terraform resources of the `google` provider to create the ABM cluster. If you are looking for a sample that is fully based off of the terraform provider, see the [anthos-onprem-terraform](/anthos-onprem-terraform/) directory.
+---
 
 ## Anthos Baremetal on Google Compute Engine VMs with Terraform
 
-This repository shows you how to use Terraform to try Anthos clusters on bare metal in High Availability (HA) mode using Virtual Machines (VMs) running on Compute Engine. For information about how to use the `gcloud` command-line tool to try this, see [Try Anthos clusters on bare metal on Compute Engine VMs](https://cloud.google.com/anthos/clusters/docs/bare-metal/latest/try/gce-vms).
+> Read the dosclaimer on top of this README before you continue.
+
+This repository shows you how to use Terraform to try Anthos clusters on bare
+metal in High Availability (HA) mode using Virtual Machines (VMs) running on
+Compute Engine. For information about how to use the `gcloud` command-line tool
+to try this, see [Try Anthos clusters on bare metal on Compute Engine VMs](https://cloud.google.com/anthos/clusters/docs/bare-metal/latest/try/gce-vms).
 
 ### Pre-requisites
 
@@ -12,14 +19,19 @@ This repository shows you how to use Terraform to try Anthos clusters on bare me
 
 - A [Google Cloud Project](https://console.cloud.google.com/cloud-resource-manager?_ga=2.187862184.1029435410.1614837439-1338907320.1614299892) _(in which the resources for the setup will be provisioned)_
 
-- A [Service Account](https://cloud.google.com/iam/docs/creating-managing-service-accounts) in the project that satisfies **one** of the following requirements and its **[key file downloaded](docs/create_sa_key.md)** to the workstation:
+- A [Service Account](https://cloud.google.com/iam/docs/creating-managing-service-accounts)
+  in the project that satisfies **one** of the following requirements and its
+  **[key file downloaded](docs/create_sa_key.md)** to the workstation:
   - The Service Account has `Owner` permissions
   - The Service Account has both `Editor` and `Project IAM Admin` permissions
 
 ---
 ### Bare metal infrastructure on Google Cloud using Compute Engine VMs
 
-The [Quick starter](docs/quickstart.md) guide sets up the following infrastructure in Google Cloud using Compute Engine VMs. The diagram assumes that the none of the default values for the [variables](variables.tf) were changed other than the ones mentioned in the quick starter.
+The [Quick starter](docs/quickstart.md) guide sets up the following
+infrastructure in Google Cloud using Compute Engine VMs. The diagram assumes
+that the none of the default values for the [variables](variables.tf) were
+changed other than the ones mentioned in the quick starter.
 
 ![Bare metal infrastructure on Google Cloud using Compute Engine VMs](docs/images/abm_gcp_infra.svg)
 
@@ -29,22 +41,42 @@ The [Quick starter](docs/quickstart.md) guide sets up the following infrastructu
 - [Terraform Module Information _(includes variables definitions)_](docs/variables.md)
 
 - [Quick start guide](docs/quickstart.md):
-    - The terraform script sets up the GCE VM environment. The output of the script prints out the commands to follow to install **Anthos on bare metal** in the provisioned GCE VMs.
+    - The terraform script sets up the GCE VM environment. The output of the
+      script prints out the commands to follow to install
+      **Anthos on bare metal** in the provisioned GCE VMs.
 
 - [All in one install](docs/one_click_install.md):
-    - The terraform script sets up the GCE VM environment and also triggers the **Anthos on bare metal** installation on the provisioned GCE VMs. The output of the script prints out the commands to SSH into the *admin workstation VM* and monitor the Anthos on bare metal installation process.
+    - The terraform script sets up the GCE VM environment and also triggers the
+      **Anthos on bare metal** installation on the provisioned GCE VMs. The
+      output of the script prints out the commands to SSH into the
+      *admin workstation VM* and monitor the Anthos on bare metal installation
+      process.
 
 - [Manual LB install](docs/manuallb_install.md):
-    - The terraform script sets up the GCE environment and triggers the **Anthos on bare metal** installation similar to the [all-in-one install](docs/one_click_install.md). However, in this mode **Anthos on bare metal** is installed with a [`Manual Loadbalancer`](https://cloud.google.com/anthos/clusters/docs/bare-metal/latest/installing/manual-lb) instead of the default [`Bundled LB`](https://cloud.google.com/anthos/clusters/docs/bare-metal/latest/installing/bundled-lb). We use [Google Cloud Loadbalancer](https://cloud.google.com/load-balancing/docs/load-balancing-overview) as the manual loadbalancer for the Anthos on bare metal cluster. The output of the script prints out the same instructions as the all-in-one install; additionally it also prints out the **Public IP** addresses of the loadbalancers.
+    - The terraform script sets up the GCE environment and triggers the
+      **Anthos on bare metal** installation similar to the
+      [all-in-one install](docs/one_click_install.md). However, in this mode
+      **Anthos on bare metal** is installed with a
+      [`Manual Loadbalancer`](https://cloud.google.com/anthos/clusters/docs/bare-metal/latest/installing/manual-lb) instead of the default
+      [`Bundled LB`](https://cloud.google.com/anthos/clusters/docs/bare-metal/latest/installing/bundled-lb).
+      We use
+      [Google Cloud Loadbalancer](https://cloud.google.com/load-balancing/docs/load-balancing-overview)
+      as the manual loadbalancer for the Anthos on bare metal cluster. The
+      output of the script prints out the same instructions as the all-in-one
+      install; additionally it also prints out the **Public IP** addresses of
+      the loadbalancers.
 
 - [NFS Shared Storage](docs/nfs.md):
-    - An optional NFS server is provisioned in conjunction with any of the install methods above to provide shared storage to the **Anthos on bare metal** cluster.
+    - An optional NFS server is provisioned in conjunction with any of the
+      install methods above to provide shared storage to the
+      **Anthos on bare metal** cluster.
 
 ---
 ## Contributing
 
 #### Pre-requisites
-- The same [pre-requisites](#pre-requisites) to run this sample is required for testing as well
+- The same [pre-requisites](#pre-requisites) to run this sample is required for
+  testing as well
 
 #### Pull requests
 - For improvements to this sample submit your pull requests to the `main` branch

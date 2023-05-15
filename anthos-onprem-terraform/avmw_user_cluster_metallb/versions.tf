@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,33 +15,29 @@
  */
 
 terraform {
+  required_version = ">= v0.15.5, < 1.4" # this line should not change during a release
   required_providers {
-    azuread = {
-      source  = "hashicorp/azuread"
-      version = ">= 2.14.0"
-    }
-    azurerm = {
-      source = "hashicorp/azurerm"
-    }
     google = {
       source  = "hashicorp/google"
-      version = ">= 4.5.0"
+      version = ">= 3.68.0"
+    }
+    google-beta = {
+      source  = "hashicorp/google-beta"
+      version = ">= 3.68.0"
     }
   }
-  required_version = ">= 0.13"
-}
 
-provider "azurerm" {
-  features {}
-}
-
-provider "azuread" {
-  /**
-   * update this block with your default Azure Active Directory information
-   * like tenant_id or client_id.
-   */
+  provider_meta "google" {
+    module_name = "anthos-samples/anthos-onprem/vmware/user-cluster:metallb/v0.0.1"
+  }
 }
 
 provider "google" {
-  project = var.gcp_project_id
+  project = var.project_id
+  region  = var.region
+}
+
+provider "google-beta" {
+  project = var.project_id
+  region  = var.region
 }
