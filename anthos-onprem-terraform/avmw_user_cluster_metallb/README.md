@@ -3,7 +3,11 @@
 We show an example of how to create an Anthos on VMware
 **user cluster** with **MetalLB** using the Google provider for Terraform.
 
-The sample here assumes that the user has already created an admin cluster and that it follows the prerequisites outlined in [public documentation](https://cloud.google.com/anthos/clusters/docs/on-prem/latest/how-to/create-user-cluster-api#before_you_begin) to leverage the GKE on prem API for the Cloud Console including registering the admin cluster and enabling admin activity logs and system level log/mon on the admin cluster.
+The sample here assumes that the user has already created an admin cluster and
+that it follows the prerequisites outlined in
+[public documentation](https://cloud.google.com/anthos/clusters/docs/on-prem/latest/how-to/create-user-cluster-api#before_you_begin) to leverage the GKE on prem API for
+the Cloud Console including registering the admin cluster and enabling admin
+activity logs and system level log/mon on the admin cluster.
 
 The minimum user cluster version for the private preview is Anthos 1.13.0.
 
@@ -50,20 +54,29 @@ have changed directory to where this samples is:
 
     You can view your user cluster in the
     [Anthos clusters page](https://console.cloud.google.com/anthos/clusters).
+---
 
 ### Upgrade the user cluster with terraform
 
-Before upgrading the user cluster, please make sure the admin cluster platform controller has been upgraded to the target version. The steps to upgrade the admin cluster platform controller is listed in the [public documentation](https://cloud.google.com/anthos/clusters/docs/on-prem/latest/how-to/upgrading#:~:text=In%20the%20Cluster%20basics%20section,Click%20Upgrade.). An example is shown below:
+Before upgrading the user cluster, please make sure the admin cluster platform
+controller has been upgraded to the target version. The steps to upgrade the
+admin cluster platform controller is listed in the
+[public documentation](https://cloud.google.com/anthos/clusters/docs/on-prem/latest/how-to/upgrading#:~:text=In%20the%20Cluster%20basics%20section,Click%20Upgrade.).
 
-```
-gcloud beta container vmware admin-clusters update ADMIN_CLUSTER_ID --required-platform-version=TARGET_VERSION --location REGION --project FLEET_HOST_PROJECT_ID
+An example is shown below:
+
+```bash
+gcloud beta container vmware admin-clusters update <ADMIN_CLUSTER_ID> \
+  --required-platform-version=<TARGET_VERSION> \
+  --location <REGION> \
+  --project <FLEET_HOST_PROJECT_ID>
 ```
 
 Then, following the steps below to upgrade the user cluster via terraform.
 
 - Update the version variable in the `terraform.tfvars` file:
-  - **`on_prem_version`**: The Anthos clusters on VMware version for
-    your user cluster.
+  - **`on_prem_version`**: The Anthos clusters on VMware version for your user
+    cluster.
 
 - Execute terraform:
 
