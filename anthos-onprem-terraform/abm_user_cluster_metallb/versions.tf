@@ -41,12 +41,3 @@ provider "google-beta" {
   project = var.project_id
   region  = var.region
 }
-
-#################################################
-#           Remove upon public release
-#################################################
-provider "google-private" {
-  project                   = var.project_id
-  region                    = var.region
-  gkeonprem_custom_endpoint = "https://gkeonprem.googleapis.com/v1/"
-}
