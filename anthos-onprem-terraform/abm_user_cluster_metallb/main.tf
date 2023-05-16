@@ -51,7 +51,7 @@ resource "google_project_service" "default" {
 resource "google_gkeonprem_bare_metal_cluster" "default" {
   name                     = var.cluster_name
   description              = "Anthos bare metal user cluster with MetalLB"
-  provider                 = google-private
+  provider                 = google-beta
   depends_on               = [google_project_service.default]
   location                 = var.region
   bare_metal_version       = var.bare_metal_version
@@ -137,7 +137,7 @@ resource "google_gkeonprem_bare_metal_cluster" "default" {
 resource "google_gkeonprem_bare_metal_node_pool" "default" {
   name               = "${var.cluster_name}-nodepool"
   display_name       = "Nodepool for ${var.cluster_name}"
-  provider           = google-private
+  provider           = google-beta
   bare_metal_cluster = google_gkeonprem_bare_metal_cluster.default.name
   location           = var.region
   node_pool_config {

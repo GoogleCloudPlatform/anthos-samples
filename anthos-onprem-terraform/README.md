@@ -29,7 +29,9 @@ suit your environment.
 
 ### Anthos clusters on VMware (AVMware)
 - Create **admin** clusters with Terraform `(coming soon)`
-- Create **user** clusters with Terraform `(coming soon)`
+- Create **user** clusters with Terraform
+  - [MetalLB](./avmw_user_cluster_metallb/)
+  - ManualLB `(coming soon)`
 - Create **standalone** clusters with Terraform `(coming soon)`
 
 ---

@@ -28,7 +28,7 @@ terraform {
   }
 
   provider_meta "google" {
-    module_name = "anthos-samples/anthos-onprem/baremetal/user-cluster:metallb/v0.0.1"
+    module_name = "anthos-samples/anthos-onprem/vmware/user-cluster:metallb/v0.0.1"
   }
 }
 
