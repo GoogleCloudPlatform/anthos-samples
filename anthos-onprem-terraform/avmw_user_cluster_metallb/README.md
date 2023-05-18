@@ -61,16 +61,25 @@ have changed directory to where this samples is:
 Before upgrading the user cluster, please make sure the admin cluster platform
 controller has been upgraded to the target version. The steps to upgrade the
 admin cluster platform controller is listed in the
-[public documentation](https://cloud.google.com/anthos/clusters/docs/on-prem/latest/how-to/upgrading#:~:text=In%20the%20Cluster%20basics%20section,Click%20Upgrade.).
+[public documentation](https://cloud.google.com/anthos/clusters/docs/on-prem/latest/how-to/upgrade-on-prem-api#available_versions_for_upgrades).
 
-An example is shown below:
+This sample shows how to update the platform controller with the following 
+gcloud modules:
 
-```bash
-gcloud beta container vmware admin-clusters update <ADMIN_CLUSTER_ID> \
-  --required-platform-version=<TARGET_VERSION> \
-  --location <REGION> \
-  --project <FLEET_HOST_PROJECT_ID>
-```
+- module `gcloud-enroll-admin-cluster`: You use this module to enroll your admin
+  cluster in the Anthos On-Prem API. This is a prerequisite to upgrade user
+  clusters using Terraform, the console, or the gcloud CLI. This is a one time
+  operation. After you enroll your admin cluster with the API, you don't need to
+  run this module again when upgrading user clusters that are managed by the
+  admin cluster.
+- module `gcloud-update-admin-cluster-platform-controller`: You use this module
+  to upgrade the platform controller on the admin cluster. The platform
+  controller contains one or more bundles of components that the admin cluster
+  uses to manage user clusters. The bundles are version specific, that is, the
+  platform controller must contain a bundle version that matches the Anthos on
+  VMware version of the user cluster. Before upgrading your user cluster, run
+  this module to install a bundle version on the admin cluster that matches the
+  version you are upgrading the user cluster to.
 
 Then, following the steps below to upgrade the user cluster via terraform.
 
