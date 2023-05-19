@@ -61,7 +61,7 @@ have changed directory to where this samples is:
 Before upgrading the user cluster, please make sure the admin cluster platform
 controller has been upgraded to the target version. The steps to upgrade the
 admin cluster platform controller is listed in the
-[public documentation](https://cloud.google.com/anthos/clusters/docs/on-prem/latest/how-to/upgrading#:~:text=In%20the%20Cluster%20basics%20section,Click%20Upgrade.).
+[public documentation](https://cloud.google.com/anthos/clusters/docs/on-prem/latest/how-to/upgrade-on-prem-api#available_versions_for_upgrades).
 
 An example is shown below:
 
