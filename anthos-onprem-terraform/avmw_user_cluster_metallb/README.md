@@ -58,19 +58,30 @@ have changed directory to where this samples is:
 
 ### Upgrade the user cluster with terraform
 
-Before upgrading the user cluster, please make sure the admin cluster platform
-controller has been upgraded to the target version. The steps to upgrade the
-admin cluster platform controller is listed in the
-[public documentation](https://cloud.google.com/anthos/clusters/docs/on-prem/latest/how-to/upgrade-on-prem-api#available_versions_for_upgrades).
+Before upgrading the user cluster, please make sure the admin cluster has been 
+enrolled in the Anthos On-Prem API. Steps for enrolling the admin cluster are
+listed in [public documentation](https://cloud.google.com/anthos/clusters/docs/on-prem/latest/how-to/enroll-cluster#enroll_a_cluster).
 
-An example is shown below:
+An example using gcloud command to enroll the admin cluster is shown below:
 
 ```bash
-gcloud beta container vmware admin-clusters update <ADMIN_CLUSTER_ID> \
-  --required-platform-version=<TARGET_VERSION> \
-  --location <REGION> \
-  --project <FLEET_HOST_PROJECT_ID>
+gcloud beta container vmware admin-clusters enroll ADMIN_CLUSTER_NAME \
+   --project=FLEET_HOST_PROJECT_ID \
+   --admin-cluster-membership=projects/FLEET_HOST_PROJECT_ID/locations/global/memberships/ADMIN_CLUSTER_NAME \
+   --location=REGION
 ```
+
+This sample shows how to update the platform controller with the following 
+gcloud module:
+
+- module `gcloud-update-admin-cluster-platform-controller`: You use this module
+  to upgrade the platform controller on the admin cluster. The platform
+  controller contains one or more bundles of components that the admin cluster
+  uses to manage user clusters. The bundles are version specific, that is, the
+  platform controller must contain a bundle version that matches the Anthos on
+  VMware version of the user cluster. Before upgrading your user cluster, run
+  this module to install a bundle version on the admin cluster that matches the
+  version you are upgrading the user cluster to.
 
 Then, following the steps below to upgrade the user cluster via terraform.
 

@@ -47,12 +47,26 @@ resource "google_project_service" "default" {
   disable_on_destroy = false
 }
 
+# Update platform controller with gcloud command.
+module "gcloud-update-admin-cluster-platform-controller" {
+  source  = "terraform-google-modules/gcloud/google"
+  version = "~> 2.0"
+
+  platform = "linux"
+
+  create_cmd_entrypoint  = "gcloud"
+  create_cmd_body        = "beta container vmware admin-clusters update ${var.admin_cluster_name} --required-platform-version=${var.on_prem_version} --location ${var.region} --project ${var.project_id}"
+}
+
 # Create an anthos vmware user cluster and enroll it with the gkeonprem API
 resource "google_gkeonprem_vmware_cluster" "default" {
   name                     = var.cluster_name
   description              = "Anthos VMware user cluster with MetalLB"
   provider                 = google-beta
-  depends_on               = [google_project_service.default]
+  depends_on               = [
+    google_project_service.default,
+    module.gcloud-update-admin-cluster-platform-controller
+  ]
   location                 = var.region
   on_prem_version          = var.on_prem_version
   admin_cluster_membership = "projects/${var.project_id}/locations/global/memberships/${var.admin_cluster_name}"
