@@ -54,16 +54,16 @@ module "gcloud-update-admin-cluster-platform-controller" {
 
   platform = "linux"
 
-  create_cmd_entrypoint  = "gcloud"
-  create_cmd_body        = "beta container vmware admin-clusters update ${var.admin_cluster_name} --required-platform-version=${var.on_prem_version} --location ${var.region} --project ${var.project_id}"
+  create_cmd_entrypoint = "gcloud"
+  create_cmd_body       = "beta container vmware admin-clusters update ${var.admin_cluster_name} --required-platform-version=${var.on_prem_version} --location ${var.region} --project ${var.project_id}"
 }
 
 # Create an anthos vmware user cluster and enroll it with the gkeonprem API
 resource "google_gkeonprem_vmware_cluster" "default" {
-  name                     = var.cluster_name
-  description              = "Anthos VMware user cluster with MetalLB"
-  provider                 = google-beta
-  depends_on               = [
+  name        = var.cluster_name
+  description = "Anthos VMware user cluster with MetalLB"
+  provider    = google-beta
+  depends_on = [
     google_project_service.default,
     module.gcloud-update-admin-cluster-platform-controller
   ]
