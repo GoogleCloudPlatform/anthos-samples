@@ -9,7 +9,7 @@ that it follows the prerequisites outlined in
 the Cloud Console including registering the admin cluster and enabling admin
 activity logs and system level log/mon on the admin cluster.
 
-The minimum user cluster version for the private preview is Anthos 1.13.0.
+The minimum user cluster version for the public preview is Anthos 1.13.0.
 
 ### Create the user cluster with terraform
 
