@@ -80,7 +80,7 @@ gcloud beta container vmware admin-clusters enroll ADMIN_CLUSTER_NAME \
 This `gcloud_update_admin_cluster_platform_controller` module uses the `gcloud`
 command prepare the admin cluster to enable the user cluster upgrade.
 
-- [**`gcloud_update_admin_cluster_platform_controller`**](./main.tf#L54-L62): 
+- [**`gcloud_update_admin_cluster_platform_controller`**](./main.tf#L53-L65): 
    This module is used to ensure that the ** platform controller** of the admin cluster
    is on a compatible version. The platform controller contains one or more bundles of
    components that the admin cluster uses to manage user clusters. The bundles are
