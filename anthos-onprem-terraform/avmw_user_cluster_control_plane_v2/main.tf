@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#[START anthos_onprem_terraform_vmware_user_cluster_metallb_main]
+#[START anthos_onprem_terraform_vmware_user_cluster_control_plane_v2_main]
 module "enable_google_apis_primary" {
   source     = "terraform-google-modules/project-factory/google//modules/project_services"
   version    = "~> 14.0"
@@ -140,4 +140,4 @@ resource "google_gkeonprem_vmware_node_pool" "default" {
     google_gkeonprem_vmware_cluster.default
   ]
 }
-#[END anthos_onprem_terraform_vmware_user_cluster_metallb_main]
+#[END anthos_onprem_terraform_vmware_user_cluster_control_plane_v2_main]
