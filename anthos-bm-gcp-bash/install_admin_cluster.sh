@@ -64,11 +64,11 @@ do
   case $OPT in
     "$RUN_ALL")
       printf "\nYou chose '%s'." "$OPT"
-      printf "This will setup the GCE infrastructure and install the Anthos bare metal cluster."
+      printf "This will setup the GCE infrastructure and create an Anthos bare metal admin cluster."
       break;;
     "$SETUP_ONLY")
       printf "\nYou chose '%s'." "$OPT"
-      printf "This will only set up the GCE infrastructure; Anthos bare metal cluster installation will be skipped."
+      printf "This will only set up the GCE infrastructure; Anthos bare metal cluster creation will be skipped."
       break;;
     "$QUIT")
       printf "Exiting..."
