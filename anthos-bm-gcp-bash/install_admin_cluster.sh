@@ -357,7 +357,7 @@ spec:
       maxPodsPerNode: 250
 EOB
 
-  bmctl create cluster -c \$ADMIN_CLUSTER_NAME
+bmctl create cluster -c \$ADMIN_CLUSTER_NAME
 EOF
   # [END anthos_bm_gcp_bash_admin_install_abm]
 fi
