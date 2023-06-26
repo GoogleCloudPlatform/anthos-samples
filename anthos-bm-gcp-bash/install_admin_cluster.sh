@@ -292,69 +292,69 @@ then
   printf "🔄 Installing Anthos on bare metal...\n"
   # [START anthos_bm_gcp_bash_admin_install_abm]
   gcloud compute ssh root@"$VM_WS" --zone "${ZONE}" <<EOF
-  set -x
-  export PROJECT_ID=\$(gcloud config get-value project)
-  ADMIN_CLUSTER_NAME=\$(curl http://metadata.google.internal/computeMetadata/v1/instance/attributes/cluster_id -H "Metadata-Flavor: Google")
-  BMCTL_VERSION=\$(curl http://metadata.google.internal/computeMetadata/v1/instance/attributes/bmctl_version -H "Metadata-Flavor: Google")
-  export ADMIN_CLUSTER_NAME
-  export BMCTL_VERSION
-  bmctl create config -c \$ADMIN_CLUSTER_NAME
-  cat > bmctl-workspace/\$ADMIN_CLUSTER_NAME/\$ADMIN_CLUSTER_NAME.yaml << EOB
-  ---
-  gcrKeyPath: /root/bm-gcr.json
-  sshPrivateKeyPath: /root/.ssh/id_rsa
-  gkeConnectAgentServiceAccountKeyPath: /root/bm-gcr.json
-  gkeConnectRegisterServiceAccountKeyPath: /root/bm-gcr.json
-  cloudOperationsServiceAccountKeyPath: /root/bm-gcr.json
-  ---
-  apiVersion: v1
-  kind: Namespace
-  metadata:
-    name: cluster-\$ADMIN_CLUSTER_NAME
-  ---
-  apiVersion: baremetal.cluster.gke.io/v1
-  kind: Cluster
-  metadata:
-    name: \$ADMIN_CLUSTER_NAME
-    namespace: cluster-\$ADMIN_CLUSTER_NAME
-  spec:
-    type: admin
-    anthosBareMetalVersion: \$BMCTL_VERSION
-    gkeConnect:
-      projectID: \$PROJECT_ID
-    controlPlane:
-      nodePoolSpec:
-        clusterName: \$ADMIN_CLUSTER_NAME
-        nodes:
-        - address: 10.200.0.3
-    clusterNetwork:
-      pods:
-        cidrBlocks:
-        - 192.168.0.0/16
-      services:
-        cidrBlocks:
-        - 10.96.0.0/20
-    loadBalancer:
-      mode: bundled
-      ports:
-        controlPlaneLBPort: 443
-      vips:
-        controlPlaneVIP: 10.200.0.48
-    clusterOperations:
-      # might need to be this location
-      location: us-central1
-      projectID: \$PROJECT_ID
-    storage:
-      lvpNodeMounts:
-        path: /mnt/localpv-disk
-        storageClassName: node-disk
-      lvpShare:
-        numPVUnderSharedPath: 5
-        path: /mnt/localpv-share
-        storageClassName: local-shared
-    nodeConfig:
-      podDensity:
-        maxPodsPerNode: 250
+set -x
+export PROJECT_ID=\$(gcloud config get-value project)
+ADMIN_CLUSTER_NAME=\$(curl http://metadata.google.internal/computeMetadata/v1/instance/attributes/cluster_id -H "Metadata-Flavor: Google")
+BMCTL_VERSION=\$(curl http://metadata.google.internal/computeMetadata/v1/instance/attributes/bmctl_version -H "Metadata-Flavor: Google")
+export ADMIN_CLUSTER_NAME
+export BMCTL_VERSION
+bmctl create config -c \$ADMIN_CLUSTER_NAME
+cat > bmctl-workspace/\$ADMIN_CLUSTER_NAME/\$ADMIN_CLUSTER_NAME.yaml << EOB
+---
+gcrKeyPath: /root/bm-gcr.json
+sshPrivateKeyPath: /root/.ssh/id_rsa
+gkeConnectAgentServiceAccountKeyPath: /root/bm-gcr.json
+gkeConnectRegisterServiceAccountKeyPath: /root/bm-gcr.json
+cloudOperationsServiceAccountKeyPath: /root/bm-gcr.json
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cluster-\$ADMIN_CLUSTER_NAME
+---
+apiVersion: baremetal.cluster.gke.io/v1
+kind: Cluster
+metadata:
+  name: \$ADMIN_CLUSTER_NAME
+  namespace: cluster-\$ADMIN_CLUSTER_NAME
+spec:
+  type: admin
+  anthosBareMetalVersion: \$BMCTL_VERSION
+  gkeConnect:
+    projectID: \$PROJECT_ID
+  controlPlane:
+    nodePoolSpec:
+      clusterName: \$ADMIN_CLUSTER_NAME
+      nodes:
+      - address: 10.200.0.3
+  clusterNetwork:
+    pods:
+      cidrBlocks:
+      - 192.168.0.0/16
+    services:
+      cidrBlocks:
+      - 10.96.0.0/20
+  loadBalancer:
+    mode: bundled
+    ports:
+      controlPlaneLBPort: 443
+    vips:
+      controlPlaneVIP: 10.200.0.48
+  clusterOperations:
+    # might need to be this location
+    location: us-central1
+    projectID: \$PROJECT_ID
+  storage:
+    lvpNodeMounts:
+      path: /mnt/localpv-disk
+      storageClassName: node-disk
+    lvpShare:
+      numPVUnderSharedPath: 5
+      path: /mnt/localpv-share
+      storageClassName: local-shared
+  nodeConfig:
+    podDensity:
+      maxPodsPerNode: 250
 EOB
 
   bmctl create cluster -c \$ADMIN_CLUSTER_NAME
