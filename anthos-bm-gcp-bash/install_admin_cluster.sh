@@ -286,7 +286,7 @@ EOF
 printf "✅ Successfully set up SSH access from admin workstation to cluster node VMs.\n\n"
 
 
-if [[ "$OPT" = "$RUN_ALL" ]];
+if [[ "$OPT" == "$RUN_ALL" ]];
 then
   # initiate Anthos on bare metal installation from the admin workstation
   printf "🔄 Installing Anthos on bare metal...\n"
@@ -355,14 +355,14 @@ then
     nodeConfig:
       podDensity:
         maxPodsPerNode: 250
-  EOB
+EOB
 
   bmctl create cluster -c \$ADMIN_CLUSTER_NAME
 EOF
   # [END anthos_bm_gcp_bash_admin_install_abm]
 fi
 
-if [[ "$OPT" = "$SETUP_ONLY" ]];
+if [[ "$OPT" == "$SETUP_ONLY" ]];
 then
   # [START anthos_bm_gcp_bash_admin_gce_info_setup_only]
   printf "✅ GCE Infrastructure setup complete. Please check the logs for any errors!!!\n\n"
