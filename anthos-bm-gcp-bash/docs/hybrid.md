@@ -32,6 +32,8 @@ explanation of all the steps included in this script.
     ```sh
     export PROJECT_ID=<GCP_PROJECT_TO_USE>
     export ZONE=<GCP_ZONE_TO_USE>
+    export CLUSTER_NAME=<CLUSTER_NAME>
+    export BMCTL_VERSION=<BMCTL_VERSERION>
     ```
 
 3. Run the installation script.
@@ -73,7 +75,7 @@ explanation of all the steps included in this script.
 
     + export PROJECT_ID=abm-test-project
     + PROJECT_ID=abm-test-project
-    + export clusterid=cluster-1
+    + export CLUSTER_NAME=cluster-1
     + clusterid=cluster-1
     + bmctl create config -c cluster-1
     [2022-10-04 19:09:08+0000] Created config: bmctl-workspace/cluster-1/cluster-1.yaml
