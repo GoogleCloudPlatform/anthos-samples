@@ -52,7 +52,7 @@ resource "google_project_service" "default" {
 # already on the correct version, then this module does not change anything
 module "gcloud_update_admin_cluster_platform_controller" {
   source                = "terraform-google-modules/gcloud/google"
-  version               = "~> 2.0"
+  version               = "~> 3.0"
   platform              = "linux"
   create_cmd_entrypoint = "gcloud"
   create_cmd_body       = <<EOT
