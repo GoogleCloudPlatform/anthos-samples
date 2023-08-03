@@ -9,6 +9,7 @@
 # the Onyx GKE Observability team (go/onyx-observability)
 /aws-logging-monitoring/          @GoogleCloudPlatform/onyx-gke-observability @yoshi-approver
 /attached-logging-monitoring/     @GoogleCloudPlatform/onyx-gke-observability @yoshi-approver
+/gmp-grafana-dashboards/          @GoogleCloudPlatform/onyx-gke-observability @yoshi-approver
 /anthos-multi-cloud/		  @GoogleCloudPlatform/anthos-multicloud @yoshi-approver
 /anthos-bm-utils/		  @GoogleCloudPlatform/anthos-baremetal-eng @yoshi-approver
 /anthos-bm-apigee/		  @GoogleCloudPlatform/app-mod-customer-engineers @yoshi-approver
