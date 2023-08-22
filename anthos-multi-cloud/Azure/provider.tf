@@ -17,7 +17,8 @@
 terraform {
   required_providers {
     azuread = {
-      source = "hashicorp/azuread"
+      source  = "hashicorp/azuread"
+      version = ">= 2.14.0"
     }
     azurerm = {
       source = "hashicorp/azurerm"
@@ -35,8 +36,12 @@ provider "azurerm" {
 }
 
 provider "azuread" {
-  version = ">= 2.14.0"
+  /**
+   * update this block with your default Azure Active Directory information
+   * like tenant_id or client_id.
+   */
 }
+
 provider "google" {
   project = var.gcp_project_id
 }

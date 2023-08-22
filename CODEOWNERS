@@ -3,12 +3,13 @@
 
 # These owners will be the default owners for everything in
 # the repo. Unless a later match takes precedence.
-*                                 @GoogleCloudPlatform/anthos-dpe
+*                                 @GoogleCloudPlatform/anthos-dpe @yoshi-approver
 
 # The samples specific to observability and monitoring should be reviewed by
 # the Onyx GKE Observability team (go/onyx-observability)
-/aws-logging-monitoring/          @GoogleCloudPlatform/onyx-gke-observability
-/attached-logging-monitoring/     @GoogleCloudPlatform/onyx-gke-observability
-/anthos-multi-cloud/		  @GoogleCloudPlatform/anthos-multicloud
-/anthos-bm-utils/		  @GoogleCloudPlatform/anthos-baremetal-eng
-/anthos-bm-apigee/		  @GoogleCloudPlatform/app-mod-customer-engineers
+/aws-logging-monitoring/          @GoogleCloudPlatform/onyx-gke-observability @yoshi-approver
+/attached-logging-monitoring/     @GoogleCloudPlatform/onyx-gke-observability @yoshi-approver
+/gmp-grafana-dashboards/          @GoogleCloudPlatform/onyx-gke-observability @yoshi-approver
+/anthos-multi-cloud/		  @GoogleCloudPlatform/anthos-multicloud @yoshi-approver
+/anthos-bm-utils/		  @GoogleCloudPlatform/anthos-baremetal-eng @yoshi-approver
+/anthos-bm-apigee/		  @GoogleCloudPlatform/app-mod-customer-engineers @yoshi-approver

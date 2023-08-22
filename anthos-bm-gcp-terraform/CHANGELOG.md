@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.15.1](https://github.com/GoogleCloudPlatform/anthos-samples/compare/v0.15.0...v0.15.1) (2023-07-27)
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/stretchr/testify to v1.8.4 ([#628](https://github.com/GoogleCloudPlatform/anthos-samples/issues/628)) ([df5cdc2](https://github.com/GoogleCloudPlatform/anthos-samples/commit/df5cdc2450de2719fec854d64dda5ec11799ea2b))
+
+## [0.15.0](https://github.com/GoogleCloudPlatform/anthos-samples/compare/v0.14.0...v0.15.0) (2023-06-29)
+
+
+### Features
+
+* add user cluster create with terraform sample (metallb) ([#593](https://github.com/GoogleCloudPlatform/anthos-samples/issues/593)) ([eecb1da](https://github.com/GoogleCloudPlatform/anthos-samples/commit/eecb1da249ac6a2deab32402137c4421714ab6d7))
+
 ## [0.14.0](https://github.com/GoogleCloudPlatform/anthos-samples/compare/v0.13.1...v0.14.0) (2023-02-08)
 
 

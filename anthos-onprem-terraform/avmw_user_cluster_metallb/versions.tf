@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 
 terraform {
-  required_version = ">= v0.15.5, < 1.5" # this line should not change during a release
+  required_version = ">= v0.15.5, < 1.4" # this line should not change during a release
   required_providers {
     google = {
       source  = "hashicorp/google"
@@ -28,20 +28,16 @@ terraform {
   }
 
   provider_meta "google" {
-    module_name = "anthos-samples/terraform/anthos-bm-terraform:gce/v0.15.1"
+    module_name = "anthos-samples/anthos-onprem/vmware/user-cluster:metallb/v0.0.1"
   }
 }
 
 provider "google" {
-  project     = var.project_id
-  region      = var.region
-  zone        = var.zone
-  credentials = file(var.credentials_file)
+  project = var.project_id
+  region  = var.region
 }
 
 provider "google-beta" {
-  project     = var.project_id
-  region      = var.region
-  zone        = var.zone
-  credentials = file(var.credentials_file)
+  project = var.project_id
+  region  = var.region
 }
