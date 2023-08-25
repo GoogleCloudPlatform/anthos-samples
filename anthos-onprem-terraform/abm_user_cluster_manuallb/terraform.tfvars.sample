@@ -1,0 +1,14 @@
+#[START anthos_onprem_terraform_bare_metal_user_cluster_manuallb_tfvars]
+
+project_id          = "PROJECT_ID"
+region              = "ON_PREM_API_REGION"
+admin_cluster_name  = "ADMIN_CLUSTER_NAME"
+cluster_name        = "YOUR_USER_CLUSTER_NAME"
+bare_metal_version  = "VERSION"
+control_plane_ips   = ["CONTROLPLANE_IP_1", "CONTROLPLANE_IP_2", "CONTROLPLANE_IP_3"]
+worker_node_ips     = ["WORKER_IP_1", "WORKER_IP_2"]
+control_plane_vip   = "CONTROLPLANE_VIRTUAL_IP"
+ingress_vip         = "INGRESS_VIRTUAL_IP"
+admin_user_emails   = ["YOUR_EMAIL_ADDRESS", "ADMIN_2_EMAIL_ADDRESS"]
+
+#[END anthos_onprem_terraform_bare_metal_user_cluster_manuallb_tfvars]
