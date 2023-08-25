@@ -47,12 +47,32 @@ resource "google_project_service" "default" {
   disable_on_destroy = false
 }
 
+# This module is used to update the platform controller on your admin cluster. This
+# is a necessary step for the user cluster version update. If the admin cluster is 
+# already on the correct version, then this module does not change anything
+module "gcloud_update_admin_cluster_platform_controller" {
+  source                = "terraform-google-modules/gcloud/google"
+  version               = "~> 3.0"
+  platform              = "linux"
+  create_cmd_entrypoint = "gcloud"
+  create_cmd_body       = <<EOT
+    beta container vmware admin-clusters               \
+    update ${var.admin_cluster_name}                   \
+    --required-platform-version=${var.on_prem_version} \
+    --project ${var.project_id}                        \
+    --location ${var.region}
+  EOT
+}
+
 # Create an anthos vmware user cluster and enroll it with the gkeonprem API
 resource "google_gkeonprem_vmware_cluster" "default" {
-  name                     = var.cluster_name
-  description              = "Anthos VMware user cluster with MetalLB"
-  provider                 = google-beta
-  depends_on               = [google_project_service.default]
+  name        = var.cluster_name
+  description = "Anthos VMware user cluster with MetalLB"
+  provider    = google-beta
+  depends_on = [
+    google_project_service.default,
+    module.gcloud_update_admin_cluster_platform_controller
+  ]
   location                 = var.region
   on_prem_version          = var.on_prem_version
   admin_cluster_membership = "projects/${var.project_id}/locations/global/memberships/${var.admin_cluster_name}"

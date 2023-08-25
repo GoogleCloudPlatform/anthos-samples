@@ -9,7 +9,7 @@ that it follows the prerequisites outlined in
 the Cloud Console including registering the admin cluster and enabling admin
 activity logs and system level log/mon on the admin cluster.
 
-The minimum user cluster version for the private preview is Anthos 1.13.0.
+The minimum user cluster version for the public preview is Anthos 1.13.0.
 
 ### Create the user cluster with terraform
 
@@ -58,19 +58,36 @@ have changed directory to where this samples is:
 
 ### Upgrade the user cluster with terraform
 
-Before upgrading the user cluster, please make sure the admin cluster platform
-controller has been upgraded to the target version. The steps to upgrade the
-admin cluster platform controller is listed in the
-[public documentation](https://cloud.google.com/anthos/clusters/docs/on-prem/latest/how-to/upgrade-on-prem-api#available_versions_for_upgrades).
+Use the same terraform script to upgrade the user cluster, by simply changing 
+the version to the new version. Note that this script can be used for upgrades 
+only if you had created the user cluster using this script. When you run the 
+script with the updated version, the `terraform.tfstate` created during the 
+first run of the script is compared to recognize the change.
 
-An example is shown below:
+Before upgrading the user cluster, please make sure the admin cluster has been 
+enrolled in the Anthos On-Prem API. Steps for enrolling the admin cluster are
+listed in [public documentation](https://cloud.google.com/anthos/clusters/docs/on-prem/latest/how-to/enroll-cluster#enroll_a_cluster).
+
+An example using gcloud command to enroll the admin cluster is shown below:
 
 ```bash
-gcloud beta container vmware admin-clusters update <ADMIN_CLUSTER_ID> \
-  --required-platform-version=<TARGET_VERSION> \
-  --location <REGION> \
-  --project <FLEET_HOST_PROJECT_ID>
+gcloud beta container vmware admin-clusters enroll ADMIN_CLUSTER_NAME \
+   --project=FLEET_HOST_PROJECT_ID \
+   --admin-cluster-membership=projects/FLEET_HOST_PROJECT_ID/locations/global/memberships/ADMIN_CLUSTER_NAME \
+   --location=REGION
 ```
+
+This `gcloud_update_admin_cluster_platform_controller` module uses the `gcloud`
+command prepare the admin cluster to enable the user cluster upgrade.
+
+- [**`gcloud_update_admin_cluster_platform_controller`**](./main.tf#L53-L65): 
+   This module is used to ensure that the ** platform controller** of the admin cluster
+   is on a compatible version. The platform controller contains one or more bundles of
+   components that the admin cluster uses to manage user clusters. The bundles are
+   version specific, that is, the platform controller must contain a bundle version that
+   matches the _Anthos on VMware version of the user cluster_.  Thus, by having this
+   module in the script we ensure that the platform controller in the admin cluster is 
+   always on the correct user cluster version. 
 
 Then, following the steps below to upgrade the user cluster via terraform.
 

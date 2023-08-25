@@ -13,8 +13,8 @@ For more information, see the reference documentation for each resource.
 
 | Type             | Sample _(by loadbalancer type)_                  | Terraform resources | 
 | ---------------- | ----------------------------------------------   | ------------------- |
-| **user** cluster | Bundled [MetalLB](./abm_user_cluster_metallb/)   | [google_gkeonprem_bare_metal_cluster](https://registry.terraform.io/providers/hashicorp/google-beta/latest/docs/resources/gkeonprem_bare_metal_cluster) </br> [google_gkeonprem_vmware_node_pool](https://registry.terraform.io/providers/hashicorp/google-beta/latest/docs/resources/gkeonprem_vmware_node_pool) | 
-| **user** cluster | Bundled [ManualLB](./abm_user_cluster_manuallb/) | [google_gkeonprem_bare_metal_cluster](https://registry.terraform.io/providers/hashicorp/google-beta/latest/docs/resources/gkeonprem_bare_metal_cluster) </br> [google_gkeonprem_vmware_node_pool](https://registry.terraform.io/providers/hashicorp/google-beta/latest/docs/resources/gkeonprem_vmware_node_pool) | 
+| **user** cluster | Bundled [MetalLB](./abm_user_cluster_metallb/)   | [google_gkeonprem_bare_metal_cluster](https://registry.terraform.io/providers/hashicorp/google-beta/latest/docs/resources/gkeonprem_bare_metal_cluster) </br> [google_gkeonprem_bare_metal_node_pool](https://registry.terraform.io/providers/hashicorp/google-beta/latest/docs/resources/gkeonprem_bare_metal_node_pool) | 
+| **user** cluster | [ManualLB](./abm_user_cluster_manuallb/)         | [google_gkeonprem_bare_metal_cluster](https://registry.terraform.io/providers/hashicorp/google-beta/latest/docs/resources/gkeonprem_bare_metal_cluster) </br> [google_gkeonprem_bare_metal_node_pool](https://registry.terraform.io/providers/hashicorp/google-beta/latest/docs/resources/gkeonprem_bare_metal_node_pool) | 
 
 ---
 
