@@ -15,7 +15,7 @@
  */
 
 terraform {
-  required_version = ">= v0.15.1, < 1.4" # this line should not change during a release
+  required_version = ">= v0.15.1, < 1.6" # this line should not change during a release
   required_providers {
     google = {
       source  = "hashicorp/google"
