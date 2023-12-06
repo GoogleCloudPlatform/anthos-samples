@@ -25,8 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: ${{github.event.pull_request.head.ref}}
-          repository: ${{github.event.pull_request.head.repo.full_name}}
+          ref: ${{github.event.pull_request.head.sha}}
       - name: License Check
         run: |
           addlicense -check -ignore anthos-bm-openstack-terraform/resources/cloud-config.yaml ./
@@ -63,8 +62,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: ${{github.event.pull_request.head.ref}}
-          repository: ${{github.event.pull_request.head.repo.full_name}}
+          ref: ${{github.event.pull_request.head.sha}}
       - name: Terraform Validate
         timeout-minutes: 20
         env:
@@ -86,8 +84,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: ${{github.event.pull_request.head.ref}}
-          repository: ${{github.event.pull_request.head.repo.full_name}}
+          ref: ${{github.event.pull_request.head.sha}}
       - name: Golang unit tests
         timeout-minutes: 20
         env:
