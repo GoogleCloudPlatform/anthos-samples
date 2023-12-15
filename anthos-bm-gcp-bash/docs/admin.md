@@ -34,6 +34,8 @@ _(which is specific to an admin cluster)_.
     export PROJECT_ID=<GCP_PROJECT_TO_USE>
     export ZONE=<GCP_ZONE_TO_USE>
     export ADMIN_CLUSTER_NAME=<NAME_FOR_THE_CLUSTER>
+    export BMCTL_VERSION=<ANTHOS_BAREMETAL_VERSION>
+
     ```
 
 3. Run the installation script.
