@@ -39,6 +39,7 @@ explanation of all the steps included in this script.
 3. Run the installation script.
 
     ```sh
+    chmod +x install_hybrid_cluster.sh
     bash install_hybrid_cluster.sh
     ```
     ```sh

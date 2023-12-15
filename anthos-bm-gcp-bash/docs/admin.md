@@ -40,6 +40,7 @@ _(which is specific to an admin cluster)_.
 3. Run the installation script.
 
     ```sh
+    chmod +x install_admin_cluster.sh
     bash install_admin_cluster.sh
     ```
     ```sh
