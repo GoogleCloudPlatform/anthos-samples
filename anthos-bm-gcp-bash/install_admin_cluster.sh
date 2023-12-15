@@ -181,6 +181,7 @@ for vm in "${VMs[@]}"
 do
     gcloud compute instances create "$vm" \
       --image-family=ubuntu-2004-lts --image-project=ubuntu-os-cloud \
+      --project=${PROJECT_ID} \
       --zone="${ZONE}" \
       --boot-disk-size 200G \
       --boot-disk-type pd-ssd \
@@ -191,7 +192,7 @@ do
       --scopes cloud-platform \
       --machine-type "$MACHINE_TYPE" \
       --metadata "cluster_id=${ADMIN_CLUSTER_NAME},bmctl_version=${BMCTL_VERSION}"
-    IP=$(gcloud compute instances describe "$vm" --zone "${ZONE}" \
+    IP=$(gcloud compute instances describe "$vm" --project=${PROJECT_ID} --zone=${ZONE} \
         --format='get(networkInterfaces[0].networkIP)')
     IPs+=("$IP")
 done
@@ -203,7 +204,7 @@ printf "🔄 Checking SSH access to the GCE VMs...\n"
 # [START anthos_bm_gcp_bash_admin_check_ssh]
 for vm in "${VMs[@]}"
 do
-    while ! gcloud compute ssh root@"$vm" --zone "${ZONE}" --command "printf SSH to $vm succeeded"
+    while ! gcloud compute ssh root@"$vm" --project=${PROJECT_ID} --zone=${ZONE} --command "printf SSH to $vm succeeded"
     do
         printf "Trying to SSH into %s failed. Sleeping for 5 seconds. zzzZZzzZZ" "$vm"
         sleep  5
@@ -219,7 +220,7 @@ printf "🔄 Setting up VxLAN in the GCE VMs...\n"
 i=2 # We start from 10.200.0.2/24
 for vm in "${VMs[@]}"
 do
-gcloud compute ssh root@"$vm" --zone "${ZONE}" << EOF
+gcloud compute ssh root@"$vm" --project=${PROJECT_ID} --zone=${ZONE} << EOF
     apt-get -qq update > /dev/null
     apt-get -qq install -y jq > /dev/null
     set -x
@@ -242,7 +243,7 @@ printf "✅ Successfully setup VxLAN in the GCE VMs.\n\n"
 # install the necessary tools inside the VMs
 printf "🔄 Setting up admin workstation...\n"
 # [START anthos_bm_gcp_bash_admin_init_vm]
-gcloud compute ssh root@$VM_WS --zone "${ZONE}" << EOF
+gcloud compute ssh root@$VM_WS --project=${PROJECT_ID} --zone=${ZONE} << EOF
 set -x
 
 export PROJECT_ID=\$(gcloud config get-value project)
@@ -273,13 +274,13 @@ printf "✅ Successfully set up admin workstation.\n\n"
 # to all the other (control-plane and worker) VMs
 printf "🔄 Setting up SSH access from admin workstation to cluster node VMs...\n"
 # [START anthos_bm_gcp_bash_admin_add_ssh_keys]
-gcloud compute ssh root@$VM_WS --zone "${ZONE}" << EOF
+gcloud compute ssh root@$VM_WS --project=${PROJECT_ID} --zone=${ZONE} << EOF
 set -x
 ssh-keygen -t rsa -N "" -f /root/.ssh/id_rsa
 sed 's/ssh-rsa/root:ssh-rsa/' ~/.ssh/id_rsa.pub > ssh-metadata
 for vm in ${VMs[@]}
 do
-    gcloud compute instances add-metadata \$vm --zone ${ZONE} --metadata-from-file ssh-keys=ssh-metadata
+    gcloud compute instances add-metadata \$vm --project=${PROJECT_ID} --zone=${ZONE} --metadata-from-file ssh-keys=ssh-metadata
 done
 EOF
 # [END anthos_bm_gcp_bash_admin_add_ssh_keys]
@@ -291,7 +292,7 @@ then
   # initiate Anthos on bare metal installation from the admin workstation
   printf "🔄 Installing Anthos on bare metal...\n"
   # [START anthos_bm_gcp_bash_admin_install_abm]
-  gcloud compute ssh root@"$VM_WS" --zone "${ZONE}" <<EOF
+  gcloud compute ssh root@"$VM_WS" --project=${PROJECT_ID} --zone=${ZONE} <<EOF
 set -x
 export PROJECT_ID=\$(gcloud config get-value project)
 ADMIN_CLUSTER_NAME=\$(curl http://metadata.google.internal/computeMetadata/v1/instance/attributes/cluster_id -H "Metadata-Flavor: Google")
