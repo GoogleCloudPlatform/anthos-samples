@@ -33,7 +33,7 @@ explanation of all the steps included in this script.
     export PROJECT_ID=<GCP_PROJECT_TO_USE>
     export ZONE=<GCP_ZONE_TO_USE>
     export CLUSTER_NAME=<CLUSTER_NAME>
-    export BMCTL_VERSION=<BMCTL_VERSERION>
+    export BMCTL_VERSION=<BMCTL_VERSION>
     ```
 
 3. Run the installation script.
