@@ -7,7 +7,10 @@ https://cloud.google.com/anthos/clusters/docs/multi-cloud/aws/reference/supporte
 */
 node_pool_instance_type     = "t3.medium"
 control_plane_instance_type = "t3.medium"
-cluster_version             = "1.25.5-gke.2000"
+/* supported versions
+https://cloud.google.com/anthos/clusters/docs/multi-cloud/aws/reference/supported-versions
+*/
+cluster_version             = "1.28.3-gke.700"
 /*
 Use 'gcloud container aws get-server-config --location [gcp-region]' to see Availability --
 https://cloud.google.com/anthos/clusters/docs/multi-cloud/aws/reference/supported-regions
