@@ -33,12 +33,16 @@ spec:
     spec:
       containers:
       - name: echoserver
-        image: gcr.io/anthos-baremetal-release/simplehttpserver:v0.3.3__linux_amd64
+        image: gcr.io/anthos-baremetal-release/simplehttpserver:v0.3.7-gke.9__linux_amd64
         imagePullPolicy: IfNotPresent
+        args: ["--port=9222"]
         ports:
-        - containerPort: 8080
+        - containerPort: 9222
       tolerations:
         - key: node-role.kubernetes.io/master
+          operator: Exists
+          effect: NoSchedule
+        - key: node-role.kubernetes.io/control-plane
           operator: Exists
           effect: NoSchedule
 ---
@@ -59,12 +63,16 @@ spec:
       hostNetwork: true
       containers:
       - name: echoserver
-        image: gcr.io/anthos-baremetal-release/simplehttpserver:v0.3.3__linux_amd64
+        image: gcr.io/anthos-baremetal-release/simplehttpserver:v0.3.7-gke.9__linux_amd64
         imagePullPolicy: IfNotPresent
+        args: ["--port=9222"]
         ports:
-        - containerPort: 8080
+        - containerPort: 9222
       tolerations:
         - key: node-role.kubernetes.io/master
+          operator: Exists
+          effect: NoSchedule
+        - key: node-role.kubernetes.io/control-plane
           operator: Exists
           effect: NoSchedule
 ---
@@ -76,7 +84,7 @@ metadata:
 spec:
   ports:
   - port: 80
-    targetPort: 8080
+    targetPort: 9222
     protocol: TCP
   selector:
     run: echoserver-non-hostnetwork
@@ -89,7 +97,7 @@ metadata:
 spec:
   ports:
   - port: 80
-    targetPort: 8080
+    targetPort: 9222
     protocol: TCP
   selector:
     run: echoserver-hostnetwork
@@ -251,7 +259,7 @@ metadata:
 spec:
   containers:
   - name: nettest
-    image: gcr.io/anthos-baremetal-release/nettest:v0.3.3__linux_amd64
+    image: gcr.io/anthos-baremetal-release/nettest:v0.3.7-gke.9__linux_amd64
     imagePullPolicy: IfNotPresent
     command: ["/nettest"]
     args: ["-v=2", "-alsologtostderr", "-engine_config=/cfg/engine.yaml"]
