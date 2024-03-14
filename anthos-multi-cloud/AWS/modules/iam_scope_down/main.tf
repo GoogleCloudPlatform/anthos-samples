@@ -81,6 +81,15 @@ data "aws_iam_policy_document" "api_iam_policy_document" {
       values   = ["autoscaling.amazonaws.com"]
     }
   }
+  statement {
+    effect = "Allow"
+    actions = [
+      "iam:GetInstanceProfile",
+    ]
+    resources = [
+      "arn:aws:iam::*:instance-profile/*",
+    ]
+  }
   // Allow passing IAM roles to EC2.
   statement {
     effect = "Allow"
