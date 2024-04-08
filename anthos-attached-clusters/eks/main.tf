@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 locals {
   tags = {
     "owner" = var.owner
@@ -86,7 +86,7 @@ module "attached_install_manifest" {
   }
   # Ensure the node group and route are destroyed after we uninstall the manifest.
   # `terraform destroy` will fail if the module can't access the cluster to clean up.
-  depends_on = [ 
+  depends_on = [
     aws_eks_node_group.node,
     aws_route.public_internet_gateway,
     aws_route_table_association.public,

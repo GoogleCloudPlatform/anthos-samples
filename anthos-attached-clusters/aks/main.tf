@@ -77,8 +77,8 @@ module "attached_install_manifest" {
   providers = {
     helm = helm.bootstrap_installer
   }
-  depends_on = [ 
-    azurerm_kubernetes_cluster.aks 
+  depends_on = [
+    azurerm_kubernetes_cluster.aks
   ]
 }
 

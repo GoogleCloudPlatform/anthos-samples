@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 variable "owner" {
   description = "Owner of the resources"
   type        = string
@@ -21,7 +21,7 @@ variable "owner" {
 
 variable "name_prefix" {
   description = "Common prefix to use for generating names"
-  type    = string
+  type        = string
 }
 
 variable "aws_region" {

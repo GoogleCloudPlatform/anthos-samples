@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 locals {
-  temp_dir = var.temp_dir == "" ? "${path.root}/.tmp" : var.temp_dir
-  helm_chart_name = "attached-bootstrap"
+  temp_dir           = var.temp_dir == "" ? "${path.root}/.tmp" : var.temp_dir
+  helm_chart_name    = "attached-bootstrap"
   module_install_dir = "${var.gcp_location}-${var.platform_version}"
-  helm_chart_dir  = "${local.temp_dir}/${local.module_install_dir}/bootstrap_helm_chart"
+  helm_chart_dir     = "${local.temp_dir}/${local.module_install_dir}/bootstrap_helm_chart"
 }
 
 # Get the install manifest from the attached clusters service.

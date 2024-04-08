@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 terraform {
   required_providers {
     azurerm = {
-      source = "hashicorp/azurerm"
+      source  = "hashicorp/azurerm"
       version = ">=3.17.0"
     }
     google = {
-      source = "hashicorp/google"
+      source  = "hashicorp/google"
       version = ">=5.0.0"
     }
     helm = {
-      source  = "hashicorp/helm"
+      source = "hashicorp/helm"
     }
   }
   required_version = ">= 0.13"

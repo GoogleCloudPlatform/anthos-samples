@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 resource "aws_vpc" "this" {
   cidr_block           = var.vpc_cidr_block
   enable_dns_hostnames = true
@@ -36,7 +36,7 @@ resource "aws_subnet" "public" {
     "kubernetes.io/cluster/${local.cluster_name}" = "shared"
   })
 
-  depends_on = [ aws_internet_gateway.this ]
+  depends_on = [aws_internet_gateway.this]
 }
 
 resource "aws_internet_gateway" "this" {
