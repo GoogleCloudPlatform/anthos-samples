@@ -54,6 +54,7 @@ jobs:
         # list of directories in the repo that hosts Terraform samples
         # update this list as new terraform samples are added to the repo
         tf-sample: [
+          'anthos-attached-clusters',
           'anthos-bm-gcp-terraform',
           'anthos-bm-openstack-terraform',
           'anthos-multi-cloud/AWS',
