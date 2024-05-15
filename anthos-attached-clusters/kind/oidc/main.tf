@@ -7,7 +7,7 @@ data "http" "issuer" {
 
   url = "${var.endpoint}/.well-known/openid-configuration"
   request_headers = {
-    content-type = "application/jwk-set+json"
+    content-type = "application/json"
   }
 
   ca         = var.cluster_ca_certificate
