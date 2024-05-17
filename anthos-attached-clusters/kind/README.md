@@ -42,7 +42,7 @@ The other examples and module limit dependanices to terraform core providers, bu
            --project=stevenlinde-adhoc-2024-030 \
            --membership=${CLUSTER} \
            --role=${ROLE} \
-           --users=${USER}
+           --users=${PRINCIPAL}
            
     gcloud container fleet  memberships get-credentials ${CLUSTER}  --project ${PROJECT} 
     
