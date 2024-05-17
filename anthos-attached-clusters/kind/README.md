@@ -30,9 +30,10 @@ The other examples and module limit dependanices to terraform core providers, bu
 
     PROJECT=$(echo google_container_attached_cluster.primary.project | terraform console | tr -d '"')
     CLUSTER=$(echo google_container_attached_cluster.primary.name | terraform console | tr -d '"')
-
-    USER=[principal]
     KUBECONFIG=$(echo kind_cluster.cluster.kubeconfig_path | terraform console | tr -d '"')
+
+    # set this to whomever you'd like to grant access
+    PRINCIPAL=update.this@example.com
     # set this whatever role you intend
     ROLE=clusterrole/cluster-admin
 
