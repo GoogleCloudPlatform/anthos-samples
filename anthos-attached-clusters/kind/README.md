@@ -39,7 +39,7 @@ The other examples and module limit dependanices to terraform core providers, bu
 
     gcloud container fleet memberships generate-gateway-rbac --apply \
            --kubeconfig ${KUBECONFIG} --context=kind-${CLUSTER} \
-           --project=stevenlinde-adhoc-2024-030 \
+           --project=${PROJECT} \
            --membership=${CLUSTER} \
            --role=${ROLE} \
            --users=${PRINCIPAL}
