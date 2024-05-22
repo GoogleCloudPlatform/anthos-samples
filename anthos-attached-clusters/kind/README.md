@@ -5,7 +5,7 @@ The sample is meant just to provide a local example for experimentation. It assu
 
 ## A note on providers
 
-The other examples and module limit dependanices to terraform core providers, but this example takes advantage of some community supplied [providers](provider.tf). They're widely used for their purpose, but please review and consider.
+The other examples and module limit dependancies to terraform core providers, but this example takes advantage of some community supplied [providers](provider.tf). They're widely used for their purpose, but please review and consider.
 
 ## Usage
 
