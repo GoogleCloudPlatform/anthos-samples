@@ -106,6 +106,7 @@ data "aws_iam_policy_document" "api_policy_document" {
       "elasticloadbalancing:RemoveTags",
       "iam:AWSServiceName",
       "iam:CreateServiceLinkedRole",
+      "iam:GetInstanceProfile",
       "iam:PassRole",
     ]
     resources = ["*"]
