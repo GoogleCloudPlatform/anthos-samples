@@ -115,6 +115,8 @@ gcloud services enable \
     stackdriver.googleapis.com \
     monitoring.googleapis.com \
     logging.googleapis.com \
+    kubernetesmetadata.googleapis.com  \
+    iam.googleapis.com \
     opsconfigmonitoring.googleapis.com
 # [END anthos_bm_gcp_bash_admin_enable_api]
 printf "✅ Successfully enabled GCP Service APIs.\n\n"
@@ -156,6 +158,12 @@ gcloud projects add-iam-policy-binding "$PROJECT_ID" \
   --member="serviceAccount:baremetal-gcr@$PROJECT_ID.iam.gserviceaccount.com" \
   --role="roles/opsconfigmonitoring.resourceMetadata.writer" \
   --no-user-output-enabled
+
+gcloud projects add-iam-policy-binding PROJECT_ID \
+    --member="serviceAccount:baremetal-gcr@$PROJECT_ID.iam.gserviceaccount.com" \
+    --role="roles/kubernetesmetadata.publisher" \
+    --no-user-output-enabled 
+
 # [END anthos_bm_gcp_bash_admin_add_iam_role]
 printf "✅ Successfully added the requires IAM roles to the Service Account.\n\n"
 
