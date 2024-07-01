@@ -12,58 +12,58 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: Scorecards supply-chain security
-on:
-  # Only the default branch is supported.
-  branch_protection_rule:
-  schedule:
-    - cron: '32 17 * * 1'
-  push:
-    branches: [ main ]
+# name: Scorecards supply-chain security
+# on:
+#   # Only the default branch is supported.
+#   branch_protection_rule:
+#   schedule:
+#     - cron: '32 17 * * 1'
+#   push:
+#     branches: [ main ]
 
-# Declare default permissions as read only.
-permissions: read-all
+# # Declare default permissions as read only.
+# permissions: read-all
 
-jobs:
-  analysis:
-    name: Scorecards analysis
-    runs-on: ubuntu-latest
-    permissions:
-      # Needed to upload the results to code-scanning dashboard.
-      security-events: write
-      actions: read
-      contents: read
+# jobs:
+#   analysis:
+#     name: Scorecards analysis
+#     runs-on: ubuntu-latest
+#     permissions:
+#       # Needed to upload the results to code-scanning dashboard.
+#       security-events: write
+#       actions: read
+#       contents: read
 
-    steps:
-      - name: "Checkout code"
-        uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
-        with:
-          persist-credentials: false
+#     steps:
+#       - name: "Checkout code"
+#         uses: actions/checkout@cd7d8d697e10461458bc61a30d094dc601a8b017
+#         with:
+#           persist-credentials: false
 
-      - name: "Run analysis"
-        uses: ossf/scorecard-action@fc268b13a8e514322ba05e124eb75f88ac3a1b51
-        with:
-          results_file: results.sarif
-          results_format: sarif
-          # Read-only PAT token. To create it,
-          # follow the steps in https://github.com/ossf/scorecard-action#pat-token-creation.
-          repo_token: ${{ secrets.SCORECARD_READ_TOKEN }}
-          # Publish the results to enable scorecard badges. For more details, see
-          # https://github.com/ossf/scorecard-action#publishing-results.
-          # For private repositories, `publish_results` will automatically be set to `false`,
-          # regardless of the value entered here.
-          publish_results: true
+#       - name: "Run analysis"
+#         uses: ossf/scorecard-action@fc268b13a8e514322ba05e124eb75f88ac3a1b51
+#         with:
+#           results_file: results.sarif
+#           results_format: sarif
+#           # Read-only PAT token. To create it,
+#           # follow the steps in https://github.com/ossf/scorecard-action#pat-token-creation.
+#           repo_token: ${{ secrets.SCORECARD_READ_TOKEN }}
+#           # Publish the results to enable scorecard badges. For more details, see
+#           # https://github.com/ossf/scorecard-action#publishing-results.
+#           # For private repositories, `publish_results` will automatically be set to `false`,
+#           # regardless of the value entered here.
+#           publish_results: true
 
-      # Upload the results as artifacts (optional).
-      - name: "Upload artifact"
-        uses: actions/upload-artifact@ef09cdac3e2d3e60d8ccadda691f4f1cec5035cb
-        with:
-          name: SARIF file
-          path: results.sarif
-          retention-days: 5
+#       # Upload the results as artifacts (optional).
+#       - name: "Upload artifact"
+#         uses: actions/upload-artifact@ef09cdac3e2d3e60d8ccadda691f4f1cec5035cb
+#         with:
+#           name: SARIF file
+#           path: results.sarif
+#           retention-days: 5
 
-      # Upload the results to GitHub's code scanning dashboard.
-      - name: "Upload to code-scanning"
-        uses: github/codeql-action/upload-sarif@99c9897648dded3fe63d6f328c46089dd57735ca
-        with:
-          sarif_file: results.sarif
+#       # Upload the results to GitHub's code scanning dashboard.
+#       - name: "Upload to code-scanning"
+#         uses: github/codeql-action/upload-sarif@99c9897648dded3fe63d6f328c46089dd57735ca
+#         with:
+#           sarif_file: results.sarif
