@@ -108,6 +108,7 @@ gcloud services enable \
     cloudresourcemanager.googleapis.com \
     connectgateway.googleapis.com \
     container.googleapis.com \
+    compute.googleapis.com \
     gkeconnect.googleapis.com \
     gkehub.googleapis.com \
     gkeonprem.googleapis.com \
@@ -159,10 +160,20 @@ gcloud projects add-iam-policy-binding "$PROJECT_ID" \
   --role="roles/opsconfigmonitoring.resourceMetadata.writer" \
   --no-user-output-enabled
 
-gcloud projects add-iam-policy-binding PROJECT_ID \
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
     --member="serviceAccount:baremetal-gcr@$PROJECT_ID.iam.gserviceaccount.com" \
     --role="roles/kubernetesmetadata.publisher" \
     --no-user-output-enabled 
+
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+  --member="serviceAccount:baremetal-gcr@$PROJECT_ID.iam.gserviceaccount.com" \
+  --role="roles/monitoring.viewer" \
+  --no-user-output-enabled
+
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+  --member="serviceAccount:baremetal-gcr@$PROJECT_ID.iam.gserviceaccount.com" \
+  --role="roles/serviceusage.serviceUsageViewer" \
+  --no-user-output-enabled
 
 # [END anthos_bm_gcp_bash_admin_add_iam_role]
 printf "✅ Successfully added the requires IAM roles to the Service Account.\n\n"
