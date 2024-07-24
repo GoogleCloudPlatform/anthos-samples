@@ -19,7 +19,6 @@ cleanup.sh
 .ssh-*
 .env*
 .temp/
-.tmp/
 
 .vscode
 *.err
