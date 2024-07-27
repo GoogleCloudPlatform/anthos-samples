@@ -20,7 +20,7 @@
 # Download the service account key in order to configure the Anthos cluster
 ##############################################################################
 function __setup_service_account__ () {
-  gcloud iam service-accounts create ${SERVICE_ACCOUNT}
+  gcloud iam service-accounts create "$SERVICE_ACCOUNT"
   gcloud iam service-accounts keys create bm-gcr.json --iam-account="${SERVICE_ACCOUNT}"@"${PROJECT_ID}".iam.gserviceaccount.com
   if [ "$?" -eq 0 ]
   then
@@ -80,31 +80,31 @@ cat << EOM
   - roles/opsconfigmonitoring.resourceMetadata.writer
 ------------------------------------------------------------------------------
 EOM
-gcloud projects add-iam-policy-binding $PROJECT_ID \
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
   --member="serviceAccount:${SERVICE_ACCOUNT}@$PROJECT_ID.iam.gserviceaccount.com" \
   --role="roles/gkehub.connect"
 
-gcloud projects add-iam-policy-binding $PROJECT_ID \
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
   --member="serviceAccount:${SERVICE_ACCOUNT}@$PROJECT_ID.iam.gserviceaccount.com" \
   --role="roles/gkehub.admin"
 
-gcloud projects add-iam-policy-binding $PROJECT_ID \
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
   --member="serviceAccount:${SERVICE_ACCOUNT}@$PROJECT_ID.iam.gserviceaccount.com" \
   --role="roles/logging.logWriter"
 
-gcloud projects add-iam-policy-binding $PROJECT_ID \
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
   --member="serviceAccount:${SERVICE_ACCOUNT}@$PROJECT_ID.iam.gserviceaccount.com" \
   --role="roles/monitoring.metricWriter"
 
-gcloud projects add-iam-policy-binding $PROJECT_ID \
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
   --member="serviceAccount:${SERVICE_ACCOUNT}@$PROJECT_ID.iam.gserviceaccount.com" \
   --role="roles/monitoring.dashboardEditor"
 
-gcloud projects add-iam-policy-binding $PROJECT_ID \
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
   --member="serviceAccount:${SERVICE_ACCOUNT}@$PROJECT_ID.iam.gserviceaccount.com" \
   --role="roles/stackdriver.resourceMetadata.writer"
 
-gcloud projects add-iam-policy-binding $PROJECT_ID \
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
   --member="serviceAccount:${SERVICE_ACCOUNT}@$PROJECT_ID.iam.gserviceaccount.com" \
   --role="roles/opsconfigmonitoring.resourceMetadata.writer"
 
