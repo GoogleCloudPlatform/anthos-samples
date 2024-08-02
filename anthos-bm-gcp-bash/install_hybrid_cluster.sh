@@ -70,7 +70,11 @@ gcloud services enable \
     stackdriver.googleapis.com \
     monitoring.googleapis.com \
     logging.googleapis.com \
-    opsconfigmonitoring.googleapis.com
+    opsconfigmonitoring.googleapis.com \
+    compute.googleapis.com \
+    gkeonprem.googleapis.com \
+    iam.googleapis.com \
+    kubernetesmetadata.googleapis.com
 # [END anthos_bm_gcp_bash_hybrid_enable_api]
 printf "✅ Successfully enabled GCP Service APIs.\n\n"
 
@@ -110,6 +114,21 @@ gcloud projects add-iam-policy-binding "$PROJECT_ID" \
 gcloud projects add-iam-policy-binding "$PROJECT_ID" \
   --member="serviceAccount:baremetal-gcr@$PROJECT_ID.iam.gserviceaccount.com" \
   --role="roles/opsconfigmonitoring.resourceMetadata.writer" \
+  --no-user-output-enabled
+
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+    --member="serviceAccount:baremetal-gcr@$PROJECT_ID.iam.gserviceaccount.com" \
+    --role="roles/kubernetesmetadata.publisher" \
+    --no-user-output-enabled 
+
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+  --member="serviceAccount:baremetal-gcr@$PROJECT_ID.iam.gserviceaccount.com" \
+  --role="roles/monitoring.viewer" \
+  --no-user-output-enabled
+
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+  --member="serviceAccount:baremetal-gcr@$PROJECT_ID.iam.gserviceaccount.com" \
+  --role="roles/serviceusage.serviceUsageViewer" \
   --no-user-output-enabled
 # [END anthos_bm_gcp_bash_hybrid_add_iam_role]
 printf "✅ Successfully added the requires IAM roles to the Service Account.\n\n"
