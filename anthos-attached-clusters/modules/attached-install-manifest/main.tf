@@ -22,7 +22,7 @@ locals {
 }
 
 # Get the install manifest from the attached clusters service.
-data "google_container_attached_install_manifest" "boostrap" {
+data "google_container_attached_install_manifest" "bootstrap" {
   location         = var.gcp_location
   project          = var.attached_cluster_fleet_project
   cluster_id       = var.attached_cluster_name
@@ -43,7 +43,7 @@ resource "local_file" "bootstrap_helm_chart" {
 # Write out the install manifest as the helm chart.
 resource "local_file" "bootstrap_manifests" {
   filename = "${local.helm_chart_dir}/templates/bootstrap.yaml"
-  content  = data.google_container_attached_install_manifest.boostrap.manifest
+  content  = data.google_container_attached_install_manifest.bootstrap.manifest
 }
 
 # Apply the helm chart to the cluster.
