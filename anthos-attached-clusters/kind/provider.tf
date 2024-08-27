@@ -17,8 +17,18 @@
 terraform {
   required_providers {
     kind = {
-      source = "tehcyx/kind"
+      source  = "tehcyx/kind"
+      version = "~> 0.6"
+    }
+    google = {
+      source  = "hashicorp/google"
+      version = "~> 5.0"
+    }
+    helm = {
+      source  = "hashicorp/helm"
+      version = "~> 2.0"
     }
   }
+  required_version = ">= 0.13"
 }
 
