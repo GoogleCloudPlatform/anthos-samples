@@ -84,7 +84,7 @@ gcloud components update
    ```bash
    gcp_project_id = "project-id"
    admin_user = "example@example.com"
-   
+
    cluster_version = "supported_gke_version"
    # supported versions at https://cloud.devsite.corp.google.com/kubernetes-engine/multi-cloud/docs/aws/reference/versioning#version_lifespans
    ```

@@ -41,7 +41,7 @@ variable "region" {
 variable "zone" {
   description = "Zone within the selected Google Cloud Region that is to be used"
   type        = string
-  default     = "us-central1-a"
+  default     = "us-central1-b"
 }
 
 variable "username" {

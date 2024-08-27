@@ -115,6 +115,33 @@ module "instance_template" {
     module.enable_google_apis_secondary
   ]
   # fetched from previous module to explicitely express dependency
+  project_id           = module.enable_google_apis_secondary.project_id
+  region               = var.region           # --zone=${ZONE}
+  source_image         = var.image            # --image=ubuntu-2004-focal-v20210429
+  source_image_family  = var.image_family     # --image-family=ubuntu-2004-lts
+  source_image_project = var.image_project    # --image-project=ubuntu-os-cloud
+  machine_type         = var.machine_type     # --machine-type $MACHINE_TYPE
+  disk_size_gb         = var.boot_disk_size   # --boot-disk-size 200G
+  disk_type            = var.boot_disk_type   # --boot-disk-type pd-ssd
+  network              = var.network          # --network default
+  tags                 = var.tags             # --tags http-server,https-server
+  min_cpu_platform     = var.min_cpu_platform # --min-cpu-platform "Intel Haswell"
+  can_ip_forward       = true                 # --can-ip-forward
+  # Disable oslogin explicitly since we rely on metadata based ssh-key (issues/70).
+  metadata = {
+    enable-oslogin = "false"
+  }
+  service_account = null
+}
+
+module "instance_template_worker" {
+  source  = "terraform-google-modules/vm/google//modules/instance_template"
+  version = "~> 8.0"
+  depends_on = [
+    module.enable_google_apis_primary,
+    module.enable_google_apis_secondary
+  ]
+  # fetched from previous module to explicitely express dependency
   project_id                   = module.enable_google_apis_secondary.project_id
   region                       = var.region                       # --zone=${ZONE}
   source_image                 = var.image                        # --image=ubuntu-2004-focal-v20210429
@@ -175,7 +202,7 @@ module "worker_vm_hosts" {
   zone              = var.zone
   network           = var.network
   vm_names          = local.worker_vm_names
-  instance_template = module.instance_template.self_link
+  instance_template = module.instance_template_worker.self_link
 }
 
 module "configure_controlplane_lb" {

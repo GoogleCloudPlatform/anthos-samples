@@ -163,7 +163,7 @@ gcloud projects add-iam-policy-binding "$PROJECT_ID" \
 gcloud projects add-iam-policy-binding "$PROJECT_ID" \
     --member="serviceAccount:baremetal-gcr@$PROJECT_ID.iam.gserviceaccount.com" \
     --role="roles/kubernetesmetadata.publisher" \
-    --no-user-output-enabled 
+    --no-user-output-enabled
 
 gcloud projects add-iam-policy-binding "$PROJECT_ID" \
   --member="serviceAccount:baremetal-gcr@$PROJECT_ID.iam.gserviceaccount.com" \

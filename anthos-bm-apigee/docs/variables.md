@@ -22,7 +22,7 @@ terraform-docs markdown table \
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= v0.15.5, < 1.2 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= v0.15.5, < 1.4 |
 | <a name="requirement_google"></a> [google](#requirement\_google) | >= 3.68.0 |
 | <a name="requirement_google-beta"></a> [google-beta](#requirement\_google-beta) | >= 3.68.0 |
 

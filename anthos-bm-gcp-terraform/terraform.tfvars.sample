@@ -15,5 +15,5 @@ instance_count                = {
 #nfs_server                   = true
 #gpu                          = {
 #                                 count = 1,
-#                                 type = "nvidia-tesla-k80"
+#                                 type = "nvidia-tesla-t4"
 #                               }
