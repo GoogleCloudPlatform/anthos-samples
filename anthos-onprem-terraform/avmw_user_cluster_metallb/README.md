@@ -58,13 +58,13 @@ have changed directory to where this samples is:
 
 ### Upgrade the user cluster with terraform
 
-Use the same terraform script to upgrade the user cluster, by simply changing 
-the version to the new version. Note that this script can be used for upgrades 
-only if you had created the user cluster using this script. When you run the 
-script with the updated version, the `terraform.tfstate` created during the 
+Use the same terraform script to upgrade the user cluster, by simply changing
+the version to the new version. Note that this script can be used for upgrades
+only if you had created the user cluster using this script. When you run the
+script with the updated version, the `terraform.tfstate` created during the
 first run of the script is compared to recognize the change.
 
-Before upgrading the user cluster, please make sure the admin cluster has been 
+Before upgrading the user cluster, please make sure the admin cluster has been
 enrolled in the Anthos On-Prem API. Steps for enrolling the admin cluster are
 listed in [public documentation](https://cloud.google.com/anthos/clusters/docs/on-prem/latest/how-to/enroll-cluster#enroll_a_cluster).
 
@@ -80,14 +80,14 @@ gcloud beta container vmware admin-clusters enroll ADMIN_CLUSTER_NAME \
 This `gcloud_update_admin_cluster_platform_controller` module uses the `gcloud`
 command prepare the admin cluster to enable the user cluster upgrade.
 
-- [**`gcloud_update_admin_cluster_platform_controller`**](./main.tf#L53-L65): 
+- [**`gcloud_update_admin_cluster_platform_controller`**](./main.tf#L53-L65):
    This module is used to ensure that the ** platform controller** of the admin cluster
    is on a compatible version. The platform controller contains one or more bundles of
    components that the admin cluster uses to manage user clusters. The bundles are
    version specific, that is, the platform controller must contain a bundle version that
    matches the _Anthos on VMware version of the user cluster_.  Thus, by having this
-   module in the script we ensure that the platform controller in the admin cluster is 
-   always on the correct user cluster version. 
+   module in the script we ensure that the platform controller in the admin cluster is
+   always on the correct user cluster version.
 
 Then, following the steps below to upgrade the user cluster via terraform.
 
