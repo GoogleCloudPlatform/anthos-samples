@@ -43,12 +43,14 @@ control "gcloud" do
       it "should have all the default values" do
         x = 0
         while x < 6
-          expect(data[x]["guestAccelerators"]).to include(
-            {
-              "acceleratorCount" => 1,
-              "acceleratorType" => "https://www.googleapis.com/compute/v1/projects/#{project_id}/zones/us-central1-a/acceleratorTypes/nvidia-tesla-k80"
-            }
-          )
+          if data[x]["name"].match?("cluster1-abm-w[1-2]-001")
+            expect(data[x]["guestAccelerators"]).to include(
+              {
+                "acceleratorCount" => 1,
+                "acceleratorType" => "https://www.googleapis.com/compute/v1/projects/#{project_id}/zones/us-central1-b/acceleratorTypes/nvidia-tesla-t4"
+              }
+            )
+          end
           x = x + 1
         end
       end

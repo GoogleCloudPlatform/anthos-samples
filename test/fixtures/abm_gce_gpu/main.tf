@@ -15,9 +15,9 @@
  */
 
 locals {
-  ssh_as_tfadmin_cmd = "gcloud compute ssh tfadmin@cluster1-abm-ws0-001 --project=${var.editor_project_id} --zone=us-central1-a --ssh-flag=\"-T\" -q -- ls"
+  ssh_as_tfadmin_cmd = "gcloud compute ssh tfadmin@cluster1-abm-ws0-001 --project=${var.editor_project_id} --zone=us-central1-b --ssh-flag=\"-T\" -q -- ls"
   install_abm_cmd    = <<EOF
-  gcloud compute ssh tfadmin@cluster1-abm-ws0-001 --project=${var.editor_project_id} --zone=us-central1-a \
+  gcloud compute ssh tfadmin@cluster1-abm-ws0-001 --project=${var.editor_project_id} --zone=us-central1-b \
     --ssh-flag=-T -q -- sudo ./run_initialization_checks.sh
   EOF
 }
@@ -29,6 +29,6 @@ module "anthos_bm_gcp" {
   resources_path   = "../../../anthos-bm-gcp-terraform/resources"
   gpu = {
     count = 1,
-    type  = "nvidia-tesla-k80"
+    type  = "nvidia-tesla-t4"
   }
 }

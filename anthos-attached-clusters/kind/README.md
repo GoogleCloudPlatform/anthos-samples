@@ -43,13 +43,10 @@ The other examples and module limit dependancies to terraform core providers, bu
            --membership=${CLUSTER} \
            --role=${ROLE} \
            --users=${PRINCIPAL}
-           
-    gcloud container fleet  memberships get-credentials ${CLUSTER}  --project ${PROJECT} 
-    
+
+    gcloud container fleet  memberships get-credentials ${CLUSTER}  --project ${PROJECT}
+
     kubectl get ns
 
     ```
     This will allow you to access the cluster using kubectl as you would other GKE Enterprise clusters, regardless of location (ie in GCP, other clouds, or on prem).
-
-
-
