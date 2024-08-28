@@ -98,6 +98,6 @@ func TestABMEditor(t *testing.T) {
 
 // runSSHCmd runs gcloud ssh command with ssh args and returns output
 func runSSHCmd(t *testing.T, project, user, args string) string {
-	commonArgs := gcloud.WithCommonArgs([]string{"--command", args, "--project", project, "--zone", "us-central1-a", "--ssh-flag=-T", "-q"})
+	commonArgs := gcloud.WithCommonArgs([]string{"--command", args, "--project", project, "--zone", "us-central1-b", "--ssh-flag=-T", "-q"})
 	return gcloud.RunCmd(t, fmt.Sprintf("compute ssh %s", user), commonArgs)
 }
