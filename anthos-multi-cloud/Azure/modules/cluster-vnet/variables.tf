@@ -32,7 +32,3 @@ variable "sp_obj_id" {
   description = "app service principal object id"
   type        = string
 }
-variable "subscription_id" {
-  description = "subscription_id "
-  type        = string
-}

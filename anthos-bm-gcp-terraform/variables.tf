@@ -125,12 +125,6 @@ variable "tags" {
   default     = ["http-server", "https-server"]
 }
 
-variable "access_scopes" {
-  description = "The IAM access scopes associated to the Compute Engine VM Service Accounts"
-  type        = set(string)
-  default     = ["cloud-platform"]
-}
-
 variable "anthos_service_account_name" {
   description = "Name given to the Service account that will be used by the Anthos cluster components"
   type        = string
@@ -171,12 +165,6 @@ variable "abm_cluster_id" {
   description = "Unique id to represent the Anthos Cluster to be created"
   type        = string
   default     = "cluster1"
-}
-
-variable "gce_vm_service_account" {
-  description = "Service Account to use for GCE instances"
-  type        = string
-  default     = ""
 }
 
 variable "gcp_login_accounts" {

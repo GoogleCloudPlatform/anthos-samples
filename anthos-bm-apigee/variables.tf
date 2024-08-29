@@ -52,12 +52,6 @@ variable "gcp_login_accounts" {
   default     = []
 }
 
-variable "gce_vm_service_account" {
-  description = "Service Account to use for GCE instances"
-  type        = string
-  default     = ""
-}
-
 variable "mode" {
   description = <<EOF
     Indication of the execution mode. By default the terraform execution will end
