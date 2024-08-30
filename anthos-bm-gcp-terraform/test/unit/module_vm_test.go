@@ -199,13 +199,13 @@ func TestUnit_VmModule(goTester *testing.T) {
 		} else {
 			// child module should be either compute_instance or external_ip_addresses
 			// it cannot be anything else
-			goTester.Error(fmt.Sprintf(
+			goTester.Errorf(
 				"Module 'vm' can only have the following sub modules: "+
 					"\n\t- compute_instance"+
 					"\n\t- external_ip_addresses"+
 					"\n But it also has: %s",
 				moduleAddress,
-			))
+			)
 			goTester.Fail()
 		}
 	}

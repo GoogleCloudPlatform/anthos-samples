@@ -417,13 +417,6 @@ func ValidateVariablesInMain(goTester *testing.T, tfPlan *util.MainModulePlan) {
 		"Variable not found in plan: tags",
 	)
 
-	// verify plan has access_scopes input variable
-	assert.NotNil(
-		goTester,
-		tfPlan.Variables.AccessScope,
-		"Variable not found in plan: access_scopes",
-	)
-
 	// verify plan has primary_apis input variable
 	assert.NotNil(
 		goTester,
@@ -469,7 +462,7 @@ func ValidateVariableValuesInMain(goTester *testing.T, tfPlan *util.MainModulePl
 		goTester,
 		(*vars)["region"],
 		tfPlan.Variables.Region.Value,
-		"Variable does not match in plan: credentials_file.",
+		"Variable does not match in plan: region.",
 	)
 
 	// verify input variable resources_path in plan matches
@@ -600,16 +593,6 @@ func ValidateVariableValuesInMain(goTester *testing.T, tfPlan *util.MainModulePl
 			(*vars)["tags"],
 			tag,
 			"Variable does not match in plan: tags.",
-		)
-	}
-
-	// verify input variable access_scopes in plan matches every access_scope in the list
-	for _, accessScope := range tfPlan.Variables.AccessScope.Value {
-		assert.Contains(
-			goTester,
-			(*vars)["access_scopes"],
-			accessScope,
-			"Variable does not match in plan: access_scopes.",
 		)
 	}
 
