@@ -371,7 +371,7 @@ func TestUnit_MainScript_ValidateDefaults(goTester *testing.T) {
 	// verify input variable zone in plan matches the default value
 	assert.Equal(
 		goTester,
-		"us-central1-a",
+		"us-central1-b",
 		terraformPlan.Variables.Zone.Value,
 		"Variable does not match expected default value: zone.",
 	)
