@@ -20,9 +20,6 @@ locals {
   }
 }
 
-data "azurerm_subscription" "current" {
-}
-
 resource "azurerm_resource_group" "aks" {
   name     = "${var.name_prefix}-rg"
   location = var.azure_region
@@ -59,12 +56,12 @@ data "google_project" "project" {
 provider "helm" {
   alias = "bootstrap_installer"
   kubernetes {
-    host                   = azurerm_kubernetes_cluster.aks.kube_config.0.host
-    username               = azurerm_kubernetes_cluster.aks.kube_config.0.username
-    password               = azurerm_kubernetes_cluster.aks.kube_config.0.password
-    client_certificate     = base64decode(azurerm_kubernetes_cluster.aks.kube_config.0.client_certificate)
-    client_key             = base64decode(azurerm_kubernetes_cluster.aks.kube_config.0.client_key)
-    cluster_ca_certificate = base64decode(azurerm_kubernetes_cluster.aks.kube_config.0.cluster_ca_certificate)
+    host                   = azurerm_kubernetes_cluster.aks.kube_config[0].host
+    username               = azurerm_kubernetes_cluster.aks.kube_config[0].username
+    password               = azurerm_kubernetes_cluster.aks.kube_config[0].password
+    client_certificate     = base64decode(azurerm_kubernetes_cluster.aks.kube_config[0].client_certificate)
+    client_key             = base64decode(azurerm_kubernetes_cluster.aks.kube_config[0].client_key)
+    cluster_ca_certificate = base64decode(azurerm_kubernetes_cluster.aks.kube_config[0].cluster_ca_certificate)
   }
 }
 

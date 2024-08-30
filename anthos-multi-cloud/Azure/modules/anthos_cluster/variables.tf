@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-variable "project_number" {
-}
 variable "location" {
 }
 variable "azure_region" {
