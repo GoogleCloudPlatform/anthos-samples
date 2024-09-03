@@ -29,7 +29,7 @@
     username                      = tfadmin
     ```
 
-    Uncomment the `gce_vm_service_account` if you want to login to your cluster
+    Uncomment the `gcp_login_accounts` if you want to login to your cluster
     using the Google email account that is associated with your GCP Project. You
     can add multiple GCP accounts to enable access to multiple users.
 
