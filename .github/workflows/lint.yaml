@@ -13,7 +13,7 @@
 # limitations under the License.
 
 # NOTE: This file was taken from:
-# https://github.com/GoogleCloudPlatform/cloud-foundation-toolkit/blob/master/infra/terraform/test-org/org/locals.tf
+# https://github.com/GoogleCloudPlatform/cloud-foundation-toolkit/blob/master/infra/terraform/modules/workflow_files/lint.yaml.tftpl
 
 name: 'lint'
 
