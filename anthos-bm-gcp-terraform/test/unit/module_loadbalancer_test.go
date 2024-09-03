@@ -33,7 +33,6 @@ func TestUnit_LoadbalancerModule_ControlPlane(goTester *testing.T) {
 
 	moduleDir := testStructure.CopyTerraformFolderToTemp(goTester, "../../", "modules/loadbalancer")
 	projectID := gcp.GetGoogleProjectIDFromEnvVar(goTester) // from GOOGLE_CLOUD_PROJECT
-	region := "test_region"
 	zone := "test_zone"
 	loadbalancerType := "controlplanelb"
 	namePrefix := "cp-loadbalancer"
@@ -88,7 +87,6 @@ func TestUnit_LoadbalancerModule_ControlPlane(goTester *testing.T) {
 	tfVarsMap := map[string]interface{}{
 		"type":                  loadbalancerType,
 		"project":               projectID,
-		"region":                region,
 		"zone":                  zone,
 		"name_prefix":           namePrefix,
 		"ip_name":               externalIPName,
@@ -153,7 +151,6 @@ func TestUnit_LoadbalancerModule_Ingress(goTester *testing.T) {
 
 	moduleDir := testStructure.CopyTerraformFolderToTemp(goTester, "../../", "modules/loadbalancer")
 	projectID := gcp.GetGoogleProjectIDFromEnvVar(goTester) // from GOOGLE_CLOUD_PROJECT
-	region := "test_region"
 	zone := "test_zone"
 	loadbalancerType := "ingresslb"
 	namePrefix := "cp-loadbalancer"
@@ -201,7 +198,6 @@ func TestUnit_LoadbalancerModule_Ingress(goTester *testing.T) {
 	tfVarsMap := map[string]interface{}{
 		"type":                  loadbalancerType,
 		"project":               projectID,
-		"region":                region,
 		"zone":                  zone,
 		"name_prefix":           namePrefix,
 		"ip_name":               externalIPName,

@@ -42,14 +42,6 @@ func ValidateLoadBalancerVariables(goTester *testing.T, tfPlan *util.LoadBalance
 	)
 	util.ExitIf(hasVar, false)
 
-	// verify plan has region input variable
-	hasVar = assert.NotNil(
-		goTester,
-		tfPlan.Variables.Region,
-		"Variable not found in plan: region",
-	)
-	util.ExitIf(hasVar, false)
-
 	// verify plan has zone input variable
 	hasVar = assert.NotNil(
 		goTester,
@@ -135,14 +127,6 @@ func ValidateLoadBalancerVariableValues(
 		(*vars)["type"],
 		tfPlan.Variables.Type.Value,
 		"Variable does not match in plan: type.",
-	)
-
-	// verify input variable region in plan matches
-	assert.Equal(
-		goTester,
-		(*vars)["region"],
-		tfPlan.Variables.Region.Value,
-		"Variable does not match in plan: region.",
 	)
 
 	// verify input variable zone in plan matches
