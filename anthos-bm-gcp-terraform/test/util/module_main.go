@@ -44,7 +44,6 @@ type MainVariables struct {
 	MinCPUPlatform             *Variable     `json:"min_cpu_platform"`
 	EnableNestedVirtualization *Variable     `json:"enable_nested_virtualization"`
 	Tags                       *ListVariable `json:"tags"`
-	AccessScope                *ListVariable `json:"access_scopes"`
 	PrimaryAPIs                *ListVariable `json:"primary_apis"`
 	SecondaryAPIs              *ListVariable `json:"secondary_apis"`
 	InstanceCount              *MapVariable  `json:"instance_count"`

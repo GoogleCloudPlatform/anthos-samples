@@ -61,7 +61,8 @@ func TestUnit_MainScript_InstallMode(goTester *testing.T) {
 
 	_, err = tmpFile.WriteString(dummyCredentials)
 	util.LogError(err, fmt.Sprintf("Could not write to temporary file at %s", credentialsFile))
-	tmpFile.Sync()
+	err = tmpFile.Sync()
+	util.LogError(err, fmt.Sprintf("Could not sync to temporary file at %s", credentialsFile))
 
 	mode := "install"
 	resourcesPath := "./resources"
@@ -113,6 +114,7 @@ func TestUnit_MainScript_InstallMode(goTester *testing.T) {
 	for _, childModule := range terraformPlan.PlannedValues.RootModule.ChildModules {
 		moduleAddress := childModule.ModuleAddress
 		if strings.HasSuffix(moduleAddress, "instance_template") ||
+			strings.HasSuffix(moduleAddress, "instance_template_worker") ||
 			strings.HasSuffix(moduleAddress, "vm_hosts") ||
 			strings.HasSuffix(moduleAddress, "service_accounts") ||
 			strings.Contains(moduleAddress, "google_apis") ||
@@ -168,7 +170,8 @@ func TestUnit_MainScript_ManualLB(goTester *testing.T) {
 
 	_, err = tmpFile.WriteString(dummyCredentials)
 	util.LogError(err, fmt.Sprintf("Could not write to temporary file at %s", credentialsFile))
-	tmpFile.Sync()
+	err = tmpFile.Sync()
+	util.LogError(err, fmt.Sprintf("Could not sync to temporary file at %s", credentialsFile))
 
 	bootDiskSize := 175
 	abmClusterID := "test-abm-cluster-id"
@@ -251,6 +254,7 @@ func TestUnit_MainScript_ManualLB(goTester *testing.T) {
 	for _, childModule := range terraformPlan.PlannedValues.RootModule.ChildModules {
 		moduleAddress := childModule.ModuleAddress
 		if strings.HasSuffix(moduleAddress, "instance_template") ||
+			strings.HasSuffix(moduleAddress, "instance_template_worker") ||
 			strings.HasSuffix(moduleAddress, "vm_hosts") ||
 			strings.HasSuffix(moduleAddress, "service_accounts") ||
 			strings.Contains(moduleAddress, "google_apis") ||
