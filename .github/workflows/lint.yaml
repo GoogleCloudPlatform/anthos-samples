@@ -31,8 +31,6 @@ jobs:
   lint:
     name: 'lint'
     runs-on: 'ubuntu-latest'
-    env:
-      EXCLUDE_LINT_DIRS: "\\./anthos-bm-openstack-terraform/resources"
     steps:
       - uses: 'actions/checkout@v4'
       - id: variables
