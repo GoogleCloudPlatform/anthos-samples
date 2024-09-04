@@ -24,7 +24,7 @@ jobs:
   static-code-tests:
     runs-on: [self-hosted, runner-nov-22]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           ref: ${{github.event.pull_request.head.sha}}
       - name: License Check
@@ -61,7 +61,7 @@ jobs:
           'anthos-multi-cloud/Azure'
         ]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           ref: ${{github.event.pull_request.head.sha}}
       - name: Terraform Validate
@@ -83,7 +83,7 @@ jobs:
         # update this list as new unit tests in golang are added to the repo
         go-test-dir: ['anthos-bm-gcp-terraform/test/unit/']
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           ref: ${{github.event.pull_request.head.sha}}
       - uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32 # v5.0.2
