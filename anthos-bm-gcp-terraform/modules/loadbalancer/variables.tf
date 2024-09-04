@@ -33,11 +33,6 @@ variable "project" {
   type        = string
 }
 
-variable "region" {
-  description = "Google Cloud Region in which the loadbalancer resources should be provisioned"
-  type        = string
-}
-
 variable "zone" {
   description = "Zone within the selected Google Cloud Region that is to be used"
   type        = string

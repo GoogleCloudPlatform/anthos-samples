@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,34 @@
  * limitations under the License.
  */
 
-variable "name" {
-  description = "Name for the test cluster"
+variable "name_prefix" {
+  description = "Common prefix to use for generating names"
   type        = string
 }
 
-variable "region" {
-  description = "Azure region to deploy to"
+variable "gcp_project_id" {
+  description = "The GCP project id where the cluster will be registered"
   type        = string
 }
 
-variable "aad_app_name" {
-  description = "app registration name"
+variable "gcp_location" {
+  description = "GCP location to create the attached resource in"
   type        = string
+  default     = "us-west1"
 }
-variable "sp_obj_id" {
-  description = "app service principal object id"
+
+variable "platform_version" {
+  description = "Platform version of the attached cluster resource"
   type        = string
+  default     = "1.28.0-gke.3"
 }
+
+
+variable "kind_node_image" {
+  description = "The image used for the kind cluster"
+  type        = string
+  default     = "kindest/node:v1.28.0"
+}
+
+
+

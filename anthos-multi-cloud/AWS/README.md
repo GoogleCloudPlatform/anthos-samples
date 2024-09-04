@@ -79,9 +79,14 @@ gcloud components update
 
 1. Edit the following  values in the **terraform.tfvars** file. You can find the project ID in the GCP console on the left side of the dashboard page. The admin user will be the GCP account email address that can login to the clusters once they are created via the connect gateway.
 
+   Select a **supported GKE version** for your chosen region. To find the supported versions, see [GKE on AWS versioning and support](https://cloud.devsite.corp.google.com/kubernetes-engine/multi-cloud/docs/aws/reference/versioning#version_lifespans).
+
    ```bash
    gcp_project_id = "project-id"
    admin_user = "example@example.com"
+
+   cluster_version = "supported_gke_version"
+   # supported versions at https://cloud.devsite.corp.google.com/kubernetes-engine/multi-cloud/docs/aws/reference/versioning#version_lifespans
    ```
 
 1. Initialize and create terraform plan.

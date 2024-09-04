@@ -64,7 +64,7 @@ metadata:
 type: kubernetes.io/service-account-token
 __EOF__
 
-until [[ $(kubectl get -o=jsonpath="{.data.token}" "secret/${SECRET_NAME}") ]]; do 
+until [[ $(kubectl get -o=jsonpath="{.data.token}" "secret/${SECRET_NAME}") ]]; do
   echo "waiting for token..." >&2;
   sleep 1;
 done
