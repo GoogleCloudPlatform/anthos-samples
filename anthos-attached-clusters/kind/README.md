@@ -25,12 +25,13 @@ The other examples and module limit dependancies to terraform core providers, bu
     ```
     Terraform may give a warning along the lines of `Warning: Content-Type is not recognized as a text type, got "application/jwk-set+json"` but this is ok and just a side effect of the `http` provider we're using and the content type the cluster returns for the `jwks` content.
 1. The process should take about a few short minutes to complete.
-1. Set some variables based on the terraform porjects values and use them to generate RBAC for the cluster and credentials to login:
+1. Set some variables based on the terraform projects values and use them to generate RBAC for the cluster and credentials to login:
     ```bash
 
-    PROJECT=$(echo google_container_attached_cluster.primary.project | terraform console | tr -d '"')
-    CLUSTER=$(echo google_container_attached_cluster.primary.name | terraform console | tr -d '"')
-    KUBECONFIG=$(echo kind_cluster.cluster.kubeconfig_path | terraform console | tr -d '"')
+    PROJECT=$(terraform output PROJECT)
+    CLUSTER=$(terraform output CLUSTER)
+    KUBECONFIG=$(terraform output KUBECONFIG)
+    CONTEXT=$(terraform output CONTEXT)
 
     # set this to whomever you'd like to grant access
     PRINCIPAL=update.this@example.com
@@ -38,7 +39,7 @@ The other examples and module limit dependancies to terraform core providers, bu
     ROLE=clusterrole/cluster-admin
 
     gcloud container fleet memberships generate-gateway-rbac --apply \
-           --kubeconfig ${KUBECONFIG} --context=kind-${CLUSTER} \
+           --kubeconfig ${KUBECONFIG} --context=${CONTEXT} \
            --project=${PROJECT} \
            --membership=${CLUSTER} \
            --role=${ROLE} \
