@@ -37,7 +37,6 @@ terraform-docs markdown table \
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_credentials_file"></a> [credentials\_file](#input\_credentials\_file) | Path to the Google Cloud Service Account key file.<br>    This is the key that will be used to authenticate the provider with the Cloud APIs | `string` | n/a | yes |
-| <a name="input_gce_vm_service_account"></a> [gce\_vm\_service\_account](#input\_gce\_vm\_service\_account) | Service Account to use for GCE instances | `string` | `""` | no |
 | <a name="input_gcp_login_accounts"></a> [gcp\_login\_accounts](#input\_gcp\_login\_accounts) | GCP account email addresses that must be allowed to login to the cluster using Google Cloud Identity. | `list(string)` | `[]` | no |
 | <a name="input_mode"></a> [mode](#input\_mode) | Indication of the execution mode. By default the terraform execution will end<br>    after setting up the GCE VMs where the Anthos bare metal clusters can be deployed.<br><br>    **setup:** create and initialize the GCE VMs required to install Anthos bare metal.<br><br>    **install:** everything up to 'setup' mode plus automatically run Anthos bare metal installation steps as well.<br><br>    **manuallb:** similar to 'install' mode but Anthos on bare metal is installed with ManualLB mode. | `string` | `"setup"` | no |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | Unique identifer of the Google Cloud Project that is to be used | `string` | n/a | yes |

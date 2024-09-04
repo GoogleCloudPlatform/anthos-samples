@@ -63,12 +63,13 @@ func TestUnit_MainScript(goTester *testing.T) {
 
 	_, err = tmpFile.WriteString(dummyCredentials)
 	util.LogError(err, fmt.Sprintf("Could not write to temporary file at %s", credentialsFile))
-	tmpFile.Sync()
+	err = tmpFile.Sync()
+	util.LogError(err, fmt.Sprintf("Could not sync to temporary file at %s", credentialsFile))
 
 	resourcesPath := "./resources"
 	username := "test_username"
 	minCPUPlatform := "test_cpu_platform"
-	enableNestedVirtualization := "true"
+	enableNestedVirtualization := "false"
 	machineType := "test_machine_type"
 	image := "test_image"
 	imageProject := "test_image_project"
@@ -81,10 +82,6 @@ func TestUnit_MainScript(goTester *testing.T) {
 	tags := []string{
 		"test_tag_1",
 		"test_tag_2",
-	}
-	accessScopes := []string{
-		"test_scope_1",
-		"test_scope_2",
 	}
 	primaryApis := []string{
 		"test_primary_api_1.googleapis.com",
@@ -123,7 +120,6 @@ func TestUnit_MainScript(goTester *testing.T) {
 		"boot_disk_size":               bootDiskSize,
 		"network":                      network,
 		"tags":                         tags,
-		"access_scopes":                accessScopes,
 		"anthos_service_account_name":  anthosServiceAccountName,
 		"primary_apis":                 primaryApis,
 		"secondary_apis":               secondaryApis,
@@ -181,7 +177,7 @@ func TestUnit_MainScript(goTester *testing.T) {
 		goTester,
 		terraformPlan.PlannedValues.RootModule.Resources,
 		rootResourceCount,
-		fmt.Sprintf("Invalid resource count in the root module of the plan at planned_values.root_module.resources"),
+		"Invalid resource count in the root module of the plan at planned_values.root_module.resources",
 	)
 
 	_, envVarFilenames := validation.ValidateRootResources(
@@ -197,6 +193,7 @@ func TestUnit_MainScript(goTester *testing.T) {
 	)
 
 	var instanceTemplateModules []util.TFModule
+	var instanceTemplateWorkerModules []util.TFModule
 	var virtualMachineModules []util.TFModule
 	var serviceAccModules []util.TFModule
 	var googleAPIsModules []util.TFModule
@@ -209,6 +206,8 @@ func TestUnit_MainScript(goTester *testing.T) {
 		moduleAddress := childModule.ModuleAddress
 		if strings.HasSuffix(moduleAddress, "instance_template") {
 			instanceTemplateModules = append(instanceTemplateModules, childModule)
+		} else if strings.HasSuffix(moduleAddress, "instance_template_worker") {
+			instanceTemplateWorkerModules = append(instanceTemplateWorkerModules, childModule)
 		} else if strings.HasSuffix(moduleAddress, "vm_hosts") {
 			virtualMachineModules = append(virtualMachineModules, childModule)
 		} else if strings.HasSuffix(moduleAddress, "service_accounts") {
@@ -233,6 +232,12 @@ func TestUnit_MainScript(goTester *testing.T) {
 		instanceTemplateModules,
 		1,
 		"Unexpected number of child modules with address type instance_template at planned_values.root_module.child_modules",
+	)
+	assert.Len(
+		goTester,
+		instanceTemplateWorkerModules,
+		1,
+		"Unexpected number of child modules with address type instance_template_worker at planned_values.root_module.child_modules",
 	)
 	assert.Len(
 		goTester,
@@ -279,6 +284,8 @@ func TestUnit_MainScript(goTester *testing.T) {
 
 	// validate the instance template module
 	validation.ValidateInstanceTemplateModule(goTester, &instanceTemplateModules[0], &tfVarsMap)
+	// validate the instance template worker module
+	validation.ValidateInstanceTemplateModule(goTester, &instanceTemplateWorkerModules[0], &tfVarsMap)
 	// validate the virtual machines modules
 	validation.ValidateVirtualMachineModules(goTester, &virtualMachineModules, &tfVarsMap)
 	// validate the service account module
@@ -326,7 +333,8 @@ func TestUnit_MainScript_ValidateDefaults(goTester *testing.T) {
 
 	_, err = tmpFile.WriteString(dummyCredentials)
 	util.LogError(err, fmt.Sprintf("Could not write to temporary file at %s", credentialsFile))
-	tmpFile.Sync()
+	err = tmpFile.Sync()
+	util.LogError(err, fmt.Sprintf("Could not sync to temporary file at %s", credentialsFile))
 
 	machineType := "test_machine_type"
 	tfPlanOutput := "terraform_test.tfplan"
@@ -371,7 +379,7 @@ func TestUnit_MainScript_ValidateDefaults(goTester *testing.T) {
 	// verify input variable zone in plan matches the default value
 	assert.Equal(
 		goTester,
-		"us-central1-a",
+		"us-central1-b",
 		terraformPlan.Variables.Zone.Value,
 		"Variable does not match expected default value: zone.",
 	)
@@ -457,7 +465,6 @@ func TestUnit_MainScript_ValidateDefaults(goTester *testing.T) {
 	)
 
 	defaultTags := []string{"http-server", "https-server"}
-	defaultAccessScopes := []string{"cloud-platform"}
 	defaultPrimaryApis := []string{
 		"cloudresourcemanager.googleapis.com",
 	}
@@ -487,12 +494,6 @@ func TestUnit_MainScript_ValidateDefaults(goTester *testing.T) {
 	)
 	assert.Len(
 		goTester,
-		terraformPlan.Variables.AccessScope.Value,
-		len(defaultAccessScopes),
-		"List variable length does not match the expected default value list length: access_scopes.",
-	)
-	assert.Len(
-		goTester,
 		terraformPlan.Variables.PrimaryAPIs.Value,
 		len(defaultPrimaryApis),
 		"List variable length does not match the expected default value list length: primary_apis.",
@@ -510,14 +511,6 @@ func TestUnit_MainScript_ValidateDefaults(goTester *testing.T) {
 			defaultTags,
 			tag,
 			"Variable does not match any valid default value: tags",
-		)
-	}
-	for _, scope := range terraformPlan.Variables.AccessScope.Value {
-		assert.Contains(
-			goTester,
-			defaultAccessScopes,
-			scope,
-			"Variable does not match any valid default value: access_scopes.",
 		)
 	}
 	for _, pAPI := range terraformPlan.Variables.PrimaryAPIs.Value {

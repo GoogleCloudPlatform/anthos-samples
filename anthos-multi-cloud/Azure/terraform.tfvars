@@ -8,7 +8,7 @@ https://cloud.google.com/anthos/clusters/docs/multi-cloud/azure/reference/suppor
 control_plane_instance_type = "Standard_DS2_v2"
 node_pool_instance_type     = "Standard_DS2_v2"
 /* supported versions
-https://cloud.google.com/anthos/clusters/docs/multi-cloud/aws/reference/supported-versions
+https://cloud.google.com/anthos/clusters/docs/multi-cloud/azure/reference/supported-versions
 */
 cluster_version = "1.29.4-gke.200"
 /*

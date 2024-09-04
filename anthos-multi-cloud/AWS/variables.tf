@@ -72,14 +72,6 @@ variable "cp_private_subnet_cidr_blocks" {
   ]
 }
 
-variable "np_private_subnet_cidr_blocks" {
-  description = "CIDR block to use for node pool private subnets"
-  type        = list(string)
-  default = [
-    "10.0.4.0/24"
-  ]
-}
-
 #Refer to this page for information on public subnets
 #https://cloud.google.com/anthos/clusters/docs/multi-cloud/aws/how-to/create-aws-vpc#create-sample-vpc
 

@@ -152,7 +152,7 @@ func TestUnit_InitModule(goTester *testing.T) {
 		goTester,
 		initModulePlan.PlannedValues.RootModule.ChildModules,
 		1,
-		fmt.Sprintf("Invalid number of planned_values.root_module.child_modules"),
+		"Invalid number of planned_values.root_module.child_modules",
 	)
 
 	// verify that the existing child module name matches

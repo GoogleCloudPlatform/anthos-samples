@@ -120,10 +120,3 @@ variable "lb_address_pools" {
   type        = list(object({ name = string, addresses = list(string) }))
 }
 
-variable "primary_apis" {
-  description = "List of primary Google Cloud APIs to be enabled for this deployment"
-  type        = list(string)
-  default = [
-    "cloudresourcemanager.googleapis.com",
-  ]
-}

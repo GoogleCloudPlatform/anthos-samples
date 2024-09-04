@@ -17,12 +17,13 @@
 terraform {
   required_version = ">= 0.12.23"
   required_providers {
-    azurerm = "=2.94.0"
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "=2.94.0"
+    }
   }
 }
 
-data "azurerm_subscription" "current" {
-}
 data "azurerm_client_config" "current" {
 }
 #Create an Azure resource group
