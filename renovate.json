@@ -22,6 +22,12 @@
     "every 1 months on the first day of the month"
   ],
   "timezone": "America/New_York",
+  "packageRules": [
+    {
+      "matchManagers": ["gomod"],
+      "postUpdateOptions": ["gomodTidy", "gomodUpdateImportPaths"]
+    }
+  },
   "regexManagers": [
     {
       "fileMatch": ["(^|/)Makefile$"],
