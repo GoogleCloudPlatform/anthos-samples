@@ -67,8 +67,6 @@ data "google_project" "project" {
   project_id = var.gcp_project_id
 }
 
-
-
 module "oidc" {
   source = "./oidc"
 
@@ -77,7 +75,6 @@ module "oidc" {
   client_certificate     = kind_cluster.cluster.client_certificate
   client_key             = kind_cluster.cluster.client_key
 }
-
 
 resource "google_container_attached_cluster" "primary" {
   name             = local.cluster_name
@@ -119,6 +116,15 @@ resource "google_container_attached_cluster" "primary" {
   ]
 }
 
+module "asmcli" {
+  source = "github.com/terraform-google-modules/terraform-google-gcloud?ref=ap%2Fasmcli"
 
+  platform              = "linux"
+  additional_components = ["kubectl"]
+  skip_download         = false
 
+  asmcli_version = "1.22"
 
+  create_cmd_entrypoint = "asmcli"
+  create_cmd_body       = "install --kubeconfig ${kind_cluster.cluster.kubeconfig_path} --context ${local.cluster_context} --fleet_id ${data.google_project.project.project_id} --platform multicloud --enable_cluster_labels --enable_namespace_creation --ca mesh_ca --option attached-cluster"
+}
