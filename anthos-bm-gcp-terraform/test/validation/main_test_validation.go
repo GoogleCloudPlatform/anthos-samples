@@ -26,7 +26,7 @@ import (
 
 	"github.com/GoogleCloudPlatform/anthos-samples/anthos-bm-gcp-terraform/util"
 	"github.com/stretchr/testify/assert"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 // ValidateRootResources validates the terraform resources in the root module of
