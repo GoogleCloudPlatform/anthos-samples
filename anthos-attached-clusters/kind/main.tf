@@ -18,7 +18,8 @@
 // This is an example of how you might use the attached module with a local kind cluster
 
 locals {
-  cluster_name = "${var.name_prefix}-cluster"
+  cluster_name    = "${var.name_prefix}-cluster"
+  cluster_context = jsondecode(jsonencode(yamldecode(kind_cluster.cluster.kubeconfig).contexts))[0].name
 }
 
 resource "kind_cluster" "cluster" {
