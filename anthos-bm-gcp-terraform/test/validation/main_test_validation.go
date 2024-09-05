@@ -643,14 +643,14 @@ func ValidateVariableValuesInMain(goTester *testing.T, tfPlan *util.MainModulePl
 		goTester,
 		(*vars)["gpu"].(map[string]interface{})["count"],
 		tfPlan.Variables.Gpu.Value.Count,
-		fmt.Sprintf("Variable does not match in plan: gpu.count"),
+		"Variable does not match in plan: gpu.count",
 	)
 
 	assert.Equal(
 		goTester,
 		(*vars)["gpu"].(map[string]interface{})["type"],
 		tfPlan.Variables.Gpu.Value.Type,
-		fmt.Sprintf("Variable does not match in plan: gpu.type"),
+		"Variable does not match in plan: gpu.type",
 	)
 }
 
