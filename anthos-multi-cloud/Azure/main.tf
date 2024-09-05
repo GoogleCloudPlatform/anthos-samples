@@ -42,11 +42,10 @@ module "aad_app" {
 module "cluster_vnet" {
   source = "./modules/cluster-vnet"
 
-  name            = "${local.name_prefix}-vnet-rg"
-  region          = var.azure_region
-  aad_app_name    = "${local.name_prefix}-app"
-  sp_obj_id       = module.aad_app.aad_app_sp_obj_id
-  subscription_id = module.aad_app.subscription_id
+  name         = "${local.name_prefix}-vnet-rg"
+  region       = var.azure_region
+  aad_app_name = "${local.name_prefix}-app"
+  sp_obj_id    = module.aad_app.aad_app_sp_obj_id
   depends_on = [
     module.aad_app
   ]
@@ -79,7 +78,6 @@ module "anthos_cluster" {
   resource_group_id           = module.cluster_rg.resource_group_id
   subnet_id                   = module.cluster_vnet.subnet_id
   ssh_public_key              = tls_private_key.anthos_ssh_key.public_key_openssh
-  project_number              = module.gcp_data.project_number
   virtual_network_id          = module.cluster_vnet.vnet_id
   tenant_id                   = module.aad_app.tenant_id
   control_plane_instance_type = var.control_plane_instance_type
@@ -93,6 +91,7 @@ module "anthos_cluster" {
 
 module "create_vars" {
   source                = "terraform-google-modules/gcloud/google"
+  version               = "~> 3.4"
   platform              = "linux"
   create_cmd_entrypoint = "./modules/scripts/create_vars.sh"
   create_cmd_body       = "\"${local.name_prefix}\" \"${var.gcp_location}\" \"${var.azure_region}\" \"${var.cluster_version}\" \"${tls_private_key.anthos_ssh_key.public_key_openssh}\" \"${module.cluster_vnet.subnet_id}\""

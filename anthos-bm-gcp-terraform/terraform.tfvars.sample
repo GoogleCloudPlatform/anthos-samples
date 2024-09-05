@@ -11,9 +11,8 @@ instance_count                = {
                                   "worker" : 2
                                 }
 #gcp_login_accounts           = ["<GCP_ACCOUNT_1>", <GCP_ACCOUNT_2>, <GCP_ACCOUNT_3>]
-#gce_vm_service_account       = "<GCE_SERVICE_ACCOUNT_WITH_iam.serviceAccountKeyAdmin_PERMISSION>"
 #nfs_server                   = true
 #gpu                          = {
 #                                 count = 1,
-#                                 type = "nvidia-tesla-k80"
+#                                 type = "nvidia-tesla-t4"
 #                               }

@@ -48,7 +48,7 @@ resource "google_project_service" "default" {
 }
 
 # This module is used to update the platform controller on your admin cluster. This
-# is a necessary step for the user cluster version update. If the admin cluster is 
+# is a necessary step for the user cluster version update. If the admin cluster is
 # already on the correct version, then this module does not change anything
 module "gcloud_update_admin_cluster_platform_controller" {
   source                = "terraform-google-modules/gcloud/google"

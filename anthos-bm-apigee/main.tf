@@ -23,19 +23,18 @@ locals {
 }
 
 module "install_abm_on_gce" {
-  source                 = "../anthos-bm-gcp-terraform"
-  project_id             = var.project_id
-  credentials_file       = var.credentials_file
-  region                 = var.region
-  zone                   = var.zone
-  gcp_login_accounts     = var.gcp_login_accounts
-  gce_vm_service_account = var.gce_vm_service_account
-  username               = var.username
-  mode                   = var.mode
-  resources_path         = local.abm_on_gce_resources
-  as_sub_module          = true
-  abm_cluster_id         = "apigee-cluster"
-  machine_type           = "n1-standard-8"
+  source             = "../anthos-bm-gcp-terraform"
+  project_id         = var.project_id
+  credentials_file   = var.credentials_file
+  region             = var.region
+  zone               = var.zone
+  gcp_login_accounts = var.gcp_login_accounts
+  username           = var.username
+  mode               = var.mode
+  resources_path     = local.abm_on_gce_resources
+  as_sub_module      = true
+  abm_cluster_id     = "apigee-cluster"
+  machine_type       = "n1-standard-8"
   instance_count = {
     "controlplane" : 1
     "worker" : 3
