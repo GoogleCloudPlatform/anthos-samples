@@ -27,7 +27,7 @@
       "matchManagers": ["gomod"],
       "postUpdateOptions": ["gomodTidy", "gomodUpdateImportPaths"]
     }
-  },
+  ],
   "regexManagers": [
     {
       "fileMatch": ["(^|/)Makefile$"],
