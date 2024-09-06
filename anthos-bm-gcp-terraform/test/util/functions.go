@@ -19,7 +19,6 @@ import (
 	"log"
 	"math/rand"
 	"os"
-	"time"
 )
 
 // LogError takes in an error returned from a function call and a string message;
@@ -46,14 +45,15 @@ func ExitIf(varToCheck bool, expectedState bool) {
 func WriteToFile(s string, path string) {
 	f, _ := os.Create(path)
 	w := bufio.NewWriter(f)
-	w.WriteString(s)
+	if _, err := w.WriteString(s); err != nil {
+		log.Fatal(err)
+	}
 	w.Flush()
 }
 
 // GetRandomPort returns a random network port number in the range between
 // 20000 and 40000
 func GetRandomPort() int {
-	rand.Seed(time.Now().UnixNano())
 	min := 20000
 	max := 40000
 	return rand.Intn(max-min+1) + min
