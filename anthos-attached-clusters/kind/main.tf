@@ -67,8 +67,6 @@ data "google_project" "project" {
   project_id = var.gcp_project_id
 }
 
-
-
 module "oidc" {
   source = "./oidc"
 
@@ -77,7 +75,6 @@ module "oidc" {
   client_certificate     = kind_cluster.cluster.client_certificate
   client_key             = kind_cluster.cluster.client_key
 }
-
 
 resource "google_container_attached_cluster" "primary" {
   name             = local.cluster_name
@@ -119,6 +116,10 @@ resource "google_container_attached_cluster" "primary" {
   ]
 }
 
+module "install-mesh" {
+  source = "../modules/attached-install-mesh"
 
-
-
+  kubeconfig = kind_cluster.cluster.kubeconfig_path
+  context    = local.cluster_context
+  fleet_id   = data.google_project.project.project_id
+}
