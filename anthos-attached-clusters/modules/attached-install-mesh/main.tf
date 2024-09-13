@@ -28,7 +28,7 @@ locals {
   asmcli_download_url = var.asmcli_download_url != null ? var.asmcli_download_url : "https://storage.googleapis.com/csm-artifacts/asm/asmcli_${var.asmcli_version}"
 
   cmd_entrypoint  = "${local.gcloud_bin_path}/asmcli"
-  create_cmd_body = "install --kubeconfig ${var.kubeconfig} --context ${var.context} --fleet_id ${var.fleet_id} --platform multicloud --enable_cluster_labels --enable_namespace_creation --enable_gcp_components --ca mesh_ca --option attached-cluster"
+  create_cmd_body = "install --kubeconfig ${var.kubeconfig} --context ${var.context} --fleet_id ${var.fleet_id} --platform multicloud --enable_cluster_labels --enable_namespace_creation --enable_gcp_components --enable_cluster_roles --ca mesh_ca --option attached-cluster"
 
   wait = length(null_resource.additional_components[*].triggers) + length(
     null_resource.gcloud_auth_service_account_key_file[*].triggers,

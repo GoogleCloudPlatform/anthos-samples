@@ -26,7 +26,7 @@ resource "kind_cluster" "cluster" {
   name       = local.cluster_name
   node_image = var.kind_node_image
 
-  kubeconfig_path = "${path.root}/.tmp/kube/${local.cluster_name}"
+  kubeconfig_path = var.kubeconfig_path != null ? var.kubeconfig_path : "${path.root}/.tmp/kube/${local.cluster_name}"
 
   wait_for_ready = true
 
@@ -35,6 +35,10 @@ resource "kind_cluster" "cluster" {
     api_version = "kind.x-k8s.io/v1alpha4"
     feature_gates = {
       KubeletInUserNamespace : "true"
+    }
+    networking {
+      api_server_address = var.kind_api_server_address
+      api_server_port    = var.kind_api_server_port
     }
   }
 }
@@ -122,4 +126,8 @@ module "install-mesh" {
   kubeconfig = kind_cluster.cluster.kubeconfig_path
   context    = local.cluster_context
   fleet_id   = data.google_project.project.project_id
+
+  depends_on = [
+    google_container_attached_cluster.primary
+  ]
 }
