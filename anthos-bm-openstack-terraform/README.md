@@ -55,3 +55,30 @@ guide.
 - [Provision the OpenStack VMs and network setup using Terraform](docs/configure_openstack.md)
 - [Install Anthos bare metal on OpenStack](docs/install_abm.md)
 - [Configure the OpenStack Cloud Provider on the Anthos on bare metal cluster](docs/openstack_cloud_provider.md)
+
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| external\_network\_id | The id of the external network that is used for floating IP addresses | `string` | n/a | yes |
+| image | The source image to use when provisioning the OpenStack VMs.<br>    Use 'openstack image list' to find a list of all available images | `string` | `"ubuntu-2004"` | no |
+| instance\_count | Number of instances to provision per layer (Control plane and Worker nodes) of the cluster | `map(any)` | <pre>{<br>  "controlplane": 1,<br>  "worker": 1<br>}</pre> | no |
+| lb\_method | The algorithm to use for load balancing requests. Valid values are<br>    ROUND\_ROBIN, LEAST\_CONNECTIONS, SOURCE\_IP, or SOURCE\_IP\_PORT | `string` | `"ROUND_ROBIN"` | no |
+| machine\_type | The machine type to use when provisioning the OpenStack VMs.<br>    Use 'openstack flavor list' to find a list of all available flavors | `string` | `"m1.jumbo"` | no |
+| network\_mtu | The Maximum Transport Unit for packets over the OpenStack network | `number` | `1400` | no |
+| os\_auth\_url | The OpenStack authentication URL to be used by the provider | `string` | n/a | yes |
+| os\_endpoint\_type | The type of the OpenStack endpoint to use; whether its public or internal | `string` | `"internalURL"` | no |
+| os\_password | The password to be used to authenticate the OpenStack provider client | `string` | n/a | yes |
+| os\_region | The OpenStack region in which the VMs are to be provisioned | `string` | `"RegionOne"` | no |
+| os\_tenant\_name | The OpenStack tenant information for the current setup | `string` | `"admin"` | no |
+| os\_user\_name | The username to be used to authenticate the OpenStack provider client | `string` | n/a | yes |
+| ssh\_key\_name | The name of the SSH key pair to associate with the provisioned OpenStack VMs.<br>    Use 'openstack key list' to find a list of all available keys | `string` | n/a | yes |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| admin\_ws\_public\_ip | Public IP address of the admin workstation VM in the Openstack deployment |
+
+<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

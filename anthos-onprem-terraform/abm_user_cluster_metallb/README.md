@@ -97,3 +97,26 @@ have changed directory to where this samples is:
 
     You can view your user cluster in the
     [Anthos clusters page](https://console.cloud.google.com/anthos/clusters).
+
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| admin\_cluster\_name | The name of the admin cluster that manages the user cluster. The admin cluster<br>    name is the last segment of the fully-specified cluster name that uniquely<br>    identifies the cluster in Google Cloud:<br>    projects/FLEET\_HOST\_PROJECT\_ID/locations/global/memberships/ADMIN\_CLUSTER\_NAME | `string` | n/a | yes |
+| admin\_user\_emails | Email addresses of GCP accounts that will be designated as administrator<br>    accounts of the cluster. | `list(string)` | n/a | yes |
+| bare\_metal\_version | The Anthos clusters on bare metal version for your user cluster. The terraform<br>    provider based cluster creation is only supported for Anthos bare metal<br>    versions 1.13.1 and later | `string` | n/a | yes |
+| cluster\_name | The name of the user cluster to be created | `string` | `"bm-metallb-user-cluster"` | no |
+| control\_plane\_ips | The IPv4 address of the control plane nodes. Control plane nodes run the system<br>    workload. Typically, you have a single machine if using a minimum deployment,<br>    or three machines if using a high availability (HA) deployment. Specify an odd<br>    number of nodes to have a majority quorum for HA. You can change these<br>    addresses whenever you update or upgrade a cluster | `list(string)` | n/a | yes |
+| control\_plane\_vip | The virtual IP address (VIP) that you have chosen to configure on the load<br>    balancer for the Kubernetes API server of the user cluster. | `string` | n/a | yes |
+| ingress\_vip | The IP address that you have chosen to configure on the load balancer for<br>    the ingress proxy. | `string` | n/a | yes |
+| lb\_address\_pools | The list of address pool configurations to be used by the MetalLB load balancer.<br>    Every address of each address pool must be a range either in CIDR or hyphenated-range<br>    format. To specify a single IP address in a pool (such as for the ingress VIP),<br>    use /32 in CIDR notation (ex. 192.0.2.1/32). | `list(object({ name = string, addresses = list(string) }))` | n/a | yes |
+| project\_id | Unique identifer of the Google Cloud Project that is to be used | `string` | n/a | yes |
+| region | The Google Cloud region in which the Anthos On-Prem API runs. Specify<br>    a supported region:<br>    https://cloud.google.com/anthos/clusters/docs/bare-metal/latest/reference/supported-regions-on-prem-api | `string` | `"us-west1"` | no |
+| worker\_node\_ips | The IPv4 address of a worker node. | `list(string)` | n/a | yes |
+
+## Outputs
+
+No outputs.
+
+<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

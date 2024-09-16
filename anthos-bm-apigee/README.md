@@ -84,3 +84,27 @@ than the ones mentioned in this guide.
     script prints out the commands to follow to install Anthos on bare metal
     in the provisioned GCE VM and to **configure Apigee** in the new Anthos on
     bare metal cluster.
+
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| credentials\_file | Path to the Google Cloud Service Account key file.<br>    This is the key that will be used to authenticate the provider with the Cloud APIs | `string` | n/a | yes |
+| gcp\_login\_accounts | GCP account email addresses that must be allowed to login to the cluster using Google Cloud Identity. | `list(string)` | `[]` | no |
+| mode | Indication of the execution mode. By default the terraform execution will end<br>    after setting up the GCE VMs where the Anthos bare metal clusters can be deployed.<br><br>    **setup:** create and initialize the GCE VMs required to install Anthos bare metal.<br><br>    **install:** everything up to 'setup' mode plus automatically run Anthos bare metal installation steps as well.<br><br>    **manuallb:** similar to 'install' mode but Anthos on bare metal is installed with ManualLB mode. | `string` | `"setup"` | no |
+| project\_id | Unique identifer of the Google Cloud Project that is to be used | `string` | n/a | yes |
+| region | Google Cloud Region in which the Compute Engine VMs should be provisioned | `string` | `"us-central1"` | no |
+| username | The name of the user to be created on each Compute Engine VM to execute the init script | `string` | `"tfadmin"` | no |
+| zone | Zone within the selected Google Cloud Region that is to be used | `string` | `"us-central1-a"` | no |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| admin\_vm\_ssh | Run the following command to provision the anthos cluster. |
+| controlplane\_ip | You may access the control plane nodes of the Anthos on bare metal cluster<br>    by accessing this IP address. You need to copy the kubeconfig file for the<br>    cluster from the admin workstation to access using the kubectl CLI. |
+| ingress\_ip | You may access the application deployed in the Anthos on bare metal cluster<br>    by accessing this IP address |
+| installation\_check | Run the following command to check the Anthos bare metal installation status. |
+
+<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

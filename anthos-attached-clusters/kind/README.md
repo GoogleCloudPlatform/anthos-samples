@@ -51,3 +51,25 @@ The other examples and module limit dependancies to terraform core providers, bu
 
     ```
     This will allow you to access the cluster using kubectl as you would other GKE Enterprise clusters, regardless of location (ie in GCP, other clouds, or on prem).
+
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| gcp\_location | GCP location to create the attached resource in | `string` | `"us-west1"` | no |
+| gcp\_project\_id | The GCP project id where the cluster will be registered | `string` | n/a | yes |
+| kind\_node\_image | The image used for the kind cluster | `string` | `"kindest/node:v1.28.0"` | no |
+| name\_prefix | Common prefix to use for generating names | `string` | n/a | yes |
+| platform\_version | Platform version of the attached cluster resource | `string` | `"1.28.0-gke.3"` | no |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| CLUSTER | cluster name |
+| CONTEXT | cluster context |
+| KUBECONFIG | cluster kubeconfig |
+| PROJECT | cluster project |
+
+<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
