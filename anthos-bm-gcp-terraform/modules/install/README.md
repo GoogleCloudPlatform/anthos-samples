@@ -21,6 +21,16 @@ terraform-docs markdown table \
 ```
 
 <!-- BEGIN_TF_DOCS -->
+## Requirements
+
+No requirements.
+
+## Providers
+
+| Name | Version |
+|------|---------|
+| <a name="provider_null"></a> [null](#provider\_null) | 3.2.3 |
+
 ## Modules
 
 No modules.

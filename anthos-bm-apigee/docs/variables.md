@@ -22,15 +22,27 @@ terraform-docs markdown table \
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= v0.15.5, < 1.4 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= v0.15.5, < 1.10 |
 | <a name="requirement_google"></a> [google](#requirement\_google) | >= 3.68.0 |
 | <a name="requirement_google-beta"></a> [google-beta](#requirement\_google-beta) | >= 3.68.0 |
+
+## Providers
+
+| Name | Version |
+|------|---------|
+| <a name="provider_null"></a> [null](#provider\_null) | 3.2.3 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_install_abm_on_gce"></a> [install\_abm\_on\_gce](#module\_install\_abm\_on\_gce) | ../anthos-bm-gcp-terraform | n/a |
+
+## Resources
+
+| Name | Type |
+|------|------|
+| [null_resource.exec_init_script](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 
 ## Inputs
 

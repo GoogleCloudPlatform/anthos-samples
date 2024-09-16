@@ -30,8 +30,8 @@ terraform-docs markdown table \
 | Name | Version |
 |------|---------|
 | <a name="provider_openstack"></a> [openstack](#provider\_openstack) | 1.47.0 |
-| <a name="provider_template"></a> [template](#provider\_template) | n/a |
-| <a name="provider_tls"></a> [tls](#provider\_tls) | n/a |
+| <a name="provider_template"></a> [template](#provider\_template) | 2.2.0 |
+| <a name="provider_tls"></a> [tls](#provider\_tls) | 4.0.6 |
 
 ## Modules
 

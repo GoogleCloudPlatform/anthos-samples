@@ -42,14 +42,8 @@ git clone https://github.com/tfutils/tfenv.git ~/.tfenv
 sudo ln -s "$HOME"/.tfenv/bin/* /bin
 
 # install the terraform versions and configure it to the latest
-tfenv install 1.0.0
-tfenv install 1.0.1
-tfenv install 1.0.6
-tfenv install 1.1.3
-tfenv install 1.1.9
-tfenv install 1.3.3
-tfenv install 1.3.9
-tfenv use 1.3.9
+tfenv install 1.9.5
+tfenv use 1.9.5
 
 # install the golint binary
 go install golang.org/x/lint/golint@latest
