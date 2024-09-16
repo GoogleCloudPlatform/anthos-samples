@@ -20,11 +20,19 @@ terraform-docs markdown table \
 ```
 
 <!-- BEGIN_TF_DOCS -->
+## Requirements
+
+No requirements.
+
+## Providers
+
+No providers.
+
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_compute_instance"></a> [compute\_instance](#module\_compute\_instance) | terraform-google-modules/vm/google//modules/compute_instance | ~> 7.6.0 |
+| <a name="module_compute_instance"></a> [compute\_instance](#module\_compute\_instance) | terraform-google-modules/vm/google//modules/compute_instance | ~> 8.0.0 |
 | <a name="module_external_ip_addresses"></a> [external\_ip\_addresses](#module\_external\_ip\_addresses) | ../external-ip | n/a |
 
 ## Resources

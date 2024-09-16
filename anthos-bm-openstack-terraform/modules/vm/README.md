@@ -20,31 +20,38 @@ terraform-docs markdown table \
 ```
 
 <!-- BEGIN_TF_DOCS -->
+## Requirements
+
+No requirements.
+
+## Providers
+
+No providers.
+
 ## Modules
 
-No modules.
+| Name | Source | Version |
+|------|--------|---------|
+| <a name="module_compute_instance"></a> [compute\_instance](#module\_compute\_instance) | terraform-google-modules/vm/google//modules/compute_instance | ~> 8.0.0 |
+| <a name="module_external_ip_addresses"></a> [external\_ip\_addresses](#module\_external\_ip\_addresses) | ../external-ip | n/a |
 
 ## Resources
 
-| Name | Type |
-|------|------|
-| [openstack_compute_instance_v2.openstack_instance](https://registry.terraform.io/providers/terraform-provider-openstack/openstack/1.47.0/docs/resources/compute_instance_v2) | resource |
+No resources.
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_flavor"></a> [flavor](#input\_flavor) | The machine type to use when provisioning the OpenStack VMs.<br>    Use 'openstack flavor list' to find a list of all available flavors | `string` | `"m1.xlarge"` | no |
-| <a name="input_image"></a> [image](#input\_image) | The source image to use when provisioning the OpenStack VMs.<br>    Use 'openstack image list' to find a list of all available images | `string` | `"ubuntu-1804"` | no |
-| <a name="input_key"></a> [key](#input\_key) | The key pair to associate with the provisioned the OpenStack VMs.<br>    Use 'openstack key list' to find a list of all available flavors | `string` | `"abm_key"` | no |
-| <a name="input_network"></a> [network](#input\_network) | The OpenStack network to which the VM is to be attached to. | `string` | n/a | yes |
-| <a name="input_security_groups"></a> [security\_groups](#input\_security\_groups) | The security groups to which the provisioned OpenStack VMs are to be<br>    associated to. | `list(string)` | <pre>[<br>  "default"<br>]</pre> | no |
-| <a name="input_user_data"></a> [user\_data](#input\_user\_data) | The user data to be provided to the cloud-init system on the provisioned<br>    VMs. This will be used to setup the VM on first boot. | `string` | `""` | no |
-| <a name="input_vm_info"></a> [vm\_info](#input\_vm\_info) | List of names to be given to the OpenStack VMs that are provisioned | `list(object({ name = string, ip = string }))` | n/a | yes |
+| <a name="input_instance_template"></a> [instance\_template](#input\_instance\_template) | Google Cloud instance template based on which the VMs are to be provisioned | `string` | n/a | yes |
+| <a name="input_network"></a> [network](#input\_network) | VPC network to which the provisioned VMs are to be connected to | `string` | `"default"` | no |
+| <a name="input_region"></a> [region](#input\_region) | Google Cloud Region in which the External IP addresses should be provisioned | `string` | `"us-central1"` | no |
+| <a name="input_vm_names"></a> [vm\_names](#input\_vm\_names) | List of names to be given to the Compute Engine VMs that are provisioned | `list(any)` | n/a | yes |
+| <a name="input_zone"></a> [zone](#input\_zone) | Google Cloud Zone in which the VMs should be provisioned | `string` | `"us-central1-a"` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| <a name="output_vm_ids"></a> [vm\_ids](#output\_vm\_ids) | Output the list of IDs of the OpenStack VMs created by this module |
+| <a name="output_vm_info"></a> [vm\_info](#output\_vm\_info) | Information pertaining to all the VMs that were created. It is in the form<br>    of a list of objects. Each object contains the hostname, internal IP address<br>    and the external IP address of a specific VM that was created. |
 <!-- END_TF_DOCS -->

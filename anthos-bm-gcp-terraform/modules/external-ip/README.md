@@ -20,6 +20,16 @@ terraform-docs markdown table \
 ```
 
 <!-- BEGIN_TF_DOCS -->
+## Requirements
+
+No requirements.
+
+## Providers
+
+| Name | Version |
+|------|---------|
+| <a name="provider_google"></a> [google](#provider\_google) | 6.3.0 |
+
 ## Modules
 
 No modules.
