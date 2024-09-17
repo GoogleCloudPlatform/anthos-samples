@@ -129,3 +129,32 @@ If you would like to test out the Anthos Configuration and Policy Management fea
    ```bash
    terraform destroy
    ```
+
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| admin\_users | User to get default Admin RBAC | `list(string)` | n/a | yes |
+| aws\_region | AWS region to deploy to | `string` | n/a | yes |
+| cluster\_version | GKE version to install | `string` | n/a | yes |
+| control\_plane\_instance\_type | AWS Node instance type | `string` | n/a | yes |
+| cp\_private\_subnet\_cidr\_blocks | CIDR blocks to use for control plane private subnets | `list(string)` | <pre>[<br>  "10.0.1.0/24",<br>  "10.0.2.0/24",<br>  "10.0.3.0/24"<br>]</pre> | no |
+| gcp\_location | GCP location to deploy to | `string` | n/a | yes |
+| gcp\_project\_id | Enter the project id of the gcp project where the cluster will be registered. | `string` | n/a | yes |
+| name\_prefix | Prefix to apply to all artifacts created. | `string` | n/a | yes |
+| node\_pool\_instance\_type | AWS Node instance type | `string` | n/a | yes |
+| pod\_address\_cidr\_blocks | CIDR Block to use for pod subnet | `string` | `"10.2.0.0/16"` | no |
+| public\_subnet\_cidr\_block | CIDR blocks to use for public subnets | `list(string)` | <pre>[<br>  "10.0.101.0/24",<br>  "10.0.102.0/24",<br>  "10.0.103.0/24"<br>]</pre> | no |
+| service\_address\_cidr\_blocks | CIDR Block to use for service subnet | `string` | `"10.1.0.0/16"` | no |
+| subnet\_availability\_zones | Availability zones to create subnets in, np will be created in the first | `list(string)` | n/a | yes |
+| vpc\_cidr\_block | CIDR block to use for VPC | `string` | `"10.0.0.0/16"` | no |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| cluster\_name | The automatically generated name of your aws GKE cluster |
+| message | Connect Instructions |
+
+<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

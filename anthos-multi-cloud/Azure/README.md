@@ -143,3 +143,29 @@ If you would like to test out the Anthos Configuration and Policy Management fea
    ```bash
    terraform destroy
    ```
+
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| admin\_users | User to get default Admin RBAC | `list(string)` | n/a | yes |
+| azure\_region | Azure region to deploy to | `string` | n/a | yes |
+| cluster\_version | GKE version to install | `string` | n/a | yes |
+| control\_plane\_instance\_type | Azure instance type for control plane | `string` | n/a | yes |
+| gcp\_location | GCP region to deploy the multi-cloud API | `string` | n/a | yes |
+| gcp\_project\_id | GCP project ID to register the Anthos Cluster to | `string` | n/a | yes |
+| name\_prefix | prefix of all artifacts created and cluster name | `string` | n/a | yes |
+| node\_pool\_instance\_type | Azure instance type for node pool | `string` | n/a | yes |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| cluster\_name | The automatically generated name of your Azure GKE cluster |
+| cluster\_resource\_group | VNET Resource Group |
+| message | Connect Instructions |
+| vars\_file | The variables needed to create more node pools are in the vars.sh file.<br> If you create additional node pools they must be manually deleted before you run terraform destroy |
+| vnet\_resource\_group | VNET Resource Group |
+
+<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

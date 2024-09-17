@@ -33,3 +33,24 @@ on the topic.
     This will allow you to access the cluster using kubectl, if appropriate RBAC permissions have
   been applied. For more information, see [Connect to your AKS Cluster](https://cloud.google.com/anthos/clusters/docs/multi-cloud/attached/aks/how-to/connect-to-cluster).
 
+
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| azure\_region | Azure region to deploy to | `string` | `"East US"` | no |
+| gcp\_location | GCP location to create the attached resource in | `string` | `"us-west1"` | no |
+| gcp\_project\_id | The GCP project id where the cluster will be registered | `string` | n/a | yes |
+| k8s\_version | Kubernetes version of the AKS cluster | `string` | `"1.28"` | no |
+| name\_prefix | Common prefix to use for generating names | `string` | n/a | yes |
+| node\_count | The number of nodes in the default node pool | `number` | `1` | no |
+| owner | Owner of the resources | `string` | n/a | yes |
+| platform\_version | Platform version of the attached cluster resource | `string` | `"1.28.0-gke.3"` | no |
+| tags | List of tags to apply to resources | `map(string)` | `{}` | no |
+
+## Outputs
+
+No outputs.
+
+<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
