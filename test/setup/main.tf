@@ -65,3 +65,22 @@ resource "local_file" "int_test_editor_sa_key_file" {
   content  = base64decode(google_service_account_key.int_test_editor_sa_key.private_key)
   filename = "${local.module_path}/${module.abm_infra_editor_project.project_id}.json"
 }
+
+module "gke-project-1" {
+  source  = "terraform-google-modules/project-factory/google"
+  version = "~> 17.0"
+
+  name                     = "ci-gke-${random_id.random_project_id_suffix.hex}"
+  random_project_id        = true
+  random_project_id_length = 4
+  org_id                   = var.org_id
+  folder_id                = var.folder_id
+  billing_account          = var.billing_account
+
+  auto_create_network = true
+
+  activate_apis = [
+    "gkemulticloud.googleapis.com",
+    "mesh.googleapis.com"
+  ]
+}

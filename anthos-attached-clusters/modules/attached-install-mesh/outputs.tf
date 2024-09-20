@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2018-2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-terraform {
-  required_providers {
-    http-full = {
-      source  = "salrashid123/http-full"
-      version = "~> 1.3"
-    }
-  }
-  required_version = ">= 0.13"
+output "wait" {
+  description = "An output to use when you want to depend on cmd finishing"
+  value       = local.wait
 }

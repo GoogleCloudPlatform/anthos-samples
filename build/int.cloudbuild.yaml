@@ -21,7 +21,29 @@ steps:
   - 'TF_VAR_org_id=$_ORG_ID'
   - 'TF_VAR_folder_id=$_FOLDER_ID'
   - 'TF_VAR_billing_account=$_BILLING_ACCOUNT'
+- id: create anthos_attached_cluster_kind
+  waitFor:
+    - prepare
+  name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
+  args: ['/bin/bash', '-c', 'cft test run TestAACKind --stage create --verbose --test-dir test/integration']
+- id: apply anthos_attached_cluster_kind
+  waitFor:
+    - create anthos_attached_cluster_kind
+  name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
+  args: ['/bin/bash', '-c', 'cft test run TestAACKind --stage apply --verbose --test-dir test/integration']
+- id: verify anthos_attached_cluster_kind
+  waitFor:
+    - apply anthos_attached_cluster_kind
+  name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
+  args: ['/bin/bash', '-c', 'cft test run TestAACKind --stage verify --verbose --test-dir test/integration']
+- id: destroy anthos_attached_cluster_kind
+  waitFor:
+    - verify anthos_attached_cluster_kind
+  name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
+  args: ['/bin/bash', '-c', 'cft test run TestAACKind --stage destroy --verbose --test-dir test/integration']
 - id: create abm-gce-defaults-on-editor-project-local
+  waitFor:
+    - destroy anthos_attached_cluster_kind
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
   args: ['/bin/bash', '-c', 'cd test/integration && RUN_STAGE=init go test -v -run TestABMEditor ./... -p 1']
 - id: converge abm-gce-defaults-on-editor-project-local
@@ -63,7 +85,7 @@ tags:
 - 'ci'
 - 'integration'
 substitutions:
-  _DOCKER_IMAGE_DEVELOPER_TOOLS: 'cft/developer-tools'
+  _DOCKER_IMAGE_DEVELOPER_TOOLS: 'cft/developer-tools-krm'
   _DOCKER_TAG_VERSION_DEVELOPER_TOOLS: '1.22.10'
 options:
   machineType: 'N1_HIGHCPU_8'

@@ -36,12 +36,26 @@ variable "platform_version" {
   default     = "1.28.0-gke.3"
 }
 
-
 variable "kind_node_image" {
   description = "The image used for the kind cluster"
   type        = string
   default     = "kindest/node:v1.28.0"
 }
 
+variable "kind_api_server_address" {
+  description = "Kind cluster API server address"
+  type        = string
+  default     = null
+}
 
+variable "kind_api_server_port" {
+  description = "Kind cluster API server port"
+  type        = number
+  default     = null
+}
 
+variable "kubeconfig_path" {
+  description = "The kubeconfig path."
+  type        = string
+  default     = null
+}

@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-terraform {
-  required_providers {
-    http-full = {
-      source  = "salrashid123/http-full"
-      version = "~> 1.3"
-    }
-  }
-  required_version = ">= 0.13"
+module "anthos_attached_cluster_kind" {
+  source                  = "../../../anthos-attached-clusters/kind"
+  gcp_project_id          = var.gke-project-1_id
+  name_prefix             = "test"
+  kind_api_server_address = "172.17.0.1"
+  kind_api_server_port    = 6443
+  kubeconfig_path         = "/workspace/.tmp/kind-cluster"
 }

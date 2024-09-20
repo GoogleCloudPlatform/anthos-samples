@@ -14,12 +14,23 @@
  * limitations under the License.
  */
 
-terraform {
-  required_providers {
-    http-full = {
-      source  = "salrashid123/http-full"
-      version = "~> 1.3"
-    }
-  }
-  required_version = ">= 0.13"
+
+output "project" {
+  description = "cluster project"
+  value       = module.anthos_attached_cluster_kind.PROJECT
+}
+
+output "cluster" {
+  description = "cluster name"
+  value       = module.anthos_attached_cluster_kind.CLUSTER
+}
+
+output "kubeconfig" {
+  description = "cluster kubeconfig"
+  value       = module.anthos_attached_cluster_kind.KUBECONFIG
+}
+
+output "context" {
+  description = "cluster context"
+  value       = module.anthos_attached_cluster_kind.CONTEXT
 }

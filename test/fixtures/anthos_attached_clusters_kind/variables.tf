@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-terraform {
-  required_providers {
-    http-full = {
-      source  = "salrashid123/http-full"
-      version = "~> 1.3"
-    }
-  }
-  required_version = ">= 0.13"
+variable "gke-project-1_id" {
+  type = string
 }

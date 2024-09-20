@@ -30,15 +30,11 @@ data "http" "issuer" {
   client_key = var.client_key
 }
 
-locals {
-  issuer_json = jsondecode(data.http.issuer.response_body)
-}
-
 data "http" "jwks" {
 
   provider = http-full
 
-  url = local.issuer_json.jwks_uri
+  url = "${var.endpoint}/openid/v1/jwks"
   request_headers = {
     content-type = "application/json"
   }

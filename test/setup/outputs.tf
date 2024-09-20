@@ -32,3 +32,7 @@ output "editor_sa_key" {
 output "editor_sa_key_file_path" {
   value = "${abspath(path.module)}/${module.abm_infra_editor_project.project_id}.json"
 }
+
+output "gke-project-1_id" {
+  value = module.gke-project-1.project_id
+}
