@@ -18,7 +18,6 @@ variable "endpoint" {
   type = string
 }
 
-
 variable "cluster_ca_certificate" {
   type = string
 }
@@ -30,5 +29,3 @@ variable "client_certificate" {
 variable "client_key" {
   type = string
 }
-
-

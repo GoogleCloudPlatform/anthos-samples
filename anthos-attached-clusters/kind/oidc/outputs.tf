@@ -15,7 +15,7 @@
  */
 
 output "issuer" {
-  value = local.issuer_json.issuer
+  value = jsondecode(data.http.issuer.response_body).issuer
 }
 
 output "jwks" {
