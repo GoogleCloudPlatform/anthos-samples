@@ -27,8 +27,23 @@ locals {
   jq_download_url     = var.jq_download_url != null ? var.jq_download_url : "https://github.com/stedolan/jq/releases/download/jq-${var.jq_version}/jq-${local.jq_platform}64"
   asmcli_download_url = var.asmcli_download_url != null ? var.asmcli_download_url : "https://storage.googleapis.com/csm-artifacts/asm/asmcli_${var.asmcli_version}"
 
+  asmcli_options = join("", [
+    " --ca ${var.asmcli_ca}",
+    var.asmcli_enable_all ? " --enable_all" : "",
+    var.asmcli_enable_cluster_roles ? " --enable_cluster_roles" : "",
+    var.asmcli_enable_cluster_labels ? " --enable_cluster_labels" : "",
+    var.asmcli_enable_gcp_components ? " --enable_gcp_components" : "",
+    var.asmcli_enable_gcp_apis ? " --enable_gcp_apis" : "",
+    var.asmcli_enable_gcp_iam_roles ? " --enable_gcp_iam_roles" : "",
+    var.asmcli_enable_meshconfig_init ? " --enable_meshconfig_init" : "",
+    var.asmcli_enable_namespace_creation ? " --enable_namespace_creation" : "",
+    var.asmcli_enable_registration ? " --enable_registration" : "",
+    var.asmcli_verbose ? " --verbose" : "",
+    var.asmcli_additional_arguments != null ? " ${var.asmcli_additional_arguments}" : ""
+  ])
+
   cmd_entrypoint  = "${local.gcloud_bin_path}/asmcli"
-  create_cmd_body = "install --kubeconfig ${var.kubeconfig} --context ${var.context} --fleet_id ${var.fleet_id} --platform multicloud --enable_cluster_labels --enable_namespace_creation --enable_gcp_components --enable_cluster_roles --ca mesh_ca --option attached-cluster"
+  create_cmd_body = "install --kubeconfig ${var.kubeconfig} --context ${var.context} --fleet_id ${var.fleet_id} --platform multicloud --option attached-cluster${local.asmcli_options}"
 
   wait = length(null_resource.additional_components[*].triggers) + length(
     null_resource.gcloud_auth_service_account_key_file[*].triggers,

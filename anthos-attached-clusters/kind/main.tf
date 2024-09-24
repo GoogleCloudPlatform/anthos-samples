@@ -120,12 +120,18 @@ resource "google_container_attached_cluster" "primary" {
   ]
 }
 
+# Install Cloud Service Mesh
 module "install-mesh" {
   source = "../modules/attached-install-mesh"
 
   kubeconfig = kind_cluster.cluster.kubeconfig_path
   context    = local.cluster_context
   fleet_id   = data.google_project.project.project_id
+
+  asmcli_enable_cluster_roles      = true
+  asmcli_enable_cluster_labels     = true
+  asmcli_enable_gcp_components     = true
+  asmcli_enable_namespace_creation = true
 
   depends_on = [
     google_container_attached_cluster.primary
