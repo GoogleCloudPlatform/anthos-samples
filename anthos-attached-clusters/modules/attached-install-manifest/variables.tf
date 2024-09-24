@@ -29,7 +29,6 @@ variable "gcp_location" {
 variable "platform_version" {
   description = "Platform version of the attached cluster resource"
   type        = string
-  default     = "1.28.8-gke.3"
 }
 
 variable "attached_cluster_fleet_project" {
