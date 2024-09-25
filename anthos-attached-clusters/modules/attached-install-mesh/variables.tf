@@ -88,3 +88,80 @@ variable "asmcli_download_url" {
   type        = string
   default     = null
 }
+
+variable "asmcli_enable_all" {
+  description = "asmcli: enable all"
+  type        = bool
+  default     = false
+}
+
+variable "asmcli_enable_cluster_roles" {
+  description = "asmcli: enable cluster roles"
+  type        = bool
+  default     = false
+}
+
+variable "asmcli_enable_cluster_labels" {
+  description = "asmcli: enable cluster labels"
+  type        = bool
+  default     = false
+}
+
+variable "asmcli_enable_gcp_components" {
+  description = "asmcli: enable gcp components"
+  type        = bool
+  default     = false
+}
+
+variable "asmcli_enable_gcp_apis" {
+  description = "asmcli: enable gcp apis"
+  type        = bool
+  default     = false
+}
+
+variable "asmcli_enable_gcp_iam_roles" {
+  description = "asmcli: enable gcp iam roles"
+  type        = bool
+  default     = false
+}
+
+variable "asmcli_enable_meshconfig_init" {
+  description = "asmcli: enable meshconfig init"
+  type        = bool
+  default     = false
+}
+
+variable "asmcli_enable_namespace_creation" {
+  description = "asmcli: enable namespace creation"
+  type        = bool
+  default     = false
+}
+
+variable "asmcli_enable_registration" {
+  description = "asmcli: enable registration "
+  type        = bool
+  default     = false
+}
+
+variable "asmcli_ca" {
+  description = "asmcli: certificate authority"
+  type        = string
+  default     = "mesh_ca"
+
+  validation {
+    condition     = contains(["mesh_ca", "gcp_cas", "citadel"], var.asmcli_ca)
+    error_message = "The asmcli_ca value must be one of: mesh_ca, gcp_cas, citadel."
+  }
+}
+
+variable "asmcli_verbose" {
+  description = "asmcli: verbose"
+  type        = bool
+  default     = false
+}
+
+variable "asmcli_additional_arguments" {
+  description = "asmcli: additional arguments"
+  type        = string
+  default     = null
+}

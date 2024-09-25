@@ -1,4 +1,4 @@
-# Sandbox Example to Attach a [kind](https://kind.sigs.k8s.io/) Cluster using Terraform
+# Sandbox Example to Attach a [kind](https://kind.sigs.k8s.io/) Cluster and install Service Mesh using Terraform
 
 ## Prerequisites
 The sample is meant just to provide a local example for experimentation. It assumes an environment where [`kind`](https://kind.sigs.k8s.io/) is available and could otherwise be run on the command line, e.g. `kind create cluster`.

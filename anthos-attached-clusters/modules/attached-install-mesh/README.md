@@ -6,11 +6,16 @@ Sample module to install [Google Cloud Service Mesh](https://cloud.google.com/pr
 
 ```
 module "install-mesh" {
-  source = "./attached-install-mesh"
+  source = "github.com/GoogleCloudPlatform/anthos-samples.git//anthos-attached-clusters/modules/attached-install-mesh?ref=3bde26802919539d27ae9295a8b936d7aa827eb3" #TODO: Use ref= release tag e.g. v0.15.4
 
-  kubeconfig = kind_cluster.cluster.kubeconfig_path
-  context    = local.cluster_context
-  fleet_id   = data.google_project.project.project_id
+  kubeconfig = "PATH TO CLUSTER CONTEXT FILE"
+  context    = "CLUSTER CONTEXT"
+  fleet_id   = "FLEET PROJECT ID"
+
+  asmcli_enable_cluster_roles      = true
+  asmcli_enable_cluster_labels     = true
+  asmcli_enable_gcp_components     = true
+  asmcli_enable_namespace_creation = true
 }
 ```
 
@@ -20,7 +25,19 @@ module "install-mesh" {
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | activate\_service\_account | Set to false to skip running `gcloud auth activate-service-account`. Optional. | `bool` | `true` | no |
+| asmcli\_additional\_arguments | asmcli: additional arguments | `string` | `null` | no |
+| asmcli\_ca | asmcli: certificate authority | `string` | `"mesh_ca"` | no |
 | asmcli\_download\_url | Custom asmcli download url. Optional. | `string` | `null` | no |
+| asmcli\_enable\_all | asmcli: enable all | `bool` | `false` | no |
+| asmcli\_enable\_cluster\_labels | asmcli: enable cluster labels | `bool` | `false` | no |
+| asmcli\_enable\_cluster\_roles | asmcli: enable cluster roles | `bool` | `false` | no |
+| asmcli\_enable\_gcp\_apis | asmcli: enable gcp apis | `bool` | `false` | no |
+| asmcli\_enable\_gcp\_components | asmcli: enable gcp components | `bool` | `false` | no |
+| asmcli\_enable\_gcp\_iam\_roles | asmcli: enable gcp iam roles | `bool` | `false` | no |
+| asmcli\_enable\_meshconfig\_init | asmcli: enable meshconfig init | `bool` | `false` | no |
+| asmcli\_enable\_namespace\_creation | asmcli: enable namespace creation | `bool` | `false` | no |
+| asmcli\_enable\_registration | asmcli: enable registration | `bool` | `false` | no |
+| asmcli\_verbose | asmcli: verbose | `bool` | `false` | no |
 | asmcli\_version | The asmcli version to download. Optional. | `string` | `"1.22"` | no |
 | context | The cluster contex. | `string` | n/a | yes |
 | fleet\_id | The fleet\_id. | `string` | n/a | yes |
