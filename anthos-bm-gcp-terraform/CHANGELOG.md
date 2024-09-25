@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.15.4](https://github.com/GoogleCloudPlatform/anthos-samples/compare/anthos-bm-gcp-terraform-v0.15.3...anthos-bm-gcp-terraform-v0.15.4) (2024-09-25)
+
+
+### Bug Fixes
+
+* **CI:** fix anthos-bm-gcp-terraform (Golang) unit tests ([#697](https://github.com/GoogleCloudPlatform/anthos-samples/issues/697)) ([c909f72](https://github.com/GoogleCloudPlatform/anthos-samples/commit/c909f72117cd87a2c47953632017c45258f8e1c4))
+* **deps:** update module github.com/gruntwork-io/terratest to v0.47.0 ([#665](https://github.com/GoogleCloudPlatform/anthos-samples/issues/665)) ([e2a3c8c](https://github.com/GoogleCloudPlatform/anthos-samples/commit/e2a3c8cf2b84ab6505379ff6a7887314d5ce3f18))
+* **deps:** update module gopkg.in/yaml.v2 to v3 ([#701](https://github.com/GoogleCloudPlatform/anthos-samples/issues/701)) ([1973898](https://github.com/GoogleCloudPlatform/anthos-samples/commit/19738980bdae25cd434d3a208cc3aeafe5943899))
+* minor updates for CI ([#691](https://github.com/GoogleCloudPlatform/anthos-samples/issues/691)) ([ef3baae](https://github.com/GoogleCloudPlatform/anthos-samples/commit/ef3baae55c6ec0e98cc062bfcfbda26345e0fe15))
+* minor updates for lint ([#694](https://github.com/GoogleCloudPlatform/anthos-samples/issues/694)) ([083e792](https://github.com/GoogleCloudPlatform/anthos-samples/commit/083e79215b0300d8eeadaf1ba3069edf29092770))
+
 ## [0.15.3](https://github.com/GoogleCloudPlatform/anthos-samples/compare/v0.15.2...v0.15.3) (2024-02-21)
 
 
