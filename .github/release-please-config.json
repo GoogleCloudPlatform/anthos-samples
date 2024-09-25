@@ -1,0 +1,25 @@
+{
+  "separate-pull-requests": true,
+  "include-component-in-tag": true,
+  "bootstrap-sha": "99ecf951a1ed861aaac7082bd6b0506f421c9871",
+  "packages": {
+    "anthos-bm-gcp-terraform": {
+      "release-type": "terraform-module",
+      "package-name": "anthos-bm-gcp-terraform",
+      "component": "anthos-bm-gcp-terraform",
+      "pull-request-title-pattern": "chore(release-please): anthos-bm-gcp-terraform v${version}",
+      "bump-minor-pre-major": true,
+      "changelog-path": "CHANGELOG.md",
+      "release-as": "0.15.4"
+    },
+    "anthos-attached-clusters": {
+      "release-type": "terraform-module",
+      "package-name": "anthos-attached-clusters",
+      "component": "anthos-attached-clusters",
+      "pull-request-title-pattern": "chore(release-please): anthos-attached-clusters v${version}",
+      "bump-minor-pre-major": true,
+      "changelog-path": "CHANGELOG.md",
+      "release-as": "0.1.0"
+    }
+  }
+}
