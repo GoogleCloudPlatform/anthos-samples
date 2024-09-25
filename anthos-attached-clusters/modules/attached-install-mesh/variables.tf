@@ -150,7 +150,7 @@ variable "asmcli_ca" {
 
   validation {
     condition     = contains(["mesh_ca", "gcp_cas", "citadel"], var.asmcli_ca)
-    error_message = "The asmcli_cad value must be one of: mesh_ca, gcp_cas, citadel."
+    error_message = "The asmcli_ca value must be one of: mesh_ca, gcp_cas, citadel."
   }
 }
 
