@@ -28,7 +28,7 @@ terraform {
   }
 
   provider_meta "google" {
-    module_name = "anthos-samples/terraform/anthos-bm-terraform:gce/v0.15.3"
+    module_name = "anthos-samples/terraform/anthos-bm-terraform:gce/v0.15.4"
   }
 }
 
