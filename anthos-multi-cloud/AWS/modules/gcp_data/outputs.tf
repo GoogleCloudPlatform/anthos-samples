@@ -14,28 +14,12 @@
  * limitations under the License.
  */
 
-terraform {
-  required_providers {
-    google = {
-      source  = "hashicorp/google"
-      version = ">= 4.14.0"
-    }
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
-    }
-    random = {
-      source  = "hashicorp/random"
-      version = ">= 3.4"
-    }
-  }
-  required_version = ">= 0.13"
+output "project_number" {
+  value       = data.google_project.project.number
+  description = "project number"
 }
 
-provider "aws" {
-  region = var.aws_region
-}
-
-provider "google" {
-  project = var.gcp_project_id
+output "latest_version" {
+  value       = data.google_container_aws_versions.this.valid_versions[0]
+  description = "google container aws latest version"
 }
