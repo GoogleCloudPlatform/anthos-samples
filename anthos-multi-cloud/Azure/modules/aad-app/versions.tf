@@ -1,5 +1,5 @@
 /**
- * Copyright 2022-2024 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,26 +16,14 @@
 
 terraform {
   required_providers {
-    google = {
-      source  = "hashicorp/google"
-      version = ">= 4.14.0"
+    azuread = {
+      source  = "hashicorp/azuread"
+      version = "~> 2.14"
     }
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
-    }
-    random = {
-      source  = "hashicorp/random"
-      version = ">= 3.4"
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "~> 2.94"
     }
   }
   required_version = ">= 0.13"
-}
-
-provider "aws" {
-  region = var.aws_region
-}
-
-provider "google" {
-  project = var.gcp_project_id
 }

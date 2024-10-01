@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2022-2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,5 +15,6 @@
  */
 
 output "fleet_membership" {
-  value = google_container_azure_cluster.this.fleet[0].membership
+  value       = google_container_azure_cluster.this.fleet[0].membership
+  description = "fleet membership"
 }

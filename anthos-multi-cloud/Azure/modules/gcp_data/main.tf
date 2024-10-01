@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2022-2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,7 @@
 data "google_project" "project" {
 }
 
-output "project_number" {
-  value = data.google_project.project.number
-}
-
 data "google_container_azure_versions" "this" {
   location = var.gcp_location
   project  = var.gcp_project
-}
-
-output "latest_version" {
-  value = data.google_container_azure_versions.this.valid_versions[0]
 }
