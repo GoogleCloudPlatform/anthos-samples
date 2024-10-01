@@ -6,7 +6,7 @@ toolchain go1.21.3
 
 require (
 	github.com/gruntwork-io/terratest v0.47.1
-	github.com/icrowley/fake v0.0.0-20221112152111-d7b7e2276db2
+	github.com/icrowley/fake v0.0.0-20240710202011-f797eb4a99c0
 	github.com/stretchr/testify v1.9.0
 	gopkg.in/yaml.v3 v3.0.1
 )
