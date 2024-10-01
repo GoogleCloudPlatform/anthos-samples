@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2022-2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-terraform {
-  required_version = ">= 0.12.23"
-  required_providers {
-    aws = {
-      source = "hashicorp/aws"
-    }
-  }
-}
 
 locals {
   vpc_name      = "${var.anthos_prefix}-anthos-vpc"
@@ -62,7 +53,6 @@ resource "aws_subnet" "private_cp" {
   }
 }
 
-
 # Create a public subnet for each node pool
 # Mark the subnet as public.
 resource "aws_subnet" "public" {
@@ -77,7 +67,6 @@ resource "aws_subnet" "public" {
   }
 }
 
-
 # Step 4
 # Create an internet gateway
 resource "aws_internet_gateway" "this" {
@@ -86,8 +75,6 @@ resource "aws_internet_gateway" "this" {
     Name = local.vpc_name
   }
 }
-
-
 
 # Configure the routing table
 # https://cloud.google.com/anthos/clusters/docs/multi-cloud/aws/how-to/create-aws-vpc#configure_the_routing_tables_for_private_subnets
@@ -109,7 +96,6 @@ resource "aws_route_table_association" "public" {
   route_table_id = aws_route_table.public[count.index].id
 }
 
-
 # Create default routers to the internet gateway
 resource "aws_route" "public_internet_gateway" {
   count                  = local.psubnet_count
@@ -120,7 +106,6 @@ resource "aws_route" "public_internet_gateway" {
     create = "5m"
   }
 }
-
 
 # Reservce an elastic IP address for the NAT gateway_id
 resource "aws_eip" "nat" {
