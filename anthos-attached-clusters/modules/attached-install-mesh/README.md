@@ -6,7 +6,7 @@ Sample module to install [Google Cloud Service Mesh](https://cloud.google.com/pr
 
 ```
 module "install-mesh" {
-  source = "github.com/GoogleCloudPlatform/anthos-samples.git//anthos-attached-clusters/modules/attached-install-mesh?ref=3bde26802919539d27ae9295a8b936d7aa827eb3" #TODO: Use ref= release tag e.g. v0.15.4
+  source = "github.com/GoogleCloudPlatform/anthos-samples.git//anthos-attached-clusters/modules/attached-install-mesh?ref=anthos-attached-clusters-v0.1.0"
 
   kubeconfig = "PATH TO CLUSTER CONTEXT FILE"
   context    = "CLUSTER CONTEXT"
