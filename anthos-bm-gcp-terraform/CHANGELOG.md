@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.15.4](https://github.com/GoogleCloudPlatform/anthos-samples/compare/anthos-bm-gcp-terraform-v0.15.4...anthos-bm-gcp-terraform-v0.15.4) (2024-10-07)
+
+
+### Bug Fixes
+
+* **deps:** update terraform terraform-google-modules/gcloud/google to v3.5.0 ([#725](https://github.com/GoogleCloudPlatform/anthos-samples/issues/725)) ([b7e13f5](https://github.com/GoogleCloudPlatform/anthos-samples/commit/b7e13f542bec190e07b6a5e742842eeca715d43a))
+* **deps:** update terraform terraform-google-modules/project-factory/google to v17 ([#729](https://github.com/GoogleCloudPlatform/anthos-samples/issues/729)) ([1866ee5](https://github.com/GoogleCloudPlatform/anthos-samples/commit/1866ee5e18783b5d62c44a1bbb624232f5ee57c2))
+* **deps:** update terraform terraform-google-modules/vm/google to v12 ([#730](https://github.com/GoogleCloudPlatform/anthos-samples/issues/730)) ([f07017a](https://github.com/GoogleCloudPlatform/anthos-samples/commit/f07017a9b432a4dcdb0fe9c543dc9ac95833cae6))
+
 ## [0.15.4](https://github.com/GoogleCloudPlatform/anthos-samples/compare/anthos-bm-gcp-terraform-v0.15.3...anthos-bm-gcp-terraform-v0.15.4) (2024-09-25)
 
 
