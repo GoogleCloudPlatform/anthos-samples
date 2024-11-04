@@ -2,7 +2,7 @@ module github.com/GoogleCloudPlatform/anthos-samples/anthos-bm-gcp-terraform
 
 go 1.21
 
-toolchain go1.21.3
+toolchain go1.23.2
 
 require (
 	github.com/gruntwork-io/terratest v0.47.2
