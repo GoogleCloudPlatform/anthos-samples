@@ -62,8 +62,7 @@ gcloud services enable --project "${PROJECT_ID}" \
   containerregistry.googleapis.com \
   secretmanager.googleapis.com \
   servicemanagement.googleapis.com \
-  serviceusage.googleapis.com \
-  sourcerepo.googleapis.com
+  serviceusage.googleapis.com
 
 ### Create Keyring for SSH key encryption (future terraform) -- Keyring and
 # keys are used to encrypt/decrypt SSH keys on the provisioning system during
