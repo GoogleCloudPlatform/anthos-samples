@@ -25,7 +25,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-const deploymentName = "istiod-asm-1225-1"
+const deploymentName = "istiod-asm-1226-2"
 
 func TestAACKind(t *testing.T) {
 	kind := tft.NewTFBlueprintTest(t)
