@@ -8,16 +8,14 @@
       "package-name": "anthos-bm-gcp-terraform",
       "component": "anthos-bm-gcp-terraform",
       "bump-minor-pre-major": true,
-      "changelog-path": "CHANGELOG.md",
-      "release-as": "0.15.4"
+      "changelog-path": "CHANGELOG.md"
     },
     "anthos-attached-clusters": {
       "release-type": "terraform-module",
       "package-name": "anthos-attached-clusters",
       "component": "anthos-attached-clusters",
       "bump-minor-pre-major": true,
-      "changelog-path": "CHANGELOG.md",
-      "release-as": "0.1.0"
+      "changelog-path": "CHANGELOG.md"
     }
   }
 }
