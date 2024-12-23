@@ -20,7 +20,7 @@ SHELL := /usr/bin/env bash
 
 # release images are available at:
 # console.cloud.google.com/gcr/images/cloud-foundation-cicd/global/cft/developer-tools?project=cloud-foundation-cicd
-DOCKER_TAG_VERSION_DEVELOPER_TOOLS := 1.22.17
+DOCKER_TAG_VERSION_DEVELOPER_TOOLS := 1.23.3
 DOCKER_IMAGE_DEVELOPER_TOOLS := cft/developer-tools
 REGISTRY_URL := gcr.io/cloud-foundation-cicd
 
