@@ -2,7 +2,7 @@ module github.com/GoogleCloudPlatform/anthos-samples/test/integration
 
 go 1.22.7
 
-toolchain go1.23.3
+toolchain go1.23.4
 
 require (
 	github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test v0.17.3
