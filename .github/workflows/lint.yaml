@@ -24,15 +24,15 @@ on:
       - main
 
 concurrency:
-  group: '${{ github.workflow }}-${{ github.head_ref || github.ref }}'
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
   cancel-in-progress: true
 
 jobs:
   lint:
-    name: 'lint'
-    runs-on: 'ubuntu-latest'
+    name: lint
+    runs-on: ubuntu-latest
     steps:
-      - uses: 'actions/checkout@v4'
+      - uses: actions/checkout@v4
       - id: variables
         run: |
           MAKEFILE=$(find . -name Makefile -print -quit)
