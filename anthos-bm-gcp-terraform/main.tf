@@ -131,7 +131,8 @@ module "instance_template" {
   metadata = {
     enable-oslogin = "false"
   }
-  service_account = null
+  service_account        = null
+  create_service_account = false
 }
 
 module "instance_template_worker" {

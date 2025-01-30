@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2022 Google LLC
+# Copyright 2022-2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ if [[ -z "${ADMIN_CLUSTER_NAME}" ]]; then
     case $yn in
         [Yy]* ) ADMIN_CLUSTER_NAME="abm-admin-cluster"; break;;
         [Nn]* ) exit 1;;
-        * ) echo "Please answer 'Y' or 'y for Yes and 'N' or 'n' for No.";;
+        * ) echo "Please answer 'Y' or 'y' for Yes and 'N' or 'n' for No.";;
     esac
   done
 fi
@@ -92,6 +92,7 @@ done
 printf "🔄 Creating Service Account and Service Account key...\n"
 # [START anthos_bm_gcp_bash_admin_create_sa]
 gcloud iam service-accounts create baremetal-gcr
+sleep 5s
 
 gcloud iam service-accounts keys create bm-gcr.json \
     --iam-account=baremetal-gcr@"${PROJECT_ID}".iam.gserviceaccount.com
@@ -239,6 +240,7 @@ i=2 # We start from 10.200.0.2/24
 for vm in "${VMs[@]}"
 do
 gcloud compute ssh root@"$vm" --zone "${ZONE}" --tunnel-through-iap << EOF
+    export DEBIAN_FRONTEND=noninteractive
     apt-get -qq update > /dev/null
     apt-get -qq install -y jq > /dev/null
     set -x
