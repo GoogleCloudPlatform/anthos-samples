@@ -17,7 +17,7 @@
 #[START anthos_onprem_terraform_vmware_user_cluster_metallb_main]
 module "enable_google_apis_primary" {
   source     = "terraform-google-modules/project-factory/google//modules/project_services"
-  version    = "~> 17.0"
+  version    = "~> 18.0"
   project_id = var.project_id
   activate_apis = [
     "cloudresourcemanager.googleapis.com",
