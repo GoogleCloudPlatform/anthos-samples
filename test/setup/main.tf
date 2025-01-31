@@ -34,7 +34,7 @@ resource "random_id" "random_project_id_suffix" {
 # Project Editor and Project IAM Admin permissions
 module "abm_infra_editor_project" {
   source              = "terraform-google-modules/project-factory/google"
-  version             = "~> 17.0"
+  version             = "~> 18.0"
   name                = "ci-abm-${random_id.random_project_id_suffix.hex}"
   random_project_id   = true
   auto_create_network = true
@@ -68,7 +68,7 @@ resource "local_file" "int_test_editor_sa_key_file" {
 
 module "gke-project-1" {
   source  = "terraform-google-modules/project-factory/google"
-  version = "~> 17.0"
+  version = "~> 18.0"
 
   name                     = "ci-gke-${random_id.random_project_id_suffix.hex}"
   random_project_id        = true
