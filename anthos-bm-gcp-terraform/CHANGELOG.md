@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.15.6](https://github.com/GoogleCloudPlatform/anthos-samples/compare/anthos-bm-gcp-terraform-v0.15.5...anthos-bm-gcp-terraform-v0.15.6) (2025-01-31)
+
+
+### Bug Fixes
+
+* **deps:** update terraform terraform-google-modules/project-factory/google to v18 ([#773](https://github.com/GoogleCloudPlatform/anthos-samples/issues/773)) ([c791114](https://github.com/GoogleCloudPlatform/anthos-samples/commit/c7911140403e286d1592a028dc39eca8758ab722))
+* update install_admin_cluster.sh ([#767](https://github.com/GoogleCloudPlatform/anthos-samples/issues/767)) ([6df0aec](https://github.com/GoogleCloudPlatform/anthos-samples/commit/6df0aecdc12a237f906e6b4da885066d631b3c10))
+
 ## [0.15.5](https://github.com/GoogleCloudPlatform/anthos-samples/compare/anthos-bm-gcp-terraform-v0.15.4...anthos-bm-gcp-terraform-v0.15.5) (2024-12-26)
 
 
