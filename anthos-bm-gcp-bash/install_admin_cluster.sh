@@ -28,7 +28,7 @@ fi
 if [[ -z "${ADMIN_CLUSTER_NAME}" ]]; then
   printf "🚨 Environment variable ADMIN_CLUSTER_NAME not set.\n"
   while true; do
-    read -rp "💡 Should the script continue with the default name - 'abm-admin-cluster'? (Use 'Y' or 'y for Yes and 'N' or 'n' for No)" yn
+    read -rp "💡 Should the script continue with the default name - 'abm-admin-cluster'? (Use 'Y' or 'y' for Yes and 'N' or 'n' for No)" yn
     case $yn in
         [Yy]* ) ADMIN_CLUSTER_NAME="abm-admin-cluster"; break;;
         [Nn]* ) exit 1;;
@@ -79,7 +79,7 @@ do
 done
 
 while true; do
-  read -rp $'\n'"Please confirm selection. (Use 'Y' or 'y for Yes and 'N' or 'n' for No) " yn
+  read -rp $'\n'"Please confirm selection. (Use 'Y' or 'y' for Yes and 'N' or 'n' for No) " yn
   case $yn in
       [Yy]* ) break;;
       [Nn]* ) exit 1;;
@@ -122,6 +122,21 @@ gcloud services enable \
     opsconfigmonitoring.googleapis.com
 # [END anthos_bm_gcp_bash_admin_enable_api]
 printf "✅ Successfully enabled GCP Service APIs.\n\n"
+
+# ensure default compute engine service account can modify instance metadata
+printf "🔄 Adding IAM roles to the default compute engine Service Account for metadata management...\n"
+# [START anthos_bm_gcp_bash_default_compute_sa_iam_roles]
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+  --member="serviceAccount:$(gcloud projects describe $PROJECT_ID --format="value(projectNumber)")-compute@developer.gserviceaccount.com" \
+  --role="roles/compute.instanceAdmin.v1"
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+  --member="serviceAccount:$(gcloud projects describe $PROJECT_ID --format="value(projectNumber)")-compute@developer.gserviceaccount.com" \
+  --role="roles/iam.serviceAccountUser"
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+  --member="serviceAccount:$(gcloud projects describe $PROJECT_ID --format="value(projectNumber)")-compute@developer.gserviceaccount.com" \
+  --role="roles/iam.serviceAccountKeyAdmin"
+# [END anthos_bm_gcp_bash_default_compute_sa_iam_roles]
+printf "✅ Successfully added metadata permissions to default compute SA.\n\n"
 
 # add all the required IAM roles to the Service Account
 printf "🔄 Adding IAM roles to the Service Account...\n"
@@ -223,7 +238,7 @@ printf "🔄 Checking SSH access to the GCE VMs...\n"
 # [START anthos_bm_gcp_bash_admin_check_ssh]
 for vm in "${VMs[@]}"
 do
-    while ! gcloud compute ssh root@"$vm" --zone "${ZONE}" --tunnel-through-iap --command "printf SSH to $vm succeeded"
+    while ! gcloud compute ssh "$vm" --zone "${ZONE}" --tunnel-through-iap --command "sudo bash -c 'printf \"SSH to \$HOSTNAME as \$USER succeeded\n\"'"
     do
         printf "Trying to SSH into %s failed. Sleeping for 5 seconds. zzzZZzzZZ" "$vm"
         sleep  5
@@ -239,7 +254,9 @@ printf "🔄 Setting up VxLAN in the GCE VMs...\n"
 i=2 # We start from 10.200.0.2/24
 for vm in "${VMs[@]}"
 do
-gcloud compute ssh root@"$vm" --zone "${ZONE}" --tunnel-through-iap << EOF
+gcloud compute ssh "$vm" --zone "${ZONE}" --tunnel-through-iap << EOF
+    sudo su
+    cd
     export DEBIAN_FRONTEND=noninteractive
     apt-get -qq update > /dev/null
     apt-get -qq install -y jq > /dev/null
@@ -263,7 +280,9 @@ printf "✅ Successfully setup VxLAN in the GCE VMs.\n\n"
 # install the necessary tools inside the VMs
 printf "🔄 Setting up admin workstation...\n"
 # [START anthos_bm_gcp_bash_admin_init_vm]
-gcloud compute ssh root@$VM_WS --zone "${ZONE}" --tunnel-through-iap << EOF
+gcloud compute ssh $VM_WS --zone "${ZONE}" --tunnel-through-iap << EOF
+sudo su
+cd
 set -x
 
 export PROJECT_ID=\$(gcloud config get-value project)
@@ -294,7 +313,9 @@ printf "✅ Successfully set up admin workstation.\n\n"
 # to all the other (control-plane and worker) VMs
 printf "🔄 Setting up SSH access from admin workstation to cluster node VMs...\n"
 # [START anthos_bm_gcp_bash_admin_add_ssh_keys]
-gcloud compute ssh root@$VM_WS --zone "${ZONE}" --tunnel-through-iap << EOF
+gcloud compute ssh $VM_WS --zone "${ZONE}" --tunnel-through-iap << EOF
+sudo su
+cd
 set -x
 ssh-keygen -t rsa -N "" -f /root/.ssh/id_rsa
 sed 's/ssh-rsa/root:ssh-rsa/' ~/.ssh/id_rsa.pub > ssh-metadata
@@ -312,7 +333,9 @@ then
   # initiate Anthos on bare metal installation from the admin workstation
   printf "🔄 Installing Anthos on bare metal...\n"
   # [START anthos_bm_gcp_bash_admin_install_abm]
-  gcloud compute ssh root@"$VM_WS" --zone "${ZONE}" --tunnel-through-iap <<EOF
+  gcloud compute ssh "$VM_WS" --zone "${ZONE}" --tunnel-through-iap <<EOF
+sudo su
+cd
 set -x
 export PROJECT_ID=\$(gcloud config get-value project)
 ADMIN_CLUSTER_NAME=\$(curl http://metadata.google.internal/computeMetadata/v1/instance/attributes/cluster_id -H "Metadata-Flavor: Google")
