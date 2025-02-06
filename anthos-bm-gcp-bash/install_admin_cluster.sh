@@ -127,13 +127,13 @@ printf "✅ Successfully enabled GCP Service APIs.\n\n"
 printf "🔄 Adding IAM roles to the default compute engine Service Account for metadata management...\n"
 # [START anthos_bm_gcp_bash_default_compute_sa_iam_roles]
 gcloud projects add-iam-policy-binding "$PROJECT_ID" \
-  --member="serviceAccount:$(gcloud projects describe $PROJECT_ID --format="value(projectNumber)")-compute@developer.gserviceaccount.com" \
+  --member="serviceAccount:$(gcloud projects describe "$PROJECT_ID" --format="value(projectNumber)")-compute@developer.gserviceaccount.com" \
   --role="roles/compute.instanceAdmin.v1"
 gcloud projects add-iam-policy-binding "$PROJECT_ID" \
-  --member="serviceAccount:$(gcloud projects describe $PROJECT_ID --format="value(projectNumber)")-compute@developer.gserviceaccount.com" \
+  --member="serviceAccount:$(gcloud projects describe "$PROJECT_ID" --format="value(projectNumber)")-compute@developer.gserviceaccount.com" \
   --role="roles/iam.serviceAccountUser"
 gcloud projects add-iam-policy-binding "$PROJECT_ID" \
-  --member="serviceAccount:$(gcloud projects describe $PROJECT_ID --format="value(projectNumber)")-compute@developer.gserviceaccount.com" \
+  --member="serviceAccount:$(gcloud projects describe "$PROJECT_ID" --format="value(projectNumber)")-compute@developer.gserviceaccount.com" \
   --role="roles/iam.serviceAccountKeyAdmin"
 # [END anthos_bm_gcp_bash_default_compute_sa_iam_roles]
 printf "✅ Successfully added metadata permissions to default compute SA.\n\n"
