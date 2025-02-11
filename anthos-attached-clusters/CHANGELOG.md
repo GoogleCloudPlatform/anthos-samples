@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/GoogleCloudPlatform/anthos-samples/compare/anthos-attached-clusters-v0.1.0...anthos-attached-clusters-v0.1.1) (2025-02-11)
+
+
+### Bug Fixes
+
+* **deps:** update terraform kind to ~&gt; 0.7 ([#752](https://github.com/GoogleCloudPlatform/anthos-samples/issues/752)) ([d1ec732](https://github.com/GoogleCloudPlatform/anthos-samples/commit/d1ec73293db152e16052c5c8de6257edb8a3bd91))
+
 ## 0.1.0 (2024-09-26)
 
 
