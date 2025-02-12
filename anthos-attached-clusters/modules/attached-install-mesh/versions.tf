@@ -37,6 +37,6 @@ terraform {
   }
 
   provider_meta "google" {
-    module_name = "anthos-samples/terraform/anthos-attached-clusters/modules/asmcli/v0.1.0"
+    module_name = "anthos-samples/terraform/anthos-attached-clusters/modules/asmcli/v0.1.1"
   }
 }
