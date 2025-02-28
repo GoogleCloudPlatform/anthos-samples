@@ -18,7 +18,7 @@ terraform {
   required_providers {
     kind = {
       source  = "tehcyx/kind"
-      version = "~> 0.7"
+      version = "~> 0.8"
     }
     google = {
       source  = "hashicorp/google"
