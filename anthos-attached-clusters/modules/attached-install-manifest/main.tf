@@ -35,7 +35,8 @@ resource "local_file" "bootstrap_helm_chart" {
   content  = <<-EOT
     apiVersion: v2
     name: ${local.helm_chart_name}
-    version: ${var.platform_version}
+    version: 0.0.1
+    appVersion: "${var.platform_version}"
     type: application
     EOT
 }
