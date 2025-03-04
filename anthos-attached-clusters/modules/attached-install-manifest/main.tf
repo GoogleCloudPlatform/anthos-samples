@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2024-2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,8 @@ resource "local_file" "bootstrap_helm_chart" {
   content  = <<-EOT
     apiVersion: v2
     name: ${local.helm_chart_name}
-    version: 0.0.0
+    version: 0.0.1
+    appVersion: "${var.platform_version}"
     type: application
     EOT
 }
