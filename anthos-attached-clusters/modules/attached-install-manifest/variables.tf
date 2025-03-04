@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2024-2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,4 +39,10 @@ variable "attached_cluster_fleet_project" {
 variable "attached_cluster_name" {
   description = "Name for the attached cluster resource"
   type        = string
+}
+
+variable "helm_timeout" {
+  description = "(Optional) Time in seconds to wait for Helm operations to complete."
+  type        = number
+  default     = null
 }

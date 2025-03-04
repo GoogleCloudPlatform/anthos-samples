@@ -20,6 +20,7 @@ module "attached_install_manifest" {
 | attached\_cluster\_fleet\_project | GCP fleet project ID where the cluster will be attached | `string` | n/a | yes |
 | attached\_cluster\_name | Name for the attached cluster resource | `string` | n/a | yes |
 | gcp\_location | GCP location to create the attached resource in | `string` | `"us-west1"` | no |
+| helm\_timeout | (Optional) Time in seconds to wait for Helm operations to complete. | `number` | `null` | no |
 | platform\_version | Platform version of the attached cluster resource | `string` | n/a | yes |
 | temp\_dir | Directory name to temporarily write out the helm chart for bootstrapping the attach process | `string` | `""` | no |
 
