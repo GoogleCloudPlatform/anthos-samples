@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.15.7](https://github.com/GoogleCloudPlatform/anthos-samples/compare/anthos-bm-gcp-terraform-v0.15.6...anthos-bm-gcp-terraform-v0.15.7) (2025-03-05)
+
+
+### Bug Fixes
+
+* **deps:** update terraform terraform-google-modules/vm/google to ~&gt; 13.2.0 ([#775](https://github.com/GoogleCloudPlatform/anthos-samples/issues/775)) ([1324559](https://github.com/GoogleCloudPlatform/anthos-samples/commit/132455940275cfd49efdda99af4138710294d42c))
+
 ## [0.15.6](https://github.com/GoogleCloudPlatform/anthos-samples/compare/anthos-bm-gcp-terraform-v0.15.5...anthos-bm-gcp-terraform-v0.15.6) (2025-01-31)
 
 
