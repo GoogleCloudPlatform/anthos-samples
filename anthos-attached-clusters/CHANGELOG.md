@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.0](https://github.com/GoogleCloudPlatform/anthos-samples/compare/anthos-attached-clusters-v0.1.1...anthos-attached-clusters-v0.2.0) (2025-03-05)
+
+
+### Features
+
+* **attached-install-manifest:** add option to configure helm timeout ([#791](https://github.com/GoogleCloudPlatform/anthos-samples/issues/791)) ([af2b4b7](https://github.com/GoogleCloudPlatform/anthos-samples/commit/af2b4b7902e0c94e348168b5ddfadd92c27cf942))
+
+
+### Bug Fixes
+
+* **attached-install-manifest:** set appVersion and bump chart version ([#790](https://github.com/GoogleCloudPlatform/anthos-samples/issues/790)) ([3f82a0e](https://github.com/GoogleCloudPlatform/anthos-samples/commit/3f82a0e795de34b5b6458dc8d3b4712045391759))
+* **deps:** update terraform kind to ~&gt; 0.8 ([#784](https://github.com/GoogleCloudPlatform/anthos-samples/issues/784)) ([4fefbc1](https://github.com/GoogleCloudPlatform/anthos-samples/commit/4fefbc11a9f41f4f747cab7e9eee44ad39922ce5))
+* update attached modules ([#783](https://github.com/GoogleCloudPlatform/anthos-samples/issues/783)) ([afd420b](https://github.com/GoogleCloudPlatform/anthos-samples/commit/afd420bbb364452e30a364072362da47dba5da43))
+
 ## [0.1.1](https://github.com/GoogleCloudPlatform/anthos-samples/compare/anthos-attached-clusters-v0.1.0...anthos-attached-clusters-v0.1.1) (2025-02-11)
 
 
