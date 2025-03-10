@@ -25,8 +25,6 @@ jobs:
     runs-on: [self-hosted, runner-nov-22]
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{github.event.pull_request.head.sha}}
       - name: License Check
         run: |
           addlicense -check -ignore anthos-bm-openstack-terraform/resources/cloud-config.yaml ./
@@ -62,8 +60,6 @@ jobs:
         ]
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{github.event.pull_request.head.sha}}
       - name: Terraform Validate
         timeout-minutes: 20
         env:
@@ -84,8 +80,6 @@ jobs:
         go-test-dir: ['anthos-bm-gcp-terraform/test/unit/']
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{github.event.pull_request.head.sha}}
       - uses: actions/setup-go@f111f3307d8850f501ac008e886eec1fd1932a34 # v5.3.0
         with:
           go-version-file: ${{ matrix.go-test-dir }}/../go.mod
