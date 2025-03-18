@@ -24,8 +24,6 @@ jobs:
     runs-on: [self-hosted, runner-nov-22]
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{github.event.pull_request.head.sha}}
       - name: License Check
         run: |
           addlicense -check -ignore anthos-bm-openstack-terraform/resources/cloud-config.yaml ./
@@ -62,8 +60,6 @@ jobs:
         ]
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{github.event.pull_request.head.sha}}
       - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3.0.2
         id: changes
         with:
@@ -91,8 +87,6 @@ jobs:
         go-test-dir: ['anthos-bm-gcp-terraform/test/unit/']
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{github.event.pull_request.head.sha}}
       - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3.0.2
         id: changes
         with:
