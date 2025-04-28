@@ -3,7 +3,7 @@
 
 #### Description
 - Brief description of the issue/purpose of this PR
-- Include environment _(e.g: Linux/Ubuntu running terraform v14.10 etc)_ if relavant
+- Include environment _(e.g: Linux/Ubuntu running terraform v14.10 etc)_ if relevant
 
 #### Change summary
 - List of changes done in this PR

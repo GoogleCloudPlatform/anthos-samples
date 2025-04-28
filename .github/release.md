@@ -4,7 +4,7 @@ Releases for this repo are managed by [release-please](https://github.com/google
 
 > **Note:** You may notice that the configuration is specific to the
 > [anthos-bm-gcp-terraform](/anthos-bm-gcp-terraform) sample. This is because
-> that is the only sample we continuosuly run tests on, update Anthos versions
+> that is the only sample we continuously run tests on, update Anthos versions
 > and validate against new versions of _Terraform_.
 
 Releases are automatically triggered by the release-please bot based on commit

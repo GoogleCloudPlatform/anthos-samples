@@ -5,7 +5,7 @@ The actions runners for this repository are hosted in the `anthos-gke-samples-ci
 - Runners are created in the `anthos-gke-samples-ci` project in GCP
 - The runner VMs should:
   - be at least n1-standard-4
-  - have atleast 50GB persistent disk
+  - have at least 50GB persistent disk
   - use the `Compute Engine default service account` with `Set access to each API` option;
     only change the permissions under **Compute Engine** to **Read Only**, leave
     the rest as is
@@ -15,7 +15,7 @@ The actions runners for this repository are hosted in the `anthos-gke-samples-ci
 - Once the VM for the runner is created
   - SSH into new VM through Google Cloud Console
   - Follow the instructions to add a new runner by clicking `Add runner` in the [Actions settings](https://github.com/GoogleCloudPlatform/anthos-samples/settings/actions/runners) page
-  - Add a label of the form `runner-<month>-<year>` _(e.g: runner-july-21)_ to te newly created runner _(you can do this whilst following the setup guide from inside the VM or do it in the [runners](https://github.com/GoogleCloudPlatform/anthos-samples/settings/actions/runners) page after you have authenticated the VM)_
+  - Add a label of the form `runner-<month>-<year>` _(e.g: runner-july-21)_ to the newly created runner _(you can do this whilst following the setup guide from inside the VM or do it in the [runners](https://github.com/GoogleCloudPlatform/anthos-samples/settings/actions/runners) page after you have authenticated the VM)_
   - Start GitHub Actions as a background service:
     ```
     sudo ~/actions-runner/svc.sh install ; sudo ~/actions-runner/svc.sh start
