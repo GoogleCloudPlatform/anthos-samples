@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.15.7](https://github.com/GoogleCloudPlatform/anthos-samples/compare/anthos-bm-gcp-terraform-v0.15.6...anthos-bm-gcp-terraform-v0.15.7) (2025-06-18)
+
+
+### Bug Fixes
+
+* **deps:** update terraform hashicorp/terraform to &lt; 1.12 ([#789](https://github.com/GoogleCloudPlatform/anthos-samples/issues/789)) ([8f7a55b](https://github.com/GoogleCloudPlatform/anthos-samples/commit/8f7a55b73e0ab417160c06a214b1019415f90929))
+* **deps:** update terraform hashicorp/terraform to &lt; 1.13 ([#805](https://github.com/GoogleCloudPlatform/anthos-samples/issues/805)) ([02a7dc4](https://github.com/GoogleCloudPlatform/anthos-samples/commit/02a7dc40d3a0dbf59bbd1d8898fb81e91f2796c5))
+* **deps:** update terraform terraform-google-modules/vm/google to ~&gt; 13.2.0 ([#775](https://github.com/GoogleCloudPlatform/anthos-samples/issues/775)) ([1324559](https://github.com/GoogleCloudPlatform/anthos-samples/commit/132455940275cfd49efdda99af4138710294d42c))
+
 ## [0.15.6](https://github.com/GoogleCloudPlatform/anthos-samples/compare/anthos-bm-gcp-terraform-v0.15.5...anthos-bm-gcp-terraform-v0.15.6) (2025-01-31)
 
 
