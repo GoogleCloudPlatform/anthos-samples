@@ -215,7 +215,7 @@ printf "🔄 Creating GCE VMs...\n"
 for vm in "${VMs[@]}"
 do
     gcloud compute instances create "$vm" \
-      --image-family=ubuntu-2004-lts --image-project=ubuntu-os-cloud \
+      --image-family=ubuntu-2204-lts --image-project=ubuntu-os-cloud \
       --zone="${ZONE}" \
       --boot-disk-size 200G \
       --boot-disk-type pd-ssd \
