@@ -86,8 +86,8 @@ changed other than the ones mentioned in the quick starter.
 | enable\_nested\_virtualization | Enable nested virtualization on the Compute Engine VMs are to be scheduled | `string` | `"true"` | no |
 | gcp\_login\_accounts | GCP account email addresses that must be allowed to login to the cluster using Google Cloud Identity. | `list(string)` | `[]` | no |
 | gpu | GPU information to be attached to the provisioned GCE instances.<br>    See https://cloud.google.com/compute/docs/gpus for supported types | `object({ type = string, count = number })` | <pre>{<br>  "count": 0,<br>  "type": ""<br>}</pre> | no |
-| image | The source image to use when provisioning the Compute Engine VMs.<br>    Use 'gcloud compute images list' to find a list of all available images | `string` | `"ubuntu-2004-focal-v20221018"` | no |
-| image\_family | Source image to use when provisioning the Compute Engine VMs.<br>    The source image should be one that is in the selected image\_project | `string` | `"ubuntu-2004-lts"` | no |
+| image | The source image to use when provisioning the Compute Engine VMs.<br>    Use 'gcloud compute images list' to find a list of all available images | `string` | `"ubuntu-2204-jammy-v20250712"` | no |
+| image\_family | Source image to use when provisioning the Compute Engine VMs.<br>    The source image should be one that is in the selected image\_project | `string` | `"ubuntu-2204-lts"` | no |
 | image\_project | Project name of the source image to use when provisioning the Compute Engine VMs | `string` | `"ubuntu-os-cloud"` | no |
 | instance\_count | Number of instances to provision per layer (Control plane and Worker nodes) of the cluster | `map(any)` | <pre>{<br>  "controlplane": 3,<br>  "worker": 2<br>}</pre> | no |
 | machine\_type | Google Cloud machine type to use when provisioning the Compute Engine VMs | `string` | `"n1-standard-8"` | no |

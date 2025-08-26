@@ -411,7 +411,7 @@ func TestUnit_MainScript_ValidateDefaults(goTester *testing.T) {
 	// verify input variable image in plan matches the default value
 	assert.Equal(
 		goTester,
-		"ubuntu-2004-focal-v20221018",
+		"ubuntu-2204-jammy-v20250712",
 		terraformPlan.Variables.Image.Value,
 		"Variable does not match expected default value: image.",
 	)
@@ -427,7 +427,7 @@ func TestUnit_MainScript_ValidateDefaults(goTester *testing.T) {
 	// verify input variable image_family in plan matches the default value
 	assert.Equal(
 		goTester,
-		"ubuntu-2004-lts",
+		"ubuntu-2204-lts",
 		terraformPlan.Variables.ImageFamily.Value,
 		"Variable does not match expected default value: image_family.",
 	)
