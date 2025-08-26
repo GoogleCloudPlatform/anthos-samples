@@ -117,8 +117,8 @@ module "instance_template" {
   # fetched from previous module to explicitely express dependency
   project_id           = module.enable_google_apis_secondary.project_id
   region               = var.region           # --zone=${ZONE}
-  source_image         = var.image            # --image=ubuntu-2004-focal-v20210429
-  source_image_family  = var.image_family     # --image-family=ubuntu-2004-lts
+  source_image         = var.image            # --image=ubuntu-2204-jammy-v20250712
+  source_image_family  = var.image_family     # --image-family=ubuntu-2204-lts
   source_image_project = var.image_project    # --image-project=ubuntu-os-cloud
   machine_type         = var.machine_type     # --machine-type $MACHINE_TYPE
   disk_size_gb         = var.boot_disk_size   # --boot-disk-size 200G
@@ -145,8 +145,8 @@ module "instance_template_worker" {
   # fetched from previous module to explicitely express dependency
   project_id                   = module.enable_google_apis_secondary.project_id
   region                       = var.region                       # --zone=${ZONE}
-  source_image                 = var.image                        # --image=ubuntu-2004-focal-v20210429
-  source_image_family          = var.image_family                 # --image-family=ubuntu-2004-lts
+  source_image                 = var.image                        # --image=ubuntu-2204-jammy-v20250712
+  source_image_family          = var.image_family                 # --image-family=ubuntu-2204-lts
   source_image_project         = var.image_project                # --image-project=ubuntu-os-cloud
   machine_type                 = var.machine_type                 # --machine-type $MACHINE_TYPE
   disk_size_gb                 = var.boot_disk_size               # --boot-disk-size 200G
