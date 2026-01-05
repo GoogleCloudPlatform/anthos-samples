@@ -297,7 +297,7 @@ curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s ht
 chmod +x kubectl
 mv kubectl /usr/local/sbin/
 mkdir baremetal && cd baremetal
-gsutil cp gs://anthos-baremetal-release/bmctl/$BMCTL_VERSION/linux-amd64/bmctl .
+gcloud storage cp gs://anthos-baremetal-release/bmctl/$BMCTL_VERSION/linux-amd64/bmctl .
 chmod a+x bmctl
 mv bmctl /usr/local/sbin/
 
