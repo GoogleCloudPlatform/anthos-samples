@@ -119,7 +119,7 @@ def upload_preflight(sa_keyfile: str, bucket: str):  # noqa: E999
     auth_cmd = ('gcloud auth activate-service-account'
                 '--key-file {}'.format(sa_keyfile))
     create_cmd = ('gcloud storage buckets create --default-storage-class=standard '
-              '--retention-period=30d gs://{}'.format(bucket))
+                  '--retention-period=30d gs://{}'.format(bucket))
     list_bucket_cmd = 'gcloud storage ls --buckets gs://{}'.format(bucket)
 
     print('Authenticating as service account from key file... ', end='')
