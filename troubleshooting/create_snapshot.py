@@ -118,8 +118,11 @@ def parse_args():
 def upload_preflight(sa_keyfile: str, bucket: str):  # noqa: E999
     auth_cmd = ('gcloud auth activate-service-account'
                 '--key-file {}'.format(sa_keyfile))
-    create_cmd = 'gsutil mb -c standard --retention 30d gs://{}'.format(bucket)
-    list_bucket_cmd = 'gsutil ls -b gs://{}'.format(bucket)
+    create_cmd = (
+        'gcloud storage buckets create --default-storage-class=standard '
+        '--retention-period=30d gs://{}'.format(bucket)
+    )
+    list_bucket_cmd = 'gcloud storage ls --buckets gs://{}'.format(bucket)
 
     print('Authenticating as service account from key file... ', end='')
     auth_return_code, auth_output = run_gsutil_cmd(auth_cmd)
@@ -151,7 +154,7 @@ def upload_preflight(sa_keyfile: str, bucket: str):  # noqa: E999
 
 def upload_file(bucket: str, snap_file: str):  # noqa: E999
     bucket_path = 'gs://{}'.format(bucket)
-    upload_cmd = 'gsutil cp {} {}'.format(snap_file, bucket_path)
+    upload_cmd = 'gcloud storage cp {} {}'.format(snap_file, bucket_path)
     print('Uploading snapshot to bucket... ', end='')
     upload_return_code, upload_output = run_gsutil_cmd(upload_cmd)
     if upload_return_code:

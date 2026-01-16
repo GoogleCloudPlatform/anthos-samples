@@ -21,7 +21,7 @@
 - name: Get a list of current snapshots
   ignore_errors: true
   command:
-    cmd: "gsutil ls -p {{ google_project_id }} gs://{{ snapshot_gcs_bucket_base }}/{{ cluster_name }}/*.tar.gz"
+    cmd: "gcloud storage ls --project={{ google_project_id }} gs://{{ snapshot_gcs_bucket_base }}/{{ cluster_name }}/*.tar.gz"
   register: snapshot_list
   when:
     - primary_cluster_machine is defined
@@ -40,7 +40,7 @@
 
 - name: Archive snapshots to archive folder
   command:
-    cmd: "gsutil mv gs://{{ item[0] }}/{{ item[1] }}/{{ item[2] }} gs://{{ item[0] }}/{{ item[1] }}/archive/{{ item[2] }}"
+    cmd: "gcloud storage mv gs://{{ item[0] }}/{{ item[1] }}/{{ item[2] }} gs://{{ item[0] }}/{{ item[1] }}/archive/{{ item[2] }}"
   with_items:
   - "{{ buckets }}"
   when:
