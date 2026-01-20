@@ -1,4 +1,4 @@
 {
   "anthos-bm-gcp-terraform": "0.15.6",
-  "anthos-attached-clusters": "0.2.0"
+  "anthos-attached-clusters": "0.2.1"
 }
