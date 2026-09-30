@@ -413,7 +413,7 @@ module "install_abm" {
 
 module "gke_hub_membership" {
   source                = "terraform-google-modules/gcloud/google"
-  version               = "~> 3.1"
+  version               = "~> 4.0"
   platform              = "linux"
   create_cmd_entrypoint = "echo"
   create_cmd_body       = "GKE hub membership is created by bmctl create cluster"
