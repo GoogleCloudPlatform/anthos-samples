@@ -33,13 +33,13 @@ variable "gcp_location" {
 variable "platform_version" {
   description = "Platform version of the attached cluster resource"
   type        = string
-  default     = "1.30.0-gke.1"
+  default     = "1.34.0-gke.2"
 }
 
 variable "kind_node_image" {
   description = "The image used for the kind cluster"
   type        = string
-  default     = "kindest/node:v1.30.4"
+  default     = "kindest/node:v1.34.11"
 }
 
 variable "kind_api_server_address" {
