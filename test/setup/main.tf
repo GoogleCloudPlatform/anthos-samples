@@ -80,7 +80,11 @@ module "gke-project-1" {
   auto_create_network = true
 
   activate_apis = [
+    "cloudresourcemanager.googleapis.com",
+    "gkeconnect.googleapis.com",
+    "gkehub.googleapis.com",
     "gkemulticloud.googleapis.com",
+    "kubernetesmetadata.googleapis.com",
     "mesh.googleapis.com"
   ]
 }

@@ -30,6 +30,10 @@ import (
 )
 
 func TestUnit_MainScript_InstallMode(goTester *testing.T) {
+	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
+		goTester.Skip("Skipping test requiring GOOGLE_APPLICATION_CREDENTIALS for live Compute Engine zone lookup")
+	}
+
 	moduleDir := testStructure.CopyTerraformFolderToTemp(goTester, "../../", ".")
 	projectID := gcp.GetGoogleProjectIDFromEnvVar(goTester) // from GOOGLE_CLOUD_PROJECT
 
@@ -139,6 +143,10 @@ func TestUnit_MainScript_InstallMode(goTester *testing.T) {
 }
 
 func TestUnit_MainScript_ManualLB(goTester *testing.T) {
+	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
+		goTester.Skip("Skipping test requiring GOOGLE_APPLICATION_CREDENTIALS for live Compute Engine zone lookup")
+	}
+
 	moduleDir := testStructure.CopyTerraformFolderToTemp(goTester, "../../", ".")
 	projectID := gcp.GetGoogleProjectIDFromEnvVar(goTester) // from GOOGLE_CLOUD_PROJECT
 
