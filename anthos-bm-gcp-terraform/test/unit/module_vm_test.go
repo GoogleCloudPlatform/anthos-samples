@@ -17,6 +17,7 @@ package unit
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"strings"
 	"testing"
 
@@ -29,6 +30,10 @@ import (
 )
 
 func TestUnit_VmModule(goTester *testing.T) {
+	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
+		goTester.Skip("Skipping test requiring GOOGLE_APPLICATION_CREDENTIALS for live Compute Engine zone lookup")
+	}
+
 	goTester.Parallel()
 
 	moduleDir := testStructure.CopyTerraformFolderToTemp(goTester, "../../", "modules/vm")
@@ -221,6 +226,10 @@ func TestUnit_VmModule(goTester *testing.T) {
 }
 
 func TestUnit_VmModule_ValidateDefaults(goTester *testing.T) {
+	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
+		goTester.Skip("Skipping test requiring GOOGLE_APPLICATION_CREDENTIALS for live Compute Engine zone lookup")
+	}
+
 	goTester.Parallel()
 
 	moduleDir := testStructure.CopyTerraformFolderToTemp(goTester, "../../", "modules/vm")

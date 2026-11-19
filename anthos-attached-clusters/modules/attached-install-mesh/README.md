@@ -38,7 +38,7 @@ module "install-mesh" {
 | asmcli\_enable\_namespace\_creation | asmcli: enable namespace creation | `bool` | `false` | no |
 | asmcli\_enable\_registration | asmcli: enable registration | `bool` | `false` | no |
 | asmcli\_verbose | asmcli: verbose | `bool` | `false` | no |
-| asmcli\_version | The asmcli version to download. Optional. | `string` | `"1.22"` | no |
+| asmcli\_version | The asmcli version to download. Optional. | `string` | `"1.27"` | no |
 | context | The cluster contex. | `string` | n/a | yes |
 | fleet\_id | The fleet\_id. | `string` | n/a | yes |
 | gcloud\_download\_url | Custom gcloud download url. Optional. | `string` | `null` | no |

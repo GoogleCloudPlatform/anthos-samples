@@ -16,6 +16,7 @@ package aackind
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 	"time"
 
@@ -25,7 +26,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-const deploymentName = "istiod-asm-1228-5"
+const deploymentPrefix = "istiod-asm-"
 
 func TestAACKind(t *testing.T) {
 	kind := tft.NewTFBlueprintTest(t)
@@ -40,22 +41,38 @@ func TestAACKind(t *testing.T) {
 		)
 
 		command := func() (string, error) {
-			deployment, err := k8s.GetDeploymentE(t, k8sOptions, deploymentName)
+			names, err := k8s.RunKubectlAndGetOutputE(
+				t,
+				k8sOptions,
+				"get",
+				"deployments",
+				"-o",
+				"jsonpath={.items[*].metadata.name}",
+			)
 			if err != nil {
 				return "", err
 			}
-			return deployment.Name, nil
+			for _, name := range strings.Fields(names) {
+				if strings.HasPrefix(name, deploymentPrefix) {
+					deployment, err := k8s.GetDeploymentE(t, k8sOptions, name)
+					if err != nil {
+						return "", err
+					}
+					return deployment.Name, nil
+				}
+			}
+			return "", fmt.Errorf("no deployment with prefix %s found in istio-system", deploymentPrefix)
 		}
 
 		output := retry.DoWithRetry(
 			t,
-			fmt.Sprintf("Get `%s` deployment", deploymentName),
+			fmt.Sprintf("Get `%s*` deployment", deploymentPrefix),
 			10,
-			time.Duration(30) * time.Second,
+			time.Duration(30)*time.Second,
 			command,
 		)
 
-		assert.Equal(output, deploymentName, fmt.Sprintf("cluster should have deployment %s", deploymentName))
+		assert.True(strings.HasPrefix(output, deploymentPrefix), fmt.Sprintf("cluster should have deployment with prefix %s, got %s", deploymentPrefix, output))
 	})
 
 	kind.Test()
