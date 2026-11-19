@@ -89,3 +89,5 @@ substitutions:
   _DOCKER_TAG_VERSION_DEVELOPER_TOOLS: '1.25.5'
 options:
   machineType: 'N1_HIGHCPU_8'
+  env:
+  - 'GOTOOLCHAIN=auto'
