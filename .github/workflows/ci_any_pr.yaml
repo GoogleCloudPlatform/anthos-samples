@@ -1,4 +1,4 @@
-# Copyright 2021-2025 Google LLC
+# Copyright 2021-2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,30 +12,46 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-## TODO:: Post comment on correct ways to resolve the build errors
 name: "Continuous Integration - Pull Request"
+
 on:
   pull_request:
     branches:
       - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: '${{ github.workflow }}-${{ github.head_ref || github.ref }}'
+  cancel-in-progress: true
+
 jobs:
   # Run static code tests: license-check, terraform format, Golang linting
   static-code-tests:
-    runs-on: [self-hosted, runner-nov-22]
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # v7.1.0
+        with:
+          go-version-file: anthos-bm-gcp-terraform/test/go.mod
+      - uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
+        with:
+          terraform_version: 1.9.5
+          terraform_wrapper: false
       - name: License Check
         run: |
+          go install github.com/google/addlicense@v1.1.1
           addlicense -check -ignore anthos-bm-openstack-terraform/resources/cloud-config.yaml ./
       - name: Terraform Checkstyle
         timeout-minutes: 20
         run: |
-          tfenv use 1.9.5
           terraform fmt -recursive -check -diff ./
       - name: Golang Checkstyle
         timeout-minutes: 20
         run: |
-          golint ./... > golint.err 2>&1
+          go install golang.org/x/lint/golint@v0.0.0-20210508222113-6edffad5e616
+          golint ./... > golint.err 2>&1 || true
           if ! [ -s golint.err ]; then
             exit 0
           fi
@@ -44,9 +60,10 @@ jobs:
             cat golint.err
             exit 1
           fi
+
   # Run terraform validate on terraform based samples
   tf-validate:
-    runs-on: [self-hosted, runner-nov-22]
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         # list of directories in the repo that hosts Terraform samples
@@ -59,13 +76,19 @@ jobs:
           'anthos-multi-cloud/Azure'
         ]
     steps:
-      - uses: actions/checkout@v4
-      - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3.0.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
         id: changes
         with:
           filters: |
             src:
-              - ${{ matrix.go-test-dir }}/**
+              - ${{ matrix.tf-sample }}/**
+              - ".github/workflows/ci_any_pr.yaml"
+      - if: steps.changes.outputs.src == 'true'
+        uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
+        with:
+          terraform_version: 1.9.5
+          terraform_wrapper: false
       - if: steps.changes.outputs.src == 'true'
         name: Terraform Validate
         timeout-minutes: 20
@@ -73,36 +96,44 @@ jobs:
           SAMPLE_DIR: ${{ matrix.tf-sample }}
         run: |
           echo "Terraform validating: $SAMPLE_DIR"
-          cd $SAMPLE_DIR
-          tfenv use 1.9.5
+          cd "$SAMPLE_DIR"
           terraform init -backend=false
           terraform validate -json .
-  # Run the Golang unit tests in any of the samples
+
+  # Run offline Golang unit tests in any of the samples
   go-unit-tests:
-    runs-on: [self-hosted, runner-nov-22]
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         # list of directories in the repo that hosts Golang unit tests
         # update this list as new unit tests in golang are added to the repo
         go-test-dir: ['anthos-bm-gcp-terraform/test/unit/']
     steps:
-      - uses: actions/checkout@v4
-      - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3.0.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
         id: changes
         with:
           filters: |
             src:
               - ${{ matrix.go-test-dir }}/**
+              - ".github/workflows/ci_any_pr.yaml"
       - if: steps.changes.outputs.src == 'true'
-        uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5 # v5.5.0
+        uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # v7.1.0
         with:
           go-version-file: ${{ matrix.go-test-dir }}/../go.mod
+          cache-dependency-path: ${{ matrix.go-test-dir }}/../go.sum
+      - if: steps.changes.outputs.src == 'true'
+        uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
+        with:
+          terraform_version: 1.9.5
+          terraform_wrapper: false
       - if: steps.changes.outputs.src == 'true'
         name: Golang unit tests
         timeout-minutes: 20
         env:
           GOLANG_TEST_DIR: ${{ matrix.go-test-dir }}
+          GOOGLE_CLOUD_PROJECT: sample-project
+          GOOGLE_OAUTH_ACCESS_TOKEN: dummy-access-token
         run: |
-          source /var/local/gh-runner/env_vars
-          cd $GOLANG_TEST_DIR
-          /usr/local/go/bin/go test -v -timeout 30m ./
+          cd "$GOLANG_TEST_DIR"
+          go test -v -timeout 30m ./

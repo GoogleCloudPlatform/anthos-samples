@@ -52,7 +52,7 @@ function __setup_kubctl__ () {
 # Install the bmctl CLI for managing the Anthos cluster
 ##############################################################################
 function __setup_bmctl__ () {
-  gsutil cp gs://anthos-baremetal-release/bmctl/"${ABM_VERSION}"/linux-amd64/bmctl .
+  gcloud storage cp gs://anthos-baremetal-release/bmctl/"${ABM_VERSION}"/linux-amd64/bmctl .
   chmod a+x bmctl
   sudo mv bmctl /usr/local/sbin/
   __check_exit_status__ $? \

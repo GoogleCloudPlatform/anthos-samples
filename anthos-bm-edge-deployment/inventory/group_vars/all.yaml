@@ -28,7 +28,7 @@ ansible_ssh_common_args: "-F build-artifacts/ssh-config -o StrictHostKeyChecking
 ####
 #### Commonly changed variables
 ####
-# Latest version can be found: gsutil ls -al gs://anthos-baremetal-release/bmctl
+# Latest version can be found: gcloud storage ls --all-versions --long gs://anthos-baremetal-release/bmctl
 # Version of Anthos Bare Metal to install
 abm_version: "1.12.0" # verify coupling of ABM to BMCTL versions
 # bmctl binary version
@@ -72,7 +72,7 @@ google_zone: "{{ lookup('env', 'ZONE') | default('us-central1-a', True) }}" # NO
 scm_token_user: "{{ lookup('env', 'SCM_TOKEN_USER') }}"
 scm_token_token: "{{ lookup('env', 'SCM_TOKEN_TOKEN') }}"
 
-# gsutil ls -al gs://config-management-release/released/
+# gcloud storage ls --all-versions --long gs://config-management-release/released/
 # Anthos Config Management version
 acm_version: "1.12.0"
 

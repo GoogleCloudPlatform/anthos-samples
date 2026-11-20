@@ -43,6 +43,10 @@ resource "azurerm_kubernetes_cluster" "aks" {
     tags       = merge(local.tags, var.tags)
   }
 
+  node_provisioning_profile {
+    mode = "Manual"
+  }
+
   identity {
     type = "SystemAssigned"
   }

@@ -61,10 +61,10 @@ The other examples and module limit dependancies to terraform core providers, bu
 | gcp\_project\_id | The GCP project id where the cluster will be registered | `string` | n/a | yes |
 | kind\_api\_server\_address | Kind cluster API server address | `string` | `null` | no |
 | kind\_api\_server\_port | Kind cluster API server port | `number` | `null` | no |
-| kind\_node\_image | The image used for the kind cluster | `string` | `"kindest/node:v1.30.4"` | no |
+| kind\_node\_image | The image used for the kind cluster | `string` | `"kindest/node:v1.34.11"` | no |
 | kubeconfig\_path | The kubeconfig path. | `string` | `null` | no |
 | name\_prefix | Common prefix to use for generating names | `string` | n/a | yes |
-| platform\_version | Platform version of the attached cluster resource | `string` | `"1.30.0-gke.1"` | no |
+| platform\_version | Platform version of the attached cluster resource | `string` | `"1.34.0-gke.2"` | no |
 
 ## Outputs
 

@@ -225,10 +225,10 @@
       - initial-install
       - tool-install
 
-### Find versions with:  gsutil ls -al gs://anthos-baremetal-release/bmctl
+### Find versions with:  gcloud storage ls --all-versions --long gs://anthos-baremetal-release/bmctl
   - name: Install Anthos Bare Metal CLI
     shell: |
-      gsutil cp gs://anthos-baremetal-release/bmctl/{{ bmctl_version }}/linux-amd64/bmctl {{ tools_base_path }}
+      gcloud storage cp gs://anthos-baremetal-release/bmctl/{{ bmctl_version }}/linux-amd64/bmctl {{ tools_base_path }}
       chmod a+x {{ tools_base_path }}/bmctl
       mv {{ tools_base_path }}/bmctl /usr/local/bin/bmctl
       bmctl version

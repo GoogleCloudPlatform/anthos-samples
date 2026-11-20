@@ -49,7 +49,7 @@
 # Download operator
 - name: "Download ACM Operator"
   command:
-    cmd: "gsutil cp gs://config-management-release/released/{{ acm_version }}/config-management-operator.yaml {{ acm_config_files }}/config-management-operator.yaml"
+    cmd: "gcloud storage cp gs://config-management-release/released/{{ acm_version }}/config-management-operator.yaml {{ acm_config_files }}/config-management-operator.yaml"
     creates: "{{ acm_config_files }}/config-management-operator.yaml"
   environment:
     PATH: "{{ tools_base_path }}/google-cloud-sdk/bin:{{ ansible_env.PATH }}"
