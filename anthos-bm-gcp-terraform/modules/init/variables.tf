@@ -124,6 +124,6 @@ variable "priv_key_path_template" {
 
 variable "module_depends_on" {
   description = "List of modules or resources this module depends on."
-  type        = list(any)
+  type        = any
   default     = []
 }
