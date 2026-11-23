@@ -17,7 +17,7 @@ initialization steps.
 | init\_vars\_file | Path to the file containing the host specific arguments to the init script | `string` | n/a | yes |
 | install\_abm\_script | Path to the script that installs Anthos on bare metal | `string` | `"../../resources/install_abm.sh"` | no |
 | login\_script | Path to the script that generates the token used to login to the Anthos bare metal cluster | `string` | `"../../resources/login.sh"` | no |
-| module\_depends\_on | List of modules or resources this module depends on. | `list(any)` | `[]` | no |
+| module\_depends\_on | List of modules or resources this module depends on. | `any` | `[]` | no |
 | nfs\_yaml\_path | Path to the NFS YAML configuration file for the Anthos cluster | `string` | `"../../resources/.nfs-csi.yaml"` | no |
 | priv\_key\_path\_template | Template denoting the path where the private key is to be stored | `string` | `"../../resources/.ssh-key-%s.priv"` | no |
 | project\_id | Google Cloud Project where the target resources live | `string` | n/a | yes |
