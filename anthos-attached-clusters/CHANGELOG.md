@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.2.1](https://github.com/GoogleCloudPlatform/anthos-samples/compare/anthos-attached-clusters-v0.2.0...anthos-attached-clusters-v0.2.1) (2026-11-23)
+
+
+### Bug Fixes
+
+* **deps:** update terraform google to v7 ([#823](https://github.com/GoogleCloudPlatform/anthos-samples/issues/823)) ([c80d49f](https://github.com/GoogleCloudPlatform/anthos-samples/commit/c80d49fdf7aa9f878efa998dccb047bbb085126c))
+* **deps:** update terraform kind to ~&gt; 0.9 ([#806](https://github.com/GoogleCloudPlatform/anthos-samples/issues/806)) ([bbf3662](https://github.com/GoogleCloudPlatform/anthos-samples/commit/bbf3662efe2f15a8f4a7122aa71aa88947613944))
+* migrate GitHub Actions workflows to ubuntu-latest ([#856](https://github.com/GoogleCloudPlatform/anthos-samples/issues/856)) ([1aa08ab](https://github.com/GoogleCloudPlatform/anthos-samples/commit/1aa08ab94f4f2ae4b83115ed4f08b7a7e73b039d))
+
 ## [0.2.0](https://github.com/GoogleCloudPlatform/anthos-samples/compare/anthos-attached-clusters-v0.1.1...anthos-attached-clusters-v0.2.0) (2025-03-05)
 
 
